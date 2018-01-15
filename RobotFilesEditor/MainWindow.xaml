@@ -5,8 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RobotFilesEditor"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
+        Title="MainWindow" Height="350" Width="525" Name="window">
+    <Grid DataContext="">        
+        <Menu x:Name="menu" HorizontalAlignment="Left" VerticalAlignment="Top" Width="517" FontSize="14" HorizontalContentAlignment="Stretch" IsTabStop="True">
+            <MenuItem Header="Controler" FontSize="14"  IsTabStop="True">
+                <MenuItem Header="KUKA KRC2" IsCheckable="True" IsChecked="{Binding SelectedKRC2, ElementName=window }"/>
+                <MenuItem Header="KUKA KRC4" IsCheckable="True" IsChecked="{Binding SelectedKRC4, ElementName=window }"/>
+            </MenuItem>
+            <MenuItem Header="Files" FontSize="14">
+            </MenuItem>
+        </Menu>
     </Grid>
 </Window>
