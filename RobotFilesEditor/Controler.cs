@@ -31,5 +31,15 @@ namespace RobotFilesEditor
             string[] filesInFolder = Directory.GetFiles(path);
 
         }
+        
+        public void MoveProductionFiles(string path)
+        {
+
+        }
+
+        public void MoveServicesFiles(string path)
+        {
+
+        }
     }
 }

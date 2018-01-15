@@ -14,5 +14,8 @@ namespace RobotFilesEditor
 
         public GlobalData()
         { }
+
+        
+
     }
 }

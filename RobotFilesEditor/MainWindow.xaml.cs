@@ -1,18 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace RobotFilesEditor
 {
@@ -21,9 +14,7 @@ namespace RobotFilesEditor
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        KukaKrc2 _krc2;
-        KukaKrc4 _krc4;
-
+       
         public bool SelectedKRC2
         {
             get { return _selectedControlerType==GlobalData.ControlerTypes.KRC2; }
@@ -72,19 +63,125 @@ namespace RobotFilesEditor
             }
         }
 
-        private GlobalData.ControlerTypes _selectedControlerType;
+        public string SelectedFoldersPath
+        {
+            get { return _selectedFoldersPath; }
+            set {
+
+                if (_selectedFoldersPath != value)
+                {
+                    _selectedFoldersPath = value;
+                    OnPropertyChanged(nameof(SelectedFoldersPath));
+                }
+            }
+        }
         public event PropertyChangedEventHandler PropertyChanged;
+
+        private KukaKrc2 _krc2;
+        private KukaKrc4 _krc4;
+        private string _selectedFoldersPath;
+        private GlobalData.ControlerTypes _selectedControlerType;
+
+        private List<FileTreeNode> _filesExtension;
 
         public MainWindow()
         {
             InitializeComponent();
-            _selectedControlerType = GlobalData.ControlerTypes.KRC2;          
+            SelectedControlerType = GlobalData.ControlerTypes.KRC2;
+            SelectedFoldersPath = "No selected path";
+            _filesExtension = new List<FileTreeNode>();
         }
 
-        [NotifyPropertyChangedInvocator] 
+        [NotifyPropertyChangedInvocatorAttribute] 
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }    
+        }
+
+        private void MoveProduction_Click(object sender, RoutedEventArgs e)
+        {
+            try {
+                switch(_selectedControlerType)
+                {
+                    case GlobalData.ControlerTypes.KRC2: {
+                            _krc2.MoveProductionFiles(_selectedFoldersPath);
+                        } break;
+                    case GlobalData.ControlerTypes.KRC4: {
+
+                        } break;
+                }
+
+            } catch(NullReferenceException ex)
+            {
+
+            }
+        }
+
+        private void MoveServices_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void FolderPath_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new System.Windows.Forms.FolderBrowserDialog();
+            System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+
+            if(result==System.Windows.Forms.DialogResult.OK)
+            {
+                SelectedFoldersPath = dialog.SelectedPath;
+            }
+
+            CreateFoldersTreeView();
+        }
+
+
+
+        public void CreateFoldersTreeView()
+        {
+
+            string[] files = Directory.GetFiles(_selectedFoldersPath);
+            files=files.OrderBy(x=>x).ToArray();
+
+
+            TreeViewItem root = new TreeViewItem();
+            root.Header = "Files";
+           
+
+            //MenuItem childItem1 = new MenuItem() { Title = "Child item #1" };
+            //childItem1.Items.Add(new MenuItem() { Title = "Child item #1.1" });
+            //childItem1.Items.Add(new MenuItem() { Title = "Child item #1.2" });
+            //root.Items.Add(childItem1);
+            //root.Items.Add(new MenuItem() { Title = "Child item #2" });
+            //trvMenu.Items.Add(root);
+
+            foreach (var f in files)
+            {
+                List<FileTreeNode> nodes=_filesExtension.Where(s => f.Contains(s.Extension)).ToList();
+
+                foreach(var n in nodes )
+                {
+                    
+                }
+
+                
+            }
+
+        }
+
+        private void GetFilesExtensions()
+        {
+            switch(_selectedControlerType)
+            {
+                case GlobalData.ControlerTypes.KRC2:
+                    {
+                        _filesExtension = _krc2?.GetFilesExtensions();
+                    } break;
+                case GlobalData.ControlerTypes.KRC4:
+                    {
+                        _filesExtension = _krc4?.GetFilesExtensions();
+                    } break;
+            }
+        }
     }
 }

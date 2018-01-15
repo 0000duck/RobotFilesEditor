@@ -5,15 +5,48 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RobotFilesEditor"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525" Name="window">
-    <Grid DataContext="">        
-        <Menu x:Name="menu" HorizontalAlignment="Left" VerticalAlignment="Top" Width="517" FontSize="14" HorizontalContentAlignment="Stretch" IsTabStop="True">
+        Title="MainWindow" Name="window" Width="775">
+    <Grid DataContext="">
+        <Menu x:Name="menu" HorizontalAlignment="Left" VerticalAlignment="Top" Width="517" FontSize="14" HorizontalContentAlignment="Stretch" IsTabStop="True" RenderTransformOrigin="0.5,0.5">
+            <Menu.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform/>
+                    <SkewTransform/>
+                    <RotateTransform Angle="-0.324"/>
+                    <TranslateTransform/>
+                </TransformGroup>
+            </Menu.RenderTransform>
             <MenuItem Header="Controler" FontSize="14"  IsTabStop="True">
                 <MenuItem Header="KUKA KRC2" IsCheckable="True" IsChecked="{Binding SelectedKRC2, ElementName=window }"/>
                 <MenuItem Header="KUKA KRC4" IsCheckable="True" IsChecked="{Binding SelectedKRC4, ElementName=window }"/>
             </MenuItem>
             <MenuItem Header="Files" FontSize="14">
+                <MenuItem Header="Set folder path">
+                    <MenuItem Header="{Binding SelectedFoldersPath, ElementName=window}" Name="FolderPath" Click="FolderPath_Click"/>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="Files full ???"/>
+                <Separator/>
+                <MenuItem Header="Move files">
+                    <MenuItem Header="All files" Name="MoveAllFiles"/>
+                    <Separator/>
+                    <MenuItem Header="Production files" Name="MoveProduction" Click="MoveProduction_Click"/>
+                    <MenuItem Header="Services files" Name="MoveServices" Click="MoveServices_Click"/>
+                </MenuItem>
+                <MenuItem Header="Exctract data">
+                    <MenuItem Header="All files" Name="ExtractAllFiles"/>
+                    <Separator/>
+                    <MenuItem Header="OLP files"  Name="ExtractOlpFiles"/>
+                    <MenuItem Header="Global files" Name="ExtractGlobalFiles"/>
+                </MenuItem>
+                <MenuItem Header="Delete files" Name="DeleteAllFiles"/>
+            </MenuItem>
+            <MenuItem Header="Configuration">
+                <MenuItem Header="Edit configuration"  Name="EditControlersConfiguration"/>
             </MenuItem>
         </Menu>
+        <TreeView x:Name="treeView" HorizontalAlignment="Left" Height="100" Margin="120,148,0,0" VerticalAlignment="Top" Width="100">
+          
+        </TreeView>
     </Grid>
 </Window>
