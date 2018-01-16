@@ -11,6 +11,17 @@ namespace RobotFilesEditor
     {
         public KukaKrc4()
         {
+            LoadConfigurationSettingsForControler();
+        }
+        public void LoadConfigurationSettingsForControler()
+        {
+            Controler controler = base.LoadConfigurationSettingsForControler("KRC4");
+
+            _productionCopiedFiles = controler._productionCopiedFiles;
+            _serviceCopiedFiles = controler._serviceCopiedFiles;
+            _copiedOlpDataFiles = controler._copiedOlpDataFiles;
+            _copiedGlobalDataFiles = controler._copiedGlobalDataFiles;
+            _removingDataFiles = controler._removingDataFiles;
         }
 
         public List<FileTreeNode> GetFilesExtensions()

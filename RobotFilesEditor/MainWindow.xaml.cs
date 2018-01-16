@@ -83,13 +83,19 @@ namespace RobotFilesEditor
         private GlobalData.ControlerTypes _selectedControlerType;
 
         private List<FileTreeNode> _filesExtension;
-
+        public TreeViewItem FileBrowser
+        {
+            get;
+            set;
+        }
         public MainWindow()
         {
             InitializeComponent();
             SelectedControlerType = GlobalData.ControlerTypes.KRC2;
             SelectedFoldersPath = "No selected path";
+
             _filesExtension = new List<FileTreeNode>();
+            _krc2 = new KukaKrc2();
         }
 
         [NotifyPropertyChangedInvocatorAttribute] 
@@ -127,46 +133,55 @@ namespace RobotFilesEditor
             var dialog = new System.Windows.Forms.FolderBrowserDialog();
             System.Windows.Forms.DialogResult result = dialog.ShowDialog();
 
+            GetFilesExtensions();
+
             if(result==System.Windows.Forms.DialogResult.OK)
             {
                 SelectedFoldersPath = dialog.SelectedPath;
             }
 
-            CreateFoldersTreeView();
+            FileBrowser=CreateFoldersTreeView();
+
         }
 
-
-
-        public void CreateFoldersTreeView()
+        public TreeViewItem CreateFoldersTreeView()
         {
-
             string[] files = Directory.GetFiles(_selectedFoldersPath);
             files=files.OrderBy(x=>x).ToArray();
 
-
             TreeViewItem root = new TreeViewItem();
-            root.Header = "Files";
-           
+            root.Header = "Files";       
 
-            //MenuItem childItem1 = new MenuItem() { Title = "Child item #1" };
-            //childItem1.Items.Add(new MenuItem() { Title = "Child item #1.1" });
-            //childItem1.Items.Add(new MenuItem() { Title = "Child item #1.2" });
-            //root.Items.Add(childItem1);
-            //root.Items.Add(new MenuItem() { Title = "Child item #2" });
-            //trvMenu.Items.Add(root);
+            string lastNodeHeader = "";
+            TreeViewItem lastItem=new TreeViewItem();
 
-            foreach (var f in files)
+            foreach (var n in _filesExtension)
             {
-                List<FileTreeNode> nodes=_filesExtension.Where(s => f.Contains(s.Extension)).ToList();
-
-                foreach(var n in nodes )
+                if(lastNodeHeader=="")
                 {
-                    
-                }
+                    lastItem = new TreeViewItem();
+                    lastItem.Header = n.Node;
+                    lastNodeHeader = n.Node;
+                }else
+                    if(lastNodeHeader!=n.Node)
+                    {
+                        root.Items.Add(lastItem);
 
-                
+                        lastItem = new TreeViewItem();                    
+                        lastItem.Header = n.Node;
+                        lastNodeHeader = n.Node;
+                    }
+
+                foreach(var f in files)
+                {
+                    if(f.Contains(n.Extension))
+                    {
+                        lastItem.Items.Add(new TreeViewItem().Header = f);
+                    }
+                }               
             }
 
+            return root;
         }
 
         private void GetFilesExtensions()

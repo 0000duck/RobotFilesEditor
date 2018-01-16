@@ -10,11 +10,20 @@ namespace RobotFilesEditor
     public class KukaKrc2: Controler
     {
         public KukaKrc2()
-        {        
+        {
+            LoadConfigurationSettingsForControler();
         }
 
-        private void LoadConfigurationSettingsForControler()
-        {}
+        public void LoadConfigurationSettingsForControler()
+        {
+            Controler controler = base.LoadConfigurationSettingsForControler("KRC2");
+
+            _productionCopiedFiles=controler._productionCopiedFiles;
+            _serviceCopiedFiles = controler._serviceCopiedFiles;
+            _copiedOlpDataFiles = controler._copiedOlpDataFiles;
+            _copiedGlobalDataFiles = controler._copiedGlobalDataFiles;
+            _removingDataFiles = controler._removingDataFiles;
+        }
 
         public List<FileTreeNode> GetFilesExtensions()
         {

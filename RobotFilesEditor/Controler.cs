@@ -26,11 +26,18 @@ namespace RobotFilesEditor
             _removingDataFiles = new FilesOrganizer();
         }
 
+        public Controler LoadConfigurationSettingsForControler(string controlerType)
+        {
+            var fs = new Serializer.FilesSerialization();
+            return fs.GetControlerConfigration(controlerType);
+        }
+
         protected void   MoveFilesToFolder(string path)
         {
             string[] filesInFolder = Directory.GetFiles(path);
 
         }
+
         
         public void MoveProductionFiles(string path)
         {
