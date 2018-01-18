@@ -9,38 +9,26 @@ using System.Xml;
 namespace RobotFilesEditor
 {
     public class KukaKrc2: Controler
-    {
-        public string DestinationPath
-        {
-            get;
-            set;
-        }
-
-        public string SourcePath
-        {
-            get;
-            set;
-        }
-
-        private string _destinationDirectory;
-        private string _destinationFolder;
-
+    {      
         private string _destinationPath;
         private string _sourcePath;
-
+        private string _controlerFolder;
 
         public KukaKrc2(string sourcePath, string destinationPath)
         {
-            string folder= @"KRC2" + DateTime.Now.ToString("_yyyyMMdd");
+            _controlerFolder= @"KRC2" + DateTime.Now.ToString("_yyyyMMdd");
 
-            if (destinationPath.Contains(folder))
+            if (destinationPath.Contains(_controlerFolder))
             {
                 _destinationPath = destinationPath;
             }
             else
             {
-                _destinationPath = Path.Combine(destinationPath, folder);
-            }                
+                _destinationPath = Path.Combine(destinationPath, _controlerFolder);
+                Directory.CreateDirectory(_destinationPath);
+            }
+
+            _sourcePath = sourcePath;        
         }
 
         #region Configuration
@@ -73,8 +61,11 @@ namespace RobotFilesEditor
             {
                 List<string>files = Directory.GetFiles(_sourcePath, $"*{e}").ToList();
 
-                files.ForEach(x => Path.GetFileName(x));
-                gropuedFiles.AddRange(files);
+                files=files.ConvertAll(x =>x=Path.GetFileName(x));
+
+                gropuedFiles.Add(e);
+                gropuedFiles.AddRange(files.OrderBy(x=>x));
+                gropuedFiles.Add("");
             }
 
             gropuedFiles.Distinct();
@@ -82,131 +73,107 @@ namespace RobotFilesEditor
             return gropuedFiles;
         }
 
-        public List<FilesTree> GetFilesExtensions()
+        public void CreateDestinationFolders()
         {
-            List<FilesTree> extensions = new List<FilesTree>();          
-
-            foreach(var pcf in _productionCopiedFiles?.Extension)
+            if (Directory.Exists(_destinationPath) == false)
             {
-                extensions.Add(new FilesTree("Production Copied Files", pcf));
-            }
-
-            foreach (var scf in _serviceCopiedFiles?.Extension)
-            {
-                extensions.Add(new FilesTree("Service Copied Files",scf));
-            }
-
-            foreach (var codf in _copiedOlpDataFiles?.Extension)
-            {
-                extensions.Add(new FilesTree("Copied Data OLP Files", codf));
-            }
-
-            foreach (var cgdf in _copiedGlobalDataFiles?.Extension)
-            {
-                extensions.Add(new FilesTree("Copied Data Global Files", cgdf));
-            }
-            
-            foreach (var rdf in _removingDataFiles?.Extension)
-            {
-                extensions.Add(new FilesTree("Removing Files",rdf));
-            }
-
-            return extensions;
-        }
-
-        public void CreateDestinationFolders(string path)
-        {
-            _destinationDirectory = Path.Combine(path, _destinationFolder);
-
-            if (Directory.Exists(_destinationDirectory) == false)
-            {
-                var result = Directory.CreateDirectory(_destinationDirectory);
+                var result = Directory.CreateDirectory(_destinationPath);
             }
 
             if (_productionCopiedFiles?.Destination != null)
             {
-                Directory.CreateDirectory(Path.Combine(_destinationDirectory, _productionCopiedFiles.Destination));
+                Directory.CreateDirectory(Path.Combine(_destinationPath, _productionCopiedFiles.Destination));
             }
 
             if (_serviceCopiedFiles?.Destination != null)
             {
-                Directory.CreateDirectory(Path.Combine(_destinationDirectory, _productionCopiedFiles.Destination));
+                Directory.CreateDirectory(Path.Combine(_destinationPath, _productionCopiedFiles.Destination));
             }
 
             if (_serviceCopiedFiles?.Destination != null)
             {
-                Directory.CreateDirectory(Path.Combine(_destinationDirectory, _productionCopiedFiles.Destination));
+                Directory.CreateDirectory(Path.Combine(_destinationPath, _productionCopiedFiles.Destination));
             }
 
             if (_copiedOlpDataFiles?.Destination != null)
             {
-                Directory.CreateDirectory(Path.Combine(_destinationDirectory, _productionCopiedFiles.Destination));
+                Directory.CreateDirectory(Path.Combine(_destinationPath, _productionCopiedFiles.Destination));
             }
 
             if (_copiedGlobalDataFiles?.Destination != null)
             {
-                Directory.CreateDirectory(Path.Combine(_destinationDirectory, _productionCopiedFiles.Destination));
+                Directory.CreateDirectory(Path.Combine(_destinationPath, _productionCopiedFiles.Destination));
             }
         }
 
-        public void RefreshDestinationPath()
+        public void RefreshDestinationPath(string path)
         {
-            throw new NotImplementedException();
+            if (Directory.Exists(path))
+            {
+                if (path.Contains(_controlerFolder))
+                {
+                    _destinationPath = path;
+                }
+                else
+                {
+                    _destinationPath = Path.Combine(path, _controlerFolder);
+                }
+            }         
         }
 
-        public void RefreshSourcePath()
+        public void RefreshSourcePath(string path)
         {
-            throw new NotImplementedException();
+            if(Directory.Exists(path))
+            {
+                _sourcePath = path;
+            }
+
         }
-
-        public bool CheckDestinationPath()
-        {
-            throw new NotImplementedException();
-        }
-
-
-
+        
         #endregion Configuration
 
 
         #region CopyFiles
-        public void MoveProductionFiles(string source)
+        public void MoveProductionFiles()
         {
-            string []getedFiles= Directory.GetFiles(source);
+            string []getedFiles= Directory.GetFiles(_sourcePath);
             List<string> editingFiles = new List<string>();
 
-            try
+            if(Directory.Exists(_sourcePath) && Directory.Exists(_destinationPath))
             {
-                if (_productionCopiedFiles.Destination == null)
-                    throw new NullReferenceException("Production Copied Files destination directory not found!");
-
-                foreach (string f in getedFiles)
+                try
                 {
-                    if (_productionCopiedFiles.Extension.Exists(x => f.Contains(x)) && _productionCopiedFiles.Containing.Exists(x => f.Contains(x)))//uściślić tylko do Glue_070ZG01_G16.src i Glue_070ZG01_G16.dat
+                    if (_productionCopiedFiles.Destination == null)
+                        throw new NullReferenceException("Production Copied Files destination directory not found!");
+
+                    foreach (string f in getedFiles)
                     {
-                        editingFiles.Add(f);
+                        if (_productionCopiedFiles.Extension.Exists(x => f.Contains(x)) && _productionCopiedFiles.Containing.Exists(x => f.Contains(x)))//uściślić tylko do Glue_070ZG01_G16.src i Glue_070ZG01_G16.dat
+                        {
+                            editingFiles.Add(f);
+                        }
                     }
-                }               
 
-                string destDir = Path.Combine(_destinationDirectory, _productionCopiedFiles.Destination);
+                    string destDir = Path.Combine(_destinationPath, _productionCopiedFiles.Destination);
 
-                if (Directory.Exists(destDir) == false)
-                {
-                    Directory.CreateDirectory(destDir);
+                    if (Directory.Exists(destDir) == false)
+                    {
+                        Directory.CreateDirectory(destDir);
+                    }
+
+                    foreach (string ef in editingFiles)
+                    {
+                        File.Copy(ef, Path.Combine(destDir, Path.GetFileName(ef)));
+                    }
                 }
-
-                foreach (string ef in editingFiles)
+                catch (Exception ex)
                 {
-                    File.Copy(ef, Path.Combine(destDir, Path.GetFileName(ef)));
+                    System.Windows.MessageBox.Show(ex.Message, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 }
             }
-            catch(Exception ex)
-            {
-                System.Windows.MessageBox.Show(ex.Message, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);               
-            }           
+           
         }
-
-
+        
         public void MoveServicesFiles(string source)
         {
             string[] getedFiles = Directory.GetFiles(source);
@@ -222,14 +189,14 @@ namespace RobotFilesEditor
                 {
                     if(System.Text.RegularExpressions.Regex.IsMatch(Path.GetFileName(f), sPattern))
                     {
-                        if (_serviceCopiedFiles.Extension.Exists(x => f.Contains(x)) && _serviceCopiedFiles.Containing.Exists(x => f.Contains(x)))//uściślić tylko do Glue_070ZG01_G16.src i Glue_070ZG01_G16.dat
+                        if (_serviceCopiedFiles.Extension.Exists(x => Path.GetFileName(f).Contains(x)) && _serviceCopiedFiles.Containing.Exists(x => Path.GetFileName(f).Contains(x)))//uściślić tylko do Glue_070ZG01_G16.src i Glue_070ZG01_G16.dat
                         {
                             editingFiles.Add(f);
                         }
                     }                   
                 }
 
-                string destDir = Path.Combine(_destinationDirectory, _serviceCopiedFiles.Destination);
+                string destDir = Path.Combine(_destinationPath, _serviceCopiedFiles.Destination);
 
                 if (Directory.Exists(destDir) == false)
                 {
@@ -249,6 +216,7 @@ namespace RobotFilesEditor
 
         #endregion CopyFiles
 
+
         #region CopyData
 
         public void OlpFilesDataCopy()
@@ -260,17 +228,15 @@ namespace RobotFilesEditor
         {
             throw new NotImplementedException();
         }
+
         #endregion CopyData
 
         #region DeleteFiles 
         public void DeleteFiles()
         {
             throw new NotImplementedException();
-        } 
-
+        }
         #endregion DeleteFiles
-
-
 
     }
 }

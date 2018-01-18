@@ -25,9 +25,8 @@ namespace RobotFilesEditor
                     if(value==true)
                     {
                         SelectedControlerType = GlobalData.ControlerTypes.KRC2;
-                        OnPropertyChanged(nameof(SelectedControlerType));
-                    }
-                    
+                        OnPropertyChanged(nameof(SelectedControlerType));                                     
+                    }                    
                 }
             }
         }
@@ -43,8 +42,8 @@ namespace RobotFilesEditor
                     {
                         SelectedControlerType = GlobalData.ControlerTypes.KRC4;
                         OnPropertyChanged(nameof(SelectedControlerType));
-                    }
-                                
+                       
+                    }                                
                 }
             }
         }
@@ -59,6 +58,7 @@ namespace RobotFilesEditor
                     _selectedControlerType = value;
                     OnPropertyChanged(nameof(SelectedKRC2));
                     OnPropertyChanged(nameof(SelectedKRC4));
+                    RefreshControlerProperty();
                 }
             }
         }
@@ -67,11 +67,11 @@ namespace RobotFilesEditor
         {
             get { return $"Source path: {_selectedSourceFoldersPath}"; }
             set {
-
                 if (_selectedSourceFoldersPath != value)
                 {
                     _selectedSourceFoldersPath = value;
                     OnPropertyChanged(nameof(SelectedSourceFoldersPath));
+                    RefreshSourcePath();
                 }
             }
         }
@@ -85,55 +85,43 @@ namespace RobotFilesEditor
                 {
                     _selectedDestFoldersPath = value;
                     OnPropertyChanged(nameof(SelectedDestFoldersPath));
+                    RefreshDestinationPath();
                 }
             }
         }
 
         public List<string>FilesList
         {
-            get;
-            set;
-        }
-
-        public TreeViewItem FileBrowser
-        {
-            get { return _fileBrowser; }
+            get { return _filesList; }
             set
             {
-                if (_fileBrowser != value)
+                if (_filesList != value)
                 {
-                    _fileBrowser = value;
-                    OnPropertyChanged(nameof(FileBrowser));
+                    _filesList = value;
+                    OnPropertyChanged(nameof(FilesList));
+                    RefreshDestinationPath();                
                 }
             }
         }
+      
         public event PropertyChangedEventHandler PropertyChanged;
-
+                
         private KukaKrc2 _krc2;
         private KukaKrc4 _krc4;
+
         private string _selectedSourceFoldersPath;
         private string _selectedDestFoldersPath;
-        private GlobalData.ControlerTypes _selectedControlerType;
-        private TreeViewItem _fileBrowser;
-        private List<FilesTree> _filesExtension;
+        private GlobalData.ControlerTypes _selectedControlerType;        
         public List<string> _filesList;
-
+        private IControler _controler;
 
         public MainWindow()
         {            
-             InitializeComponent();
-
-            SelectedControlerType = GlobalData.ControlerTypes.KRC2;
+            InitializeComponent();
             SelectedSourceFoldersPath = @"C:\Users\ajergas\Downloads\KUKA Organizer\Przykładowe pliki do obrobienia\KRC2";//"No selected path";
             SelectedDestFoldersPath = @"C:\Users\" + Environment.UserName + @"\Documents";
-            _filesExtension = new List<FilesTree>();
-            _krc2 = new KukaKrc2();
-            _krc4 = new KukaKrc4();
-
-            _filesExtension = _krc2.GetFilesExtensions();
-            FileBrowser = CreateFoldersTreeView();
-            
-           // treeView.Items.Add(FileBrowser);        
+            SelectedControlerType = GlobalData.ControlerTypes.KRC2;
+            RefreshControlerProperty();                       
         }
 
         [NotifyPropertyChangedInvocatorAttribute] 
@@ -148,10 +136,10 @@ namespace RobotFilesEditor
                 switch(_selectedControlerType)
                 {
                     case GlobalData.ControlerTypes.KRC2: {
-                            _krc2.MoveProductionFiles(_selectedSourceFoldersPath);
+                            _krc2.MoveProductionFiles();
                         } break;
                     case GlobalData.ControlerTypes.KRC4: {
-
+                            _krc4.MoveProductionFiles();
                         } break;
                 }
 
@@ -185,72 +173,21 @@ namespace RobotFilesEditor
                 MessageBoxResult result = MessageBox.Show("Problem with read a configration file. Error " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        public TreeViewItem CreateFoldersTreeView()
-        {
-            string[] files = Directory.GetFiles(_selectedSourceFoldersPath);
-            files=files.OrderBy(x=>x).ToArray();
-
-            TreeViewItem root = new TreeViewItem();
-            root.Header = "Files";      
-
-           
-            TreeViewItem lastItem=new TreeViewItem();
-
-            foreach (var n in _filesExtension)
-            {
-                lastItem = new TreeViewItem();
-                lastItem.Header = n.NodeName+n.Extension;                
-
-                foreach(var f in files)
-                {
-                    if(f.Contains(n.Extension))
-                    {
-                        lastItem.Items.Add(new TreeViewItem().Header = f);
-                    }
-                }
-
-                root.Items.Add(lastItem);             
-            }         
-
-            return root;
-        }
-
-        private void GetFilesExtensions()
-        {
-            switch(_selectedControlerType)
-            {
-                case GlobalData.ControlerTypes.KRC2:
-                    {
-                        _filesExtension = _krc2?.GetFilesExtensions();
-                    } break;
-                case GlobalData.ControlerTypes.KRC4:
-                    {
-                        _filesExtension = _krc4?.GetFilesExtensions();
-                    } break;
-            }
-        }
-
         private void FolderSourcePath_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new System.Windows.Forms.FolderBrowserDialog();
-            System.Windows.Forms.DialogResult result = dialog.ShowDialog();
-
-            GetFilesExtensions();
+            System.Windows.Forms.DialogResult result = dialog.ShowDialog();          
 
             if (result == System.Windows.Forms.DialogResult.OK)
             {
                 SelectedSourceFoldersPath = dialog.SelectedPath;
             }
-
-            FileBrowser = CreateFoldersTreeView();
         }
 
         private void FolderDestinationPath_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new System.Windows.Forms.FolderBrowserDialog();
-            System.Windows.Forms.DialogResult result = dialog.ShowDialog();
-
-            GetFilesExtensions();
+            System.Windows.Forms.DialogResult result = dialog.ShowDialog();           
 
             if (result == System.Windows.Forms.DialogResult.OK)
             {
@@ -272,22 +209,86 @@ namespace RobotFilesEditor
             }
         }
 
-        public void InitializeControler()
+        public void RefreshControlerProperty()
         {
-            switch(_selectedControlerType)
+            switch (_selectedControlerType)
             {
                 case GlobalData.ControlerTypes.KRC2:
                     {
                         if (_krc2 == null)
                         {
-                            _krc2 = new KukaKrc2();
+                            _krc2 = new KukaKrc2(_selectedSourceFoldersPath, _selectedDestFoldersPath);
                             _krc2.LoadConfigurationSettingsForControler();
-                            FilesList=_krc2.GetGroupedFiles();
+                            FilesList = _krc2.GetGroupedFiles();
+                        }else
+                        {
+                            _krc2.RefreshSourcePath(_selectedSourceFoldersPath);
+                            _krc4.RefreshDestinationPath(_selectedDestFoldersPath);
+                            FilesList = _krc2.GetGroupedFiles();
                         }
-                    }break;
+                    }
+                    break;
                 case GlobalData.ControlerTypes.KRC4:
                     {
+                        if (_krc4 == null)
+                        {
+                            _krc4 = new KukaKrc4(_selectedSourceFoldersPath, _selectedDestFoldersPath);
+                            _krc4.LoadConfigurationSettingsForControler();
+                            FilesList = _krc2.GetGroupedFiles();
+                        }else
+                        {
+                            _krc2.RefreshSourcePath(_selectedSourceFoldersPath);
+                            _krc4.RefreshDestinationPath(_selectedDestFoldersPath);
+                            FilesList = _krc2.GetGroupedFiles();
+                        }
+                    }
+                    break;
+            }
+        }
 
+        public void RefreshSourcePath()
+        {
+            switch (_selectedControlerType)
+            {
+                case GlobalData.ControlerTypes.KRC2:
+                    {
+                        if(_krc2!=null)
+                        {
+                            _krc2.RefreshSourcePath(_selectedSourceFoldersPath);
+                            FilesList = _krc2.GetGroupedFiles();
+                        }
+                    }
+                    break;
+                case GlobalData.ControlerTypes.KRC4:
+                    {
+                        if (_krc4 != null)
+                        {
+                            _krc4.RefreshSourcePath(_selectedSourceFoldersPath);
+                            FilesList = _krc4.GetGroupedFiles();
+                        }
+                    }
+                    break;
+            }
+        }
+
+        public void RefreshDestinationPath()
+        {
+            switch (_selectedControlerType)
+            {
+                case GlobalData.ControlerTypes.KRC2:
+                    {
+                        if (_krc2 != null)
+                        {
+                            _krc2.RefreshDestinationPath(_selectedDestFoldersPath);
+                        }
+                    }
+                    break;
+                case GlobalData.ControlerTypes.KRC4:
+                    {
+                        if (_krc4 != null)
+                        {
+                            _krc4.RefreshDestinationPath(_selectedDestFoldersPath);
+                        }
                     }
                     break;
             }

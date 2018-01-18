@@ -46,6 +46,6 @@
                 <MenuItem Header="Edit configuration"  Name="EditControlersConfiguration"/>
             </MenuItem>
         </Menu>
-        <ListBox x:Name="listBox" HorizontalAlignment="Left" Margin="0,24,0,0" VerticalAlignment="Top" Width="100" Height="33" DataContext="{Binding FilesList, ElementName=window}" />
+        <ListBox HorizontalAlignment="Left" Margin="0,24,0,0" ItemsSource="{Binding FilesList, ElementName=window}" />
     </Grid>
 </Window>

@@ -20,7 +20,7 @@ namespace RobotFilesEditor
         void RefreshSourcePath();
         bool CheckDestinationPath();
 
-        #endregion
+        #endregion Configuration
 
         #region FilesOperations
 
