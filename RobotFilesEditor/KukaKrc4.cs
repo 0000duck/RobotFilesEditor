@@ -8,8 +8,13 @@ using System.Threading.Tasks;
 namespace RobotFilesEditor
 {
 
-    public class KukaKrc4: Controler
+    public class KukaKrc4 : IControler
     {
+        private FilesOrganizer _productionCopiedFiles;
+        private FilesOrganizer _serviceCopiedFiles;
+        private FilesOrganizer _copiedOlpDataFiles;
+        private FilesOrganizer _copiedGlobalDataFiles;
+        private FilesOrganizer _removingDataFiles;
         private string _destinationPath;
         private string _sourcePath;
         private string _controlerFolder;
@@ -25,6 +30,7 @@ namespace RobotFilesEditor
             else
             {
                 _destinationPath = Path.Combine(destinationPath, _controlerFolder);
+                Directory.CreateDirectory(_destinationPath);
             }
 
             _sourcePath = sourcePath;
@@ -34,7 +40,8 @@ namespace RobotFilesEditor
 
         public void LoadConfigurationSettingsForControler()
         {
-            Controler controler = base.LoadConfigurationSettingsForControler("KRC2");
+            var fs = new Serializer.FilesSerialization();
+            Controler controler = fs.GetControlerConfigration("KRC4");
 
             _productionCopiedFiles = controler._productionCopiedFiles;
             _serviceCopiedFiles = controler._serviceCopiedFiles;
@@ -60,8 +67,11 @@ namespace RobotFilesEditor
             {
                 List<string> files = Directory.GetFiles(_sourcePath, $"*{e}").ToList();
 
-                files.ForEach(x => Path.GetFileName(x));
-                gropuedFiles.AddRange(files);
+                files = files.ConvertAll(x => x = Path.GetFileName(x));
+
+                gropuedFiles.Add(e);
+                gropuedFiles.AddRange(files.OrderBy(x => x));
+                gropuedFiles.Add("");
             }
 
             gropuedFiles.Distinct();
@@ -124,11 +134,6 @@ namespace RobotFilesEditor
                 _sourcePath = path;
             }
 
-        }
-
-        public bool CheckDestinationPath()
-        {
-            throw new NotImplementedException();
         }
 
         #endregion Configuration

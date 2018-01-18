@@ -98,8 +98,7 @@ namespace RobotFilesEditor
                 if (_filesList != value)
                 {
                     _filesList = value;
-                    OnPropertyChanged(nameof(FilesList));
-                    RefreshDestinationPath();                
+                    OnPropertyChanged(nameof(FilesList));                            
                 }
             }
         }
@@ -201,10 +200,7 @@ namespace RobotFilesEditor
             {
                 _controler.RefreshSourcePath(_selectedSourceFoldersPath);
                 FilesList = _controler.GetGroupedFiles();
-            }else
-            {
-                RefreshControlerProperty();
-            }               
+            }     
         }
 
         public void RefreshDestinationPath()
@@ -213,11 +209,7 @@ namespace RobotFilesEditor
             {
                 _controler.RefreshDestinationPath(_selectedDestFoldersPath);
                 FilesList = _controler.GetGroupedFiles();
-            }
-            else
-            {
-                RefreshControlerProperty();
-            }
+            }           
         }
     }
 }

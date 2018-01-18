@@ -8,15 +8,26 @@ using System.Xml;
 
 namespace RobotFilesEditor
 {
-    public class KukaKrc2: Controler
-    {      
+    public class KukaKrc2: IControler
+    {
+        private FilesOrganizer _productionCopiedFiles;
+        private FilesOrganizer _serviceCopiedFiles;
+        private FilesOrganizer _copiedOlpDataFiles;
+        private FilesOrganizer _copiedGlobalDataFiles;
+        private FilesOrganizer _removingDataFiles;
         private string _destinationPath;
         private string _sourcePath;
         private string _controlerFolder;
 
         public KukaKrc2(string sourcePath, string destinationPath)
         {
-            _controlerFolder= @"KRC2" + DateTime.Now.ToString("_yyyyMMdd");
+            _productionCopiedFiles = new FilesOrganizer();
+            _serviceCopiedFiles = new FilesOrganizer();
+            _copiedOlpDataFiles = new FilesOrganizer();
+            _copiedGlobalDataFiles = new FilesOrganizer();
+            _removingDataFiles = new FilesOrganizer();
+            
+            _controlerFolder = @"KRC2" + DateTime.Now.ToString("_yyyyMMdd");
 
             if (destinationPath.Contains(_controlerFolder))
             {
@@ -35,9 +46,10 @@ namespace RobotFilesEditor
 
         public void LoadConfigurationSettingsForControler()
         {
-            Controler controler = base.LoadConfigurationSettingsForControler("KRC2");
+            var fs = new Serializer.FilesSerialization();
+            Controler controler=fs.GetControlerConfigration("KRC2");
 
-            _productionCopiedFiles=controler._productionCopiedFiles;
+            _productionCopiedFiles =controler._productionCopiedFiles;
             _serviceCopiedFiles = controler._serviceCopiedFiles;
             _copiedOlpDataFiles = controler._copiedOlpDataFiles;
             _copiedGlobalDataFiles = controler._copiedGlobalDataFiles;
