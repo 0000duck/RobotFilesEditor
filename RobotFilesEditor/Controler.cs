@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RobotFilesEditor
 {
-    public class Controler
+    public class Controler: IControler
     {
         public FilesOrganizer _productionCopiedFiles;
         public FilesOrganizer _serviceCopiedFiles;
@@ -32,21 +32,59 @@ namespace RobotFilesEditor
             return fs.GetControlerConfigration(controlerType);
         }
 
-        protected void   MoveFilesToFolder(string path)
+        public void LoadConfigurationSettingsForControler()
         {
-            string[] filesInFolder = Directory.GetFiles(path);
-
+            throw new NotImplementedException();
         }
 
-        
-        public void MoveProductionFiles(string path)
+        public List<FilesTree> GetFilesExtensions()
         {
-
+            throw new NotImplementedException();
         }
 
-        public void MoveServicesFiles(string path)
+        public void MoveProductionFiles(string source)
         {
+            throw new NotImplementedException();
+        }
 
+        public void MoveServicesFiles(string source)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CreateDestinationFolders(string path)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RefreshDestinationPath()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RefreshSourcePath()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool CheckDestinationPath()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OlpFilesDataCopy()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GlobalFilesDataCopy()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteFiles()
+        {
+            throw new NotImplementedException();
         }
     }
 }

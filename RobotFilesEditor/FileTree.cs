@@ -6,18 +6,25 @@ using System.Threading.Tasks;
 
 namespace RobotFilesEditor
 {
-    public class FileTreeNode
+    public class FilesTree
     {
-        public string Node { get; set; }
+        public string NodeName { get; set; }
         public string Extension { get; set; }
+        public List<string> FilesNames { get; set; }
+        public List<string>FilePaths { get; set; }
 
-        public FileTreeNode(string node, string extension)
+        public FilesTree(string node, string extension)
         {
             if(node!=null && extension!=null)
             {
-                this.Node = node;
+                this.NodeName = node;
                 this.Extension = extension;
             }           
+        }
+
+        public FilesTree()
+        {    
+                  
         }
     }
 }

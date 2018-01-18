@@ -1,15 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Windows;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace RobotFilesEditor.Serializer
 {
     public class FilesSerialization
     {
+
 
         public FilesSerialization()
         {}
@@ -18,61 +19,81 @@ namespace RobotFilesEditor.Serializer
         {
             Controler controler = new Controler();
 
-            FileStream fs = File.OpenRead(GlobalData.ConfigurationFileName);
-            ControlersConfiguration cc = (ControlersConfiguration)new XmlSerializer(typeof(ControlersConfiguration)).Deserialize(fs);
+            try {
 
-            foreach (var c in cc.Controler)
-            {
-                if (c.ControlerType.Equals(controlerType))
+                XmlSerializer serializer = new XmlSerializer(typeof(ControlersConfiguration));
+
+                // A FileStream is needed to read the XML document.
+                FileStream fs = new FileStream(GlobalData.ConfigurationFileName, FileMode.Open);
+                XmlReader reader = XmlReader.Create(fs);
+
+                // Declare an object variable of the type to be deserialized.
+                ControlersConfiguration cc;
+
+                // Use the Deserialize method to restore the object's state.
+                cc = (ControlersConfiguration)serializer.Deserialize(reader);
+                fs.Close();
+
+                foreach (var c in cc.Controlers)
                 {
-                    foreach (var ftc in c.FilesToCopy)
+                    if (c.ControlerType.Equals(controlerType))
                     {
-                        switch (ftc.ProgramType.ToLower())
+                        foreach (var ftc in c.FilesToCopy)
                         {
-                            case "program":
-                                {
-                                    controler._productionCopiedFiles.Extension = ftc?.FilesFilter.FilesExtension.ToList();
-                                    controler._productionCopiedFiles.Containing = ftc?.FilesFilter.ContainName.ToList();
-                                    controler._productionCopiedFiles.Destination = ftc?.DestinationFolder;
-                                }
-                                break;
-                            case "service":
-                                {
-                                    controler._serviceCopiedFiles.Extension = ftc?.FilesFilter.FilesExtension.ToList();
-                                    controler._serviceCopiedFiles.Containing = ftc?.FilesFilter.ContainName.ToList();
-                                    controler._serviceCopiedFiles.Destination = ftc?.DestinationFolder;
-                                }
-                                break;
+                            switch (ftc?.Type?.ToLower())
+                            {
+                                case "program":
+                                    {
+                                        controler._productionCopiedFiles.Extension = ftc?.FilesExtension.ToList();
+                                        controler._productionCopiedFiles.Containing = ftc?.ContainNames.ToList();
+                                        controler._productionCopiedFiles.Destination = ftc?.DestinationFolder;
+                                    }
+                                    break;
+                                case "service":
+                                    {
+                                        controler._serviceCopiedFiles.Extension = ftc?.FilesExtension.ToList();
+                                        controler._serviceCopiedFiles.Containing = ftc?.ContainNames.ToList();
+                                        controler._serviceCopiedFiles.Destination = ftc?.DestinationFolder;
+                                    }
+                                    break;
+                            }
                         }
-                    }
 
-                    foreach (var dtc in c.DataToCopy)
-                    {
-                        switch (dtc.FileType.ToLower())
+                        foreach (var dtc in c.DataToCopy)
                         {
-                            case "olp":
-                                {
-                                    controler._copiedOlpDataFiles.Extension = dtc?.FilesFilter.FilesExtension.ToList();
-                                    controler._copiedOlpDataFiles.Containing = dtc?.FilesFilter.ContainName.ToList();
-                                    controler._copiedOlpDataFiles.Destination = dtc?.DestinationFolder;
-                                }
-                                break;
-                            case "global": {
-                                    controler._copiedGlobalDataFiles.Extension = dtc?.FilesFilter.FilesExtension.ToList();
-                                    controler._copiedGlobalDataFiles.Containing = dtc?.FilesFilter.ContainName.ToList();
-                                    controler._copiedGlobalDataFiles.Destination = dtc?.DestinationFolder;
-                                } break;
+                            switch (dtc?.Type?.ToLower())
+                            {
+                                case "olp":
+                                    {
+                                        controler._copiedOlpDataFiles.Extension = dtc?.FilesExtension.ToList();
+                                        controler._copiedOlpDataFiles.Containing = dtc?.ContainNames.ToList();
+                                        controler._copiedOlpDataFiles.Destination = dtc?.DestinationFolder;
+                                    }
+                                    break;
+                                case "global":
+                                    {
+                                        controler._copiedGlobalDataFiles.Extension = dtc?.FilesExtension.ToList();
+                                        controler._copiedGlobalDataFiles.Containing = dtc?.ContainNames.ToList();
+                                        controler._copiedGlobalDataFiles.Destination = dtc?.DestinationFolder;
+                                    }
+                                    break;
+                            }
                         }
-                    }
 
-                    foreach (var ftr in c.FilesToRemove)
-                    {
-                        controler._removingDataFiles.Extension = ftr?.FilesFilter.FilesExtension.ToList();
+                        foreach (var ftr in c.FilesToRemove)
+                        {
+                            controler._removingDataFiles.Extension = ftr?.FilesExtension.ToList();
+                        }
+
+                        return controler;
                     }
                 }
-            }               
-           
-            return controler;
+            } catch(Exception ex) {
+
+                MessageBoxResult result = MessageBox.Show("Problem with read a configration file.Error: "+ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);                
+            }
+
+            return null;
         }
 
 

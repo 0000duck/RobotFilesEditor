@@ -56,7 +56,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="FileTreeNode.cs" />
+    <Compile Include="FileTree.cs" />
+    <Compile Include="IControler.cs" />
     <Compile Include="Serializer\SerializationObjects.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

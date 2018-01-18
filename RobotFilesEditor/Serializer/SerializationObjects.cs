@@ -2,334 +2,56 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace RobotFilesEditor.Serializer
 {
-
-    /// <remarks/>
-    [System.SerializableAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    [System.Xml.Serialization.XmlRootAttribute(Namespace = "", IsNullable = false)]
-    public partial class ControlersConfiguration
-    {
-
-        private ControlersConfigurationControler []controlerField;
-
-        /// <remarks/>
-        public ControlersConfigurationControler []Controler
-        {
-            get
-            {
-                return this.controlerField;
-            }
-            set
-            {
-                this.controlerField = value;
-            }
-        }
+    [Serializable]
+    [XmlRoot("ControlersConfiguration")]
+    public class ControlersConfiguration
+    {        
+        [XmlArray("Controlers")]
+        [XmlArrayItem("Controler")]
+        public List<SingleControler> Controlers { get; set; }        
     }
 
-    /// <remarks/>
-    [System.SerializableAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class ControlersConfigurationControler
+    [Serializable]
+    [XmlRoot("ControlersConfiguration")]
+    public class SingleControler
     {
+        [XmlAttribute("ControlerType")]
+        public string ControlerType { get; set; }       
 
-        private ControlersConfigurationControlerFilesToCopy[] filesToCopyField;
+        [XmlArray("FilesToCopy")]
+        [XmlArrayItem("FilesFilter")]
+        public List<FileFilter> FilesToCopy { get; set; }
 
-        private ControlersConfigurationControlerDataToCopy []dataToCopyField;
+         [XmlArray("DataToCopy")]
+        [XmlArrayItem("FilesFilter")]
+        public List<FileFilter> DataToCopy { get; set; }
 
-        private ControlersConfigurationControlerFilesToRemove []filesToRemoveField;
+        [XmlArray("FilesToRemove")]
+        [XmlArrayItem("FilesFilter")]
+        public List<FileFilter> FilesToRemove { get; set; }       
+    }   
 
-        private string controlerTypeField;
+    [Serializable]  
+    public class FileFilter
+    {
+        [XmlAttribute("Destination")]
+        public string DestinationFolder { get; set; }
 
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("FilesToCopy")]
-        public ControlersConfigurationControlerFilesToCopy[] FilesToCopy
-        {
-            get
-            {
-                return this.filesToCopyField;
-            }
-            set
-            {
-                this.filesToCopyField = value;
-            }
-        }
+        [XmlAttribute("Type")]
+        public string Type { get; set; }
 
-        /// <remarks/>
-        public ControlersConfigurationControlerDataToCopy []DataToCopy
-        {
-            get
-            {
-                return this.dataToCopyField;
-            }
-            set
-            {
-                this.dataToCopyField = value;
-            }
-        }
+        [XmlArray("FilesExtension")]
+        [XmlArrayItem("Extension")]
+        public List<string> FilesExtension { get; set; }
 
-        /// <remarks/>
-        public ControlersConfigurationControlerFilesToRemove []FilesToRemove
-        {
-            get
-            {
-                return this.filesToRemoveField;
-            }
-            set
-            {
-                this.filesToRemoveField = value;
-            }
-        }
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string ControlerType
-        {
-            get
-            {
-                return this.controlerTypeField;
-            }
-            set
-            {
-                this.controlerTypeField = value;
-            }
-        }
+        [XmlArray("ContainNames")]
+        [XmlArrayItem("ContainName")]
+        public List<string> ContainNames { get; set; }        
     }
 
-    /// <remarks/>
-    [System.SerializableAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class ControlersConfigurationControlerFilesToCopy
-    {
-
-        private ControlersConfigurationControlerFilesToCopyFilesFilter filesFilterField;
-
-        private string destinationFolderField;
-
-        private string programTypeField;
-
-        /// <remarks/>
-        public ControlersConfigurationControlerFilesToCopyFilesFilter FilesFilter
-        {
-            get
-            {
-                return this.filesFilterField;
-            }
-            set
-            {
-                this.filesFilterField = value;
-            }
-        }
-
-        /// <remarks/>
-        public string DestinationFolder
-        {
-            get
-            {
-                return this.destinationFolderField;
-            }
-            set
-            {
-                this.destinationFolderField = value;
-            }
-        }
-
-        /// <remarks/>
-        public string ProgramType
-        {
-            get
-            {
-                return this.programTypeField;
-            }
-            set
-            {
-                this.programTypeField = value;
-            }
-        }
-    }
-
-    /// <remarks/>
-    [System.SerializableAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class ControlersConfigurationControlerFilesToCopyFilesFilter
-    {
-
-        private string[] filesExtensionField;
-
-        private string[] containNameField;
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("FilesExtension")]
-        public string[] FilesExtension
-        {
-            get
-            {
-                return this.filesExtensionField;
-            }
-            set
-            {
-                this.filesExtensionField = value;
-            }
-        }
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("ContainName")]
-        public string[] ContainName
-        {
-            get
-            {
-                return this.containNameField;
-            }
-            set
-            {
-                this.containNameField = value;
-            }
-        }
-    }
-
-    /// <remarks/>
-    [System.SerializableAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class ControlersConfigurationControlerDataToCopy
-    {
-
-        private ControlersConfigurationControlerDataToCopyFilesFilter filesFilterField;
-
-        private string destinationFolderField;
-
-        private string fileTypeField;
-
-        /// <remarks/>
-        public ControlersConfigurationControlerDataToCopyFilesFilter FilesFilter
-        {
-            get
-            {
-                return this.filesFilterField;
-            }
-            set
-            {
-                this.filesFilterField = value;
-            }
-        }
-
-        /// <remarks/>
-        public string DestinationFolder
-        {
-            get
-            {
-                return this.destinationFolderField;
-            }
-            set
-            {
-                this.destinationFolderField = value;
-            }
-        }
-
-        /// <remarks/>
-        public string FileType
-        {
-            get
-            {
-                return this.fileTypeField;
-            }
-            set
-            {
-                this.fileTypeField = value;
-            }
-        }
-    }
-
-    /// <remarks/>
-    [System.SerializableAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class ControlersConfigurationControlerDataToCopyFilesFilter
-    {
-
-        private string []filesExtensionField;
-
-        private string[] containNameField;
-
-        /// <remarks/>
-        public string []FilesExtension
-        {
-            get
-            {
-                return this.filesExtensionField;
-            }
-            set
-            {
-                this.filesExtensionField = value;
-            }
-        }
-
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("ContainName")]
-        public string[] ContainName
-        {
-            get
-            {
-                return this.containNameField;
-            }
-            set
-            {
-                this.containNameField = value;
-            }
-        }
-    }
-
-    /// <remarks/>
-    [System.SerializableAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class ControlersConfigurationControlerFilesToRemove
-    {
-
-        private ControlersConfigurationControlerFilesToRemoveFilesFilter filesFilterField;
-
-        /// <remarks/>
-        public ControlersConfigurationControlerFilesToRemoveFilesFilter FilesFilter
-        {
-            get
-            {
-                return this.filesFilterField;
-            }
-            set
-            {
-                this.filesFilterField = value;
-            }
-        }
-    }
-
-    /// <remarks/>
-    [System.SerializableAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType = true)]
-    public partial class ControlersConfigurationControlerFilesToRemoveFilesFilter
-    {
-
-        private string []filesExtensionField;
-
-        /// <remarks/>
-        public string []FilesExtension
-        {
-            get
-            {
-                return this.filesExtensionField;
-            }
-            set
-            {
-                this.filesExtensionField = value;
-            }
-        }
-    }
 }
 
