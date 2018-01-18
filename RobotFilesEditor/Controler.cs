@@ -86,5 +86,30 @@ namespace RobotFilesEditor
         {
             throw new NotImplementedException();
         }
+
+        public void CreateDestinationFolders()
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<string> GetGroupedFiles()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RefreshDestinationPath(string path)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RefreshSourcePath(string path)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void MoveProductionFiles()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

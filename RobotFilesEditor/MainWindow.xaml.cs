@@ -104,10 +104,7 @@ namespace RobotFilesEditor
             }
         }
       
-        public event PropertyChangedEventHandler PropertyChanged;
-                
-        private KukaKrc2 _krc2;
-        private KukaKrc4 _krc4;
+        public event PropertyChangedEventHandler PropertyChanged;     
 
         private string _selectedSourceFoldersPath;
         private string _selectedDestFoldersPath;
@@ -132,16 +129,8 @@ namespace RobotFilesEditor
 
         private void MoveProduction_Click(object sender, RoutedEventArgs e)
         {
-            try {
-                switch(_selectedControlerType)
-                {
-                    case GlobalData.ControlerTypes.KRC2: {
-                            _krc2.MoveProductionFiles();
-                        } break;
-                    case GlobalData.ControlerTypes.KRC4: {
-                            _krc4.MoveProductionFiles();
-                        } break;
-                }
+            try {             
+                  _controler.MoveProductionFiles();
 
             } catch(NullReferenceException ex)
             {
@@ -153,20 +142,7 @@ namespace RobotFilesEditor
         {
             try
             {
-                switch (_selectedControlerType)
-                {
-                    case GlobalData.ControlerTypes.KRC2:
-                        {
-                            _krc2.MoveServicesFiles(_selectedSourceFoldersPath);
-                        }
-                        break;
-                    case GlobalData.ControlerTypes.KRC4:
-                        {
-
-                        }
-                        break;
-                }
-
+                _controler.MoveServicesFiles(_selectedSourceFoldersPath);
             }
             catch (NullReferenceException ex)
             {
@@ -192,105 +168,55 @@ namespace RobotFilesEditor
             if (result == System.Windows.Forms.DialogResult.OK)
             {
                 SelectedDestFoldersPath = dialog.SelectedPath;
-            }
-
-            switch (_selectedControlerType)
-            {
-                case GlobalData.ControlerTypes.KRC2:
-                    {
-                        _krc2?.CreateDestinationFolders(_selectedDestFoldersPath);
-                    }
-                    break;
-                case GlobalData.ControlerTypes.KRC4:
-                    {
-                        _krc4?.CreateDestinationFolders(_selectedDestFoldersPath);
-                    }
-                    break;
-            }
+            }         
+                _controler?.CreateDestinationFolders();
         }
 
         public void RefreshControlerProperty()
         {
-            switch (_selectedControlerType)
+            if (_controler == null)
             {
-                case GlobalData.ControlerTypes.KRC2:
-                    {
-                        if (_krc2 == null)
+                switch (_selectedControlerType)
+                {
+                    case GlobalData.ControlerTypes.KRC2:
                         {
-                            _krc2 = new KukaKrc2(_selectedSourceFoldersPath, _selectedDestFoldersPath);
-                            _krc2.LoadConfigurationSettingsForControler();
-                            FilesList = _krc2.GetGroupedFiles();
-                        }else
-                        {
-                            _krc2.RefreshSourcePath(_selectedSourceFoldersPath);
-                            _krc4.RefreshDestinationPath(_selectedDestFoldersPath);
-                            FilesList = _krc2.GetGroupedFiles();
+                            _controler = new KukaKrc2(_selectedSourceFoldersPath, _selectedDestFoldersPath);                         
                         }
-                    }
-                    break;
-                case GlobalData.ControlerTypes.KRC4:
-                    {
-                        if (_krc4 == null)
+                        break;
+                    case GlobalData.ControlerTypes.KRC4:
                         {
-                            _krc4 = new KukaKrc4(_selectedSourceFoldersPath, _selectedDestFoldersPath);
-                            _krc4.LoadConfigurationSettingsForControler();
-                            FilesList = _krc2.GetGroupedFiles();
-                        }else
-                        {
-                            _krc2.RefreshSourcePath(_selectedSourceFoldersPath);
-                            _krc4.RefreshDestinationPath(_selectedDestFoldersPath);
-                            FilesList = _krc2.GetGroupedFiles();
+                             _controler= new KukaKrc4(_selectedSourceFoldersPath, _selectedDestFoldersPath);                                
                         }
-                    }
-                    break;
+                        break;
+                }
             }
+
+            _controler.LoadConfigurationSettingsForControler();
+            FilesList = _controler.GetGroupedFiles();
         }
 
         public void RefreshSourcePath()
         {
-            switch (_selectedControlerType)
+            if (_controler != null)
             {
-                case GlobalData.ControlerTypes.KRC2:
-                    {
-                        if(_krc2!=null)
-                        {
-                            _krc2.RefreshSourcePath(_selectedSourceFoldersPath);
-                            FilesList = _krc2.GetGroupedFiles();
-                        }
-                    }
-                    break;
-                case GlobalData.ControlerTypes.KRC4:
-                    {
-                        if (_krc4 != null)
-                        {
-                            _krc4.RefreshSourcePath(_selectedSourceFoldersPath);
-                            FilesList = _krc4.GetGroupedFiles();
-                        }
-                    }
-                    break;
-            }
+                _controler.RefreshSourcePath(_selectedSourceFoldersPath);
+                FilesList = _controler.GetGroupedFiles();
+            }else
+            {
+                RefreshControlerProperty();
+            }               
         }
 
         public void RefreshDestinationPath()
         {
-            switch (_selectedControlerType)
+            if (_controler != null)
             {
-                case GlobalData.ControlerTypes.KRC2:
-                    {
-                        if (_krc2 != null)
-                        {
-                            _krc2.RefreshDestinationPath(_selectedDestFoldersPath);
-                        }
-                    }
-                    break;
-                case GlobalData.ControlerTypes.KRC4:
-                    {
-                        if (_krc4 != null)
-                        {
-                            _krc4.RefreshDestinationPath(_selectedDestFoldersPath);
-                        }
-                    }
-                    break;
+                _controler.RefreshDestinationPath(_selectedDestFoldersPath);
+                FilesList = _controler.GetGroupedFiles();
+            }
+            else
+            {
+                RefreshControlerProperty();
             }
         }
     }

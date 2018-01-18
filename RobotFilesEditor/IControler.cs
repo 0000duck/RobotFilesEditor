@@ -11,23 +11,20 @@ namespace RobotFilesEditor
         #region Configuration
 
         void LoadConfigurationSettingsForControler();
-
-        List<FilesTree> GetFilesExtensions();
-        
-        void CreateDestinationFolders(string path);
-
-        void RefreshDestinationPath();
-        void RefreshSourcePath();
-        bool CheckDestinationPath();
-
+                
+        void CreateDestinationFolders();
+        List<string> GetGroupedFiles();
+        void RefreshDestinationPath(string path);
+        void RefreshSourcePath(string path);
+    
         #endregion Configuration
 
         #region FilesOperations
 
         #region Copy
-        void MoveProductionFiles(string source);
+        void MoveProductionFiles();
 
-        void MoveServicesFiles(string source);
+        void MoveServicesFiles(string path);
 
         #endregion
 
