@@ -20,12 +20,13 @@ namespace RobotFilesEditor
             get { return _selectedControlerType==GlobalData.ControlerTypes.KRC2; }
             set
             {
-                if (_selectedControlerType == GlobalData.ControlerTypes.KRC2 != value)
+                if ((_selectedControlerType == GlobalData.ControlerTypes.KRC2) != value)
                 {
-                    if(value==true)
+                    if(value)
                     {
                         SelectedControlerType = GlobalData.ControlerTypes.KRC2;
-                        OnPropertyChanged(nameof(SelectedControlerType));                                     
+                        OnPropertyChanged(nameof(SelectedControlerType));
+                        InitializeControler();                                  
                     }                    
                 }
             }
@@ -36,13 +37,13 @@ namespace RobotFilesEditor
             get { return _selectedControlerType == GlobalData.ControlerTypes.KRC4; }
             set
             {
-                if (_selectedControlerType == GlobalData.ControlerTypes.KRC4 != value)
+                if ((_selectedControlerType == GlobalData.ControlerTypes.KRC4) != value)
                 {
                     if (value)
                     {
                         SelectedControlerType = GlobalData.ControlerTypes.KRC4;
                         OnPropertyChanged(nameof(SelectedControlerType));
-                       
+                        InitializeControler();
                     }                                
                 }
             }
@@ -57,8 +58,7 @@ namespace RobotFilesEditor
                 {
                     _selectedControlerType = value;
                     OnPropertyChanged(nameof(SelectedKRC2));
-                    OnPropertyChanged(nameof(SelectedKRC4));
-                    RefreshControlerProperty();
+                    OnPropertyChanged(nameof(SelectedKRC4));                    
                 }
             }
         }
@@ -92,7 +92,16 @@ namespace RobotFilesEditor
 
         public List<string>FilesList
         {
-            get { return _filesList; }
+            get {
+                if (_controler != null)
+                {
+                    return _filesList;
+                }
+                else
+                {
+                    return new List<string>();
+                }
+            }
             set
             {
                 if (_filesList != value)
@@ -102,7 +111,105 @@ namespace RobotFilesEditor
                 }
             }
         }
-      
+
+        #region MenuControl
+
+        public bool IsPossibleCopyAllFiles
+        {
+            get
+            {
+                return IsPossibleCopyProductionFiles && IsPossibleCopyServicesFiles;              
+            }
+            set
+            {
+                OnPropertyChanged(nameof(IsPossibleCopyAllFiles));
+            }
+        }
+        public bool IsPossibleCopyProductionFiles
+        {
+            get {
+                if (_controler != null)
+                    return _controler.IsPossibleCopyProductionFiles();
+                else
+                    return false;
+            }
+            set
+            {
+                OnPropertyChanged(nameof(IsPossibleCopyProductionFiles));
+            }
+        }
+        public bool IsPossibleCopyServicesFiles
+        {
+            get
+            {
+                if (_controler != null)
+                    return _controler.IsPossibleCopyServicesFiles();
+                else
+                    return false;
+            }
+            set
+            {
+                OnPropertyChanged(nameof(IsPossibleCopyProductionFiles));
+            }
+        }
+
+        public bool IsPossibleAllFilesDataCopy
+        {
+            get
+            {
+                return IsPossibleOlpFilesDataCopy && IsPossibleGlobalFilesDataCopy;
+            }
+            set
+            {
+                OnPropertyChanged(nameof(IsPossibleAllFilesDataCopy));
+            }
+        }
+        public bool IsPossibleOlpFilesDataCopy
+        {
+            get
+            {
+                if (_controler != null)
+                    return _controler.IsPossibleOlpFilesDataCopy();
+                else
+                    return false;
+            }
+            set
+            {
+                OnPropertyChanged(nameof(IsPossibleOlpFilesDataCopy));
+            }
+        }
+        public bool IsPossibleGlobalFilesDataCopy
+        {
+            get
+            {
+                if (_controler != null)
+                    return _controler.IsPossibleGlobalFilesDataCopy();
+                else
+                    return false;
+            }
+            set
+            {
+                OnPropertyChanged(nameof(IsPossibleGlobalFilesDataCopy));
+            }
+        }
+
+        public bool IsPossibleDeleteFiles
+        {
+            get
+            {
+                if (_controler != null)
+                    return _controler.IsPossibleDeleteFiles();
+                else
+                    return false;
+            }
+            set
+            {
+                OnPropertyChanged(nameof(IsPossibleDeleteFiles));
+            }
+        }
+        
+        #endregion MenuControl
+
         public event PropertyChangedEventHandler PropertyChanged;     
 
         private string _selectedSourceFoldersPath;
@@ -115,9 +222,7 @@ namespace RobotFilesEditor
         {            
             InitializeComponent();
             SelectedSourceFoldersPath = @"C:\Users\ajergas\Downloads\KUKA Organizer\Przykładowe pliki do obrobienia\KRC2";//"No selected path";
-            SelectedDestFoldersPath = @"C:\Users\" + Environment.UserName + @"\Documents";
-            SelectedControlerType = GlobalData.ControlerTypes.KRC2;
-            RefreshControlerProperty();                       
+            SelectedDestFoldersPath = @"C:\Users\" + Environment.UserName + @"\Documents";                                      
         }
 
         [NotifyPropertyChangedInvocatorAttribute] 
@@ -141,7 +246,7 @@ namespace RobotFilesEditor
         {
             try
             {
-                _controler.MoveServicesFiles(_selectedSourceFoldersPath);
+                _controler.MoveServicesFiles();
             }
             catch (NullReferenceException ex)
             {
@@ -171,27 +276,34 @@ namespace RobotFilesEditor
                 _controler?.CreateDestinationFolders();
         }
 
+        public void InitializeControler()
+        {
+            switch (_selectedControlerType)
+            {
+                case GlobalData.ControlerTypes.KRC2:
+                    {
+                        _controler = new KukaKrc2(_selectedSourceFoldersPath, _selectedDestFoldersPath);
+                    }
+                    break;
+                case GlobalData.ControlerTypes.KRC4:
+                    {
+                        _controler = new KukaKrc4(_selectedSourceFoldersPath, _selectedDestFoldersPath);
+                    }
+                    break;
+            }
+            RefreshControlerProperty();      
+        }
+
         public void RefreshControlerProperty()
         {
             if (_controler == null)
             {
-                switch (_selectedControlerType)
-                {
-                    case GlobalData.ControlerTypes.KRC2:
-                        {
-                            _controler = new KukaKrc2(_selectedSourceFoldersPath, _selectedDestFoldersPath);                         
-                        }
-                        break;
-                    case GlobalData.ControlerTypes.KRC4:
-                        {
-                             _controler= new KukaKrc4(_selectedSourceFoldersPath, _selectedDestFoldersPath);                                
-                        }
-                        break;
-                }
+                InitializeControler();
             }
 
             _controler.LoadConfigurationSettingsForControler();
             FilesList = _controler.GetGroupedFiles();
+            RefreshMenuOptions();
         }
 
         public void RefreshSourcePath()
@@ -211,5 +323,14 @@ namespace RobotFilesEditor
                 FilesList = _controler.GetGroupedFiles();
             }           
         }
+
+        private void RefreshMenuOptions()
+        {
+            OnPropertyChanged(nameof(IsPossibleCopyProductionFiles));
+            OnPropertyChanged(nameof(IsPossibleCopyServicesFiles));
+            OnPropertyChanged(nameof(IsPossibleOlpFilesDataCopy));
+            OnPropertyChanged(nameof(IsPossibleGlobalFilesDataCopy));
+            OnPropertyChanged(nameof(IsPossibleDeleteFiles));
+        } 
     }
 }

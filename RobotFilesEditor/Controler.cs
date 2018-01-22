@@ -42,17 +42,17 @@ namespace RobotFilesEditor
             throw new NotImplementedException();
         }
 
-        public void MoveProductionFiles(string source)
+        public void MoveProductionFiles()
         {
             throw new NotImplementedException();
         }
 
-        public void MoveServicesFiles(string source)
+        public void MoveServicesFiles()
         {
             throw new NotImplementedException();
         }
 
-        public void CreateDestinationFolders(string path)
+        public void CreateDestinationFolders()
         {
             throw new NotImplementedException();
         }
@@ -85,12 +85,7 @@ namespace RobotFilesEditor
         public void DeleteFiles()
         {
             throw new NotImplementedException();
-        }
-
-        public void CreateDestinationFolders()
-        {
-            throw new NotImplementedException();
-        }
+        }     
 
         public List<string> GetGroupedFiles()
         {
@@ -106,10 +101,29 @@ namespace RobotFilesEditor
         {
             throw new NotImplementedException();
         }
-
-        public void MoveProductionFiles()
+        
+        #region IsPossible
+        public bool IsPossibleCopyProductionFiles()
         {
-            throw new NotImplementedException();
+            return (_productionCopiedFiles.FileExtensions?.Count > 0 && _productionCopiedFiles.DestinationFolder != null);
         }
+        public bool IsPossibleCopyServicesFiles()
+        {
+            return (_serviceCopiedFiles.FileExtensions?.Count > 0 && _serviceCopiedFiles.DestinationFolder != null);
+        }
+        public bool IsPossibleOlpFilesDataCopy()
+        {
+            return (_copiedOlpDataFiles.FileExtensions?.Count > 0 && _copiedOlpDataFiles.DestinationFolder != null);
+        }
+        public bool IsPossibleGlobalFilesDataCopy()
+        {
+            return (_copiedGlobalDataFiles.FileExtensions?.Count > 0 && _copiedGlobalDataFiles.DestinationFolder != null);
+        }
+        public bool IsPossibleDeleteFiles()
+        {
+            return (_removingDataFiles.FileExtensions?.Count > 0);
+        }
+        #endregion IsPossible
+
     }
 }

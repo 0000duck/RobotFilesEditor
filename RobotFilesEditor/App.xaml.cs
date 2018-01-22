@@ -13,5 +13,13 @@ namespace RobotFilesEditor
     /// </summary>
     public partial class App : Application
     {
+        //pobranie listy z konfiguracji
+
+        void Startup()
+        {
+            MainWindow mainWindow;
+
+
+        }
     }
 }

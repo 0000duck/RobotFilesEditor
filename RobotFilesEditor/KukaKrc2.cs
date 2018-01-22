@@ -15,6 +15,7 @@ namespace RobotFilesEditor
         private FilesOrganizer _copiedOlpDataFiles;
         private FilesOrganizer _copiedGlobalDataFiles;
         private FilesOrganizer _removingDataFiles;
+
         private string _destinationPath;
         private string _sourcePath;
         private string _controlerFolder;
@@ -61,11 +62,11 @@ namespace RobotFilesEditor
             List<string> gropuedFiles = new List<string>();
             List<string> extensions = new List<string>();
 
-            extensions.AddRange(_productionCopiedFiles?.Extension);   
-            extensions.AddRange(_serviceCopiedFiles?.Extension);
-            extensions.AddRange(_copiedOlpDataFiles?.Extension);
-            extensions.AddRange(_copiedGlobalDataFiles?.Extension);
-            extensions.AddRange(_removingDataFiles?.Extension);
+            extensions.AddRange(_productionCopiedFiles?.FileExtensions);   
+            extensions.AddRange(_serviceCopiedFiles?.FileExtensions);
+            extensions.AddRange(_copiedOlpDataFiles?.FileExtensions);
+            extensions.AddRange(_copiedGlobalDataFiles?.FileExtensions);
+            extensions.AddRange(_removingDataFiles?.FileExtensions);
            
             extensions = extensions.Distinct().ToList();
 
@@ -92,29 +93,29 @@ namespace RobotFilesEditor
                 var result = Directory.CreateDirectory(_destinationPath);
             }
 
-            if (_productionCopiedFiles?.Destination != null)
+            if (_productionCopiedFiles?.DestinationFolder != null)
             {
-                Directory.CreateDirectory(Path.Combine(_destinationPath, _productionCopiedFiles.Destination));
+                Directory.CreateDirectory(Path.Combine(_destinationPath, _productionCopiedFiles.DestinationFolder));
             }
 
-            if (_serviceCopiedFiles?.Destination != null)
+            if (_serviceCopiedFiles?.DestinationFolder != null)
             {
-                Directory.CreateDirectory(Path.Combine(_destinationPath, _productionCopiedFiles.Destination));
+                Directory.CreateDirectory(Path.Combine(_destinationPath, _productionCopiedFiles.DestinationFolder));
             }
 
-            if (_serviceCopiedFiles?.Destination != null)
+            if (_serviceCopiedFiles?.DestinationFolder != null)
             {
-                Directory.CreateDirectory(Path.Combine(_destinationPath, _productionCopiedFiles.Destination));
+                Directory.CreateDirectory(Path.Combine(_destinationPath, _productionCopiedFiles.DestinationFolder));
             }
 
-            if (_copiedOlpDataFiles?.Destination != null)
+            if (_copiedOlpDataFiles?.DestinationFolder != null)
             {
-                Directory.CreateDirectory(Path.Combine(_destinationPath, _productionCopiedFiles.Destination));
+                Directory.CreateDirectory(Path.Combine(_destinationPath, _productionCopiedFiles.DestinationFolder));
             }
 
-            if (_copiedGlobalDataFiles?.Destination != null)
+            if (_copiedGlobalDataFiles?.DestinationFolder != null)
             {
-                Directory.CreateDirectory(Path.Combine(_destinationPath, _productionCopiedFiles.Destination));
+                Directory.CreateDirectory(Path.Combine(_destinationPath, _productionCopiedFiles.DestinationFolder));
             }
         }
 
@@ -148,74 +149,88 @@ namespace RobotFilesEditor
         #region CopyFiles
         public void MoveProductionFiles()
         {
-            string []getedFiles= Directory.GetFiles(_sourcePath);
-            List<string> editingFiles = new List<string>();
+            string []allFilesAtSourcePath= Directory.GetFiles(_sourcePath);
+            List<string> movingFiles = new List<string>();
+            string sPattern = @"^([a-zA-Z0-9]+_){2}[a-zA-Z0-9]+\.[a-z]+";
 
-            if(Directory.Exists(_sourcePath) && Directory.Exists(_destinationPath))
+            if (Directory.Exists(_sourcePath)==false || Directory.Exists(_destinationPath)==false)
             {
-                try
-                {
-                    if (_productionCopiedFiles.Destination == null)
-                        throw new NullReferenceException("Production Copied Files destination directory not found!");
-
-                    foreach (string f in getedFiles)
-                    {
-                        if (_productionCopiedFiles.Extension.Exists(x => f.Contains(x)) && _productionCopiedFiles.Containing.Exists(x => f.Contains(x)))//uściślić tylko do Glue_070ZG01_G16.src i Glue_070ZG01_G16.dat
-                        {
-                            editingFiles.Add(f);
-                        }
-                    }
-
-                    string destDir = Path.Combine(_destinationPath, _productionCopiedFiles.Destination);
-
-                    if (Directory.Exists(destDir) == false)
-                    {
-                        Directory.CreateDirectory(destDir);
-                    }
-
-                    foreach (string ef in editingFiles)
-                    {
-                        File.Copy(ef, Path.Combine(destDir, Path.GetFileName(ef)));
-                    }
-                }
-                catch (Exception ex)
-                {
-                    System.Windows.MessageBox.Show(ex.Message, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
-                }
+                throw new DirectoryNotFoundException();
             }
-           
-        }
-        
-        public void MoveServicesFiles(string source)
-        {
-            string[] getedFiles = Directory.GetFiles(source);
-            List<string> editingFiles = new List<string>();
-            string sPattern = @"^A\d{2}_*\.*";
+
+            if (string.IsNullOrEmpty(_productionCopiedFiles.DestinationFolder))
+            {
+                throw new NullReferenceException("Production Copied Files destination directory not found!");
+            }
 
             try
-            {
-                if (_serviceCopiedFiles.Destination == null)
-                    throw new NullReferenceException("Services Copied Files destination directory not found!");
-
-                foreach (string f in getedFiles)
+            {  
+                foreach (string f in allFilesAtSourcePath)
                 {
-                    if(System.Text.RegularExpressions.Regex.IsMatch(Path.GetFileName(f), sPattern))
+                    string fn = Path.GetFileName(f);
+                    
+
+                    if (System.Text.RegularExpressions.Regex.IsMatch(fn, sPattern))
                     {
-                        if (_serviceCopiedFiles.Extension.Exists(x => Path.GetFileName(f).Contains(x)) && _serviceCopiedFiles.Containing.Exists(x => Path.GetFileName(f).Contains(x)))//uściślić tylko do Glue_070ZG01_G16.src i Glue_070ZG01_G16.dat
-                        {
-                            editingFiles.Add(f);
+                        if (_productionCopiedFiles.FileExtensions.Exists(x => fn.Contains(x)) && _productionCopiedFiles.ContainsAtName.Exists(x => fn.Contains(x)))
+                        { 
+                            movingFiles.Add(f);
                         }
                     }                   
                 }
 
-                string destDir = Path.Combine(_destinationPath, _serviceCopiedFiles.Destination);
+                string destDir = Path.Combine(_destinationPath, _productionCopiedFiles.DestinationFolder);
 
                 if (Directory.Exists(destDir) == false)
                 {
                     Directory.CreateDirectory(destDir);
                 }
 
-                foreach (string ef in editingFiles)
+                foreach (string ef in movingFiles)
+                {
+                    var destinationFile = Path.Combine(destDir, Path.GetFileName(ef));
+                    File.Copy(ef, destinationFile);
+                    
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message, "Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            }
+            
+           
+        }
+        
+        public void MoveServicesFiles()
+        {
+            string[] getedFiles = Directory.GetFiles(_sourcePath);
+            List<string> movingFiles = new List<string>();
+            string sPattern = @"^A\d{2}_*\.*";
+
+            try
+            {
+                if (_serviceCopiedFiles.DestinationFolder == null)
+                    throw new NullReferenceException("Services Copied Files destination directory not found!");
+
+                foreach (string f in getedFiles)
+                {
+                    if(System.Text.RegularExpressions.Regex.IsMatch(Path.GetFileName(f), sPattern))
+                    {
+                        if (_serviceCopiedFiles.FileExtensions.Exists(x => Path.GetFileName(f).Contains(x)) && _serviceCopiedFiles.ContainsAtName.Exists(x => Path.GetFileName(f).Contains(x)))//uściślić tylko do Glue_070ZG01_G16.src i Glue_070ZG01_G16.dat
+                        {
+                            movingFiles.Add(f);
+                        }
+                    }                   
+                }
+
+                string destDir = Path.Combine(_destinationPath, _serviceCopiedFiles.DestinationFolder);
+
+                if (Directory.Exists(destDir) == false)
+                {
+                    Directory.CreateDirectory(destDir);
+                }
+
+                foreach (string ef in movingFiles)
                 {
                     File.Copy(ef, Path.Combine(destDir, Path.GetFileName(ef)));
                 }
@@ -249,6 +264,29 @@ namespace RobotFilesEditor
             throw new NotImplementedException();
         }
         #endregion DeleteFiles
+
+        #region IsPossible
+        public bool IsPossibleCopyProductionFiles()
+        {
+            return (_productionCopiedFiles.FileExtensions?.Count > 0 && _productionCopiedFiles.DestinationFolder != null);           
+        }
+        public bool IsPossibleCopyServicesFiles()
+        {
+            return (_serviceCopiedFiles.FileExtensions?.Count > 0 && _serviceCopiedFiles.DestinationFolder != null);
+        }
+        public bool IsPossibleOlpFilesDataCopy()
+        {
+            return (_copiedOlpDataFiles.FileExtensions?.Count > 0 && _copiedOlpDataFiles.DestinationFolder != null);
+        }
+        public bool IsPossibleGlobalFilesDataCopy()
+        {
+            return (_copiedGlobalDataFiles.FileExtensions?.Count > 0 && _copiedGlobalDataFiles.DestinationFolder != null);
+        }
+        public bool IsPossibleDeleteFiles()
+        {
+            return (_removingDataFiles.FileExtensions?.Count > 0);
+        }
+        #endregion IsPossible
 
     }
 }

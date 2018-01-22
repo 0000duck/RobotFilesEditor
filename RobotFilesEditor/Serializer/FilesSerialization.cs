@@ -44,16 +44,16 @@ namespace RobotFilesEditor.Serializer
                             {
                                 case "program":
                                     {
-                                        controler._productionCopiedFiles.Extension = ftc?.FilesExtension.ToList();
-                                        controler._productionCopiedFiles.Containing = ftc?.ContainNames.ToList();
-                                        controler._productionCopiedFiles.Destination = ftc?.DestinationFolder;
+                                        controler._productionCopiedFiles.FileExtensions = ftc?.FilesExtension.ToList();
+                                        controler._productionCopiedFiles.ContainsAtName = ftc?.ContainNames.ToList();
+                                        controler._productionCopiedFiles.DestinationFolder = ftc?.DestinationFolder;
                                     }
                                     break;
                                 case "service":
                                     {
-                                        controler._serviceCopiedFiles.Extension = ftc?.FilesExtension.ToList();
-                                        controler._serviceCopiedFiles.Containing = ftc?.ContainNames.ToList();
-                                        controler._serviceCopiedFiles.Destination = ftc?.DestinationFolder;
+                                        controler._serviceCopiedFiles.FileExtensions = ftc?.FilesExtension.ToList();
+                                        controler._serviceCopiedFiles.ContainsAtName = ftc?.ContainNames.ToList();
+                                        controler._serviceCopiedFiles.DestinationFolder = ftc?.DestinationFolder;
                                     }
                                     break;
                             }
@@ -65,16 +65,16 @@ namespace RobotFilesEditor.Serializer
                             {
                                 case "olp":
                                     {
-                                        controler._copiedOlpDataFiles.Extension = dtc?.FilesExtension.ToList();
-                                        controler._copiedOlpDataFiles.Containing = dtc?.ContainNames.ToList();
-                                        controler._copiedOlpDataFiles.Destination = dtc?.DestinationFolder;
+                                        controler._copiedOlpDataFiles.FileExtensions = dtc?.FilesExtension.ToList();
+                                        controler._copiedOlpDataFiles.ContainsAtName = dtc?.ContainNames.ToList();
+                                        controler._copiedOlpDataFiles.DestinationFolder = dtc?.DestinationFolder;
                                     }
                                     break;
                                 case "global":
                                     {
-                                        controler._copiedGlobalDataFiles.Extension = dtc?.FilesExtension.ToList();
-                                        controler._copiedGlobalDataFiles.Containing = dtc?.ContainNames.ToList();
-                                        controler._copiedGlobalDataFiles.Destination = dtc?.DestinationFolder;
+                                        controler._copiedGlobalDataFiles.FileExtensions = dtc?.FilesExtension.ToList();
+                                        controler._copiedGlobalDataFiles.ContainsAtName = dtc?.ContainNames.ToList();
+                                        controler._copiedGlobalDataFiles.DestinationFolder = dtc?.DestinationFolder;
                                     }
                                     break;
                             }
@@ -82,7 +82,7 @@ namespace RobotFilesEditor.Serializer
 
                         foreach (var ftr in c.FilesToRemove)
                         {
-                            controler._removingDataFiles.Extension = ftr?.FilesExtension.ToList();
+                            controler._removingDataFiles.FileExtensions = ftr?.FilesExtension.ToList();
                         }
 
                         return controler;

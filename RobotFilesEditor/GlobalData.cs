@@ -9,9 +9,8 @@ namespace RobotFilesEditor
     public class GlobalData
     {
         public const string ConfigurationFileName = "Application.config";
-        
-        public enum ControlerTypes {KRC2, KRC4};
-
+        public enum ControlerTypes {none, KRC2, KRC4};
+        public enum Action {None, Move, Remove, Copy}
         public GlobalData()
         { }
 

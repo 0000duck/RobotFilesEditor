@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<xs:schema id="ConfigurationSchema"    
+<xs:schema id="ConfigurationSchema"  
+    targetNamespace="RobotFilesEditor"
     elementFormDefault="qualified" 
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
 >
@@ -9,58 +10,28 @@
         <xs:element name ="Controler">
           <xs:complexType>
             <xs:sequence>
-
-              <xs:element name ="FilesToCopy" minOccurs="0" maxOccurs="unbounded">               
-                <xs:complexType>                  
-                  <xs:sequence>                    
-                    <xs:element name ="FilesFilter" minOccurs="0" maxOccurs="1">
-                      <xs:complexType>
+              <xs:element name ="Files" minOccurs="0" maxOccurs="unbounded">
+                <xs:complexType>                     
                         <xs:sequence>
                           <xs:element  name="FilesExtension" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-                          <xs:element  name="ContainName" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-                        </xs:sequence>
-                      </xs:complexType>
-                    </xs:element> 
-                    <xs:element  name="DestinationFolder" type="xs:string"/>
-                    <xs:element name="ProgramType" type="xs:string"/>  
-                  </xs:sequence>
+                          <xs:element  name="ContainName" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>                         
+                          <xs:element  name="NotContain" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+                        </xs:sequence>                     
+                    <xs:attribute  name="DestinationFolder" type="xs:string"/>
+                    <xs:attribute name="FilesType" type="xs:string"/>
+                    <xs:attribute name="Action" use="required">
+                      <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                          <xs:enumeration value="Move" />
+                          <xs:enumeration value="Remove" />
+                          <xs:enumeration value="CopyData" />
+                        </xs:restriction>
+                      </xs:simpleType>
+                    </xs:attribute>           
                 </xs:complexType>
-              </xs:element>
-
-              <xs:element name="DataToCopy" minOccurs="0" maxOccurs="1">
-                <xs:complexType>
-                  <xs:sequence>
-                    <xs:element name ="FilesFilter" minOccurs="0" maxOccurs="1">
-                      <xs:complexType>
-                        <xs:sequence>
-                          <xs:element  name="FilesExtension" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-                          <xs:element  name="ContainName" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-                        </xs:sequence>
-                      </xs:complexType>
-                    </xs:element>
-                    <xs:element  name="DestinationFolder" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-                  </xs:sequence>
-                </xs:complexType>
-              </xs:element>
-
-              <xs:element name="FilesToRemove" minOccurs="0" maxOccurs="1">
-                <xs:complexType>
-                  <xs:sequence>
-                    <xs:element name ="FilesFilter" minOccurs="0" maxOccurs="1">
-                      <xs:complexType>
-                        <xs:sequence>
-                          <xs:element  name="FilesExtension" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-                          <xs:element  name="ContainName" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-                        </xs:sequence>
-                      </xs:complexType>
-                    </xs:element>                    
-                  </xs:sequence>
-                </xs:complexType>
-              </xs:element>
+              </xs:element>              
+              <xs:attribute name="ControlerType" type="xs:string"/>
             </xs:sequence>
-
-            <xs:attribute name="ControlerType" type="xs:string"/>
-
           </xs:complexType>
         </xs:element>
         

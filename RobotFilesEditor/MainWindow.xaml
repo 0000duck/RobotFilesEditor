@@ -29,18 +29,18 @@
                 <MenuItem Header="Files full modyfication"/>
                 <Separator/>
                 <MenuItem Header="Move files">
-                    <MenuItem Header="All files" Name="MoveAllFiles"/>
+                    <MenuItem Header="All files" Name="MoveAllFiles" IsEnabled="{Binding IsPossibleCopyAllFiles, ElementName=window}"/>
                     <Separator/>
-                    <MenuItem Header="Production files" Name="MoveProduction" Click="MoveProduction_Click"/>
-                    <MenuItem Header="Services files" Name="MoveServices" Click="MoveServices_Click"/>
+                    <MenuItem Header="Production files" Name="MoveProduction" Click="MoveProduction_Click" IsEnabled="{Binding IsPossibleCopyProductionFiles, ElementName=window}"/>
+                    <MenuItem Header="Services files" Name="MoveServices" Click="MoveServices_Click" IsEnabled="{Binding IsPossibleCopyServicesFiles, ElementName=window}"/>
                 </MenuItem>
                 <MenuItem Header="Exctract data">
-                    <MenuItem Header="All files" Name="ExtractAllFiles"/>
+                    <MenuItem Header="All files" Name="ExtractAllFiles" IsEnabled="{Binding IsPossibleAllFilesDataCopy, ElementName=window}"/>
                     <Separator/>
-                    <MenuItem Header="OLP files"  Name="ExtractOlpFiles"/>
-                    <MenuItem Header="Global files" Name="ExtractGlobalFiles"/>
+                    <MenuItem Header="OLP files"  Name="ExtractOlpFiles" IsEnabled="{Binding IsPossibleOlpFilesDataCopy, ElementName=window}"/>
+                    <MenuItem Header="Global files" Name="ExtractGlobalFiles" IsEnabled="{Binding IsPossibleGlobalFilesDataCopy, ElementName=window}"/>
                 </MenuItem>
-                <MenuItem Header="Delete files" Name="DeleteAllFiles"/>
+                <MenuItem Header="Delete files" Name="DeleteAllFiles" IsEnabled="{Binding IsPossibleDeleteFiles, ElementName=window}"/>
             </MenuItem>
             <MenuItem Header="Configuration">
                 <MenuItem Header="Edit configuration"  Name="EditControlersConfiguration"/>

@@ -8,15 +8,26 @@ namespace RobotFilesEditor
 {
     public class FilesOrganizer
     {
-        public List<string> Extension { get; set; }
-        public List<string> Containing { get; set; }
-        public string Destination { get; set; }
+        public GlobalData.Action Action { get; set; }
+        public string DestinationFolder {get; set; }
+
+        public List<string> FileExtensions { get; set; }
+        public List<string> ContainsAtName { get; set; }
+        public List<string> NotContainsAtName { get; set; }       
+
+        public string RegexContain { get; set; }
+        public string RegexNotContain { get; set; }
 
 
         public FilesOrganizer()
         {
-            Extension = new List<string>();
-            Containing = new List<string>();
+            FileExtensions = new List<string>();
+            ContainsAtName = new List<string>();
+            NotContainsAtName = new List<string>();
+
+            Action = GlobalData.Action.None;
+            RegexContain = "";
+            DestinationFolder = "";
         }
     }
 }

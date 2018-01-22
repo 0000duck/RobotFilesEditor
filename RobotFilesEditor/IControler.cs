@@ -24,7 +24,7 @@ namespace RobotFilesEditor
         #region Copy
         void MoveProductionFiles();
 
-        void MoveServicesFiles(string path);
+        void MoveServicesFiles();
 
         #endregion
 
@@ -41,8 +41,14 @@ namespace RobotFilesEditor
 
         #endregion
 
+        #region IsPossible
+        bool IsPossibleCopyProductionFiles();
+        bool IsPossibleCopyServicesFiles();
+        bool IsPossibleOlpFilesDataCopy();
+        bool IsPossibleGlobalFilesDataCopy();
+        bool IsPossibleDeleteFiles();
 
-
+        #endregion IsPossible
 
     }
 }
