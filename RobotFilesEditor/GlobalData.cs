@@ -8,9 +8,8 @@ namespace RobotFilesEditor
 {
     public class GlobalData
     {
-        public const string ConfigurationFileName = "Application.config";
-        public enum ControlerTypes {none, KRC2, KRC4};
-        public enum Action {None, Move, Remove, Copy}
+        public const string ConfigurationFileName = "Application.config";       
+        public enum Action {None, Move, Remove, Copy, CopyData}
         public GlobalData()
         { }
 

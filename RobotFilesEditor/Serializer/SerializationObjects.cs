@@ -9,49 +9,61 @@ namespace RobotFilesEditor.Serializer
     [Serializable]
     [XmlRoot("ControlersConfiguration")]
     public class ControlersConfiguration
-    {        
-        [XmlArray("Controlers")]
+    {
+        [XmlAttribute("DestinationPath")]
+        public string DestinationPath { get; set; }
+        [XmlAttribute("SourcePath")]
+        public string SourcePath { get; set; }
+
+        [XmlArray("ArrayOfControlers")]
         [XmlArrayItem("Controler")]
-        public List<SingleControler> Controlers { get; set; }        
-    }
+        public List<Controler> Controlers { get; set; }
+    } 
 
     [Serializable]
     [XmlRoot("ControlersConfiguration")]
-    public class SingleControler
+    public class Controler
     {
         [XmlAttribute("ControlerType")]
-        public string ControlerType { get; set; }       
+        public string ControlerType { get; set; }
 
-        [XmlArray("FilesToCopy")]
-        [XmlArrayItem("FilesFilter")]
-        public List<FileFilter> FilesToCopy { get; set; }
+        [XmlArray("ArrayOfOperationFilters")]
+        [XmlArrayItem("OperationFilter")]
+        public List<OperationFilter> OperationFilters { get; set; }
+     }   
 
-         [XmlArray("DataToCopy")]
-        [XmlArrayItem("FilesFilter")]
-        public List<FileFilter> DataToCopy { get; set; }
-
-        [XmlArray("FilesToRemove")]
-        [XmlArrayItem("FilesFilter")]
-        public List<FileFilter> FilesToRemove { get; set; }       
-    }   
-
-    [Serializable]  
-    public class FileFilter
+    [Serializable]
+    [XmlRoot("Controler")]
+    public class OperationFilter
     {
-        [XmlAttribute("Destination")]
+        [XmlAttribute("OperationName")]
+        public string OperationName { get; set; }
+
+        [XmlAttribute("DestinationFolder")]
         public string DestinationFolder { get; set; }
 
-        [XmlAttribute("Type")]
-        public string Type { get; set; }
+        [XmlAttribute("Action")]
+        public GlobalData.Action Action { get; set; }
 
-        [XmlArray("FilesExtension")]
-        [XmlArrayItem("Extension")]
+
+        [XmlArray("Arrays")]
+        [XmlArrayItem("FileExtension")]
         public List<string> FilesExtension { get; set; }
 
-        [XmlArray("ContainNames")]
-        [XmlArrayItem("ContainName")]
-        public List<string> ContainNames { get; set; }        
-    }
+        [XmlArrayItem("Arrays")]
+        [XmlArrayItem("ContainsAtName")]
+        public List<string> ContainsAtName { get; set; }
+        
+        [XmlArray("Arrays")]
+        [XmlArrayItem("ContainsAtName")]
+        public List<string> NotContainsAtName { get; set; }
+        
 
+        [XmlAttribute("RegexContain")]
+        public string RegexContain { get; set; }
+
+        [XmlAttribute("RegexNotContain")]
+        public string RegexNotContain { get; set; }
+    }
 }
 
