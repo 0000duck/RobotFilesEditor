@@ -48,7 +48,7 @@ namespace RobotFilesEditor
         //public void LoadConfigurationSettingsForControler()
         //{
         //    var fs = new Serializer.FilesSerialization();
-        //    Controler controler=fs.GetControlerConfigration("KRC2");
+        //    SingleControler controler=fs.GetControlerConfigration("KRC2");
 
         //    _productionCopiedFiles =controler._productionCopiedFiles;
         //    _serviceCopiedFiles = controler._serviceCopiedFiles;

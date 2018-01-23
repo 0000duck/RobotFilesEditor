@@ -1,45 +1,65 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<xs:schema id="ConfigurationSchema"  
-    targetNamespace="RobotFilesEditor"
-    elementFormDefault="qualified" 
-    xmlns:xs="http://www.w3.org/2001/XMLSchema"
->
- <xs:element name ="ControlersConfiguration">
-    <xs:complexType>     
-      <xs:sequence id="ArrayOfControlers" minOccurs="1">
-        <xs:element name ="Controler">
+<xs:schema 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+  attributeFormDefault="unqualified" 
+  elementFormDefault="qualified" 
+  targetNamespace="RobotFilesEditor" 
+  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="ControlersConfiguration">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ContorolersArray">
           <xs:complexType>
-            <xs:sequence id="ArrayOfOperationFilters">
-              <xs:element name ="OperationFilter" minOccurs="0" maxOccurs="unbounded">
-                <xs:complexType>                     
-                        <xs:sequence id="ArrayOfFilesExtension">
-                          <xs:element  name="FilesExtension" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-                          <xs:element  name="ContainsAtName" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>                         
-                          <xs:element  name="NotContainsAtName" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
-                        </xs:sequence> 
-                    <xs:attribute name="OperationName" type="xs:string"/>                     
-                    <xs:attribute  name="Destination" type="xs:string"/>                       
-                    <xs:attribute name="RegexContain" type="xs:string"/>
-                    <xs:attribute  name="RegexNotContain" type="xs:string"/>
-                    <xs:attribute name="Action" use="required">
-                      <xs:simpleType>
-                        <xs:restriction base="xs:string">
-                          <xs:enumeration value="Move" />
-                          <xs:enumeration value="Remove" />
-                          <xs:enumeration value="Copy" />
-                          <xs:enumeration value="CopyData" />
-                        </xs:restriction>
-                      </xs:simpleType>
-                    </xs:attribute>           
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="Controler">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="OperationFiltersArray">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="OperationFilter">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="FilesExtensionsArray">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element maxOccurs="unbounded" name="FilesExtension" type="xs:string" />
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
+                                <xs:element name="ContainsAtNameArray">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element maxOccurs="unbounded" name="ContainsAtName" type="xs:string" />
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
+                                <xs:element minOccurs="0" name="NotContainsAtNameArray">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element maxOccurs="unbounded" name="ContainsAtName" type="xs:string" />
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
+                              </xs:sequence>
+                              <xs:attribute name="Action" type="xs:string" use="required" />
+                              <xs:attribute name="Destination" type="xs:string" use="required" />
+                              <xs:attribute name="OperationName" type="xs:string" use="required" />
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="ControlerType" type="xs:string" use="required" />
                 </xs:complexType>
-              </xs:element>             
+              </xs:element>
             </xs:sequence>
-            <xs:attribute name="ControlerType" type="xs:string"/>
           </xs:complexType>
-        </xs:element>        
+        </xs:element>
       </xs:sequence>
-      <xs:attribute name="DestinationPath" type="xs:string" use="required"/>
-      <xs:attribute name="SourcePath" type="xs:string" use="required"/> 
-    </xs:complexType>  
-  </xs:element>   
+      <xs:attribute name="DestinationPath" type="xs:string" use="required" />
+      <xs:attribute name="SourcePath" type="xs:string" use="required" />
+    </xs:complexType>
+  </xs:element>
 </xs:schema>

@@ -218,9 +218,10 @@ namespace RobotFilesEditor
         //public List<string> _filesList;
         //private IControler _controler;
 
-        public MainWindow()
+        public MainWindow(List<Controler>controlers)
         {            
             InitializeComponent();
+
         //    SelectedSourceFoldersPath = @"C:\Users\ajergas\Downloads\KUKA Organizer\Przykładowe pliki do obrobienia\KRC2";//"No selected path";
         //    SelectedDestFoldersPath = @"C:\Users\" + Environment.UserName + @"\Documents";                                      
         }

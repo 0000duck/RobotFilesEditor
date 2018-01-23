@@ -21,6 +21,11 @@ namespace RobotFilesEditor
             get { return _contolerType; }
             set
             {
+                if (string.IsNullOrEmpty(value) || string.IsNullOrWhiteSpace(value))                  
+                {
+                    throw new ArgumentNullException(nameof(ContolerType));
+                }
+
                 if(_contolerType!=value)
                 {
                     _contolerType = value;
@@ -34,6 +39,11 @@ namespace RobotFilesEditor
             get { return _files; }
             set
             {
+                if(value==null)
+                {
+                    _files=new List<FilesOrganizer>();
+                }
+
                 if(_files!=value && value!=null)
                 {
                     _files = value;
@@ -47,13 +57,21 @@ namespace RobotFilesEditor
             get { return _destinationPath; }
             set
             {
-                if (_destinationPath!=value && string.IsNullOrEmpty(value)==false)
+                if(string.IsNullOrEmpty(value))
+                {
+                    throw new ArgumentNullException(nameof(DestinationPath));
+                }
+
+                if (_destinationPath!=value)
                 {
                     if (Directory.Exists(value))
                     {
                         _destinationPath = value;
                         OnPropertyChanged(nameof(DestinationPath));
-                    }                   
+                    }else
+                    {
+                        throw new DirectoryNotFoundException($"Directory \'{value} \'not exist!");
+                    }                
                 }                     
             }
         }
@@ -63,12 +81,21 @@ namespace RobotFilesEditor
             get { return _sourcePath; }
             set
             {
-                if (_sourcePath != value && string.IsNullOrEmpty(value) == false)
+                if (string.IsNullOrEmpty(value))
+                {
+                    throw new ArgumentNullException(nameof(DestinationPath));
+                }
+
+                if (_sourcePath != value)
                 {
                     if (Directory.Exists(value))
                     {
                         _sourcePath = value;
                         OnPropertyChanged(nameof(SourcePath));
+                    }
+                    else
+                    {
+                        throw new DirectoryNotFoundException($"Directory: \'{value} \'not exist!");
                     }
                 }
             }
@@ -90,6 +117,7 @@ namespace RobotFilesEditor
 
         public Controler()
         {
+            Files = new List<FilesOrganizer>();
             //_productionCopiedFiles = new FilesOrganizer();
             //_serviceCopiedFiles = new FilesOrganizer();
 
@@ -99,7 +127,7 @@ namespace RobotFilesEditor
             //_removingDataFiles = new FilesOrganizer();
         }
 
-        //public Controler LoadConfigurationSettingsForControler(string controlerType)
+        //public SingleControler LoadConfigurationSettingsForControler(string controlerType)
         //{
         //    var fs = new Serializer.FilesSerialization();
         //    return fs.GetControlerConfigration(controlerType);

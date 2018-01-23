@@ -7,33 +7,34 @@ using System.Xml.Serialization;
 namespace RobotFilesEditor.Serializer
 {
     [Serializable]
-    [XmlRoot("ControlersConfiguration")]
+    [XmlRoot("ControlersConfiguration", Namespace = "RobotFilesEditor")]
     public class ControlersConfiguration
     {
         [XmlAttribute("DestinationPath")]
         public string DestinationPath { get; set; }
+
         [XmlAttribute("SourcePath")]
         public string SourcePath { get; set; }
 
-        [XmlArray("ArrayOfControlers")]
+        [XmlArray("ContorolersArray")]
         [XmlArrayItem("Controler")]
-        public List<Controler> Controlers { get; set; }
-    } 
+        public List<SingleControler> Contorolers { get; set; }
+    }
 
     [Serializable]
     [XmlRoot("ControlersConfiguration")]
-    public class Controler
+    public class SingleControler
     {
         [XmlAttribute("ControlerType")]
         public string ControlerType { get; set; }
 
-        [XmlArray("ArrayOfOperationFilters")]
+        [XmlArray("OperationFiltersArray")]
         [XmlArrayItem("OperationFilter")]
         public List<OperationFilter> OperationFilters { get; set; }
-     }   
+    }
 
     [Serializable]
-    [XmlRoot("Controler")]
+    [XmlRoot("ControlersConfiguration")]
     public class OperationFilter
     {
         [XmlAttribute("OperationName")]
@@ -43,21 +44,21 @@ namespace RobotFilesEditor.Serializer
         public string DestinationFolder { get; set; }
 
         [XmlAttribute("Action")]
-        public GlobalData.Action Action { get; set; }
+        public string Action { get; set; }
 
 
-        [XmlArray("Arrays")]
-        [XmlArrayItem("FileExtension")]
+        [XmlArray("FilesExtensionsArray")]
+        [XmlArrayItem("FilesExtension")]
         public List<string> FilesExtension { get; set; }
 
-        [XmlArrayItem("Arrays")]
+        [XmlArray("ContainsAtNameArray")]
         [XmlArrayItem("ContainsAtName")]
         public List<string> ContainsAtName { get; set; }
-        
-        [XmlArray("Arrays")]
-        [XmlArrayItem("ContainsAtName")]
+
+        [XmlArray("NotContainsAtNameArray")]
+        [XmlArrayItem("NotContainsAtName")]
         public List<string> NotContainsAtName { get; set; }
-        
+
 
         [XmlAttribute("RegexContain")]
         public string RegexContain { get; set; }
