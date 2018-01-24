@@ -159,7 +159,7 @@ namespace RobotFilesEditor
         //        try
         //        {
         //            if (_productionCopiedFiles.DestinationFolder == null)
-        //                throw new NullReferenceException("Production Copied Files destination directory not found!");
+        //                throw new NullReferenceException("Production Copied FilesFilters destination directory not found!");
 
         //            foreach (string f in getedFiles)
         //            {
@@ -203,7 +203,7 @@ namespace RobotFilesEditor
         //    try
         //    {
         //        if (_serviceCopiedFiles.DestinationFolder == null)
-        //            throw new NullReferenceException("Services Copied Files destination directory not found!");
+        //            throw new NullReferenceException("Services Copied FilesFilters destination directory not found!");
 
         //        foreach (string f in getedFiles)
         //        {

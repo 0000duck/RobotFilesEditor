@@ -29,11 +29,6 @@ namespace RobotFilesEditor
             get { return _action; }
             set
             {
-                if (value==null)
-                {
-                    throw new ArgumentNullException(nameof(Action));
-                }
-
                 if (_action != value)
                 {
                     _action = value;
@@ -56,6 +51,7 @@ namespace RobotFilesEditor
                 }
             }            
         }
+
         public List<string> FileExtensions
         {
             get { return _fileExtensions; }

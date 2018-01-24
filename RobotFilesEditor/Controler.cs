@@ -8,14 +8,9 @@ using System.Threading.Tasks;
 
 namespace RobotFilesEditor
 {
-    public class Controler: INotifyPropertyChanged//: IControler
+    public class Controler: INotifyPropertyChanged, IFileOperations, IFileDataOperations
     {
-        //public FilesOrganizer _productionCopiedFiles;
-        //public FilesOrganizer _serviceCopiedFiles;
-        //public FilesOrganizer _copiedOlpDataFiles;
-        //public FilesOrganizer _copiedGlobalDataFiles;
-        //public FilesOrganizer _removingDataFiles;    
-
+        #region Public
         public string ContolerType
         {
             get { return _contolerType; }
@@ -33,25 +28,23 @@ namespace RobotFilesEditor
                 }
             }
         }
-
-        public List<FilesOrganizer>Files
+        public List<FilesOrganizer>FilesFilters
         {
-            get { return _files; }
+            get { return _filesfilters; }
             set
             {
                 if(value==null)
                 {
-                    _files=new List<FilesOrganizer>();
+                    _filesfilters=new List<FilesOrganizer>();
                 }
 
-                if(_files!=value && value!=null)
+                if(_filesfilters!=value && value!=null)
                 {
-                    _files = value;
-                    OnPropertyChanged(nameof(Files));
+                    _filesfilters = value;
+                    OnPropertyChanged(nameof(FilesFilters));
                 }
             }
         }
-
         public string DestinationPath
         {
             get { return _destinationPath; }
@@ -75,7 +68,6 @@ namespace RobotFilesEditor
                 }                     
             }
         }
-
         public string SourcePath
         {
             get { return _sourcePath; }
@@ -100,131 +92,156 @@ namespace RobotFilesEditor
                 }
             }
         }
+        #endregion Public
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-        private List<FilesOrganizer> _files;
+        
+        #region Private 
+        private List<FilesOrganizer> _filesfilters;
         private string _destinationPath;
         private string _sourcePath;
         private string _contolerType;
-
+        #endregion Private 
 
         [NotifyPropertyChangedInvocatorAttribute]
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-
+        
         public Controler()
         {
-            Files = new List<FilesOrganizer>();
-            //_productionCopiedFiles = new FilesOrganizer();
-            //_serviceCopiedFiles = new FilesOrganizer();
-
-            //_copiedOlpDataFiles = new FilesOrganizer();
-            //_copiedGlobalDataFiles = new FilesOrganizer();
-
-            //_removingDataFiles = new FilesOrganizer();
+            FilesFilters = new List<FilesOrganizer>();
         }
 
-        //public SingleControler LoadConfigurationSettingsForControler(string controlerType)
-        //{
-        //    var fs = new Serializer.FilesSerialization();
-        //    return fs.GetControlerConfigration(controlerType);
-        //}
+        public bool DoAction(string operation)
+        {
+            GlobalData.Action action = FilesFilters.Where(x => x.OperationName == operation).FirstOrDefault().Action;
+            bool actionResult = false;
 
-        //public void LoadConfigurationSettingsForControler()
-        //{
-        //    throw new NotImplementedException();
-        //}
+            switch(action)
+            {
+                case GlobalData.Action.Copy: {
+                        actionResult=CopyFile(operation);
+                    } break;               
+                case GlobalData.Action.Move: {
+                        actionResult = MoveFile(operation);
+                    } break;
+                case GlobalData.Action.Remove: {
+                        actionResult = RemoveFile(operation);
+                    } break;
+                case GlobalData.Action.CopyData: {
+                        actionResult = CopyData(operation);
+                    } break;
+            }
 
-        //public List<FilesTree> GetFilesExtensions()
-        //{
-        //    throw new NotImplementedException();
-        //}
+            return actionResult;
+        }
 
-        //public void MoveProductionFiles()
-        //{
-        //    throw new NotImplementedException();
-        //}
+        private List<string>FiltrFiles(FilesOrganizer filter)
+        {
+            string[] allFilesAtSourcePath = Directory.GetFiles(SourcePath);
+            List<string> filteredFiles = new List<string>();
 
-        //public void MoveServicesFiles()
-        //{
-        //    throw new NotImplementedException();
-        //}
+            if(filter.FileExtensions.Count>0)
+            {
+                filteredFiles = allFilesAtSourcePath.Where(x => filter.FileExtensions.Contains(Path.GetExtension(x))).ToList();
+            }else
+            {
+                filteredFiles = allFilesAtSourcePath.ToList();
+            }            
+           
+            if(filter.ContainsAtName.Count>0)
+            {
+                filteredFiles = filteredFiles.Where(x =>filter.ContainsAtName.Exists(y=>x.Contains(y))).ToList();
+            }
 
-        //public void CreateDestinationFolders()
-        //{
-        //    throw new NotImplementedException();
-        //}
+            if (filter.NotContainsAtName.Count > 0)
+            {
+                filteredFiles = filteredFiles.Where(x => filter.NotContainsAtName.Exists(y => x.Contains(y))==false).ToList();
+            }
 
-        //public void RefreshDestinationPath()
-        //{
-        //    throw new NotImplementedException();
-        //}
+            if(string.IsNullOrEmpty(filter.RegexContain)==false)
+            {
+                filteredFiles = filteredFiles.Where(x => System.Text.RegularExpressions.Regex.IsMatch(x, filter.RegexContain)).ToList();
+            }
 
-        //public void RefreshSourcePath()
-        //{
-        //    throw new NotImplementedException();
-        //}
+            if (string.IsNullOrEmpty(filter.RegexNotContain) == false)
+            {
+                filteredFiles = filteredFiles.Where(x => System.Text.RegularExpressions.Regex.IsMatch(x, filter.RegexNotContain)==false).ToList();
+            }
 
-        //public bool CheckDestinationPath()
-        //{
-        //    throw new NotImplementedException();
-        //}
+            return filteredFiles;
+        }
 
-        //public void OlpFilesDataCopy()
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public bool CopyFile(string operation)
+        {
+            FilesOrganizer filesOrganizer = FilesFilters.Where(x => x.OperationName == operation).FirstOrDefault();
+            List<string> filteredFiles = FiltrFiles(filesOrganizer);
+            string destination = CreateDestinationFolder(filesOrganizer.DestinationFolder);
+            filteredFiles.ForEach(x => File.Copy(x, Path.Combine(destination, Path.GetFileName(x))));    
 
-        //public void GlobalFilesDataCopy()
-        //{
-        //    throw new NotImplementedException();
-        //}
+            return CheckFilesCorrectness(destination, filteredFiles);
+        }
 
-        //public void DeleteFiles()
-        //{
-        //    throw new NotImplementedException();
-        //}     
+        public bool MoveFile(string operation)
+        {
+            FilesOrganizer filesOrganizer = FilesFilters.Where(x => x.OperationName == operation).FirstOrDefault();
+            List<string> filteredFiles = FiltrFiles(filesOrganizer);
+            string destination = CreateDestinationFolder(filesOrganizer.DestinationFolder);
+            filteredFiles.ForEach(x => File.Move(x, Path.Combine(destination, Path.GetFileName(x))));
 
-        //public List<string> GetGroupedFiles()
-        //{
-        //    throw new NotImplementedException();
-        //}
+            return CheckFilesCorrectness(destination, filteredFiles);
+        }
 
-        //public void RefreshDestinationPath(string path)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public bool RemoveFile(string operation)
+        {
+            FilesOrganizer filesOrganizer = FilesFilters.Where(x => x.OperationName == operation).FirstOrDefault();
+            List<string> filteredFiles = FiltrFiles(filesOrganizer);
+            filteredFiles.ForEach(x => File.Delete(x));
 
-        //public void RefreshSourcePath(string path)
-        //{
-        //    throw new NotImplementedException();
-        //}
+            return CheckFilesCorrectness(SourcePath, filteredFiles)==false;
+        }
+
+        public bool CopyData(string operation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool CutData(string operation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool CreateNewFileFromData(string operation)
+        {
+            throw new NotImplementedException();
+        }
         
-        //#region IsPossible
-        //public bool IsPossibleCopyProductionFiles()
-        //{
-        //    return (_productionCopiedFiles.FileExtensions?.Count > 0 && _productionCopiedFiles.DestinationFolder != null);
-        //}
-        //public bool IsPossibleCopyServicesFiles()
-        //{
-        //    return (_serviceCopiedFiles.FileExtensions?.Count > 0 && _serviceCopiedFiles.DestinationFolder != null);
-        //}
-        //public bool IsPossibleOlpFilesDataCopy()
-        //{
-        //    return (_copiedOlpDataFiles.FileExtensions?.Count > 0 && _copiedOlpDataFiles.DestinationFolder != null);
-        //}
-        //public bool IsPossibleGlobalFilesDataCopy()
-        //{
-        //    return (_copiedGlobalDataFiles.FileExtensions?.Count > 0 && _copiedGlobalDataFiles.DestinationFolder != null);
-        //}
-        //public bool IsPossibleDeleteFiles()
-        //{
-        //    return (_removingDataFiles.FileExtensions?.Count > 0);
-        //}
-        //#endregion IsPossible
+        string CreateDestinationFolder(string newFolder)
+        {
+            string destinationPath = Path.Combine(_destinationPath, newFolder);
 
+            if(Directory.Exists(destinationPath)==false)
+            {
+                Directory.CreateDirectory(destinationPath);
+            }
+
+            return destinationPath;
+        }
+
+        bool CheckFilesCorrectness(string path, List<string>sourceFiles)
+        {
+            List<string>resultFiles = Directory.GetFiles(path).ToList();
+            
+            if (sourceFiles.Exists(s=>resultFiles.Exists(r=>Path.GetFileName(r)== Path.GetFileName(s)) ==false))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
     }
 }

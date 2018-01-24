@@ -82,7 +82,7 @@ namespace RobotFilesEditor.Serializer
                         var operationName = files.OperationName;
                         GlobalData.Action action;
 
-                        if (controler.Files.Exists(x => x.OperationName == operationName))
+                        if (controler.FilesFilters.Exists(x => x.OperationName == operationName))
                         {
                             throw new ArgumentException($"Controler operation \'{operationName}\' already exists!");
                         }
@@ -103,7 +103,7 @@ namespace RobotFilesEditor.Serializer
                         fileOrganizer.RegexContain = files.RegexContain;
                         fileOrganizer.RegexNotContain = files.RegexNotContain;
 
-                        controler.Files.Add(fileOrganizer);
+                        controler.FilesFilters.Add(fileOrganizer);
                     }
                     controlers.Add(controler);
                 }

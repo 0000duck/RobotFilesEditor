@@ -35,8 +35,7 @@ namespace RobotFilesEditor
                          
             }
             catch(Exception ex)
-            {
-                throw ex;
+            {               
                 MessageBoxResult ExeptionMessage = MessageBox.Show(ex.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);                
             }            
 

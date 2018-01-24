@@ -7,45 +7,15 @@
         mc:Ignorable="d"
         Title="MainWindow" Name="window" Width="775">
     <Grid DataContext="">
-        <Menu x:Name="menu" HorizontalAlignment="Left" VerticalAlignment="Top" Width="764" FontSize="14" HorizontalContentAlignment="Stretch" IsTabStop="True" RenderTransformOrigin="0.5,0.5" Margin="0,-1,0,0">
-            <Menu.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform/>
-                    <SkewTransform/>
-                    <RotateTransform Angle="-0.324"/>
-                    <TranslateTransform/>
-                </TransformGroup>
-            </Menu.RenderTransform>
-            <MenuItem Header="Controler" FontSize="14"  IsTabStop="True">
-                <MenuItem Header="KUKA KRC2" IsCheckable="True" IsChecked="{Binding SelectedKRC2, ElementName=window }"/>
-                <MenuItem Header="KUKA KRC4" IsCheckable="True" IsChecked="{Binding SelectedKRC4, ElementName=window }"/>
-            </MenuItem>
-            <MenuItem Header="Files" FontSize="14">
-                <MenuItem Header="Set folder paths">
-                    <MenuItem Header="{Binding SelectedSourceFoldersPath, ElementName=window}" Name="FolderSourcePath" Click="FolderSourcePath_Click"/>
-                    <MenuItem Header="{Binding SelectedDestFoldersPath, ElementName=window}" Name="FolderDestinationPath" Click="FolderDestinationPath_Click"/>
-                </MenuItem>
-                <Separator/>
-                <MenuItem Header="Files full modyfication"/>
-                <Separator/>
-                <MenuItem Header="Move files">
-                    <MenuItem Header="All files" Name="MoveAllFiles" IsEnabled="{Binding IsPossibleCopyAllFiles, ElementName=window}"/>
-                    <Separator/>
-                    <MenuItem Header="Production files" Name="MoveProduction" Click="MoveProduction_Click" IsEnabled="{Binding IsPossibleCopyProductionFiles, ElementName=window}"/>
-                    <MenuItem Header="Services files" Name="MoveServices" Click="MoveServices_Click" IsEnabled="{Binding IsPossibleCopyServicesFiles, ElementName=window}"/>
-                </MenuItem>
-                <MenuItem Header="Exctract data">
-                    <MenuItem Header="All files" Name="ExtractAllFiles" IsEnabled="{Binding IsPossibleAllFilesDataCopy, ElementName=window}"/>
-                    <Separator/>
-                    <MenuItem Header="OLP files"  Name="ExtractOlpFiles" IsEnabled="{Binding IsPossibleOlpFilesDataCopy, ElementName=window}"/>
-                    <MenuItem Header="Global files" Name="ExtractGlobalFiles" IsEnabled="{Binding IsPossibleGlobalFilesDataCopy, ElementName=window}"/>
-                </MenuItem>
-                <MenuItem Header="Delete files" Name="DeleteAllFiles" IsEnabled="{Binding IsPossibleDeleteFiles, ElementName=window}"/>
-            </MenuItem>
-            <MenuItem Header="Configuration">
-                <MenuItem Header="Edit configuration"  Name="EditControlersConfiguration"/>
-            </MenuItem>
+        <Menu x:Name="MainWindowMenu" HorizontalAlignment="Left" 
+              VerticalAlignment="Top" Width="764" 
+              FontSize="14" 
+              HorizontalContentAlignment="Stretch" 
+              IsTabStop="True" 
+              RenderTransformOrigin="0.5,0.5" 
+              Margin="0,-1,0,0"
+              ItemsSource="{Binding MainMenu.Items, ElementName=window}">
         </Menu>
-        <ListBox HorizontalAlignment="Left" Margin="0,24,0,0" ItemsSource="{Binding FilesList, ElementName=window}" />
+        <ListBox HorizontalAlignment="Left" Margin="0,24,0,0" />
     </Grid>
 </Window>
