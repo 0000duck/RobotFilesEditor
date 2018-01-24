@@ -58,6 +58,7 @@
     </ApplicationDefinition>
     <Compile Include="FileTree.cs" />
     <Compile Include="IControler.cs" />
+    <Compile Include="MenuCreator.cs" />
     <Compile Include="Serializer\SerializationObjects.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

@@ -8,8 +8,6 @@ namespace RobotFilesEditor.Serializer
 {
     public class FilesSerialization
     {
-       
-
         public FilesSerialization()
         {}
 
@@ -48,7 +46,7 @@ namespace RobotFilesEditor.Serializer
             try
             {                
                 controlersConfiguration = ReadAplicationConfiguration();
-
+                
                 
 
                 if (string.IsNullOrEmpty(controlersConfiguration.SourcePath))
@@ -74,13 +72,17 @@ namespace RobotFilesEditor.Serializer
                         throw new ArgumentException($"Controler type \'{controlerType}\' already exists!" );
                     }
 
+                    controler.ContolerType = controlerType;
+                    controler.DestinationPath = destinationPath;
+                    controler.SourcePath = sourcePath;
+
                     foreach (var files in controlersArray?.OperationFilters)
                     {
                         fileOrganizer = new FilesOrganizer();
                         var operationName = files.OperationName;
                         GlobalData.Action action;
 
-                        if (controler.Files.Exists(x => x.OperationName == controlerType))
+                        if (controler.Files.Exists(x => x.OperationName == operationName))
                         {
                             throw new ArgumentException($"Controler operation \'{operationName}\' already exists!");
                         }

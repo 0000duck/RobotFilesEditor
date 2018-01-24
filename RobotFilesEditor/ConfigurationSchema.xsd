@@ -43,7 +43,7 @@
                                 </xs:element>
                               </xs:sequence>
                               <xs:attribute name="Action" type="xs:string" use="required" />
-                              <xs:attribute name="Destination" type="xs:string" use="required" />
+                              <xs:attribute name="DestinationFolder" type="xs:string" use="required" />
                               <xs:attribute name="OperationName" type="xs:string" use="required" />
                             </xs:complexType>
                           </xs:element>

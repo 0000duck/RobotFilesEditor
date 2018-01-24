@@ -52,7 +52,7 @@ namespace RobotFilesEditor
             }
         }
 
-        private string DestinationPath
+        public string DestinationPath
         {
             get { return _destinationPath; }
             set
@@ -76,7 +76,7 @@ namespace RobotFilesEditor
             }
         }
 
-        private string SourcePath
+        public string SourcePath
         {
             get { return _sourcePath; }
             set

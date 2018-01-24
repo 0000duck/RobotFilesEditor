@@ -22,11 +22,22 @@ namespace RobotFilesEditor
             {
                 filesSerialization = new Serializer.FilesSerialization();
                 controlers = filesSerialization.GetControlersConfigurations();
-               
+                
+                if(controlers.Count>0)
+                {
+                    mainWindow = new RobotFilesEditor.MainWindow(controlers);
+                    mainWindow.Show();
+                }
+                else
+                {
+                    throw new NullReferenceException("Configuration not contain any controler");
+                }
+                         
             }
             catch(Exception ex)
             {
                 throw ex;
+                MessageBoxResult ExeptionMessage = MessageBox.Show(ex.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);                
             }            
 
         }
