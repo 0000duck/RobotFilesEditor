@@ -28,20 +28,31 @@ namespace RobotFilesEditor
                 }
             }
         }
-        public List<FilesOrganizer>FilesFilters
+        public List<FilesFilter>FilesFilters
         {
             get { return _filesfilters; }
             set
             {
                 if(value==null)
                 {
-                    _filesfilters=new List<FilesOrganizer>();
+                    _filesfilters=new List<FilesFilter>();
                 }
 
                 if(_filesfilters!=value && value!=null)
                 {
                     _filesfilters = value;
                     OnPropertyChanged(nameof(FilesFilters));
+                }
+            }
+        }
+        private List<FilesDataFilter> FilesDataFilter
+        {
+            get { return _filesDataFilter; }
+            set
+            {
+                if(_filesDataFilter!=value)
+                {
+                    _filesDataFilter = value;
                 }
             }
         }
@@ -97,7 +108,8 @@ namespace RobotFilesEditor
         public event PropertyChangedEventHandler PropertyChanged;
         
         #region Private 
-        private List<FilesOrganizer> _filesfilters;
+        private List<FilesFilter> _filesfilters;
+        private List<FilesDataFilter> _filesDataFilter;
         private string _destinationPath;
         private string _sourcePath;
         private string _contolerType;
@@ -111,7 +123,8 @@ namespace RobotFilesEditor
         
         public Controler()
         {
-            FilesFilters = new List<FilesOrganizer>();
+            FilesFilters = new List<FilesFilter>();
+            FilesDataFilter = new List<FilesDataFilter>();
         }
 
         public bool DoAction(string operation)
@@ -138,7 +151,7 @@ namespace RobotFilesEditor
             return actionResult;
         }
 
-        private List<string>FiltrFiles(FilesOrganizer filter)
+        private List<string>FiltrFiles(FilesFilter filter)
         {
             string[] allFilesAtSourcePath = Directory.GetFiles(SourcePath);
             List<string> filteredFiles = new List<string>();
@@ -151,24 +164,24 @@ namespace RobotFilesEditor
                 filteredFiles = allFilesAtSourcePath.ToList();
             }            
            
-            if(filter.ContainsAtName.Count>0)
+            if(filter.Filter.ContainsAtName.Count>0)
             {
-                filteredFiles = filteredFiles.Where(x =>filter.ContainsAtName.Exists(y=>x.Contains(y))).ToList();
+                filteredFiles = filteredFiles.Where(x =>filter.Filter.ContainsAtName.Exists(y=>x.Contains(y))).ToList();
             }
 
-            if (filter.NotContainsAtName.Count > 0)
+            if (filter.Filter.NotContainsAtName.Count > 0)
             {
-                filteredFiles = filteredFiles.Where(x => filter.NotContainsAtName.Exists(y => x.Contains(y))==false).ToList();
+                filteredFiles = filteredFiles.Where(x => filter.Filter.NotContainsAtName.Exists(y => x.Contains(y))==false).ToList();
             }
 
-            if(string.IsNullOrEmpty(filter.RegexContain)==false)
+            if(string.IsNullOrEmpty(filter.Filter.RegexContain)==false)
             {
-                filteredFiles = filteredFiles.Where(x => System.Text.RegularExpressions.Regex.IsMatch(x, filter.RegexContain)).ToList();
+                filteredFiles = filteredFiles.Where(x => System.Text.RegularExpressions.Regex.IsMatch(x, filter.Filter.RegexContain)).ToList();
             }
 
-            if (string.IsNullOrEmpty(filter.RegexNotContain) == false)
+            if (string.IsNullOrEmpty(filter.Filter.RegexNotContain) == false)
             {
-                filteredFiles = filteredFiles.Where(x => System.Text.RegularExpressions.Regex.IsMatch(x, filter.RegexNotContain)==false).ToList();
+                filteredFiles = filteredFiles.Where(x => System.Text.RegularExpressions.Regex.IsMatch(x, filter.Filter.RegexNotContain)==false).ToList();
             }
 
             return filteredFiles;
@@ -176,7 +189,7 @@ namespace RobotFilesEditor
 
         public bool CopyFile(string operation)
         {
-            FilesOrganizer filesOrganizer = FilesFilters.Where(x => x.OperationName == operation).FirstOrDefault();
+            FilesFilter filesOrganizer = FilesFilters.Where(x => x.OperationName == operation).FirstOrDefault();
             List<string> filteredFiles = FiltrFiles(filesOrganizer);
             string destination = CreateDestinationFolder(filesOrganizer.DestinationFolder);
             filteredFiles.ForEach(x => File.Copy(x, Path.Combine(destination, Path.GetFileName(x))));    
@@ -186,7 +199,7 @@ namespace RobotFilesEditor
 
         public bool MoveFile(string operation)
         {
-            FilesOrganizer filesOrganizer = FilesFilters.Where(x => x.OperationName == operation).FirstOrDefault();
+            FilesFilter filesOrganizer = FilesFilters.Where(x => x.OperationName == operation).FirstOrDefault();
             List<string> filteredFiles = FiltrFiles(filesOrganizer);
             string destination = CreateDestinationFolder(filesOrganizer.DestinationFolder);
             filteredFiles.ForEach(x => File.Move(x, Path.Combine(destination, Path.GetFileName(x))));
@@ -196,7 +209,7 @@ namespace RobotFilesEditor
 
         public bool RemoveFile(string operation)
         {
-            FilesOrganizer filesOrganizer = FilesFilters.Where(x => x.OperationName == operation).FirstOrDefault();
+            FilesFilter filesOrganizer = FilesFilters.Where(x => x.OperationName == operation).FirstOrDefault();
             List<string> filteredFiles = FiltrFiles(filesOrganizer);
             filteredFiles.ForEach(x => File.Delete(x));
 
@@ -205,7 +218,12 @@ namespace RobotFilesEditor
 
         public bool CopyData(string operation)
         {
-            throw new NotImplementedException();
+            FilesFilter filesOrganizer = FilesFilters.Where(x => x.OperationName == operation).FirstOrDefault();
+            List<string> filteredFiles = FiltrFiles(filesOrganizer);
+
+            filteredFiles.ForEach(x => File.Delete(x));
+
+            return CheckFilesCorrectness(SourcePath, filteredFiles) == false;
         }
 
         public bool CutData(string operation)
@@ -242,6 +260,32 @@ namespace RobotFilesEditor
             {
                 return true;
             }
+        }
+
+        private List<string>LoadFiles(List<string>filesPaths)
+        {
+            List<string> filesContent=new List<string>();
+
+            foreach(string path in filesPaths)
+            {
+                filesContent.AddRange(File.ReadAllLines(path).ToList());
+            }
+            return filesContent;
+        }
+
+        private void GetGroups(List<string>filesContent)
+        {
+            
+        }
+
+        private void CreateDestinationFile()
+        {
+
+        }
+
+        private void WriteData()
+        {
+
         }
     }
 }

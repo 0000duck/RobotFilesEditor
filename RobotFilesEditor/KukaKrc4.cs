@@ -10,22 +10,22 @@ namespace RobotFilesEditor
 
     public class KukaKrc4 //: //IControler
     {
-        //private FilesOrganizer _productionCopiedFiles;
-        //private FilesOrganizer _serviceCopiedFiles;
-        //private FilesOrganizer _copiedOlpDataFiles;
-        //private FilesOrganizer _copiedGlobalDataFiles;
-        //private FilesOrganizer _removingDataFiles;
+        //private FilesFilter _productionCopiedFiles;
+        //private FilesFilter _serviceCopiedFiles;
+        //private FilesFilter _copiedOlpDataFiles;
+        //private FilesFilter _copiedGlobalDataFiles;
+        //private FilesFilter _removingDataFiles;
         //private string _destinationPath;
         //private string _sourcePath;
         //private string _controlerFolder;
 
         //public KukaKrc4(string sourcePath, string destinationPath)
         //{
-        //    _productionCopiedFiles = new FilesOrganizer();
-        //    _serviceCopiedFiles = new FilesOrganizer();
-        //    _copiedOlpDataFiles = new FilesOrganizer();
-        //    _copiedGlobalDataFiles = new FilesOrganizer();
-        //    _removingDataFiles = new FilesOrganizer();
+        //    _productionCopiedFiles = new FilesFilter();
+        //    _serviceCopiedFiles = new FilesFilter();
+        //    _copiedOlpDataFiles = new FilesFilter();
+        //    _copiedGlobalDataFiles = new FilesFilter();
+        //    _removingDataFiles = new FilesFilter();
 
         //    _controlerFolder = @"KRC4" + DateTime.Now.ToString("_yyyyMMdd");
 

@@ -41,13 +41,11 @@ namespace RobotFilesEditor.Serializer
             string destinationPath;
             string sourcePath;
             RobotFilesEditor.Controler controler;
-            FilesOrganizer fileOrganizer;
+            FilesFilter fileOrganizer;
 
             try
             {                
-                controlersConfiguration = ReadAplicationConfiguration();
-                
-                
+                controlersConfiguration = ReadAplicationConfiguration();               
 
                 if (string.IsNullOrEmpty(controlersConfiguration.SourcePath))
                 {
@@ -78,7 +76,7 @@ namespace RobotFilesEditor.Serializer
 
                     foreach (var files in controlersArray?.OperationFilters)
                     {
-                        fileOrganizer = new FilesOrganizer();
+                        fileOrganizer = new FilesFilter();
                         var operationName = files.OperationName;
                         GlobalData.Action action;
 
@@ -96,12 +94,12 @@ namespace RobotFilesEditor.Serializer
                             throw new FormatException(nameof(files.Action));
                         }
 
-                        fileOrganizer.ContainsAtName = files.ContainsAtName;
+                        fileOrganizer.Filter.ContainsAtName = files.ContainsAtName;
                         fileOrganizer.DestinationFolder = files.DestinationFolder;
                         fileOrganizer.FileExtensions = files.FilesExtension;
-                        fileOrganizer.NotContainsAtName = files.NotContainsAtName;
-                        fileOrganizer.RegexContain = files.RegexContain;
-                        fileOrganizer.RegexNotContain = files.RegexNotContain;
+                        fileOrganizer.Filter.NotContainsAtName = files.NotContainsAtName;
+                        fileOrganizer.Filter.RegexContain = files.RegexContain;
+                        fileOrganizer.Filter.RegexNotContain = files.RegexNotContain;
 
                         controler.FilesFilters.Add(fileOrganizer);
                     }

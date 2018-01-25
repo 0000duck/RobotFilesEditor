@@ -10,6 +10,18 @@ namespace RobotFilesEditor
 {
     class MenuCreator: INotifyPropertyChanged
     {
+        public List<Controler> Controlers
+        {
+            get { return _controlers; }
+            set
+            {
+                if (_controlers != value)
+                {
+                    _controlers = value;
+                    OnPropertyChanged(nameof(Controlers));
+                }
+            }
+        }
         public Menu MainMenu
         {
             get { return _mainMenu; }
@@ -18,7 +30,7 @@ namespace RobotFilesEditor
                 if(value!=_mainMenu && value!=null)
                 {
                     _mainMenu = value;
-                    OnPropertyChanged(nameof(MainWindow.MainMenu));
+                    OnPropertyChanged(nameof(MainMenu));
                 }
             }
         }
@@ -30,13 +42,27 @@ namespace RobotFilesEditor
                 if (value != null && value!=_controlersChooserMenu)
                 {
                     _controlersChooserMenu = value;
-                    OnPropertyChanged(nameof(ControlersChooserMenu));
+                    //OnPropertyChanged(nameof(ControlersChooserMenu));
+                    OnPropertyChanged(nameof(MainWindow.ControlersChooserMenu));                  
                 }
             }
         }
         public MenuItem FilesMenu;
-        public MenuItem OperationsMenu;
+        public MenuItem OperationsMenu
+        {
+            get { return _operationsMenu; }
+            set
+            {
+                if(_operationsMenu!=value)
+                {
+                    _operationsMenu = value;
+                    //OnPropertyChanged(nameof(OperationsMenu));
+                    OnPropertyChanged(nameof(MainWindow.OperationsMenu));                    
+                }
+            }
+        }
         public MenuItem ConfigurationMenu;
+        
         public event PropertyChangedEventHandler PropertyChanged;
         
         private Controler _controler;
@@ -51,20 +77,20 @@ namespace RobotFilesEditor
         {
         }
 
-        public MenuCreator(List<Controler>controlers)
+        public MenuCreator(ref List<Controler>controlers)
         {
             if(controlers.Count>0)
             {
-                _controlers = controlers;
+                Controlers = controlers;
             }else
             {
-                throw new ArgumentNullException(nameof(_controlers));
+                throw new ArgumentNullException(nameof(Controlers));
             }
 
-            _controler = _controlers.FirstOrDefault();
+            _controler = Controlers.FirstOrDefault();
             CreateControlersChooserMenu();
             CreateOperationsMenu();
-            CreateMainMenu();
+            //CreateMainMenu();
         }
 
         [NotifyPropertyChangedInvocatorAttribute]
@@ -100,55 +126,75 @@ namespace RobotFilesEditor
 
         private void CreateControlersChooserMenu()
         {            
-            MenuItem menuRoot = new MenuItem();            
-
-            menuRoot.Header = "Controlers";           
+            MenuItem menuRoot = new MenuItem();         
            
-            foreach(var controler in _controlers)
+            foreach(var controler in Controlers)
             {
                 MenuItem menuNode = new MenuItem();
 
                 menuNode.Header = controler.ContolerType;
                 menuNode.IsCheckable = true;
+                menuNode.Click += ControlersChooser_Click;
                 menuRoot.Items.Add(menuNode);
             }
-
             ControlersChooserMenu = menuRoot;
-        }
+        }       
 
         private void CreateOperationsMenu()
         {
             MenuItem menuRoot = new MenuItem();
+            MenuItem menuLeaf;
             List<MenuItem> actionsNodes=new List<MenuItem>();
-            List<FilesOrganizer> filters = _controler.FilesFilters.OrderBy(x => x.Action).ToList();
-
-            menuRoot.Header = "Operations";
+            List<FilesFilter> filters = _controler.FilesFilters.OrderBy(x => x.Action).ToList();
 
             foreach (var filter in _controler.FilesFilters)
             {
                 var actualAction = filter.Action.ToString();
                 var nodeIndex = -1;
 
+                menuLeaf = new MenuItem();
+                menuLeaf.Header = filter.OperationName;
+                menuLeaf.Click += OperationsMenu_Click;
+
                 if (actionsNodes.Exists(x=>x.Header.ToString()==actualAction)==false)
                 {
                     actionsNodes.Add(new MenuItem() {Header = filter.Action.ToString()});
+
                     nodeIndex = actionsNodes.IndexOf(actionsNodes.Where(x => x.Header.ToString() == actualAction).FirstOrDefault());
 
                     if (nodeIndex != -1)
                     {
                         actionsNodes[nodeIndex].Items.Add($"All {actualAction} operations");
-                    }                    
+                        actionsNodes[nodeIndex].Items.Add(new Separator());
+                    }
                 }
 
-                if(actionsNodes[nodeIndex]!=null)
+                if(nodeIndex<0)
                 {
-                    actionsNodes[nodeIndex].Items.Add(filter.OperationName);
+                    nodeIndex = actionsNodes.IndexOf(actionsNodes.Where(x => x.Header.ToString() == actualAction).FirstOrDefault());
+                }               
+
+                if (actionsNodes[nodeIndex]!=null)
+                {
+                    actionsNodes[nodeIndex].Items.Add(menuLeaf);
                 }                
             }
 
             actionsNodes.ForEach(x => menuRoot.Items.Add(x));
 
             OperationsMenu = menuRoot;
+        }      
+
+        private void ControlersChooser_Click(object sender, System.Windows.RoutedEventArgs e)
+        {            
+            Controlers[0].DestinationPath = @"C:\Users\ajergas\Documents\KRC2_20180122";
+            OnPropertyChanged(nameof(Controlers));
+        }
+
+        private void OperationsMenu_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            Controlers[1].DestinationPath = @"C:\Users\ajergas\Documents\KRC2_20180122";
+            OnPropertyChanged(nameof(Controlers));
         }
     }
 }

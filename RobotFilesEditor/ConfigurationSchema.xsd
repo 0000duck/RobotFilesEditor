@@ -1,10 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<xs:schema 
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-  attributeFormDefault="unqualified" 
-  elementFormDefault="qualified" 
-  targetNamespace="RobotFilesEditor" 
-  xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="RobotFilesEditor" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="ControlersConfiguration">
     <xs:complexType>
       <xs:sequence>
@@ -17,7 +12,7 @@
                     <xs:element name="OperationFiltersArray">
                       <xs:complexType>
                         <xs:sequence>
-                          <xs:element name="OperationFilter">
+                          <xs:element maxOccurs="unbounded" name="OperationFilter">
                             <xs:complexType>
                               <xs:sequence>
                                 <xs:element name="FilesExtensionsArray">
@@ -27,14 +22,7 @@
                                     </xs:sequence>
                                   </xs:complexType>
                                 </xs:element>
-                                <xs:element name="ContainsAtNameArray">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element maxOccurs="unbounded" name="ContainsAtName" type="xs:string" />
-                                    </xs:sequence>
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element minOccurs="0" name="NotContainsAtNameArray">
+                                <xs:element minOccurs="0" name="ContainsAtNameArray">
                                   <xs:complexType>
                                     <xs:sequence>
                                       <xs:element maxOccurs="unbounded" name="ContainsAtName" type="xs:string" />
@@ -43,7 +31,7 @@
                                 </xs:element>
                               </xs:sequence>
                               <xs:attribute name="Action" type="xs:string" use="required" />
-                              <xs:attribute name="DestinationFolder" type="xs:string" use="required" />
+                              <xs:attribute name="DestinationFolder" type="xs:string" use="optional" />
                               <xs:attribute name="OperationName" type="xs:string" use="required" />
                             </xs:complexType>
                           </xs:element>

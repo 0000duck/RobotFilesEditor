@@ -7,15 +7,20 @@
         mc:Ignorable="d"
         Title="MainWindow" Name="window" Width="775">
     <Grid DataContext="">
-        <Menu x:Name="MainWindowMenu" HorizontalAlignment="Left" 
-              VerticalAlignment="Top" Width="764" 
+        <Menu x:Name="MainWindowMenu" 
+              VerticalAlignment="Top" 
               FontSize="14" 
-              HorizontalContentAlignment="Stretch" 
-              IsTabStop="True" 
-              RenderTransformOrigin="0.5,0.5" 
-              Margin="0,-1,0,0"
-              ItemsSource="{Binding MainMenu.Items, ElementName=window}">
+              IsTabStop="True">            
+            <MenuItem Header="Files" FontSize="14">
+                <MenuItem Header="Set folder paths">
+                    <MenuItem Header="{Binding SelectedSourceFoldersPath, ElementName=window}" Name="FolderSourcePath" />
+                    <MenuItem Header="{Binding SelectedDestFoldersPath, ElementName=window}" Name="FolderDestinationPath"/>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="Controles" ItemsSource="{Binding ControlersChooserMenu.Items, ElementName=window}"/>
+            <MenuItem Header="Operations" ItemsSource="{Binding OperationsMenu.Items, ElementName=window}"/>
+            <MenuItem Header="Configuration"/>
         </Menu>
-        <ListBox HorizontalAlignment="Left" Margin="0,24,0,0" />
+        <ListBox HorizontalAlignment="Left" Margin="0,24,0,0" />       
     </Grid>
 </Window>

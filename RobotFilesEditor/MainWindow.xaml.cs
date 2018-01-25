@@ -14,28 +14,55 @@ namespace RobotFilesEditor
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
-        public Menu MainMenu
+        public MenuItem ControlersChooserMenu
         {
-            get {
-                //MainWindowMenu = _menuCreator.MainMenu;
-                return _menuCreator?.MainMenu; }
+            get {                
+                return _menuCreator?.ControlersChooserMenu; }
             set
             {
-                _menuCreator.MainMenu = value;
-                OnPropertyChanged(nameof(MainMenu));
+                if(_menuCreator?.ControlersChooserMenu!=value)
+                {
+                    _menuCreator.ControlersChooserMenu = value;
+                    OnPropertyChanged(nameof(ControlersChooserMenu));
+                }               
+            }
+        }
+
+        public MenuItem OperationsMenu
+        {
+            get { return _menuCreator?.OperationsMenu; }
+            set
+            {
+                if (_menuCreator?.OperationsMenu != value)
+                {
+                    _menuCreator.OperationsMenu = value;
+                    OnPropertyChanged(nameof(ControlersChooserMenu));
+                }
+            }
+        }
+
+        public List<Controler>Controlers
+        {
+            get { return _controlers; }
+            set
+            {
+                if(_controlers!=value)
+                {
+                    _controlers = value;
+                    OnPropertyChanged(nameof(Controlers));
+                }
             }
         }
 
         private MenuCreator _menuCreator;
+        private List<Controler> _controlers;
        
         public MainWindow(List<Controler>controlers)
-        {
+        {          
+            _menuCreator = new MenuCreator(ref controlers);
+            ControlersChooserMenu = _menuCreator.ControlersChooserMenu;
+            OperationsMenu = _menuCreator.OperationsMenu;
             InitializeComponent();
-
-            _menuCreator = new MenuCreator(controlers);
-            MainMenu = _menuCreator.MainMenu;
-            //MainWindowMenu.Items.Add(_menuCreator.MainMenu);
-
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -44,6 +71,6 @@ namespace RobotFilesEditor
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }       
+        }        
     }
 }
