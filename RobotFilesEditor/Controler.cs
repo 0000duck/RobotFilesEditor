@@ -162,28 +162,12 @@ namespace RobotFilesEditor
             }else
             {
                 filteredFiles = allFilesAtSourcePath.ToList();
-            }            
-           
-            if(filter.Filter.ContainsAtName.Count>0)
-            {
-                filteredFiles = filteredFiles.Where(x =>filter.Filter.ContainsAtName.Exists(y=>x.Contains(y))).ToList();
             }
 
-            if (filter.Filter.NotContainsAtName.Count > 0)
-            {
-                filteredFiles = filteredFiles.Where(x => filter.Filter.NotContainsAtName.Exists(y => x.Contains(y))==false).ToList();
-            }
-
-            if(string.IsNullOrEmpty(filter.Filter.RegexContain)==false)
-            {
-                filteredFiles = filteredFiles.Where(x => System.Text.RegularExpressions.Regex.IsMatch(x, filter.Filter.RegexContain)).ToList();
-            }
-
-            if (string.IsNullOrEmpty(filter.Filter.RegexNotContain) == false)
-            {
-                filteredFiles = filteredFiles.Where(x => System.Text.RegularExpressions.Regex.IsMatch(x, filter.Filter.RegexNotContain)==false).ToList();
-            }
-
+            filteredFiles = filter.Filter.FilterContainsAtName(filteredFiles);
+            filteredFiles = filter.Filter.FilterNotContainsAtName(filteredFiles);
+            filteredFiles = filter.Filter.FilterRegexContain(filteredFiles);
+            filteredFiles = filter.Filter.FilterRegexNotContain(filteredFiles);
             return filteredFiles;
         }
 
@@ -273,9 +257,11 @@ namespace RobotFilesEditor
             return filesContent;
         }
 
-        private void GetGroups(List<string>filesContent)
+        private FilesDataFilter GetGroups(List<string>filesContent, FilesDataFilter fileDataFilter)
         {
-            
+            fileDataFilter.DataFilterGroups.ForEach(x => x.SetLinesToAddToFile(filesContent));
+
+            return fileDataFilter;
         }
 
         private void CreateDestinationFile()
@@ -283,9 +269,12 @@ namespace RobotFilesEditor
 
         }
 
-        private void WriteData()
-        {
+        private void WriteData(FilesDataFilter fileDataFilter)
+        {            
+            foreach(var filter in fileDataFilter.DataFilterGroups)
+            {
 
+            }
         }
     }
 }

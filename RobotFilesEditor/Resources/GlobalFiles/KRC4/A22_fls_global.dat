@@ -1,0 +1,12 @@
+&ACCESS RV
+&REL 1
+&COMMENT V_1_4_1
+DEFDAT A22_fls_global PUBLIC
+;********************************
+;Date: 24.11.2015 / 01.08.2016
+;Programmer: Christian Hoenle (KUKA Roboter GmbH) / R.T. (KUKA Roboter GmbH)
+;Description: Global positions
+;********************************
+
+
+ENDDAT

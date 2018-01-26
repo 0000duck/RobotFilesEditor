@@ -1,0 +1,16 @@
+&ACCESS RVE
+&REL 11
+&COMMENT V_1_4_0
+&PARAM DISKPATH = BMW_Std
+DEFDAT  A03_GRP_GLOBAL PUBLIC
+;********************************
+;Date: 03.2013
+;Programmer: GRAF E. Kuka Roboter
+;Description: Global positions
+;********************************
+
+
+
+
+
+ENDDAT

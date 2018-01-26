@@ -1,0 +1,12 @@
+&ACCESS R
+&COMMENT V_1_4_4
+DEFDAT A13_RVT_GLOBAL PUBLIC
+
+;********************************
+;Date: 17.09.2012 / 07.02.2017
+;Programmer: Dominik Prudlo (KUKA Roboter GmbH) / R.T (KUKA Roboter GmbH)
+;Description: Global positions
+;********************************
+
+
+ENDDAT

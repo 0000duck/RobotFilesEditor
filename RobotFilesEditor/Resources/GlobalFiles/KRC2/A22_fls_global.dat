@@ -1,0 +1,21 @@
+&ACCESS RV
+&REL 1
+&COMMENT V_1_4_0
+DEFDAT A22_fls_global PUBLIC
+
+;********************************
+;Date: 16.09.2016
+;Programmer: DS (OrangeApps GmbH)
+;Description: Global positions
+;********************************
+
+;-- this modul is ported form KRC4 A22 TechPack
+;-- Original KRC4 header 
+;********************************
+;Date: 24.11.2015
+;Programmer: Christian Hoenle (KUKA Roboter GmbH)
+;Description: Global positions
+;********************************
+
+
+ENDDAT

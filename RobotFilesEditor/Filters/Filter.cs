@@ -40,7 +40,6 @@ namespace RobotFilesEditor
                 }
             }
         }
-
         public string RegexContain
         {
             get { return _regexContain; }
@@ -114,7 +113,7 @@ namespace RobotFilesEditor
 
         public List<string> FilterRegexNotContain(List<string> source)
         {
-            if (string.IsNullOrEmpty(RegexContain) == false)
+            if (string.IsNullOrEmpty(RegexNotContain) == false)
             {
                 source = source.Where(x => System.Text.RegularExpressions.Regex.IsMatch(x, RegexNotContain) == false).ToList();
             }

@@ -1,0 +1,12 @@
+&ACCESS R
+&COMMENT V_1_4_3
+DEFDAT A19_CLI_GLOBAL PUBLIC
+
+;********************************
+;Date: 17.09.2012 / 01.08.2016
+;Programmer: Dominik Prudlo (KUKA Roboter GmbH) / R.T. (KUKA Roboter GmbH)
+;Description: Global positions
+;********************************
+
+
+ENDDAT

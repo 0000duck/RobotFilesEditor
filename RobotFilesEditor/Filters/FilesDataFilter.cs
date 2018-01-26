@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -85,30 +86,52 @@ namespace RobotFilesEditor
                 }
             }
         }
-        public List<string>LinesToAddToFile
-        {
-            get { return _linesToAddToFile; }
-            set
-            {
-                if(_linesToAddToFile!=value)
-                {
-                    _linesToAddToFile = value;
-                }
-            }
-        }
-
+     
         private FilesFilter _filter;
         private string _fileHeader;
         private string _fileFooter;
         private int _groupSpace;
         private string _writeStart;
         private string _writeStop;
-        private List<DataFilterGroup> _dataFilterGroups;
-        private List<string> _linesToAddToFile;
+        private List<DataFilterGroup> _dataFilterGroups;        
 
         FilesDataFilter()
         {
             DataFilterGroups = new List<DataFilterGroup>();
-        }
+        }   
+        
+        public string PrepareGroupsToWriteToFile()
+        {
+            string Buffor = "";
+            
+                       
+            using (StreamWriter sw = new StreamWriter(""))
+            {           
+                if (string.IsNullOrEmpty(FileHeader) == false){
+                    sw.WriteLine(FileHeader);
+                }
+
+                foreach(var group in DataFilterGroups)
+                {                    
+                    var GroupsContent = group.PrepareGroupToWrite();
+
+                    if(string.IsNullOrEmpty(GroupsContent))
+                    {
+                        sw.WriteLine(GroupsContent);   
+
+                         for (int i = 0; i < GroupSpace; i++){
+                             sw.WriteLine();
+                         }        
+                    }
+                }
+
+                if (string.IsNullOrEmpty(FileFooter) == false){
+                    sw.WriteLine(FileFooter);
+                }                 
+
+                Buffor = sw.ToString();
+            }          
+            return Buffor;
+        }    
     }
 }

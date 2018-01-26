@@ -1,0 +1,13 @@
+&ACCESS  RV
+&COMMENT V_1_4_0
+&PARAM DISKPATH = BMW_App
+&REL 1
+DEFDAT  a02_tch_global PUBLIC
+;********************************
+;Date: 21.11.2014
+;Programmer: Thomas Roessler (KUKA Roboter GmbH)
+;Description: Global positions
+;********************************
+
+
+ENDDAT

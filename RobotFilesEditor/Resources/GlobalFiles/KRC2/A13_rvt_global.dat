@@ -1,0 +1,27 @@
+&ACCESS R
+&REL 15
+&COMMENT V_1_4_0
+DEFDAT  A13_RVT_GLOBAL PUBLIC
+
+;********************************
+;Date: 16.09.2016
+;Programmer: DS (OrangeApps GmbH)
+;Description: Global variables and signals
+;********************************
+
+;-- this modul is ported form KRC4 A13 TechPack
+;-- Original KRC4 header 
+;********************************
+;Date: 17.09.2012
+;Programmer: Dominik Prudlo (KUKA Roboter GmbH)
+;Description: Global positions
+;********************************
+
+DECL GLOBAL CHAR RV_TXT_POS_CONT[24]
+RV_TXT_POS_CONT[]="                        "
+
+DECL GLOBAL CHAR RV_TXT_TRUEFALSE[24]
+RV_TXT_TRUEFALSE[]="TRUE "
+
+DECL GLOBAL INT RV_HELPINT=4
+ENDDAT
