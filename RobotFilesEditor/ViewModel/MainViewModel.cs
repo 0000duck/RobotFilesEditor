@@ -1,15 +1,25 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace RobotFilesEditor
+namespace RobotFilesEditor.ViewModel
 {
-    class MainViewModel: INotifyPropertyChanged
+    /// <summary>
+    /// This class contains properties that the main View can data bind to.
+    /// <para>
+    /// Use the <strong>mvvminpc</strong> snippet to add bindable properties to this ViewModel.
+    /// </para>
+    /// <para>
+    /// You can also use Blend to data bind with the tool's support.
+    /// </para>
+    /// <para>
+    /// See http://www.galasoft.ch/mvvm
+    /// </para>
+    /// </summary>
+    public class MainViewModel : ViewModelBase, INotifyPropertyChanged
     {
         #region Controls
         #region MenuControls
@@ -40,29 +50,50 @@ namespace RobotFilesEditor
                 }
             }
         }
+
+        public string SelectedControler
+        {
+            get { return _selectedControler; }
+            set
+            {
+                if (_selectedControler != value)
+                {
+                    _selectedControler = value;
+                    OnPropertyChanged(nameof(SelectedControler));
+                }
+            }
+        }
+        public string SelectedOperation
+        {
+            get { return _selectedOperation; }
+            set
+            {
+                if (_selectedOperation != value)
+                {
+                    _selectedOperation = value;
+                    OnPropertyChanged(nameof(SelectedOperation));
+                }
+            }
+        }
         #endregion MenuControls
         #endregion Controls
 
-        #region Commands
-
-        #region ControlersChooserMenuCommandRegion       
+        #region Commands      
         public ICommand ChooseControlerCommand
         {
             get;
             internal set;
         }
-
-        private void CreateSaveCommand()
+        public ICommand SelectOperationCommand
         {
-            ChooseControlerCommand = new 
+            get;
+            internal set;
         }
-
-        public void SaveExecute()
+        private void CreateCommands()
         {
-            SelectControler();
-        }
-
-        #endregion ControlersChooserMenuCommandRegion
+            ChooseControlerCommand = new RelayCommand(SelectControler);
+            SelectOperationCommand = new RelayCommand(SelectOperation);
+        }       
         #endregion Commands
 
         public List<Controler> Controlers
@@ -80,14 +111,8 @@ namespace RobotFilesEditor
 
         private MenuCreator _menuCreator;
         private List<Controler> _controlers;
-
-        public MainViewModel(List<Controler> controlers)
-        {
-            _menuCreator = new MenuCreator(ref controlers);
-            ControlersChooserMenu = _menuCreator.ControlersChooserMenu;
-            OperationsMenu = _menuCreator.OperationsMenu;
-            //InitializeComponent();
-        }
+        private string _selectedControler;
+        private string _selectedOperation;            
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -111,5 +136,15 @@ namespace RobotFilesEditor
         }
 
         #endregion OperationsMenuMenuMethodRegion
+
+
+        public MainViewModel(List<Controler> controlers)
+        {         
+            _menuCreator = new MenuCreator(ref controlers);
+            ControlersChooserMenu = _menuCreator.ControlersChooserMenu;
+            OperationsMenu = _menuCreator.OperationsMenu;
+            //InitializeComponent();      
+        }
+
     }
 }
