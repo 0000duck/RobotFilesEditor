@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Text;
-using System.Windows;
+using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace RobotFilesEditor
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window, INotifyPropertyChanged
+    class MainViewModel: INotifyPropertyChanged
     {
-
         #region Controls
         #region MenuControls
         public MenuItem ControlersChooserMenu
@@ -47,12 +43,34 @@ namespace RobotFilesEditor
         #endregion MenuControls
         #endregion Controls
 
-        public List<Controler>Controlers
+        #region Commands
+
+        #region ControlersChooserMenuCommandRegion       
+        public ICommand ChooseControlerCommand
+        {
+            get;
+            internal set;
+        }
+
+        private void CreateSaveCommand()
+        {
+            ChooseControlerCommand = new 
+        }
+
+        public void SaveExecute()
+        {
+            SelectControler();
+        }
+
+        #endregion ControlersChooserMenuCommandRegion
+        #endregion Commands
+
+        public List<Controler> Controlers
         {
             get { return _controlers; }
             set
             {
-                if(_controlers!=value)
+                if (_controlers != value)
                 {
                     _controlers = value;
                     OnPropertyChanged(nameof(Controlers));
@@ -62,13 +80,13 @@ namespace RobotFilesEditor
 
         private MenuCreator _menuCreator;
         private List<Controler> _controlers;
-       
-        public MainWindow(List<Controler>controlers)
-        {          
+
+        public MainViewModel(List<Controler> controlers)
+        {
             _menuCreator = new MenuCreator(ref controlers);
-            //ControlersChooserMenu = _menuCreator.ControlersChooserMenu;
-            //OperationsMenu = _menuCreator.OperationsMenu;
-            InitializeComponent();
+            ControlersChooserMenu = _menuCreator.ControlersChooserMenu;
+            OperationsMenu = _menuCreator.OperationsMenu;
+            //InitializeComponent();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -77,6 +95,21 @@ namespace RobotFilesEditor
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }        
+        }
+
+        #region ControlersChooserMenuMethodRegion
+        private void SelectControler()
+        {
+
+        }
+        #endregion ControlersChooserMenuMethodRegion
+
+        #region OperationsMenuMethodRegion
+        private void SelectOperation()
+        {
+
+        }
+
+        #endregion OperationsMenuMenuMethodRegion
     }
 }

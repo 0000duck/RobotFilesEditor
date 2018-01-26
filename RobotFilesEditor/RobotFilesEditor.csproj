@@ -80,6 +80,7 @@
     <Compile Include="IFileOperations.cs" />
     <Compile Include="MenuCreator.cs" />
     <Compile Include="Serializer\SerializationObjects.cs" />
+    <Compile Include="ViewModel\MainViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
