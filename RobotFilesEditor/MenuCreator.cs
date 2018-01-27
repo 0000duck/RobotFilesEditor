@@ -43,7 +43,7 @@ namespace RobotFilesEditor
                 {
                     _controlersChooserMenu = value;
                     //OnPropertyChanged(nameof(ControlersChooserMenu));
-                    OnPropertyChanged(nameof(MainWindow.ControlersChooserMenu));                  
+                    OnPropertyChanged(nameof(ControlersChooserMenu));                  
                 }
             }
         }
@@ -57,7 +57,7 @@ namespace RobotFilesEditor
                 {
                     _operationsMenu = value;
                     //OnPropertyChanged(nameof(OperationsMenu));
-                    OnPropertyChanged(nameof(MainWindow.OperationsMenu));                    
+                    OnPropertyChanged(nameof(OperationsMenu));                    
                 }
             }
         }

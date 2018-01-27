@@ -4,23 +4,26 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RobotFilesEditor"
+        DataContext="{Binding Main, Mode=OneWay, Source={StaticResource Locator}}"
         mc:Ignorable="d"
         Title="MainWindow" Name="window" Width="775">
-    <Grid DataContext="">
+    <Grid>
         <Menu x:Name="MainWindowMenu" 
               VerticalAlignment="Top" 
               FontSize="14" 
               IsTabStop="True">            
             <MenuItem Header="Files" FontSize="14">
                 <MenuItem Header="Set folder paths">
-                    <MenuItem Header="{Binding SelectedSourceFoldersPath, ElementName=window}" Name="FolderSourcePath" />
-                    <MenuItem Header="{Binding SelectedDestFoldersPath, ElementName=window}" Name="FolderDestinationPath"/>
+                    <MenuItem Header="{Binding SelectedSourceFoldersPath}" Name="FolderSourcePath" />
+                    <MenuItem Header="{Binding SelectedDestFoldersPath}" Name="FolderDestinationPath"/>
                 </MenuItem>
             </MenuItem>
-            <MenuItem Header="Controles" ItemsSource="{Binding ControlersChooserMenu.Items, ElementName=window}"/>
-            <MenuItem Header="Operations" ItemsSource="{Binding OperationsMenu.Items, ElementName=window}"/>
+            <MenuItem Header="Controles" ItemsSource="{Binding ControlersChooserMenu.Items}"/>
+            <MenuItem Header="Operations" ItemsSource="{Binding OperationsMenu.Items}"/>
             <MenuItem Header="Configuration"/>
         </Menu>
-        <ListBox HorizontalAlignment="Left" Margin="0,24,0,0" />       
+        <ListBox HorizontalAlignment="Left" Margin="0,24,0,0" />
+        <Button x:Name="MySweetButton" Content="{Binding SelectedOperation}" HorizontalAlignment="Left" Margin="346,150,0,0" VerticalAlignment="Top" Width="75" Command="{Binding ChooseControlerCommand}"/>
+
     </Grid>
 </Window>

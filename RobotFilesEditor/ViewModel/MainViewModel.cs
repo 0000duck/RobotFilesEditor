@@ -2,6 +2,7 @@
 using GalaSoft.MvvmLight.Command;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -19,39 +20,35 @@ namespace RobotFilesEditor.ViewModel
     /// See http://www.galasoft.ch/mvvm
     /// </para>
     /// </summary>
-    public class MainViewModel : ViewModelBase, INotifyPropertyChanged
+    public class MainViewModel : ViewModelBase
     {
         #region Controls
         #region MenuControls
         public MenuItem ControlersChooserMenu
         {
-            get
-            {
-                return _menuCreator?.ControlersChooserMenu;
-            }
+            get{ return _controlersChooserMenu;}
             set
             {
-                if (_menuCreator?.ControlersChooserMenu != value)
+                if (_controlersChooserMenu != value)
                 {
-                    _menuCreator.ControlersChooserMenu = value;
-                    OnPropertyChanged(nameof(_menuCreator.ControlersChooserMenu));
+                    _controlersChooserMenu = value;
+                    RaisePropertyChanged(nameof(ControlersChooserMenu));
                 }
             }
         }
         public MenuItem OperationsMenu
         {
-            get { return _menuCreator?.OperationsMenu; }
+            get { return _operationsMenu; }
             set
             {
-                if (_menuCreator?.OperationsMenu != value)
+                if (_operationsMenu != value)
                 {
-                    _menuCreator.OperationsMenu = value;
-                    OnPropertyChanged(nameof(_menuCreator.OperationsMenu));
+                    _operationsMenu = value;
+                    RaisePropertyChanged(nameof(OperationsMenu));
                 }
             }
         }
-
-        public string SelectedControler
+        public Controler SelectedControler
         {
             get { return _selectedControler; }
             set
@@ -59,7 +56,7 @@ namespace RobotFilesEditor.ViewModel
                 if (_selectedControler != value)
                 {
                     _selectedControler = value;
-                    OnPropertyChanged(nameof(SelectedControler));
+                    RaisePropertyChanged(nameof(SelectedControler));
                 }
             }
         }
@@ -71,7 +68,7 @@ namespace RobotFilesEditor.ViewModel
                 if (_selectedOperation != value)
                 {
                     _selectedOperation = value;
-                    OnPropertyChanged(nameof(SelectedOperation));
+                    RaisePropertyChanged(nameof(SelectedOperation));
                 }
             }
         }
@@ -79,21 +76,17 @@ namespace RobotFilesEditor.ViewModel
         #endregion Controls
 
         #region Commands      
-        public ICommand ChooseControlerCommand
+        public List<ICommand>ChooseControlerCommand
         {
             get;
-            internal set;
+            set;
         }
         public ICommand SelectOperationCommand
         {
             get;
-            internal set;
+            set;
         }
-        private void CreateCommands()
-        {
-            ChooseControlerCommand = new RelayCommand(SelectControler);
-            SelectOperationCommand = new RelayCommand(SelectOperation);
-        }       
+      
         #endregion Commands
 
         public List<Controler> Controlers
@@ -104,14 +97,15 @@ namespace RobotFilesEditor.ViewModel
                 if (_controlers != value)
                 {
                     _controlers = value;
-                    OnPropertyChanged(nameof(Controlers));
+                    RaisePropertyChanged(nameof(Controlers));
                 }
             }
         }
 
-        private MenuCreator _menuCreator;
         private List<Controler> _controlers;
-        private string _selectedControler;
+        private MenuItem _controlersChooserMenu;     
+        private MenuItem _operationsMenu;
+        private Controler _selectedControler;
         private string _selectedOperation;            
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -122,29 +116,105 @@ namespace RobotFilesEditor.ViewModel
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        #region ControlersChooserMenuMethodRegion
-        private void SelectControler()
+        public MainViewModel(List<Controler> controlers)
         {
+            //_menuCreator = new MenuCreator(ref controlers);
+            //ControlersChooserMenu = _menuCreator.ControlersChooserMenu;
+            //OperationsMenu = _menuCreator.OperationsMenu;
+            //InitializeComponent();      
+            SelectOperationCommand = new RelayCommand(()=>SelectControler("Działa"));
 
+            ChooseControlerCommand = new List<ICommand>();
+            Controlers = controlers;
+            CreateControlersChooserMenu();            
+        }
+
+        #region ControlersChooserMenuMethodRegion
+        public void SelectControler(string selectedControler)
+        {
+            //CreateOperationsMenu();           
+            SelectedOperation = selectedControler;
         }
         #endregion ControlersChooserMenuMethodRegion
 
         #region OperationsMenuMethodRegion
-        private void SelectOperation()
+        private void SelectOperation(string selectedOperation)
         {
 
         }
 
         #endregion OperationsMenuMenuMethodRegion
 
+        #region MenuCreator
+        private void CreateControlersChooserMenu()
+        {
+            MenuItem menuRoot = new MenuItem();
 
-        public MainViewModel(List<Controler> controlers)
-        {         
-            _menuCreator = new MenuCreator(ref controlers);
-            ControlersChooserMenu = _menuCreator.ControlersChooserMenu;
-            OperationsMenu = _menuCreator.OperationsMenu;
-            //InitializeComponent();      
+            foreach (var controler in Controlers)
+            {
+                MenuItem menuNode = new MenuItem();
+                var controlerType= controler.ContolerType;
+                menuNode.Header = controlerType;
+                menuNode.IsCheckable = false;
+                ChooseControlerCommand.Add(new RelayCommand(() => SelectControler(controlerType)));
+                menuNode.Command = ChooseControlerCommand.Last();
+                menuRoot.Items.Add(menuNode);
+            }
+            ControlersChooserMenu = menuRoot;
         }
 
+        private void CreateOperationsMenu()
+        {
+            MenuItem menuRoot = new MenuItem();
+            MenuItem menuLeaf;
+            List<MenuItem> actionsNodes = new List<MenuItem>();
+            List<FilesFilter> filters = SelectedControler.FilesFilters.OrderBy(x => x.Action).ToList();
+
+            foreach (var filter in SelectedControler.FilesFilters)
+            {
+                var actualAction = filter.Action.ToString();
+                var nodeIndex = -1;
+                var operationName = filter.OperationName;
+
+                menuLeaf = new MenuItem();
+                menuLeaf.Header = filter.OperationName;
+                menuLeaf.CommandParameter = filter.OperationName;
+                menuLeaf.Command = new RelayCommand(()=>SelectOperation(operationName));
+
+                if (actionsNodes.Exists(x => x.Header.ToString() == actualAction) == false)
+                {
+                    actionsNodes.Add(new MenuItem() { Header = filter.Action.ToString() });
+
+                    nodeIndex = actionsNodes.IndexOf(actionsNodes.Where(x => x.Header.ToString() == actualAction).FirstOrDefault());
+
+                    if (nodeIndex != -1)
+                    {
+                        menuLeaf = new MenuItem();
+                        operationName = $"All {actualAction} operations";
+                        menuLeaf.Header = operationName;
+                        menuLeaf.CommandParameter = filter.OperationName;
+                        menuLeaf.Command = new RelayCommand(()=>SelectOperation(operationName));
+
+                        actionsNodes[nodeIndex].Items.Add(menuLeaf);                        
+                        actionsNodes[nodeIndex].Items.Add(new Separator());
+                    }
+                }
+
+                if (nodeIndex < 0)
+                {
+                    nodeIndex = actionsNodes.IndexOf(actionsNodes.Where(x => x.Header.ToString() == actualAction).FirstOrDefault());
+                }
+
+                if (actionsNodes[nodeIndex] != null)
+                {
+                    actionsNodes[nodeIndex].Items.Add(menuLeaf);
+                }
+            }
+
+            actionsNodes.ForEach(x => menuRoot.Items.Add(x));
+
+            OperationsMenu = menuRoot;
+        }
+        #endregion MenuCreator
     }
 }

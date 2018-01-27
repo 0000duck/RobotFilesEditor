@@ -5,40 +5,52 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace RobotFilesEditor
 {
-    public class Controler: INotifyPropertyChanged, IFileOperations, IFileDataOperations
+    public class Controler : INotifyPropertyChanged, IFileOperations, IFileDataOperations
     {
+        #region Commands
+
+        public ICommand SelectedCommand
+        {
+            get;
+            private set;
+        }
+
+        #endregion
+
         #region Public
+
         public string ContolerType
         {
             get { return _contolerType; }
             set
             {
-                if (string.IsNullOrEmpty(value) || string.IsNullOrWhiteSpace(value))                  
+                if (string.IsNullOrEmpty(value) || string.IsNullOrWhiteSpace(value))
                 {
                     throw new ArgumentNullException(nameof(ContolerType));
                 }
 
-                if(_contolerType!=value)
+                if (_contolerType != value)
                 {
                     _contolerType = value;
                     OnPropertyChanged(nameof(_contolerType));
                 }
             }
         }
-        public List<FilesFilter>FilesFilters
+        public List<FilesFilter> FilesFilters
         {
             get { return _filesfilters; }
             set
             {
-                if(value==null)
+                if (value == null)
                 {
-                    _filesfilters=new List<FilesFilter>();
+                    _filesfilters = new List<FilesFilter>();
                 }
 
-                if(_filesfilters!=value && value!=null)
+                if (_filesfilters != value && value != null)
                 {
                     _filesfilters = value;
                     OnPropertyChanged(nameof(FilesFilters));
@@ -50,7 +62,7 @@ namespace RobotFilesEditor
             get { return _filesDataFilter; }
             set
             {
-                if(_filesDataFilter!=value)
+                if (_filesDataFilter != value)
                 {
                     _filesDataFilter = value;
                 }
@@ -61,22 +73,23 @@ namespace RobotFilesEditor
             get { return _destinationPath; }
             set
             {
-                if(string.IsNullOrEmpty(value))
+                if (string.IsNullOrEmpty(value))
                 {
                     throw new ArgumentNullException(nameof(DestinationPath));
                 }
 
-                if (_destinationPath!=value)
+                if (_destinationPath != value)
                 {
                     if (Directory.Exists(value))
                     {
                         _destinationPath = value;
                         OnPropertyChanged(nameof(DestinationPath));
-                    }else
+                    }
+                    else
                     {
                         throw new DirectoryNotFoundException($"Directory \'{value} \'not exist!");
-                    }                
-                }                     
+                    }
+                }
             }
         }
         public string SourcePath
@@ -103,10 +116,15 @@ namespace RobotFilesEditor
                 }
             }
         }
+
         #endregion Public
 
+        #region Events
+
         public event PropertyChangedEventHandler PropertyChanged;
-        
+
+        #endregion
+
         #region Private 
         private List<FilesFilter> _filesfilters;
         private List<FilesDataFilter> _filesDataFilter;
@@ -120,7 +138,7 @@ namespace RobotFilesEditor
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
-        
+
         public Controler()
         {
             FilesFilters = new List<FilesFilter>();
@@ -132,34 +150,43 @@ namespace RobotFilesEditor
             GlobalData.Action action = FilesFilters.Where(x => x.OperationName == operation).FirstOrDefault().Action;
             bool actionResult = false;
 
-            switch(action)
+            switch (action)
             {
-                case GlobalData.Action.Copy: {
-                        actionResult=CopyFile(operation);
-                    } break;               
-                case GlobalData.Action.Move: {
+                case GlobalData.Action.Copy:
+                    {
+                        actionResult = CopyFile(operation);
+                    }
+                    break;
+                case GlobalData.Action.Move:
+                    {
                         actionResult = MoveFile(operation);
-                    } break;
-                case GlobalData.Action.Remove: {
+                    }
+                    break;
+                case GlobalData.Action.Remove:
+                    {
                         actionResult = RemoveFile(operation);
-                    } break;
-                case GlobalData.Action.CopyData: {
+                    }
+                    break;
+                case GlobalData.Action.CopyData:
+                    {
                         actionResult = CopyData(operation);
-                    } break;
+                    }
+                    break;
             }
 
             return actionResult;
         }
 
-        private List<string>FiltrFiles(FilesFilter filter)
+        private List<string> FiltrFiles(FilesFilter filter)
         {
             string[] allFilesAtSourcePath = Directory.GetFiles(SourcePath);
             List<string> filteredFiles = new List<string>();
 
-            if(filter.FileExtensions.Count>0)
+            if (filter.FileExtensions.Count > 0)
             {
                 filteredFiles = allFilesAtSourcePath.Where(x => filter.FileExtensions.Contains(Path.GetExtension(x))).ToList();
-            }else
+            }
+            else
             {
                 filteredFiles = allFilesAtSourcePath.ToList();
             }
@@ -176,7 +203,7 @@ namespace RobotFilesEditor
             FilesFilter filesOrganizer = FilesFilters.Where(x => x.OperationName == operation).FirstOrDefault();
             List<string> filteredFiles = FiltrFiles(filesOrganizer);
             string destination = CreateDestinationFolder(filesOrganizer.DestinationFolder);
-            filteredFiles.ForEach(x => File.Copy(x, Path.Combine(destination, Path.GetFileName(x))));    
+            filteredFiles.ForEach(x => File.Copy(x, Path.Combine(destination, Path.GetFileName(x))));
 
             return CheckFilesCorrectness(destination, filteredFiles);
         }
@@ -197,7 +224,7 @@ namespace RobotFilesEditor
             List<string> filteredFiles = FiltrFiles(filesOrganizer);
             filteredFiles.ForEach(x => File.Delete(x));
 
-            return CheckFilesCorrectness(SourcePath, filteredFiles)==false;
+            return CheckFilesCorrectness(SourcePath, filteredFiles) == false;
         }
 
         public bool CopyData(string operation)
@@ -219,12 +246,12 @@ namespace RobotFilesEditor
         {
             throw new NotImplementedException();
         }
-        
+
         string CreateDestinationFolder(string newFolder)
         {
             string destinationPath = Path.Combine(_destinationPath, newFolder);
 
-            if(Directory.Exists(destinationPath)==false)
+            if (Directory.Exists(destinationPath) == false)
             {
                 Directory.CreateDirectory(destinationPath);
             }
@@ -232,11 +259,11 @@ namespace RobotFilesEditor
             return destinationPath;
         }
 
-        bool CheckFilesCorrectness(string path, List<string>sourceFiles)
+        bool CheckFilesCorrectness(string path, List<string> sourceFiles)
         {
-            List<string>resultFiles = Directory.GetFiles(path).ToList();
-            
-            if (sourceFiles.Exists(s=>resultFiles.Exists(r=>Path.GetFileName(r)== Path.GetFileName(s)) ==false))
+            List<string> resultFiles = Directory.GetFiles(path).ToList();
+
+            if (sourceFiles.Exists(s => resultFiles.Exists(r => Path.GetFileName(r) == Path.GetFileName(s)) == false))
             {
                 return false;
             }
@@ -246,18 +273,18 @@ namespace RobotFilesEditor
             }
         }
 
-        private List<string>LoadFiles(List<string>filesPaths)
+        private List<string> LoadFiles(List<string> filesPaths)
         {
-            List<string> filesContent=new List<string>();
+            List<string> filesContent = new List<string>();
 
-            foreach(string path in filesPaths)
+            foreach (string path in filesPaths)
             {
                 filesContent.AddRange(File.ReadAllLines(path).ToList());
             }
             return filesContent;
         }
 
-        private FilesDataFilter GetGroups(List<string>filesContent, FilesDataFilter fileDataFilter)
+        private FilesDataFilter GetGroups(List<string> filesContent, FilesDataFilter fileDataFilter)
         {
             fileDataFilter.DataFilterGroups.ForEach(x => x.SetLinesToAddToFile(filesContent));
 
@@ -270,8 +297,8 @@ namespace RobotFilesEditor
         }
 
         private void WriteData(FilesDataFilter fileDataFilter)
-        {            
-            foreach(var filter in fileDataFilter.DataFilterGroups)
+        {
+            foreach (var filter in fileDataFilter.DataFilterGroups)
             {
 
             }

@@ -15,6 +15,9 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using Microsoft.Practices.ServiceLocation;
+using System;
+using System.Collections.Generic;
+using System.Windows;
 
 namespace RobotFilesEditor.ViewModel
 {
@@ -30,6 +33,27 @@ namespace RobotFilesEditor.ViewModel
         public ViewModelLocator()
         {
             ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
+                      
+            Serializer.FilesSerialization filesSerialization;
+            List<Controler> controlers=new List<Controler>();
+
+            try
+            {
+                filesSerialization = new Serializer.FilesSerialization();
+                controlers = filesSerialization.GetControlersConfigurations();
+
+                if (controlers.Count == 0)
+                {
+                    throw new NullReferenceException("Configuration not contain any controler");
+                }               
+            }
+            catch (Exception ex)
+            {
+                MessageBoxResult ExeptionMessage = MessageBox.Show(ex.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            SimpleIoc.Default.Register<List<Controler>>(() => { return controlers; });
+                
 
             ////if (ViewModelBase.IsInDesignModeStatic)
             ////{

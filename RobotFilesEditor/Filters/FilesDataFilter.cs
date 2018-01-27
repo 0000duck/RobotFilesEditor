@@ -20,6 +20,17 @@ namespace RobotFilesEditor
                 }
             }
         }
+        public string DestinationFile
+        {
+            get { return _destinationFile; }
+            set
+            {
+                if(_destinationFile!=value)
+                {
+                    _destinationFile = value;                    
+                }
+            }
+        }
         public string FileHeader
         {
             get { return _fileHeader; }
@@ -88,6 +99,7 @@ namespace RobotFilesEditor
         }
      
         private FilesFilter _filter;
+        private string _destinationFile; //check if regex contais in Resources or make new file with this name
         private string _fileHeader;
         private string _fileFooter;
         private int _groupSpace;
