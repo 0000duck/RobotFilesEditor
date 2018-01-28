@@ -4,26 +4,76 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RobotFilesEditor"
-        DataContext="{Binding Main, Mode=OneWay, Source={StaticResource Locator}}"
+        DataContext="{Binding MainVM, Source={StaticResource Locator}}"
         mc:Ignorable="d"
         Title="MainWindow" Name="window" Width="775">
     <Grid>
-        <Menu x:Name="MainWindowMenu" 
-              VerticalAlignment="Top" 
-              FontSize="14" 
-              IsTabStop="True">            
-            <MenuItem Header="Files" FontSize="14">
-                <MenuItem Header="Set folder paths">
-                    <MenuItem Header="{Binding SelectedSourceFoldersPath}" Name="FolderSourcePath" />
-                    <MenuItem Header="{Binding SelectedDestFoldersPath}" Name="FolderDestinationPath"/>
-                </MenuItem>
-            </MenuItem>
-            <MenuItem Header="Controles" ItemsSource="{Binding ControlersChooserMenu.Items}"/>
-            <MenuItem Header="Operations" ItemsSource="{Binding OperationsMenu.Items}"/>
-            <MenuItem Header="Configuration"/>
-        </Menu>
-        <ListBox HorizontalAlignment="Left" Margin="0,24,0,0" />
-        <Button x:Name="MySweetButton" Content="{Binding SelectedOperation}" HorizontalAlignment="Left" Margin="346,150,0,0" VerticalAlignment="Top" Width="75" Command="{Binding ChooseControlerCommand}"/>
-
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Expander ExpandDirection="Left" IsExpanded="True">       
+            <GroupBox x:Name="ControlersChooserGroupBox" Header="Controlers" Margin="5" MinWidth="120" Grid.Column="0" Grid.Row="0">
+                <ItemsControl Name="ControlersChooser" VerticalAlignment="Top" ItemsSource="{Binding ControlerChooser}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <RadioButton Content="{Binding Content}" GroupName="Controlers" Command="{Binding ClickedCommand}"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </GroupBox>
+        </Expander>
+        <Expander Grid.Column="1" Grid.Row="0" IsExpanded="True">
+            <GroupBox x:Name="MoveFilesOperationsGroupBox" Header="Move files" Margin="5" MinWidth="120" >
+                <ItemsControl Name="MoveFilesOperations" VerticalAlignment="Top" ItemsSource="{Binding MoveFilesOperations, NotifyOnSourceUpdated=True}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding Content}" Command="{Binding ClickedCommand}" Margin="3" HorizontalContentAlignment="Left" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </GroupBox>
+        </Expander>
+        <Expander Grid.Column="1" Grid.Row="1" IsExpanded="True">
+            <GroupBox x:Name="Copy" Header="Copy Files" Margin="5" MinWidth="120">
+                <ItemsControl Name="CopyFilesOperationsGroupBox" VerticalAlignment="Top" ItemsSource="{Binding CopyFilesOperations}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding Content}" Command="{Binding ClickedCommand}" Margin="3" HorizontalContentAlignment="Left"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </GroupBox>
+        </Expander>
+        <Expander Grid.Column="1" Grid.Row="2" IsExpanded="True">
+            <GroupBox x:Name="CopyTextFromFilesOperationsGroupBox" Header="Copy Text From Files" Margin="5" MinWidth="120" >
+                <ItemsControl Name="CopyTextFromFilesOperations" VerticalAlignment="Top" ItemsSource="{Binding CopyTextFromFilesOperations}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding Content}" Command="{Binding ClickedCommand}" Margin="3" HorizontalContentAlignment="Left"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </GroupBox>
+        </Expander>
+        <Expander Grid.Column="1" Grid.Row="3" IsExpanded="True">
+            <GroupBox x:Name="RemoveFilesOperationsGroupBox" Header="Remove Files" Margin="5" MinWidth="120"  >
+                <ItemsControl Name="RemoveFilesOperations" VerticalAlignment="Top" ItemsSource="{Binding RemoveFilesOperations}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Content="{Binding Content}" Command="{Binding ClickedCommand}" Margin="3" HorizontalContentAlignment="Left"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </GroupBox>
+        </Expander>        
     </Grid>
 </Window>

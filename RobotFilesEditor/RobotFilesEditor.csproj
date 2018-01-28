@@ -91,6 +91,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ControlItem.cs" />
     <Compile Include="Filters\DataFilterGroup.cs" />
     <Compile Include="Filters\FilesDataFilter.cs" />
     <Compile Include="FileTree.cs" />
@@ -98,7 +99,6 @@
     <Compile Include="IControler.cs" />
     <Compile Include="IFileDataOperations.cs" />
     <Compile Include="IFileOperations.cs" />
-    <Compile Include="MenuCreator.cs" />
     <Compile Include="Serializer\SerializationObjects.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
@@ -144,7 +144,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </None>
-    <None Include="ClassDiagram1.cd" />
     <None Include="ConfigurationSchema.xsd">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

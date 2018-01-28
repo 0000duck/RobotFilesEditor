@@ -69,7 +69,7 @@ namespace RobotFilesEditor.ViewModel
             SimpleIoc.Default.Register<MainViewModel>();
         }
 
-        public MainViewModel Main
+        public MainViewModel MainVM
         {
             get
             {

@@ -30,7 +30,16 @@
                                   </xs:complexType>
                                 </xs:element>
                               </xs:sequence>
-                              <xs:attribute name="Action" type="xs:string" use="required" />
+                              <xs:attribute name="Action" type="xs:string" use="required" >
+                                <xs:simpleType>
+                                  <xs:restriction base="xs:string">
+                                    <xs:enumeration value="Move" />
+                                    <xs:enumeration value="Remove" />
+                                    <xs:enumeration value="Copy" />
+                                    <xs:enumeration value="CopyData" />
+                                  </xs:restriction>
+                                </xs:simpleType>
+                              </xs:attribute>
                               <xs:attribute name="DestinationFolder" type="xs:string" use="optional" />
                               <xs:attribute name="OperationName" type="xs:string" use="required" />
                             </xs:complexType>
