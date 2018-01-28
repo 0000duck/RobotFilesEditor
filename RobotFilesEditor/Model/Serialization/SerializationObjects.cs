@@ -13,7 +13,7 @@ namespace RobotFilesEditor.Serializer
         [XmlAttribute("DestinationPath")]
         public string DestinationPath { get; set; }
 
-        [XmlAttribute("SourcePath")]
+        [XmlAttribute("Source")]
         public string SourcePath { get; set; }
 
         [XmlArray("ContorolersArray")]

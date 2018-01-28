@@ -32,7 +32,63 @@ namespace RobotFilesEditor.ViewModel
         public ObservableCollection<ControlItem> RemoveFilesOperations
         {
             get;
-            set;
+            set;           
+        }
+
+        public string MoveFilesOperationsVisibility
+        {
+            get {
+                if (MoveFilesOperations.Count > 0)
+                {
+                    return "Visible";
+                }
+                else
+                {
+                    return "Hidden";
+                }
+            }
+        }
+        public string CopyFilesOperationsVisibility
+        {          
+            get
+            {
+                if (CopyFilesOperations.Count > 0)
+                {
+                    return "Visible";
+                }
+                else
+                {
+                    return "Hidden";
+                }
+            }
+        }
+        public string CopyTextFromFilesOperationsVisibility
+        {           
+            get
+            {
+                if (CopyTextFromFilesOperations.Count > 0)
+                {
+                    return "Visible";
+                }
+                else
+                {
+                    return "Hidden";
+                }
+            }
+        }
+        public string RemoveFilesOperationsVisibility
+        {            
+            get
+            {
+                if (RemoveFilesOperations.Count > 0)
+                {
+                    return "Visible";
+                }
+                else
+                {
+                    return "Hidden";
+                }
+            }
         }
         #endregion Controls
 
@@ -80,6 +136,8 @@ namespace RobotFilesEditor.ViewModel
         #region ControlersCreator
         private void CreateControlerChooser()
         {
+            ControlerChooser.Clear();
+
             Controlers.ForEach(controler =>
             {
                 var controlerChooserSelectorItem = new ControlItem(controler.ContolerType);
@@ -90,6 +148,11 @@ namespace RobotFilesEditor.ViewModel
 
         private void CreateOperationsControls()
         {
+            MoveFilesOperations.Clear();
+            CopyFilesOperations.Clear();
+            CopyTextFromFilesOperations.Clear();
+            RemoveFilesOperations.Clear();
+
             foreach (var filter in SelectedControler.FilesFilters)
             {
                 var controlItem = new ControlItem(filter.OperationName);
@@ -140,6 +203,7 @@ namespace RobotFilesEditor.ViewModel
 
         private void Operation_Click(object sender, ControlItem e)
         {
+
         }
     }
 }

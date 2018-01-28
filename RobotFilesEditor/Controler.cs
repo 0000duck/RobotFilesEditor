@@ -7,18 +7,8 @@ using System.Windows.Input;
 
 namespace RobotFilesEditor
 {
-    public class Controler : INotifyPropertyChanged, IFileOperations, IFileDataOperations
+    public class Controler : INotifyPropertyChanged
     {
-        #region Commands
-
-        public ICommand SelectedCommand
-        {
-            get;
-            private set;
-        }
-
-        #endregion
-
         #region Public
 
         public string ContolerType
@@ -35,34 +25,6 @@ namespace RobotFilesEditor
                 {
                     _contolerType = value;
                     OnPropertyChanged(nameof(_contolerType));
-                }
-            }
-        }
-        public List<FilesFilter> FilesFilters
-        {
-            get { return _filesfilters; }
-            set
-            {
-                if (value == null)
-                {
-                    _filesfilters = new List<FilesFilter>();
-                }
-
-                if (_filesfilters != value && value != null)
-                {
-                    _filesfilters = value;
-                    OnPropertyChanged(nameof(FilesFilters));
-                }
-            }
-        }
-        private List<FilesDataFilter> FilesDataFilter
-        {
-            get { return _filesDataFilter; }
-            set
-            {
-                if (_filesDataFilter != value)
-                {
-                    _filesDataFilter = value;
                 }
             }
         }
@@ -114,6 +76,47 @@ namespace RobotFilesEditor
                 }
             }
         }
+        public Operations Operations
+        {
+            get { return _operations; }
+            set
+            {
+                if(_operations!=value)
+                {
+                    _operations = value;
+                }
+            }
+        }
+
+        public List<FilesFilter> FilesFilters
+        {
+            get { return _filesfilters; }
+            set
+            {
+                if (value == null)
+                {
+                    _filesfilters = new List<FilesFilter>();
+                }
+
+                if (_filesfilters != value && value != null)
+                {
+                    _filesfilters = value;
+                    OnPropertyChanged(nameof(FilesFilters));
+                }
+            }
+        }
+        private List<FilesDataFilter> FilesDataFilter
+        {
+            get { return _filesDataFilter; }
+            set
+            {
+                if (_filesDataFilter != value)
+                {
+                    _filesDataFilter = value;
+                }
+            }
+        }
+       
 
         #endregion Public
 
@@ -129,6 +132,7 @@ namespace RobotFilesEditor
         private string _destinationPath;
         private string _sourcePath;
         private string _contolerType;
+        private Operations _operations;
         #endregion Private 
 
         [NotifyPropertyChangedInvocatorAttribute]

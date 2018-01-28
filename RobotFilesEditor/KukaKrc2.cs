@@ -17,7 +17,7 @@ namespace RobotFilesEditor
         //private FilesFilter _removingDataFiles;
 
         //private string _destinationPath;
-        //private string _sourcePath;
+        //private string _source;
         //private string _controlerFolder;
 
         //public KukaKrc2(string sourcePath, string destinationPath)
@@ -40,7 +40,7 @@ namespace RobotFilesEditor
         //        Directory.CreateDirectory(_destinationPath);
         //    }
 
-        //    _sourcePath = sourcePath;        
+        //    _source = sourcePath;        
         //}
 
         //#region Configuration
@@ -72,7 +72,7 @@ namespace RobotFilesEditor
 
         //    foreach(string e in extensions)
         //    {
-        //        List<string>files = Directory.GetFiles(_sourcePath, $"*{e}").ToList();
+        //        List<string>files = Directory.GetFiles(_source, $"*{e}").ToList();
 
         //        files=files.ConvertAll(x =>x=Path.GetFileName(x));
 
@@ -138,7 +138,7 @@ namespace RobotFilesEditor
         //{
         //    if(Directory.Exists(path))
         //    {
-        //        _sourcePath = path;
+        //        _source = path;
         //    }
 
         //}
@@ -149,11 +149,11 @@ namespace RobotFilesEditor
         //#region CopyFiles
         //public void MoveProductionFiles()
         //{
-        //    string []allFilesAtSourcePath= Directory.GetFiles(_sourcePath);
+        //    string []allFilesAtSourcePath= Directory.GetFiles(_source);
         //    List<string> movingFiles = new List<string>();
         //    string sPattern = @"^([a-zA-Z0-9]+_){2}[a-zA-Z0-9]+\.[a-z]+";
 
-        //    if (Directory.Exists(_sourcePath)==false || Directory.Exists(_destinationPath)==false)
+        //    if (Directory.Exists(_source)==false || Directory.Exists(_destinationPath)==false)
         //    {
         //        throw new DirectoryNotFoundException();
         //    }
@@ -203,7 +203,7 @@ namespace RobotFilesEditor
         
         //public void MoveServicesFiles()
         //{
-        //    string[] getedFiles = Directory.GetFiles(_sourcePath);
+        //    string[] getedFiles = Directory.GetFiles(_source);
         //    List<string> movingFiles = new List<string>();
         //    string sPattern = @"^A\d{2}_*\.*";
 

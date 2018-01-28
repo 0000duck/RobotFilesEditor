@@ -9,7 +9,7 @@ namespace RobotFilesEditor
     public class FilesFilter
     {
         public string OperationName
-        {
+        { 
             get { return _operationName; }
             set
             {

@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace RobotFilesEditor
 {
-    interface IFileOperations
+    public class DataOperation: Operation
     {
-        bool CopyFile(string operation);
-        bool MoveFile(string operation);
-        bool RemoveFile(string operation);
+
     }
 }

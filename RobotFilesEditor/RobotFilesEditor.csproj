@@ -91,15 +91,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ControlItem.cs" />
-    <Compile Include="Filters\DataFilterGroup.cs" />
-    <Compile Include="Filters\FilesDataFilter.cs" />
-    <Compile Include="FileTree.cs" />
-    <Compile Include="Filters\Filter.cs" />
-    <Compile Include="IControler.cs" />
-    <Compile Include="IFileDataOperations.cs" />
-    <Compile Include="IFileOperations.cs" />
-    <Compile Include="Serializer\SerializationObjects.cs" />
+    <Compile Include="Model\Operations\Operation.cs" />
+    <Compile Include="ViewModel\ControlItem.cs" />
+    <Compile Include="Model\Operations\DataOperation.cs" />
+    <Compile Include="Model\Operations\FileOperaion.cs" />
+    <Compile Include="Model\Filters\DataFilterGroup.cs" />
+    <Compile Include="Model\Filters\FilesDataFilter.cs" />
+    <Compile Include="Model\Filters\Filter.cs" />
+    <Compile Include="Model\Operations\IFileDataOperations.cs" />
+    <Compile Include="Model\Operations\IFileOperations.cs" />
+    <Compile Include="Model\Operations\Operations.cs" />
+    <Compile Include="Model\Serialization\SerializationObjects.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Page Include="MainWindow.xaml">
@@ -111,8 +113,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Controler.cs" />
-    <Compile Include="Filters\FilesFilter.cs" />
-    <Compile Include="Serializer\FilesSerialization.cs" />
+    <Compile Include="Model\Filters\FilesFilter.cs" />
+    <Compile Include="Model\Serialization\FilesSerialization.cs" />
     <Compile Include="GlobalData.cs" />
     <Compile Include="KukaKrc2.cs" />
     <Compile Include="KukaKrc4.cs" />
