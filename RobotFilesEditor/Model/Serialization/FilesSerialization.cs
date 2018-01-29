@@ -36,12 +36,11 @@ namespace RobotFilesEditor.Serializer
 
         public List<RobotFilesEditor.Controler> GetControlersConfigurations()
         {            
-            Serializer.ControlersConfiguration controlersConfiguration;
-            List<RobotFilesEditor.Controler> controlers = new List<RobotFilesEditor.Controler>();
+            ControlersConfiguration controlersConfiguration;
+            List<Controler> controlers = new List<Controler>();
             string destinationPath;
             string sourcePath;
-            RobotFilesEditor.Controler controler;
-            FilesFilter fileOrganizer;
+            Controler controler;
 
             try
             {                
@@ -60,10 +59,10 @@ namespace RobotFilesEditor.Serializer
                 sourcePath = controlersConfiguration.SourcePath;
                 destinationPath = controlersConfiguration.DestinationPath;
 
-                foreach (var controlersArray in controlersConfiguration.Contorolers)
+                foreach (var controlerXml in controlersConfiguration.Contorolers)
                 {
-                    controler = new RobotFilesEditor.Controler();
-                    var controlerType = controlersArray.ControlerType;
+                    controler = new Controler();
+                    var controlerType = controlerXml.ControlerType;
 
                     if (controlers.Exists(x => x.ContolerType == controlerType))
                     {
@@ -74,35 +73,82 @@ namespace RobotFilesEditor.Serializer
                     controler.DestinationPath = destinationPath;
                     controler.SourcePath = sourcePath;
 
-                    foreach (var files in controlersArray?.OperationFilters)
+                    foreach(var filesOperations in controlerXml?.FileOperations)
                     {
-                        fileOrganizer = new FilesFilter();
-                        var operationName = files.OperationName;
-                        GlobalData.Action action;
+                        FileOperation operation = new FileOperation();
+                        GlobalData.Action actionType;
+                        Filter filter;
+                        
 
-                        if (controler.FilesFilters.Exists(x => x.OperationName == operationName))
+                        if (Enum.TryParse(filesOperations.ActionType, out actionType))
                         {
-                            throw new ArgumentException($"Controler operation \'{operationName}\' already exists!");
+                            operation.ActionType = actionType;
                         }
-                                              
-                        fileOrganizer.OperationName = files.OperationName;
-                        if(Enum.TryParse(files.Action, out action))
+                        else
                         {
-                            fileOrganizer.Action = action;
-                        }else
-                        {
-                            throw new FormatException(nameof(files.Action));
+                            throw new FormatException(nameof(operation.ActionType));
                         }
 
-                        fileOrganizer.Filter.ContainsAtName = files.ContainsAtName;
-                        fileOrganizer.DestinationFolder = files.DestinationFolder;
-                        fileOrganizer.FileExtensions = files.FilesExtension;
-                        fileOrganizer.Filter.NotContainsAtName = files.NotContainsAtName;
-                        fileOrganizer.Filter.RegexContain = files.RegexContain;
-                        fileOrganizer.Filter.RegexNotContain = files.RegexNotContain;
+                        operation.ActionType = actionType;
+                        operation.OperationName = filesOperations.OperationName;
+                        operation.DestinationFolder = filesOperations.DestinationFolder;                        
+                        operation.Priority = filesOperations.Priority;                        
+                        operation.DestinationPath = destinationPath;
+                        operation.SourcePath = sourcePath;
+                        operation.FileExtensions = filesOperations.FilesExtensions;
+                        operation.NestedSourcePath = filesOperations.NestedSourcePath;
 
-                        controler.FilesFilters.Add(fileOrganizer);
+                        filter = new Filter();
+                        filter.ContainsAtName = filesOperations.Filter?.Contains;
+                        filter.NotContainsAtName = filesOperations.Filter?.NotContains;
+                        filter.RegexContain = filesOperations.Filter?.RegexContain;
+                        filter.RegexNotContain = filesOperations.Filter?.RegexNotContain;
+
+                        operation.Filter = filter;
+
+                        controler.Operations.FilesOperations.Add(operation);
                     }
+
+                    foreach (var filesOperations in controlerXml?.DataOperations)
+                    {
+                        DataOperation operation = new DataOperation();
+                        GlobalData.Action actionType;
+                        Filter filter;
+
+
+                        if (Enum.TryParse(filesOperations.ActionType, out actionType))
+                        {
+                            operation.ActionType = actionType;
+                        }
+                        else
+                        {
+                            throw new FormatException(nameof(operation.ActionType));
+                        }
+
+                        operation.OperationName = filesOperations.FileOperationName;
+                        operation.DestinationFile = filesOperations.DestinationFile;
+                        operation.ActionType = actionType;
+                        operation.Priority = filesOperations.Priority;
+
+                        filter = new Filter();
+                        filter.ContainsAtName = filesOperations.Filter.Contains;
+                        filter.NotContainsAtName = filesOperations.Filter.NotContains;
+                        filter.RegexContain = filesOperations.Filter.RegexContain;
+                        filter.RegexNotContain = filesOperations.Filter.RegexNotContain;
+                        operation.Filter = filter;
+
+                        operation.FileHeader = filesOperations.FileHeader;
+                        operation.FileFooter = filesOperations.FileFooter;
+                        operation.GroupSpace = filesOperations.GroupSpace;
+                        operation.WriteStart = filesOperations.WriteStart;
+                        operation.WriteStop = filesOperations.WriteStop;
+                       
+                        operation.DestinationPath = destinationPath;
+                        operation.SourcePath = sourcePath;                    
+
+                        controler.Operations.DataOperations.Add(operation);
+                    }
+
                     controlers.Add(controler);
                 }
             }

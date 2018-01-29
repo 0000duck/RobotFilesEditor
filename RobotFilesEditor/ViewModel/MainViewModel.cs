@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Collections.ObjectModel;
+using System.IO;
 
 namespace RobotFilesEditor.ViewModel
 {
@@ -90,6 +91,31 @@ namespace RobotFilesEditor.ViewModel
                 }
             }
         }
+
+        public string SourcePath
+        {
+            get { return _sourcePath; }
+            set
+            {
+                if (Directory.Exists(value) && _sourcePath != value)
+                {
+                    _sourcePath = value;
+                    RaisePropertyChanged(nameof(SourcePath));
+                }
+            }
+        }
+        public string DestinationPath
+        {
+            get { return _destinationPath; }
+            set
+            {             
+                if(Directory.Exists(value) && _destinationPath != value)
+                {
+                    _destinationPath = value;
+                    RaisePropertyChanged(nameof(DestinationPath));
+                }              
+            }
+        }
         #endregion Controls
 
         public Controler SelectedControler
@@ -119,7 +145,8 @@ namespace RobotFilesEditor.ViewModel
                
         private List<Controler> _controlers;
         private Controler _selectedControler;
-        private string _selectedOperation;
+        private string _sourcePath;
+        private string _destinationPath;
 
         public MainViewModel(List<Controler> controlers)
         {
@@ -130,6 +157,8 @@ namespace RobotFilesEditor.ViewModel
             RemoveFilesOperations = new ObservableCollection<ControlItem>();
 
             Controlers = controlers;
+            SourcePath = Controlers.FirstOrDefault().SourcePath;
+            DestinationPath = Controlers.FirstOrDefault().DestinationPath;
             CreateControlerChooser();
         }
 
@@ -152,13 +181,14 @@ namespace RobotFilesEditor.ViewModel
             CopyFilesOperations.Clear();
             CopyTextFromFilesOperations.Clear();
             RemoveFilesOperations.Clear();
+            List<string> operations = new List<string>();           
 
-            foreach (var filter in SelectedControler.FilesFilters)
+            foreach (var filter in SelectedControler.Operations.FilesOperations)
             {
                 var controlItem = new ControlItem(filter.OperationName);
                 controlItem.ControlItemSelected += Operation_Click;
 
-                switch (filter.Action)
+                switch (filter.ActionType)
                 {
                     case GlobalData.Action.Move:
                         {                           
@@ -181,7 +211,17 @@ namespace RobotFilesEditor.ViewModel
                         }
                         break;
                 }
-            }           
+            }
+
+            MoveFilesOperations.Distinct();
+            CopyFilesOperations.Distinct();
+            CopyTextFromFilesOperations.Distinct();
+            RemoveFilesOperations.Distinct();
+
+            RaisePropertyChanged(nameof(MoveFilesOperationsVisibility));
+            RaisePropertyChanged(nameof(CopyFilesOperationsVisibility));
+            RaisePropertyChanged(nameof(CopyTextFromFilesOperationsVisibility));
+            RaisePropertyChanged(nameof(RemoveFilesOperationsVisibility));
         }
 
         public void Dispose()
@@ -203,7 +243,15 @@ namespace RobotFilesEditor.ViewModel
 
         private void Operation_Click(object sender, ControlItem e)
         {
+            SelectedControler.Operations.FollowOperation(e.Content);
+        }
 
+        void SelectSourcePath()
+        {
+            using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
+            {
+                System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+            }
         }
     }
 }

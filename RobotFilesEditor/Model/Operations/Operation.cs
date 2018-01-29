@@ -26,7 +26,7 @@ namespace RobotFilesEditor
                 }
             }
         }
-        public GlobalData.Action Action
+        public GlobalData.Action ActionType
         {
             get { return _action; }
             set
@@ -53,26 +53,53 @@ namespace RobotFilesEditor
                 }
             }
         }
-        public string Source
+        public string SourcePath
         {
-            get { return _source; }
+            get { return _sourcePath; }
             set
             {
                 if (string.IsNullOrEmpty(value))
                 {
-                    throw new ArgumentNullException(nameof(Source));
+                    throw new ArgumentNullException(nameof(SourcePath));
                 }
 
-                if (_source != value)
+                if (_sourcePath != value)
                 {
                     if (Directory.Exists(value))
                     {
-                        _source = value;
+                        _sourcePath = value;
                     }
                     else
                     {
                         throw new DirectoryNotFoundException($"Source: \'{value} \'not exist!");
                     }
+                }
+            }
+        }
+        public string DestinationPath
+        {
+            get { return _destinationPath; }
+            set
+            {
+                if (value == null)
+                {
+                    _destinationPath = string.Empty;
+                }
+
+                if (_destinationPath != value)
+                {
+                    _destinationPath = value;
+                }
+            }
+        }
+        public int Priority
+        {
+            get { return _priority; }
+            set
+            {
+                if (_priority != value)
+                {
+                    _priority = value;
                 }
             }
         }
@@ -82,7 +109,9 @@ namespace RobotFilesEditor
         protected string _operationName;
         protected GlobalData.Action _action;
         protected string _destinationFolder;
-        protected string _source;
+        protected string _sourcePath;
+        protected string _destinationPath;
+        protected int _priority;
         #endregion Private      
 
         public void FollowOperation()

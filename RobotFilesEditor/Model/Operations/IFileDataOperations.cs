@@ -8,8 +8,8 @@ namespace RobotFilesEditor
 {
     interface IFileDataOperations
     {
-        bool CopyData(string operation);
-        bool CutData(string operation);
-        bool CreateNewFileFromData(string operation);
+        bool CopyData();
+        bool CutData();
+        bool CreateNewFileFromData();
     }
 }

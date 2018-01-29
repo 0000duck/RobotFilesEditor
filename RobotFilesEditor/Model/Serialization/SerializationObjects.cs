@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
 
 namespace RobotFilesEditor.Serializer
@@ -13,29 +11,33 @@ namespace RobotFilesEditor.Serializer
         [XmlAttribute("DestinationPath")]
         public string DestinationPath { get; set; }
 
-        [XmlAttribute("Source")]
+        [XmlAttribute("SourcePath")]
         public string SourcePath { get; set; }
 
         [XmlArray("ContorolersArray")]
         [XmlArrayItem("Controler")]
-        public List<SingleControler> Contorolers { get; set; }
+        public List<XmlControler> Contorolers { get; set; }
     }
 
     [Serializable]
     [XmlRoot("ControlersConfiguration")]
-    public class SingleControler
+    public class XmlControler
     {
         [XmlAttribute("ControlerType")]
         public string ControlerType { get; set; }
-
-        [XmlArray("OperationFiltersArray")]
-        [XmlArrayItem("OperationFilter")]
-        public List<OperationFilter> OperationFilters { get; set; }
+                
+        [XmlArray("FileOperationsArray")]
+        [XmlArrayItem("FileOperation")]
+        public List<XmlFileOperation> FileOperations { get; set; }
+                
+        [XmlArray("DataOperationsArray")]
+        [XmlArrayItem("DataOperation")]
+        public List<XmlDataOperation> DataOperations { get; set; }
     }
 
     [Serializable]
     [XmlRoot("ControlersConfiguration")]
-    public class OperationFilter
+    public class XmlFileOperation
     {
         [XmlAttribute("OperationName")]
         public string OperationName { get; set; }
@@ -43,28 +45,75 @@ namespace RobotFilesEditor.Serializer
         [XmlAttribute("DestinationFolder")]
         public string DestinationFolder { get; set; }
 
-        [XmlAttribute("Action")]
-        public string Action { get; set; }
+        [XmlAttribute("ActionType")]
+        public string ActionType { get; set; }
 
+        [XmlAttribute("Priority")]
+        public int Priority { get; set; }
+               
+        [XmlElement("Filter")]
+        public XmlFilter Filter { get; set; }
 
-        [XmlArray("FilesExtensionsArray")]
+        [XmlArray("FilesExtensionArray")]
         [XmlArrayItem("FilesExtension")]
-        public List<string> FilesExtension { get; set; }
+        public List<string> FilesExtensions;
 
-        [XmlArray("ContainsAtNameArray")]
-        [XmlArrayItem("ContainsAtName")]
-        public List<string> ContainsAtName { get; set; }
+        [XmlAttribute("NestedSourcePath")]
+        public bool NestedSourcePath { get; set; }
+    }
 
-        [XmlArray("NotContainsAtNameArray")]
-        [XmlArrayItem("NotContainsAtName")]
-        public List<string> NotContainsAtName { get; set; }
+    [Serializable]
+    [XmlRoot("ControlersConfiguration")]
+    public class XmlDataOperation
+    {
+        [XmlAttribute("FileOperationName")]
+        public string FileOperationName { get; set; }
 
+        [XmlAttribute("DestinationFile")]
+        public string DestinationFile { get; set; }
 
+        [XmlAttribute("ActionType")]
+        public string ActionType { get; set; }
+
+        [XmlAttribute("Priority")]
+        public int Priority { get; set; }
+
+        [XmlElement("Filter")]
+        public XmlFilter Filter { get; set; }
+
+        [XmlAttribute("FileHeader")]
+        public string FileHeader { get; set; }
+
+        [XmlAttribute("FileFooter")]
+        public string FileFooter { get; set; }
+
+        [XmlAttribute("GroupSpace")]
+        public int GroupSpace { get; set; }
+
+        [XmlAttribute("WriteStart")]
+        public string WriteStart { get; set; }
+
+        [XmlAttribute("WriteStop")]
+        public string WriteStop { get; set; }
+    }
+
+    [Serializable]
+    [XmlRoot("ControlersConfiguration")]
+    public class XmlFilter
+    {
         [XmlAttribute("RegexContain")]
         public string RegexContain { get; set; }
 
         [XmlAttribute("RegexNotContain")]
         public string RegexNotContain { get; set; }
-    }
+
+        [XmlArray("ContainArray")]
+        [XmlArrayItem("Contain")]
+        public List<string> Contains { get; set; }
+
+        [XmlArray("NotContainArray")]
+        [XmlArrayItem("NotContain")]
+        public List<string> NotContains { get; set; }      
+    }  
 }
 

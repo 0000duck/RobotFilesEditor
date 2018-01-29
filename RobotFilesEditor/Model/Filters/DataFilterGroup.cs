@@ -83,10 +83,16 @@ namespace RobotFilesEditor
         private Filter _filter;
         private List<string> _linesToAddToFile;
 
+        public DataFilterGroup()
+        {
+            Filter = new Filter();
+            LinesToAddToFile = new List<string>();
+        }
+
         public List<string>CkeckAllFilters(List<string>listToCheck)
         {
-            listToCheck = Filter.FilterContainsAtName(listToCheck);
-            listToCheck = Filter.FilterNotContainsAtName(listToCheck);
+            listToCheck = Filter.FilterContains(listToCheck);
+            listToCheck = Filter.FilterNotContains(listToCheck);
             listToCheck = Filter.FilterRegexContain(listToCheck);
             listToCheck = Filter.FilterRegexNotContain(listToCheck);
 
@@ -133,6 +139,11 @@ namespace RobotFilesEditor
             }
 
             return Buffor;
+        }
+
+        public static implicit operator List<object>(DataFilterGroup v)
+        {
+            throw new NotImplementedException();
         }
     }
 }

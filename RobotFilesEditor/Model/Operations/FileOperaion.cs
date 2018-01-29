@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RobotFilesEditor
 {
-    public class FileOperaion: Operation, IFileOperations
+    public class FileOperation: Operation, IFileOperations
     {
         #region Public
         public Filter Filter
@@ -30,17 +29,29 @@ namespace RobotFilesEditor
                     _fileExtensions = value;
                 }
             }
+        }     
+        public bool NestedSourcePath
+        {
+            get { return _nestedSourcePath; }
+            set
+            {
+                if(_nestedSourcePath != value)
+                {
+                    _nestedSourcePath = value;
+                }
+            }
         }
+
         #endregion Public
 
         #region Private
-        public List<string> _fileExtensions;
-        public Filter _filter;
+        private List<string> _fileExtensions;
+        private Filter _filter;       
         #endregion Private
 
         public new void FollowOperation()
         {
-            switch (Action)
+            switch (ActionType)
             {
                 case GlobalData.Action.Copy:
                     {
@@ -59,23 +70,77 @@ namespace RobotFilesEditor
                     break;
             }
         }
+        private List<string> FiltrFiles()
+        {
+            string[] allFilesAtSourcePath = Directory.GetFiles(SourcePath);
+            List<string> filteredFiles = new List<string>();
+
+            if (FileExtensions.Count > 0)
+            {
+                filteredFiles = allFilesAtSourcePath.Where(x => FileExtensions.Contains(Path.GetExtension(x))).ToList();
+            }
+            else
+            {
+                filteredFiles = allFilesAtSourcePath.ToList();
+            }
+
+            filteredFiles = Filter.CheckAllFilesFilters(filteredFiles);
+
+            return filteredFiles;
+        }
+        private bool _nestedSourcePath;
 
         public bool CopyFile()
         {
-            throw new NotImplementedException();
+            List<string> filteredFiles = FiltrFiles();
+            string destination = CreateDestinationFolder();
+            filteredFiles.ForEach(x => File.Copy(x, Path.Combine(destination, Path.GetFileName(x))));
+
+            return CheckFilesCorrectness(destination, filteredFiles);
         }
 
         public bool MoveFile()
-        {
-            throw new NotImplementedException();
+        {          
+            List<string> filteredFiles = FiltrFiles();
+            string destination = CreateDestinationFolder();
+            filteredFiles.ForEach(x => File.Move(x, Path.Combine(destination, Path.GetFileName(x))));
+
+            return CheckFilesCorrectness(destination, filteredFiles);
         }
 
         public bool RemoveFile()
         {
-            throw new NotImplementedException();
-        }
-       
+            List<string> filteredFiles = FiltrFiles();
+            filteredFiles.ForEach(x => File.Delete(x));
 
+            return CheckFilesCorrectness(SourcePath, filteredFiles) == false;
+        }
+
+        string CreateDestinationFolder()
+        {
+            string destination = Path.Combine(DestinationPath, DestinationFolder);
+
+            if (Directory.Exists(destination) == false)
+            {
+                Directory.CreateDirectory(destination);
+            }
+
+            return destination;
+        }
+
+        bool CheckFilesCorrectness(string path, List<string> sourceFiles)
+        {
+            List<string> resultFiles = Directory.GetFiles(path).ToList();
+
+            if (sourceFiles.Exists(s => resultFiles.Exists(r => Path.GetFileName(r) == Path.GetFileName(s)) == false))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
 
     }
 }
