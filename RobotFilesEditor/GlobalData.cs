@@ -9,7 +9,7 @@ namespace RobotFilesEditor
     public class GlobalData
     {
         public const string ConfigurationFileName = "Application.config";       
-        public enum Action {None, Move, Remove, Copy, CopyData}
+        public enum Action {None, Move, Remove, Copy, CopyData, MoveData, RemoveData}
         public GlobalData()
         { }
 

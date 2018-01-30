@@ -4,6 +4,8 @@ using System.Linq;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Windows.Input;
+using GalaSoft.MvvmLight.Command;
 
 namespace RobotFilesEditor.ViewModel
 {
@@ -100,7 +102,11 @@ namespace RobotFilesEditor.ViewModel
                 if (Directory.Exists(value) && _sourcePath != value)
                 {
                     _sourcePath = value;
-                    RaisePropertyChanged(nameof(SourcePath));
+                    RaisePropertyChanged(nameof(SourcePath));  
+                    if(SelectedControler!=null)
+                    {
+                        SelectedControler.SourcePath = SourcePath;
+                    }                    
                 }
             }
         }
@@ -113,6 +119,11 @@ namespace RobotFilesEditor.ViewModel
                 {
                     _destinationPath = value;
                     RaisePropertyChanged(nameof(DestinationPath));
+                    if (SelectedControler != null)
+                    {
+                        SelectedControler.DestinationPath = DestinationPath;
+                    }
+                    
                 }              
             }
         }
@@ -127,6 +138,14 @@ namespace RobotFilesEditor.ViewModel
                 {
                     _selectedControler = value;
                     RaisePropertyChanged(nameof(SelectedControler));
+                    if(SelectedControler?.SourcePath!=SourcePath)
+                    {
+                        SelectedControler.SourcePath = SourcePath;
+                    }
+                    if(SelectedControler?.DestinationPath!=DestinationPath)
+                    {
+                        SelectedControler.DestinationPath = DestinationPath;
+                    }                    
                 }
             }
         }
@@ -159,6 +178,7 @@ namespace RobotFilesEditor.ViewModel
             Controlers = controlers;
             SourcePath = Controlers.FirstOrDefault().SourcePath;
             DestinationPath = Controlers.FirstOrDefault().DestinationPath;
+            SetCommands();
             CreateControlerChooser();
         }
 
@@ -186,7 +206,7 @@ namespace RobotFilesEditor.ViewModel
             foreach (var filter in SelectedControler.Operations.FilesOperations)
             {
                 var controlItem = new ControlItem(filter.OperationName);
-                controlItem.ControlItemSelected += Operation_Click;
+                controlItem.ControlItemSelected += OperationCommandExecute;
 
                 switch (filter.ActionType)
                 {
@@ -227,13 +247,24 @@ namespace RobotFilesEditor.ViewModel
         public void Dispose()
         {
             ControlerChooser?.ToList().ForEach(item => item.ControlItemSelected -= ControlerChooser_Click);
-            MoveFilesOperations?.ToList().ForEach(item => item.ControlItemSelected -= Operation_Click);
-            CopyFilesOperations?.ToList().ForEach(item => item.ControlItemSelected -= Operation_Click);
-            CopyTextFromFilesOperations?.ToList().ForEach(item => item.ControlItemSelected -= Operation_Click);
-            RemoveFilesOperations?.ToList().ForEach(item => item.ControlItemSelected -= Operation_Click);
+            MoveFilesOperations?.ToList().ForEach(item => item.ControlItemSelected -= OperationCommandExecute);
+            CopyFilesOperations?.ToList().ForEach(item => item.ControlItemSelected -= OperationCommandExecute);
+            CopyTextFromFilesOperations?.ToList().ForEach(item => item.ControlItemSelected -= OperationCommandExecute);
+            RemoveFilesOperations?.ToList().ForEach(item => item.ControlItemSelected -= OperationCommandExecute);
         }
 
         #endregion ControlersCreator
+
+        #region Command
+        public ICommand SetSourcePathCommand { get; set; }
+        public ICommand SetDestinationPathCommand { get; set; }
+
+        private void SetCommands()
+        {
+            SetSourcePathCommand = new RelayCommand(SetSourcePathCommandExecute);
+            SetDestinationPathCommand = new RelayCommand(SetDestinationPathCommandExecute);
+        }
+        #endregion Command
 
         private void ControlerChooser_Click(object sender, ControlItem e)
         {
@@ -241,17 +272,34 @@ namespace RobotFilesEditor.ViewModel
             CreateOperationsControls();
         }
 
-        private void Operation_Click(object sender, ControlItem e)
+        private void OperationCommandExecute(object sender, ControlItem e)
         {
             SelectedControler.Operations.FollowOperation(e.Content);
         }
 
-        void SelectSourcePath()
+        private void SetSourcePathCommandExecute()
         {
-            using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
+            SourcePath = SetPath(SourcePath);
+        }
+
+        private void SetDestinationPathCommandExecute()
+        {
+            DestinationPath=SetPath(DestinationPath);
+        }
+
+        private string SetPath(string path)
+        {
+            using (var folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog())
             {
-                System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+                folderBrowserDialog.SelectedPath = path;
+                System.Windows.Forms.DialogResult result = folderBrowserDialog.ShowDialog();
+                if (result == System.Windows.Forms.DialogResult.OK)
+                {
+                    path = folderBrowserDialog.SelectedPath;
+                }
             }
+
+            return path;
         }
     }
 }

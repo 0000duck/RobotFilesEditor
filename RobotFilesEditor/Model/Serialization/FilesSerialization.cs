@@ -11,9 +11,9 @@ namespace RobotFilesEditor.Serializer
         public FilesSerialization()
         {}
 
-        public ControlersConfiguration ReadAplicationConfiguration()
+        public XmlControlersConfiguration ReadAplicationConfiguration()
         {            
-            ControlersConfiguration controlerConfiguration;
+            XmlControlersConfiguration controlerConfiguration;
 
             if (String.IsNullOrEmpty(GlobalData.ConfigurationFileName))
             {
@@ -22,10 +22,10 @@ namespace RobotFilesEditor.Serializer
 
             try
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(ControlersConfiguration));
+                XmlSerializer serializer = new XmlSerializer(typeof(XmlControlersConfiguration));
                 FileStream fileStream = new FileStream(GlobalData.ConfigurationFileName, FileMode.Open);
                 XmlReader reader = XmlReader.Create(fileStream); 
-                controlerConfiguration = (ControlersConfiguration)serializer.Deserialize(reader);
+                controlerConfiguration = (XmlControlersConfiguration)serializer.Deserialize(reader);
                 fileStream.Close();                
             }catch(Exception ex)
             {
@@ -36,7 +36,7 @@ namespace RobotFilesEditor.Serializer
 
         public List<RobotFilesEditor.Controler> GetControlersConfigurations()
         {            
-            ControlersConfiguration controlersConfiguration;
+            XmlControlersConfiguration controlersConfiguration;
             List<Controler> controlers = new List<Controler>();
             string destinationPath;
             string sourcePath;
@@ -114,6 +114,7 @@ namespace RobotFilesEditor.Serializer
                         DataOperation operation = new DataOperation();
                         GlobalData.Action actionType;
                         Filter filter;
+                        DataFilterGroup dataFilterGroup;
 
 
                         if (Enum.TryParse(filesOperations.ActionType, out actionType))
@@ -126,29 +127,36 @@ namespace RobotFilesEditor.Serializer
                         }
 
                         operation.OperationName = filesOperations.FileOperationName;
-                        operation.DestinationFile = filesOperations.DestinationFile;
+                        operation.DestinationFilePath = filesOperations.DestinationFile;
                         operation.ActionType = actionType;
                         operation.Priority = filesOperations.Priority;
-
-                        filter = new Filter();
-                        filter.ContainsAtName = filesOperations.Filter.Contains;
-                        filter.NotContainsAtName = filesOperations.Filter.NotContains;
-                        filter.RegexContain = filesOperations.Filter.RegexContain;
-                        filter.RegexNotContain = filesOperations.Filter.RegexNotContain;
-                        operation.Filter = filter;
-
                         operation.FileHeader = filesOperations.FileHeader;
                         operation.FileFooter = filesOperations.FileFooter;
                         operation.GroupSpace = filesOperations.GroupSpace;
                         operation.WriteStart = filesOperations.WriteStart;
                         operation.WriteStop = filesOperations.WriteStop;
-                       
                         operation.DestinationPath = destinationPath;
-                        operation.SourcePath = sourcePath;                    
+                        operation.SourcePath = sourcePath;
 
+                        foreach(XmlDataFilterGroup filterGroup in filesOperations.DataFilterGroups)
+                        {
+                            dataFilterGroup = new DataFilterGroup();
+
+                            dataFilterGroup.Header = filterGroup.GroupHeader;
+                            dataFilterGroup.Footer = filterGroup.GroupFooter;
+                            dataFilterGroup.SpaceBefor = filterGroup.SpaceBeforGroup;
+                            dataFilterGroup.SpaceAfter = filterGroup.SpaceAfterGroup;
+
+                            filter = new Filter();
+                            filter.ContainsAtName = filterGroup.Filter.Contains;
+                            filter.NotContainsAtName = filterGroup.Filter.NotContains;
+                            filter.RegexContain = filterGroup.Filter.RegexContain;
+                            filter.RegexNotContain = filterGroup.Filter.RegexNotContain;
+                            dataFilterGroup.Filter = filter;
+                            operation.DataFilterGroups.Add(dataFilterGroup);
+                        }
                         controler.Operations.DataOperations.Add(operation);
                     }
-
                     controlers.Add(controler);
                 }
             }

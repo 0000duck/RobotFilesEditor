@@ -41,16 +41,18 @@ namespace RobotFilesEditor
                 }
             }
         }
-
         #endregion Public
 
         #region Private
         private List<string> _fileExtensions;
-        private Filter _filter;       
+        private Filter _filter;
+        private bool _nestedSourcePath;
         #endregion Private
 
-        public new void FollowOperation()
+        public List<string> FollowOperation()
         {
+            List<string> result = new List<string>();
+
             switch (ActionType)
             {
                 case GlobalData.Action.Copy:
@@ -68,8 +70,14 @@ namespace RobotFilesEditor
                         RemoveFile();
                     }
                     break;
+                case GlobalData.Action.CopyData:
+                    {
+                        result = FiltrFiles();
+                    }break;              
             }
+            return result;
         }
+
         private List<string> FiltrFiles()
         {
             string[] allFilesAtSourcePath = Directory.GetFiles(SourcePath);
@@ -88,7 +96,7 @@ namespace RobotFilesEditor
 
             return filteredFiles;
         }
-        private bool _nestedSourcePath;
+       
 
         public bool CopyFile()
         {
@@ -141,6 +149,8 @@ namespace RobotFilesEditor
                 return true;
             }
         }
+
+       
 
     }
 }

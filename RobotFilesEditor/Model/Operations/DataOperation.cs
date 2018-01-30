@@ -31,14 +31,25 @@ namespace RobotFilesEditor
                 }
             }
         }
-        public string DestinationFile
+        public string DestinationFilePath
         {
-            get { return _destinationFile; }
+            get { return _destinationFilePath; }
             set
             {
-                if (_destinationFile != value)
+                if (_destinationFilePath != value)
                 {
-                    _destinationFile = value;
+                    _destinationFilePath = value;
+                }
+            }
+        }
+        public string DestinationFileSource
+        {
+            get { return _destinationFileSource; }
+            set
+            {
+                if (_destinationFileSource != value)
+                {
+                    _destinationFileSource = value;
                 }
             }
         }
@@ -99,13 +110,42 @@ namespace RobotFilesEditor
         }       
 
         private Filter _filter;
-        private string _destinationFile; //check if regex contais in Resources or make new file with this name
+        private string _destinationFilePath; //check if regex contais in Resources or make new file with this name
+        private string _destinationFileSource;
         private string _fileHeader;
         private string _fileFooter;
         private int _groupSpace;
         private string _writeStart;
         private string _writeStop;
         private List<DataFilterGroup> _dataFilterGroups;
+        private List<string> _filesToPrepare;
+
+        public void FollowOperation(List<string>filesToPrepare)
+        {
+            if(filesToPrepare?.Count>0)
+            {
+                _filesToPrepare = filesToPrepare;
+            }
+
+            switch (ActionType)
+            {               
+                case GlobalData.Action.CopyData:
+                    {
+                        CopyData();
+                    }
+                    break;
+                case GlobalData.Action.MoveData:
+                    {
+                        CutData();
+                    }
+                    break;
+                case GlobalData.Action.RemoveData:
+                    {
+
+                    }
+                    break;
+            }
+        }
 
         public DataOperation()
         {
@@ -114,43 +154,170 @@ namespace RobotFilesEditor
 
         public bool CopyData()
         {
+            List<string>filesContent=LoadFilesContent();
+            FiltrContentOnGroups(filesContent);
+            DataFilterGroups.ForEach(x => x.PrepareGroupToWrite());
+            string destinationFile=GetDestinationFile();
+            string fileContent = PreparedDataToWrite();
+            WriteTextToFile(destinationFile, fileContent);
             return false;
         }
         public bool CutData()
         {
             throw new NotImplementedException();
         }
+
         public bool CreateNewFileFromData()
         {
             throw new NotImplementedException();
         }
-        private void CreateDestinationFile()
-        {
 
-        }
-        private void WriteData(FilesDataFilter fileDataFilter)
+        private string GetDestinationFile()
         {
-            foreach (var filter in fileDataFilter.DataFilterGroups)
+            string destinationFilePath="";
+
+            string[] files = Directory.GetFileSystemEntries(@"...\Resource\");
+
+            string destinationFile =files.FirstOrDefault(x => System.Text.RegularExpressions.Regex.IsMatch(x, DestinationFileSource));
+
+            if (string.IsNullOrEmpty(destinationFile)==false)
             {
+                File.Copy(destinationFile, Path.Combine(DestinationFilePath, Path.GetFileName(destinationFile)));
+                return Path.Combine(DestinationFilePath, Path.GetFileName(destinationFile));
+            }else
+            {
+                if (DestinationFileSource.IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) != -1)
+                {
+                    throw new FileFormatException(nameof(DestinationFileSource));
+                }
+                else
+                {
+                    destinationFilePath = Path.Combine(DestinationFilePath, Path.GetFileName(DestinationFileSource));
+                    File.Create(destinationFile);
 
-            }
+                    return destinationFilePath;
+                }
+            }            
         }
-        private List<string> LoadFiles(List<string> filesPaths)
+
+        private string PreparedDataToWrite()
+        {
+            string Buffor = "";
+
+            foreach (var filter in DataFilterGroups)
+            {
+                if (filter.LinesToAddToFile.Count > 0)
+                {
+                    using (StreamWriter sw = File.CreateText(""))
+                    {
+                        if (string.IsNullOrEmpty(FileHeader) == false)
+                        {
+                            sw.WriteLine(FileHeader);
+                        }
+
+                        filter.PrepareGroupToWrite();
+
+                        if (string.IsNullOrEmpty(FileFooter) == false)
+                        {
+                            sw.WriteLine(FileFooter);
+                        }
+
+                        for (int i = 0; i < GroupSpace; i++)
+                        {
+                            sw.WriteLine();
+                        }
+
+                        Buffor = sw.ToString();
+                    }
+                }
+           }
+                return Buffor;           
+        }
+        private List<string> LoadFilesContent()
         {
             List<string> filesContent = new List<string>();
 
-            foreach (string path in filesPaths)
+            foreach (string path in _filesToPrepare)
             {
                 filesContent.AddRange(File.ReadAllLines(path).ToList());
             }
             return filesContent;
         }
-        private FilesDataFilter GetGroups(List<string> filesContent, FilesDataFilter fileDataFilter)
+        private void FiltrContentOnGroups(List<string>filesContent)
         {
-            fileDataFilter.DataFilterGroups.ForEach(x => x.SetLinesToAddToFile(filesContent));
-
-            return fileDataFilter;
+           DataFilterGroups.ForEach(x => x.SetLinesToAddToFile(filesContent));            
         }
+
+        private bool WriteTextToFile(string filePath, string fileContet)
+        {
+            List<string> destinationFile = File.ReadAllLines(filePath).ToList();
+            bool writed = false;
+
+            if(destinationFile?.Count>0)
+            {               
+                if (string.IsNullOrEmpty(WriteStart) == false)
+                {
+                    
+                        using (StreamWriter fileStream = new StreamWriter(filePath))
+                        {
+                            foreach (string line in destinationFile)
+                            {
+                                if (line.Contains(WriteStart))
+                                {
+                                    fileStream.WriteLine(line);
+                                    fileStream.Write(fileContet);
+                                    writed = true;
+                                }
+                                else
+                                {
+                                    fileStream.WriteLine(line);
+                                }
+                            }
+
+                            if(writed!=true)
+                            {
+                                fileStream.Write(fileContet);
+                            }
+                        }                   
+                }
+                else
+                {
+                    if (string.IsNullOrEmpty(WriteStop))
+                    {
+                        using (StreamWriter fileStream = new StreamWriter(filePath))
+                        {
+                            foreach (string line in destinationFile)
+                            {
+                                if (line.Contains(WriteStop))
+                                {
+                                    fileStream.Write(fileContet);
+                                    fileStream.WriteLine(line);
+                                    writed = true;
+                                }
+                                else
+                                {
+                                    fileStream.WriteLine(line);
+                                }
+                            }
+
+                            if (writed != true)
+                            {
+                                fileStream.Write(fileContet);
+                            }
+                        }
+                    }
+                }
+            }else
+            {
+                using (StreamWriter fileStream = new StreamWriter(filePath))
+                {
+                    fileStream.Write(fileContet);
+                }
+            }          
+
+            return true;
+        }
+
         public bool CutData(string operation)
         {
             throw new NotImplementedException();

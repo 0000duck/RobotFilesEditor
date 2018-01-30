@@ -5,8 +5,8 @@ using System.Xml.Serialization;
 namespace RobotFilesEditor.Serializer
 {
     [Serializable]
-    [XmlRoot("ControlersConfiguration", Namespace = "RobotFilesEditor")]
-    public class ControlersConfiguration
+    [XmlRoot("XmlControlersConfiguration", Namespace = "RobotFilesEditor")]
+    public class XmlControlersConfiguration
     {
         [XmlAttribute("DestinationPath")]
         public string DestinationPath { get; set; }
@@ -20,7 +20,7 @@ namespace RobotFilesEditor.Serializer
     }
 
     [Serializable]
-    [XmlRoot("ControlersConfiguration")]
+    [XmlRoot("XmlControlersConfiguration")]
     public class XmlControler
     {
         [XmlAttribute("ControlerType")]
@@ -36,7 +36,7 @@ namespace RobotFilesEditor.Serializer
     }
 
     [Serializable]
-    [XmlRoot("ControlersConfiguration")]
+    [XmlRoot("XmlControlersConfiguration")]
     public class XmlFileOperation
     {
         [XmlAttribute("OperationName")]
@@ -63,23 +63,20 @@ namespace RobotFilesEditor.Serializer
     }
 
     [Serializable]
-    [XmlRoot("ControlersConfiguration")]
+    [XmlRoot("XmlControlersConfiguration")]
     public class XmlDataOperation
     {
         [XmlAttribute("FileOperationName")]
         public string FileOperationName { get; set; }
 
-        [XmlAttribute("DestinationFile")]
+        [XmlAttribute("DestinationFilePath")]
         public string DestinationFile { get; set; }
 
         [XmlAttribute("ActionType")]
         public string ActionType { get; set; }
 
         [XmlAttribute("Priority")]
-        public int Priority { get; set; }
-
-        [XmlElement("Filter")]
-        public XmlFilter Filter { get; set; }
+        public int Priority { get; set; }      
 
         [XmlAttribute("FileHeader")]
         public string FileHeader { get; set; }
@@ -95,10 +92,34 @@ namespace RobotFilesEditor.Serializer
 
         [XmlAttribute("WriteStop")]
         public string WriteStop { get; set; }
+
+        [XmlArray("DataFilterGroupsArray")]
+        [XmlArrayItem("DataFilterGroup")]
+        public List<XmlDataFilterGroup> DataFilterGroups { get; set; }
     }
 
     [Serializable]
-    [XmlRoot("ControlersConfiguration")]
+    [XmlRoot("XmlControlersConfiguration")]
+    public class XmlDataFilterGroup
+    {
+        [XmlAttribute("GroupHeader")]
+        public string GroupHeader { get; set; }
+
+        [XmlAttribute("GroupFooter")]
+        public string GroupFooter { get; set; }
+
+        [XmlAttribute("SpaceBeforGroup")]
+        public int SpaceBeforGroup { get; set; }
+
+        [XmlAttribute("SpaceAfterGroup")]
+        public int SpaceAfterGroup { get; set; }
+
+        [XmlElement("Filter")]
+        public XmlFilter Filter { get; set; }      
+    }
+    
+    [Serializable]
+    [XmlRoot("XmlControlersConfiguration")]
     public class XmlFilter
     {
         [XmlAttribute("RegexContain")]

@@ -115,7 +115,7 @@ namespace RobotFilesEditor
         #endregion Private      
 
         public void FollowOperation()
-        {
+        { 
         }
     }
 }

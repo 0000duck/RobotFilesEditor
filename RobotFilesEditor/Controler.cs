@@ -44,6 +44,7 @@ namespace RobotFilesEditor
                     {
                         _destinationPath = value;
                         OnPropertyChanged(nameof(DestinationPath));
+                        Operations.FilesOperations.ForEach(x => x.DestinationPath = DestinationPath);
                     }
                     else
                     {
@@ -68,6 +69,7 @@ namespace RobotFilesEditor
                     {
                         _sourcePath = value;
                         OnPropertyChanged(nameof(SourcePath));
+                        Operations.FilesOperations.ForEach(x => x.SourcePath = SourcePath);
                     }
                     else
                     {

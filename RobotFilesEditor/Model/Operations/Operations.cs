@@ -27,16 +27,18 @@ namespace RobotFilesEditor
                 if(fileOperation.NestedSourcePath)
                 {
                     fileOperation.SourcePath=NestedSourcePath;
-                }
-
-                fileOperation.FollowOperation();
+                }              
 
                 if (fileOperation.ActionType.ToString().Contains("Data"))
                 {
+                    List<string>filesToPrepare=fileOperation.FollowOperation();
                     DataOperation operationData = DataOperations.FirstOrDefault(x => x.OperationName == fileOperation.OperationName && x.Priority==fileOperation.Priority);
-                    operationData.FollowOperation();
+                    operationData.FollowOperation(filesToPrepare);
+                }else
+                {
+                    fileOperation.FollowOperation();
                 }
-                NestedSourcePath = Path.Combine(fileOperation.SourcePath, fileOperation.DestinationFolder);
+                NestedSourcePath = Path.Combine(fileOperation.DestinationPath, fileOperation.DestinationFolder);
             }           
         }
     }

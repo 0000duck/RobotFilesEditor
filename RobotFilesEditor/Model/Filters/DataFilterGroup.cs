@@ -112,13 +112,11 @@ namespace RobotFilesEditor
             if (LinesToAddToFile.Count > 0)
             {
                 using (StreamWriter sw = File.CreateText(""))
-                {
-                    if(SpaceBefor>0)
+                {                    
+                    for(int i=0; i<SpaceBefor; i++)
                     {
-                        for(int i=0; i<SpaceBefor; i++){
-                            sw.WriteLine();
-                        }                            
-                    }
+                        sw.WriteLine();
+                    } 
 
                     if(string.IsNullOrEmpty(Header)==false){
                         sw.WriteLine(Header);
