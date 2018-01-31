@@ -76,20 +76,8 @@ namespace RobotFilesEditor.Serializer
                     foreach(var filesOperations in controlerXml?.FileOperations)
                     {
                         FileOperation operation = new FileOperation();
-                        GlobalData.Action actionType;
-                        Filter filter;
-                        
 
-                        if (Enum.TryParse(filesOperations.ActionType, out actionType))
-                        {
-                            operation.ActionType = actionType;
-                        }
-                        else
-                        {
-                            throw new FormatException(nameof(operation.ActionType));
-                        }
-
-                        operation.ActionType = actionType;
+                        operation.ActionType = StringToAction(filesOperations.ActionType);
                         operation.OperationName = filesOperations.OperationName;
                         operation.DestinationFolder = filesOperations.DestinationFolder;                        
                         operation.Priority = filesOperations.Priority;                        
@@ -97,64 +85,32 @@ namespace RobotFilesEditor.Serializer
                         operation.SourcePath = sourcePath;
                         operation.FileExtensions = filesOperations.FilesExtensions;
                         operation.NestedSourcePath = filesOperations.NestedSourcePath;
-
-                        filter = new Filter();
-                        filter.ContainsAtName = filesOperations.Filter?.Contains;
-                        filter.NotContainsAtName = filesOperations.Filter?.NotContains;
-                        filter.RegexContain = filesOperations.Filter?.RegexContain;
-                        filter.RegexNotContain = filesOperations.Filter?.RegexNotContain;
-
-                        operation.Filter = filter;
+                        operation.Filter = ParseXmlFilterToFilter(filesOperations?.Filter);
 
                         controler.Operations.FilesOperations.Add(operation);
                     }
 
-                    foreach (var filesOperations in controlerXml?.DataOperations)
+                    foreach (var dataOperations in controlerXml?.DataOperations)
                     {
-                        DataOperation operation = new DataOperation();
-                        GlobalData.Action actionType;
-                        Filter filter;
-                        DataFilterGroup dataFilterGroup;
+                        DataOperation operation = new DataOperation();                   
 
-
-                        if (Enum.TryParse(filesOperations.ActionType, out actionType))
-                        {
-                            operation.ActionType = actionType;
-                        }
-                        else
-                        {
-                            throw new FormatException(nameof(operation.ActionType));
-                        }
-
-                        operation.OperationName = filesOperations.FileOperationName;
-                        operation.DestinationFilePath = filesOperations.DestinationFile;
-                        operation.ActionType = actionType;
-                        operation.Priority = filesOperations.Priority;
-                        operation.FileHeader = filesOperations.FileHeader;
-                        operation.FileFooter = filesOperations.FileFooter;
-                        operation.GroupSpace = filesOperations.GroupSpace;
-                        operation.WriteStart = filesOperations.WriteStart;
-                        operation.WriteStop = filesOperations.WriteStop;
+                        operation.OperationName = dataOperations.FileOperationName;
+                        operation.DestinationFilePath = dataOperations.DestinationFile;
+                        operation.ActionType = StringToAction(dataOperations.ActionType);
+                        operation.Priority = dataOperations.Priority;
+                        operation.FileHeader = dataOperations.FileHeader;
+                        operation.FileFooter = dataOperations.FileFooter;
+                        operation.GroupSpace = dataOperations.GroupSpace;
+                        operation.WriteStart = dataOperations.WriteStart;
+                        operation.WriteStop = dataOperations.WriteStop;
                         operation.DestinationPath = destinationPath;
                         operation.SourcePath = sourcePath;
 
-                        foreach(XmlDataFilterGroup filterGroup in filesOperations.DataFilterGroups)
+                        foreach(XmlDataFilterGroup filterGroup in dataOperations.DataFilterGroups)
                         {
-                            dataFilterGroup = new DataFilterGroup();
-
-                            dataFilterGroup.Header = filterGroup.GroupHeader;
-                            dataFilterGroup.Footer = filterGroup.GroupFooter;
-                            dataFilterGroup.SpaceBefor = filterGroup.SpaceBeforGroup;
-                            dataFilterGroup.SpaceAfter = filterGroup.SpaceAfterGroup;
-
-                            filter = new Filter();
-                            filter.ContainsAtName = filterGroup.Filter.Contains;
-                            filter.NotContainsAtName = filterGroup.Filter.NotContains;
-                            filter.RegexContain = filterGroup.Filter.RegexContain;
-                            filter.RegexNotContain = filterGroup.Filter.RegexNotContain;
-                            dataFilterGroup.Filter = filter;
-                            operation.DataFilterGroups.Add(dataFilterGroup);
+                            operation.DataFilterGroups.Add(ParseXmlDataFilterGroupToDataFilterGroup(filterGroup));
                         }
+
                         controler.Operations.DataOperations.Add(operation);
                     }
                     controlers.Add(controler);
@@ -167,5 +123,46 @@ namespace RobotFilesEditor.Serializer
 
             return controlers;
         }
+
+        private Filter ParseXmlFilterToFilter(XmlFilter xmlFilter)
+        {
+            Filter filter = new Filter();
+
+            filter.Contain = xmlFilter?.Contains;
+            filter.NotContain = xmlFilter?.NotContains;
+            filter.RegexContain = xmlFilter?.RegexContain;
+            filter.RegexNotContain = xmlFilter?.RegexNotContain;
+
+            return filter;
+        }
+
+        private DataFilterGroup ParseXmlDataFilterGroupToDataFilterGroup(XmlDataFilterGroup xmlDataFilterGroup)
+        {
+            DataFilterGroup dataFilterGroup = new DataFilterGroup();           
+
+            dataFilterGroup.Header = xmlDataFilterGroup.GroupHeader;
+            dataFilterGroup.Footer = xmlDataFilterGroup.GroupFooter;
+            dataFilterGroup.SpaceBefor = xmlDataFilterGroup.SpaceBeforGroup;
+            dataFilterGroup.SpaceAfter = xmlDataFilterGroup.SpaceAfterGroup;
+
+            dataFilterGroup.Filter = ParseXmlFilterToFilter(xmlDataFilterGroup?.Filter);
+
+            return dataFilterGroup;
+        }
+
+        private GlobalData.Action StringToAction(string action)
+        {
+            GlobalData.Action actionType;
+
+            if (Enum.TryParse(action, out actionType))
+            {
+                return actionType;
+            }
+            else
+            {
+                throw new FormatException(nameof(action));
+            }            
+        }
+
     }
 }

@@ -167,7 +167,7 @@ namespace RobotFilesEditor
 
         //                if (System.Text.RegularExpressions.Regex.IsMatch(fn, sPattern))
         //                {
-        //                    if (_productionCopiedFiles.FileExtensions.Exists(x => fn.Contains(x)) && _productionCopiedFiles.ContainsAtName.Exists(x => fn.Contains(x)))//uściślić tylko do Glue_070ZG01_G16.src i Glue_070ZG01_G16.dat
+        //                    if (_productionCopiedFiles.FileExtensions.Exists(x => fn.Contains(x)) && _productionCopiedFiles.Contain.Exists(x => fn.Contains(x)))//uściślić tylko do Glue_070ZG01_G16.src i Glue_070ZG01_G16.dat
         //                    {
         //                        movingFiles.Add(f);
         //                    }
@@ -210,7 +210,7 @@ namespace RobotFilesEditor
         //            string fn = Path.GetFileName(f);
         //            if (System.Text.RegularExpressions.Regex.IsMatch(fn, fPattern))
         //            {
-        //                if (_serviceCopiedFiles.FileExtensions.Exists(x => fn.Contains(x)) && _serviceCopiedFiles.ContainsAtName.Exists(x => fn.Contains(x)))
+        //                if (_serviceCopiedFiles.FileExtensions.Exists(x => fn.Contains(x)) && _serviceCopiedFiles.Contain.Exists(x => fn.Contains(x)))
         //                {
         //                    if((fn.Contains("Dock") || fn.Contains("tch_auto")) && fn.Contains("A04")==false)
         //                    {

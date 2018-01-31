@@ -1,8 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<xs:schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-           attributeFormDefault="unqualified" 
-           elementFormDefault="qualified" 
-           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="RobotFilesEditor" xmlns:xs="http://www.w3.org/2001/XMLSchema">
   <xs:element name="ControlersConfiguration">
     <xs:complexType>
       <xs:sequence>
@@ -51,7 +48,8 @@
                               <xs:attribute name="OperationName" type="xs:string" use="required" />
                               <xs:attribute name="ActionType" type="xs:string" use="required" />
                               <xs:attribute name="DestinationFolder" type="xs:string" use="required" />
-                              <xs:attribute name="Priority" type="xs:string" use="required" />
+                              <xs:attribute name="Priority" type="xs:unsignedByte" use="required" />
+                              <xs:attribute name="NestedSourcePath" type="xs:boolean" use="required" />
                             </xs:complexType>
                           </xs:element>
                         </xs:sequence>
@@ -63,7 +61,45 @@
                           <xs:element maxOccurs="unbounded" name="DataOperation">
                             <xs:complexType>
                               <xs:sequence>
-                                <xs:element name="Filter">
+                                <xs:element minOccurs="0" name="DataFilterGroupsArray">
+                                  <xs:complexType>
+                                    <xs:sequence>
+                                      <xs:element maxOccurs="unbounded" name="DataFilterGroup">
+                                        <xs:complexType>
+                                          <xs:sequence>
+                                            <xs:element name="Filter">
+                                              <xs:complexType>
+                                                <xs:sequence>
+                                                  <xs:element name="ContainArray">
+                                                    <xs:complexType>
+                                                      <xs:sequence>
+                                                        <xs:element maxOccurs="unbounded" name="Contain" type="xs:string" />
+                                                      </xs:sequence>
+                                                    </xs:complexType>
+                                                  </xs:element>
+                                                  <xs:element minOccurs="0" name="NotContainArray">
+                                                    <xs:complexType>
+                                                      <xs:sequence>
+                                                        <xs:element name="NotContain" />
+                                                      </xs:sequence>
+                                                    </xs:complexType>
+                                                  </xs:element>
+                                                </xs:sequence>
+                                                <xs:attribute name="RegexContain" type="xs:string" use="required" />
+                                                <xs:attribute name="RegexNotContain" type="xs:string" use="required" />
+                                              </xs:complexType>
+                                            </xs:element>
+                                          </xs:sequence>
+                                          <xs:attribute name="GroupHeader" type="xs:string" use="required" />
+                                          <xs:attribute name="GroupFooter" type="xs:string" use="required" />
+                                          <xs:attribute name="SpaceBeforGroup" type="xs:string" use="required" />
+                                          <xs:attribute name="SpaceAfterGroup" type="xs:string" use="required" />
+                                        </xs:complexType>
+                                      </xs:element>
+                                    </xs:sequence>
+                                  </xs:complexType>
+                                </xs:element>
+                                <xs:element minOccurs="0" name="Filter">
                                   <xs:complexType>
                                     <xs:sequence>
                                       <xs:element name="ContainArray">
@@ -87,11 +123,12 @@
                                 </xs:element>
                               </xs:sequence>
                               <xs:attribute name="FileOperationName" type="xs:string" use="required" />
-                              <xs:attribute name="Priority" type="xs:string" use="required" />
+                              <xs:attribute name="ActionType" type="xs:string" use="required" />
+                              <xs:attribute name="Priority" type="xs:unsignedByte" use="required" />
                               <xs:attribute name="DestinationFile" type="xs:string" use="required" />
                               <xs:attribute name="FileHeader" type="xs:string" use="required" />
                               <xs:attribute name="FileFooter" type="xs:string" use="required" />
-                              <xs:attribute name="GroupSpace" type="xs:string" use="required" />
+                              <xs:attribute name="GroupSpace" type="xs:unsignedByte" use="required" />
                               <xs:attribute name="WriteStart" type="xs:string" use="required" />
                               <xs:attribute name="WriteStop" type="xs:string" use="required" />
                             </xs:complexType>

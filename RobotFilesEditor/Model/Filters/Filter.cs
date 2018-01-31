@@ -9,35 +9,35 @@ namespace RobotFilesEditor
 {
     public class Filter
     {
-        public List<string> ContainsAtName
+        public List<string> Contain
         {
-            get { return _containsAtName; }
+            get { return _contain; }
             set
             {
                 if (value == null)
                 {
-                    _containsAtName = new List<string>();
+                    _contain = new List<string>();
                 }
 
-                if (_containsAtName != value)
+                if (_contain != value)
                 {
-                    _containsAtName = value;
+                    _contain = value;
                 }
             }
         }
-        public List<string> NotContainsAtName
+        public List<string> NotContain
         {
-            get { return _notContainsAtName; }
+            get { return _notContain; }
             set
             {
                 if (value == null)
                 {
-                    _notContainsAtName = new List<string>();
+                    _notContain = new List<string>();
                 }
 
-                if (_notContainsAtName != value)
+                if (_notContain != value)
                 {
-                    _notContainsAtName = value;
+                    _notContain = value;
                 }
             }
         }
@@ -74,32 +74,32 @@ namespace RobotFilesEditor
             }
         }
       
-        public List<string> _containsAtName;
-        public List<string> _notContainsAtName;
+        public List<string> _contain;
+        public List<string> _notContain;
         public string _regexContain;
         public string _regexNotContain;
 
         public Filter()
         {          
-            ContainsAtName = new List<string>();
-            NotContainsAtName = new List<string>();            
+            Contain = new List<string>();
+            NotContain = new List<string>();            
         }
 
         #region FileFilter
         public List<string>FilesFilterContains(List<string>source)
         {
-            if(ContainsAtName?.Count>0)
+            if(Contain?.Count>0)
             {
-                source = source.Where(x => ContainsAtName.Exists(y => Path.GetFileName(x).Contains(y))).ToList();
+                source = source.Where(x => Contain.Exists(y => Path.GetFileName(x).Contains(y))).ToList();
             }
                 return source; 
         }
 
         public List<string>FilesFilterNotContains(List<string> source)
         {
-            if (NotContainsAtName?.Count > 0)
+            if (NotContain?.Count > 0)
             {
-                source = source.Where(x => NotContainsAtName.Exists(y => Path.GetFileName(x).Contains(y)) == false).ToList();         
+                source = source.Where(x => NotContain.Exists(y => Path.GetFileName(x).Contains(y)) == false).ToList();         
             }
             return source;
         }
@@ -135,18 +135,18 @@ namespace RobotFilesEditor
         #region CommonFilter
         public List<string> FilterContains(List<string> source)
         {
-            if (ContainsAtName?.Count > 0)
+            if (Contain?.Count > 0)
             {
-                source = source.Where(x => ContainsAtName.Exists(y => x.Contains(y))).ToList();
+                source = source.Where(x => Contain.Exists(y => x.Contains(y))).ToList();
             }
             return source;
         }
 
         public List<string> FilterNotContains(List<string> source)
         {
-            if (NotContainsAtName?.Count > 0)
+            if (NotContain?.Count > 0)
             {
-                source = source.Where(x => NotContainsAtName.Exists(y => x.Contains(y)) == false).ToList();
+                source = source.Where(x => NotContain.Exists(y => x.Contains(y)) == false).ToList();
             }
             return source;
         }

@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 namespace RobotFilesEditor.Serializer
 {
     [Serializable]
-    [XmlRoot("XmlControlersConfiguration", Namespace = "RobotFilesEditor")]
+    [XmlRoot("ControlersConfiguration", Namespace = "RobotFilesEditor")]
     public class XmlControlersConfiguration
     {
         [XmlAttribute("DestinationPath")]
@@ -20,7 +20,7 @@ namespace RobotFilesEditor.Serializer
     }
 
     [Serializable]
-    [XmlRoot("XmlControlersConfiguration")]
+    [XmlRoot("ControlersConfiguration")]
     public class XmlControler
     {
         [XmlAttribute("ControlerType")]
@@ -36,7 +36,7 @@ namespace RobotFilesEditor.Serializer
     }
 
     [Serializable]
-    [XmlRoot("XmlControlersConfiguration")]
+    [XmlRoot("ControlersConfiguration")]
     public class XmlFileOperation
     {
         [XmlAttribute("OperationName")]
@@ -63,7 +63,7 @@ namespace RobotFilesEditor.Serializer
     }
 
     [Serializable]
-    [XmlRoot("XmlControlersConfiguration")]
+    [XmlRoot("ControlersConfiguration")]
     public class XmlDataOperation
     {
         [XmlAttribute("FileOperationName")]
@@ -99,7 +99,7 @@ namespace RobotFilesEditor.Serializer
     }
 
     [Serializable]
-    [XmlRoot("XmlControlersConfiguration")]
+    [XmlRoot("ControlersConfiguration")]
     public class XmlDataFilterGroup
     {
         [XmlAttribute("GroupHeader")]
@@ -119,7 +119,7 @@ namespace RobotFilesEditor.Serializer
     }
     
     [Serializable]
-    [XmlRoot("XmlControlersConfiguration")]
+    [XmlRoot("ControlersConfiguration")]
     public class XmlFilter
     {
         [XmlAttribute("RegexContain")]

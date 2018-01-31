@@ -102,38 +102,39 @@ namespace RobotFilesEditor
         public void SetLinesToAddToFile(List<string> filesContent)
         {
            LinesToAddToFile=CkeckAllFilters(filesContent);
-           LinesToAddToFile.Distinct();   
+           LinesToAddToFile=LinesToAddToFile.Distinct().ToList();   
         }
 
         public string PrepareGroupToWrite()
         {
             string Buffor = "";
+            LinesToAddToFile = LinesToAddToFile.OrderBy(x => x).ToList();
 
             if (LinesToAddToFile.Count > 0)
             {
-                using (StreamWriter sw = File.CreateText(""))
-                {                    
-                    for(int i=0; i<SpaceBefor; i++)
-                    {
-                        sw.WriteLine();
-                    } 
+                //using (StreamWriter sw = File.CreateText(""))
+                //{                    
+                //    for(int i=0; i<SpaceBefor; i++)
+                //    {
+                //        sw.WriteLine();
+                //    } 
 
-                    if(string.IsNullOrEmpty(Header)==false){
-                        sw.WriteLine(Header);
-                    }
+                //    if(string.IsNullOrEmpty(Header)==false){
+                //        sw.WriteLine(Header);
+                //    }
+                   
+                //    LinesToAddToFile.ForEach(x => sw.WriteLine(x));
 
-                    LinesToAddToFile.ForEach(x => sw.WriteLine(x));
-
-                    if (string.IsNullOrEmpty(Footer) == false){
-                        sw.WriteLine(Footer);
-                    }
+                //    if (string.IsNullOrEmpty(Footer) == false){
+                //        sw.WriteLine(Footer);
+                //    }
               
-                    for (int i = 0; i < SpaceAfter; i++){
-                        sw.WriteLine();
-                    }                   
+                //    for (int i = 0; i < SpaceAfter; i++){
+                //        sw.WriteLine();
+                //    }                   
 
-                    Buffor = sw.ToString();   
-                }
+                //    Buffor = sw.ToString();   
+                //}
             }
 
             return Buffor;

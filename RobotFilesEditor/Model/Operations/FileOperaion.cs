@@ -26,7 +26,7 @@ namespace RobotFilesEditor
             {
                 if (_fileExtensions != value)
                 {
-                    _fileExtensions = value;
+                    _fileExtensions = value;                    
                 }
             }
         }     

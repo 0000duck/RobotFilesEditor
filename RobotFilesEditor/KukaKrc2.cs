@@ -172,7 +172,7 @@ namespace RobotFilesEditor
 
         //            if (System.Text.RegularExpressions.Regex.IsMatch(fn, sPattern))
         //            {
-        //                if (_productionCopiedFiles.FileExtensions.Exists(x => fn.Contains(x)) && _productionCopiedFiles.ContainsAtName.Exists(x => fn.Contains(x)))
+        //                if (_productionCopiedFiles.FileExtensions.Exists(x => fn.Contains(x)) && _productionCopiedFiles.Contain.Exists(x => fn.Contains(x)))
         //                { 
         //                    movingFiles.Add(f);
         //                }
@@ -216,7 +216,7 @@ namespace RobotFilesEditor
         //        {
         //            if(System.Text.RegularExpressions.Regex.IsMatch(Path.GetFileName(f), sPattern))
         //            {
-        //                if (_serviceCopiedFiles.FileExtensions.Exists(x => Path.GetFileName(f).Contains(x)) && _serviceCopiedFiles.ContainsAtName.Exists(x => Path.GetFileName(f).Contains(x)))//uściślić tylko do Glue_070ZG01_G16.src i Glue_070ZG01_G16.dat
+        //                if (_serviceCopiedFiles.FileExtensions.Exists(x => Path.GetFileName(f).Contains(x)) && _serviceCopiedFiles.Contain.Exists(x => Path.GetFileName(f).Contains(x)))//uściślić tylko do Glue_070ZG01_G16.src i Glue_070ZG01_G16.dat
         //                {
         //                    movingFiles.Add(f);
         //                }
