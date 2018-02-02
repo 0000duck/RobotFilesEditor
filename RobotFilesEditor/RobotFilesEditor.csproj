@@ -97,7 +97,6 @@
     <Compile Include="Model\Operations\DataOperation.cs" />
     <Compile Include="Model\Operations\FileOperation.cs" />
     <Compile Include="Model\Filters\DataFilterGroup.cs" />
-    <Compile Include="Model\Filters\FilesDataFilter.cs" />
     <Compile Include="Model\Filters\Filter.cs" />
     <Compile Include="Model\Operations\IFileDataOperations.cs" />
     <Compile Include="Model\Operations\IFileOperations.cs" />
@@ -113,12 +112,9 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Controler.cs" />
-    <Compile Include="Model\Filters\FilesFilter.cs" />
+    <Compile Include="Model\Controler.cs" />
     <Compile Include="Model\Serialization\FilesSerialization.cs" />
-    <Compile Include="GlobalData.cs" />
-    <Compile Include="KukaKrc2.cs" />
-    <Compile Include="KukaKrc4.cs" />
+    <Compile Include="Model\GlobalData.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -147,7 +143,6 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
     </None>
-    <None Include="ClassDiagram1.cd" />
     <None Include="ConfigurationSchema.xsd">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

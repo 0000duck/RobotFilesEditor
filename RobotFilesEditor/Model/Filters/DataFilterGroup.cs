@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RobotFilesEditor
 {
@@ -139,11 +135,6 @@ namespace RobotFilesEditor
             }
 
             return Buffor;
-        }
-
-        public static implicit operator List<object>(DataFilterGroup v)
-        {
-            throw new NotImplementedException();
-        }
+        }       
     }
 }
