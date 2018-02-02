@@ -95,7 +95,8 @@ namespace RobotFilesEditor.Serializer
                         DataOperation operation = new DataOperation();                   
 
                         operation.OperationName = dataOperations.FileOperationName;
-                        operation.DestinationFilePath = dataOperations.DestinationFile;
+                        operation.DestinationFilePath = dataOperations.DestinationFilePath;
+                        operation.DestinationFileSource = dataOperations.DestinationFileSource;
                         operation.ActionType = StringToAction(dataOperations.ActionType);
                         operation.Priority = dataOperations.Priority;
                         operation.FileHeader = dataOperations.FileHeader;

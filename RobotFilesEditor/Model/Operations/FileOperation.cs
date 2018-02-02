@@ -95,8 +95,7 @@ namespace RobotFilesEditor
             filteredFiles = Filter.CheckAllFilesFilters(filteredFiles);
 
             return filteredFiles;
-        }
-       
+        }       
 
         public bool CopyFile()
         {
@@ -148,9 +147,7 @@ namespace RobotFilesEditor
             {
                 return true;
             }
-        }
-
-       
+        }      
 
     }
 }

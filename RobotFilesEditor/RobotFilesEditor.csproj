@@ -91,10 +91,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Model\Operations\DataContentSortTool.cs" />
     <Compile Include="Model\Operations\Operation.cs" />
     <Compile Include="ViewModel\ControlItem.cs" />
     <Compile Include="Model\Operations\DataOperation.cs" />
-    <Compile Include="Model\Operations\FileOperaion.cs" />
+    <Compile Include="Model\Operations\FileOperation.cs" />
     <Compile Include="Model\Filters\DataFilterGroup.cs" />
     <Compile Include="Model\Filters\FilesDataFilter.cs" />
     <Compile Include="Model\Filters\Filter.cs" />
@@ -144,7 +145,9 @@
     </EmbeddedResource>
     <None Include="Application.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
+    <None Include="ClassDiagram1.cd" />
     <None Include="ConfigurationSchema.xsd">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -67,10 +67,7 @@ namespace RobotFilesEditor.Serializer
     public class XmlDataOperation
     {
         [XmlAttribute("FileOperationName")]
-        public string FileOperationName { get; set; }
-
-        [XmlAttribute("DestinationFilePath")]
-        public string DestinationFile { get; set; }
+        public string FileOperationName { get; set; }     
 
         [XmlAttribute("ActionType")]
         public string ActionType { get; set; }
@@ -96,6 +93,12 @@ namespace RobotFilesEditor.Serializer
         [XmlArray("DataFilterGroupsArray")]
         [XmlArrayItem("DataFilterGroup")]
         public List<XmlDataFilterGroup> DataFilterGroups { get; set; }
+
+        [XmlAttribute("DestinationFilePath")]
+        public string DestinationFilePath { get; set; }
+
+        [XmlAttribute("DestinationFileSource")]
+        public string DestinationFileSource { get; set; }
     }
 
     [Serializable]
@@ -115,7 +118,7 @@ namespace RobotFilesEditor.Serializer
         public int SpaceAfterGroup { get; set; }
 
         [XmlElement("Filter")]
-        public XmlFilter Filter { get; set; }      
+        public XmlFilter Filter { get; set; }       
     }
     
     [Serializable]

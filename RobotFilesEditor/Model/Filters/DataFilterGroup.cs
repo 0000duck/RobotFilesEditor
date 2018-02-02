@@ -108,11 +108,12 @@ namespace RobotFilesEditor
         public string PrepareGroupToWrite()
         {
             string Buffor = "";
-            LinesToAddToFile = LinesToAddToFile.OrderBy(x => x).ToList();
+            //LinesToAddToFile = LinesToAddToFile.OrderBy(x => x).ToList();
 
             if (LinesToAddToFile.Count > 0)
             {
-                //using (StreamWriter sw = File.CreateText(""))
+                //using(MemoryStream ms=new MemoryStream())
+                
                 //{                    
                 //    for(int i=0; i<SpaceBefor; i++)
                 //    {

@@ -33,7 +33,7 @@ namespace RobotFilesEditor
                 {
                     List<string>filesToPrepare=fileOperation.FollowOperation();
                     DataOperation operationData = DataOperations.FirstOrDefault(x => x.OperationName == fileOperation.OperationName && x.Priority==fileOperation.Priority);
-                    operationData.FollowOperation(filesToPrepare);
+                    operationData.FollowOperation(filesToPrepare, Path.Combine(fileOperation.DestinationPath));
                 }else
                 {
                     fileOperation.FollowOperation();
