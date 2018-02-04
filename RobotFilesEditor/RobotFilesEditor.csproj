@@ -91,6 +91,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Model\FileDataValidation\FileLineProperties.cs" />
+    <Compile Include="Model\FileDataValidation\ValidateTextBeforeWrite.cs" />
     <Compile Include="Model\Operations\DataContentSortTool.cs" />
     <Compile Include="Model\Operations\Operation.cs" />
     <Compile Include="ViewModel\ControlItem.cs" />

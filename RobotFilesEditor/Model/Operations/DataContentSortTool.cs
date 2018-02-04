@@ -9,46 +9,83 @@ namespace RobotFilesEditor
 {
     public class DataContentSortTool
     {
-        public List<DataFilterGroup> SortOlpDataFiles(List<DataFilterGroup>filterGroups)
+        public List<DataFilterGroup> SortOlpDataFiles(List<DataFilterGroup> filterGroups)
         {
-            Dictionary<string, int> sortBuffer = new Dictionary<string, int>();
-
-            string indexPattern = @"\[[0-9]+,*\]";
-            Regex indexRegex = new Regex(indexPattern);
-            Match indexMatch;
-
-            string valuePattern = "[0-9]+";
-            Regex valueRegex = new Regex(valuePattern);
-            Match valueMatch;
-
+            List<FileLineProperties> linesBuffer = new List<FileLineProperties>();
+            
             foreach (DataFilterGroup group in filterGroups)
             {
-                sortBuffer = new Dictionary<string, int>();
 
-                foreach (string line in group.LinesToAddToFile)
-                {                   
-                    indexMatch = indexRegex.Match(line);
-                    int value = -1;
+                group.LinesToAddToFile.GroupBy(x => x.VariableName);
 
-                    if (string.IsNullOrEmpty(indexMatch.Value)==false)
-                    {
-                        valueMatch = valueRegex.Match(indexMatch.Value);
+                //sortBuffer = new Dictionary<string, int>();
 
-                        int.TryParse(valueMatch.Value, out value);
+                //foreach (string line in group.LinesToAddToFile)
+                //{
+                //    indexMatch = indexRegex.Match(line);
+                //    int value = -1;
 
-                        if(indexMatch.Value.Contains(','))
-                        {
-                            sortBuffer = UpValues(sortBuffer, value);
-                        }
-                    }    
-                    sortBuffer.Add(line, value);
-                }
+                //    if (string.IsNullOrEmpty(indexMatch.Value) == false)
+                //    {
+                //        valueMatch = valueRegex.Match(indexMatch.Value);
 
-                group.LinesToAddToFile = GroupByContain(sortBuffer, group);
+                //        int.TryParse(valueMatch.Value, out value);
+
+                //        if (indexMatch.Value.Contains(','))
+                //        {
+                //            sortBuffer = UpValues(sortBuffer, value);
+                //        }
+                //    }
+                //    sortBuffer.Add(line, value);
+                //}
+
+                //group.LinesToAddToFile = GroupByContain(sortBuffer, group);
             }
 
             return filterGroups;
         }
+
+
+        //public List<DataFilterGroup> SortOlpDataFiles(List<DataFilterGroup>filterGroups)
+        //{
+        //    Dictionary<string, int> sortBuffer = new Dictionary<string, int>();
+
+        //    string indexPattern = @"\[[0-9]+,*\]";
+        //    Regex indexRegex = new Regex(indexPattern);
+        //    Match indexMatch;
+
+        //    string valuePattern = "[0-9]+";
+        //    Regex valueRegex = new Regex(valuePattern);
+        //    Match valueMatch;
+
+        //    foreach (DataFilterGroup group in filterGroups)
+        //    {
+        //        sortBuffer = new Dictionary<string, int>();
+
+        //        foreach (string line in group.LinesToAddToFile)
+        //        {                   
+        //            indexMatch = indexRegex.Match(line);
+        //            int value = -1;
+
+        //            if (string.IsNullOrEmpty(indexMatch.Value)==false)
+        //            {
+        //                valueMatch = valueRegex.Match(indexMatch.Value);
+
+        //                int.TryParse(valueMatch.Value, out value);
+
+        //                if(indexMatch.Value.Contains(','))
+        //                {
+        //                    sortBuffer = UpValues(sortBuffer, value);
+        //                }
+        //            }    
+        //            sortBuffer.Add(line, value);
+        //        }
+
+        //        group.LinesToAddToFile = GroupByContain(sortBuffer, group);
+        //    }
+
+        //    return filterGroups;
+        //}
 
         private Dictionary<string, int> UpValues(Dictionary<string, int> source, int value)
         {

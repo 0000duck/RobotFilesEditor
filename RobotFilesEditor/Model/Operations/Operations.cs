@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RobotFilesEditor
 {
@@ -11,6 +9,10 @@ namespace RobotFilesEditor
     {
         public List<DataOperation> DataOperations;
         public List<FileOperation> FilesOperations;
+        public FileOperation ActiveFileOperation;
+        public DataOperation ActiveDataOperation;
+        public List<string> OperatedFiles;
+        public List<FileLineProperties> OperatedDataFiles;
 
         public Operations()
         {
@@ -40,6 +42,15 @@ namespace RobotFilesEditor
                 }
                 NestedSourcePath = Path.Combine(fileOperation.DestinationPath, fileOperation.DestinationFolder);
             }           
+        }
+
+        public List<string> ShowFilesToChanged()
+        {
+            List<string> filesToChange = new List<string>();
+
+
+
+            return filesToChange;
         }
     }
 }

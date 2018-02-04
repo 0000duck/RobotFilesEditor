@@ -47,6 +47,7 @@ namespace RobotFilesEditor
         private List<string> _fileExtensions;
         private Filter _filter;
         private bool _nestedSourcePath;
+        private List<string> _fileredFiles;
         #endregion Private
 
         public List<string> FollowOperation()
@@ -109,6 +110,7 @@ namespace RobotFilesEditor
         public bool MoveFile()
         {          
             List<string> filteredFiles = FiltrFiles();
+
             string destination = CreateDestinationFolder();
             filteredFiles.ForEach(x => File.Move(x, Path.Combine(destination, Path.GetFileName(x))));
 
@@ -149,5 +151,10 @@ namespace RobotFilesEditor
             }
         }      
 
+        public List<string>GetOperatedFiles()
+        {
+            _fileredFiles = FiltrFiles();
+            return _fileredFiles;
+        }
     }
 }

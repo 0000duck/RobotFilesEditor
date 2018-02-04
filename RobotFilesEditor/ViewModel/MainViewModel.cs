@@ -205,32 +205,35 @@ namespace RobotFilesEditor.ViewModel
 
             foreach (var filter in SelectedControler.Operations.FilesOperations)
             {
-                var controlItem = new ControlItem(filter.OperationName);
-                controlItem.ControlItemSelected += OperationCommandExecute;
-
-                switch (filter.ActionType)
+                if (filter.Priority == 0)
                 {
-                    case GlobalData.Action.Move:
-                        {                           
-                            MoveFilesOperations.Add(controlItem);
-                        }
-                        break;
-                    case GlobalData.Action.Copy:
-                        {
-                            CopyFilesOperations.Add(controlItem);
-                        }
-                        break;
-                    case GlobalData.Action.CopyData:
-                        {
-                            CopyTextFromFilesOperations.Add(controlItem);
-                        }
-                        break;
-                    case GlobalData.Action.Remove:
-                        {
-                            RemoveFilesOperations.Add(controlItem);
-                        }
-                        break;
-                }
+                    var controlItem = new ControlItem(filter.OperationName);
+                    controlItem.ControlItemSelected += OperationCommandExecute;
+
+                    switch (filter.ActionType)
+                    {
+                        case GlobalData.Action.Move:
+                            {
+                                MoveFilesOperations.Add(controlItem);
+                            }
+                            break;
+                        case GlobalData.Action.Copy:
+                            {
+                                CopyFilesOperations.Add(controlItem);
+                            }
+                            break;
+                        case GlobalData.Action.CopyData:
+                            {
+                                CopyTextFromFilesOperations.Add(controlItem);
+                            }
+                            break;
+                        case GlobalData.Action.Remove:
+                            {
+                                RemoveFilesOperations.Add(controlItem);
+                            }
+                            break;
+                    }
+                }                
             }
 
             MoveFilesOperations.Distinct();

@@ -164,7 +164,7 @@ namespace RobotFilesEditor
 
         public bool CopyData()
         {
-            List<string>filesContent=LoadFilesContent();
+            List<FileLineProperties> filesContent=LoadFilesContent();
             FiltrContentOnGroups(filesContent);
             SortGroupsContent();
             DataFilterGroups.ForEach(x => x.PrepareGroupToWrite());            
@@ -272,17 +272,32 @@ namespace RobotFilesEditor
            }
                 return Buffor;           
         }
-        private List<string> LoadFilesContent()
+        private List<FileLineProperties> LoadFilesContent()
         {
-            List<string> filesContent = new List<string>();
+            List<FileLineProperties> filesContent = new List<FileLineProperties>();
+            FileLineProperties fileLineProperties;
+            string []fileContent;
+            int lineNumber;
 
             foreach (string path in _filesToPrepare)
             {
-                filesContent.AddRange(File.ReadAllLines(path).ToList());
+                
+                lineNumber = 1;
+                fileContent = File.ReadAllLines(path);
+                 
+                foreach(string line in fileContent)
+                {
+                    fileLineProperties = new FileLineProperties();
+                    fileLineProperties.FileLinePath = path;
+                    fileLineProperties.LineContent = line;
+                    fileLineProperties.LineNumber = lineNumber;                    
+                    lineNumber++;
+                    filesContent.Add(fileLineProperties);
+                }                
             }
             return filesContent;
         }
-        private void FiltrContentOnGroups(List<string>filesContent)
+        private void FiltrContentOnGroups(List<FileLineProperties> filesContent)
         {
            DataFilterGroups.ForEach(x => x.SetLinesToAddToFile(filesContent));            
         }

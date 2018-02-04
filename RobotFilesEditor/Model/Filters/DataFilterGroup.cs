@@ -60,7 +60,7 @@ namespace RobotFilesEditor
                 }
             }
         }
-        public List<string> LinesToAddToFile
+        public List<FileLineProperties> LinesToAddToFile
         {
             get { return _linesToAddToFile; }
             set
@@ -77,15 +77,15 @@ namespace RobotFilesEditor
         private int _spaceBefor;
         private int _spaceAfter;
         private Filter _filter;
-        private List<string> _linesToAddToFile;
+        private List<FileLineProperties> _linesToAddToFile;
 
         public DataFilterGroup()
         {
             Filter = new Filter();
-            LinesToAddToFile = new List<string>();
+            LinesToAddToFile = new List<FileLineProperties>();
         }
 
-        public List<string>CkeckAllFilters(List<string>listToCheck)
+        public List<FileLineProperties> CkeckAllFilters(List<FileLineProperties> listToCheck)
         {
             listToCheck = Filter.FilterContains(listToCheck);
             listToCheck = Filter.FilterNotContains(listToCheck);
@@ -95,10 +95,10 @@ namespace RobotFilesEditor
             return listToCheck;
         }
 
-        public void SetLinesToAddToFile(List<string> filesContent)
+        public void SetLinesToAddToFile(List<FileLineProperties> filesContent)
         {
            LinesToAddToFile=CkeckAllFilters(filesContent);
-           LinesToAddToFile=LinesToAddToFile.Distinct().ToList();   
+           var list = LinesToAddToFile.Select(x => x.LineContent).Distinct().ToList();
         }
 
         public string PrepareGroupToWrite()

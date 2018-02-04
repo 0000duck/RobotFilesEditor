@@ -133,43 +133,43 @@ namespace RobotFilesEditor
         #endregion FileFilter
 
         #region CommonFilter
-        public List<string> FilterContains(List<string> source)
+        public List<FileLineProperties> FilterContains(List<FileLineProperties> source)
         {
             if (Contain?.Count > 0)
             {
-                source = source.Where(x => Contain.Exists(y => x.Contains(y))).ToList();
+                source = source.Where(x => Contain.Exists(y => x.LineContent.Contains(y))).ToList();
             }
             return source;
         }
 
-        public List<string> FilterNotContains(List<string> source)
+        public List<FileLineProperties> FilterNotContains(List<FileLineProperties> source)
         {
             if (NotContain?.Count > 0)
             {
-                source = source.Where(x => NotContain.Exists(y => x.Contains(y)) == false).ToList();
+                source = source.Where(x => NotContain.Exists(y => x.LineContent.Contains(y)) == false).ToList();
             }
             return source;
         }
 
-        public List<string> FilterRegexContain(List<string> source)
+        public List<FileLineProperties> FilterRegexContain(List<FileLineProperties> source)
         {
             if (string.IsNullOrEmpty(RegexContain) == false)
             {
-                source = source.Where(x => System.Text.RegularExpressions.Regex.IsMatch(Path.GetFileName(x), RegexContain)).ToList();
+                source = source.Where(x => System.Text.RegularExpressions.Regex.IsMatch(x.LineContent, RegexContain)).ToList();
             }
             return source;
         }
 
-        public List<string> FilterRegexNotContain(List<string> source)
+        public List<FileLineProperties> FilterRegexNotContain(List<FileLineProperties> source)
         {
             if (string.IsNullOrEmpty(RegexNotContain) == false)
             {
-                source = source.Where(x => System.Text.RegularExpressions.Regex.IsMatch(x, RegexNotContain) == false).ToList();
+                source = source.Where(x => System.Text.RegularExpressions.Regex.IsMatch(x.LineContent, RegexNotContain) == false).ToList();
             }
             return source;
         }
 
-        public List<string> CheckAllFilters(List<string> source)
+        public List<FileLineProperties> CheckAllFilters(List<FileLineProperties> source)
         {
             source = FilterContains(source);
             source = FilterNotContains(source);
