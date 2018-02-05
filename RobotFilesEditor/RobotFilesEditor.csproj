@@ -96,6 +96,12 @@
     <Compile Include="Model\Filters\DistinctBy.cs" />
     <Compile Include="Model\Operations\DataContentSortTool.cs" />
     <Compile Include="Model\Operations\Operation.cs" />
+    <Compile Include="Model\Serialization\XmlControler.cs" />
+    <Compile Include="Model\Serialization\XmlControlersConfiguration.cs" />
+    <Compile Include="Model\Serialization\XmlDataFilterGroup.cs" />
+    <Compile Include="Model\Serialization\XmlDataOperation.cs" />
+    <Compile Include="Model\Serialization\XmlFileOperation.cs" />
+    <Compile Include="Model\Serialization\XmlFilter.cs" />
     <Compile Include="ViewModel\ControlItem.cs" />
     <Compile Include="Model\Operations\DataOperation.cs" />
     <Compile Include="Model\Operations\FileOperation.cs" />
@@ -104,7 +110,6 @@
     <Compile Include="Model\Operations\IFileDataOperations.cs" />
     <Compile Include="Model\Operations\IFileOperations.cs" />
     <Compile Include="Model\Operations\Operations.cs" />
-    <Compile Include="Model\Serialization\SerializationObjects.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Page Include="MainWindow.xaml">
