@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace RobotFilesEditor
@@ -98,40 +99,36 @@ namespace RobotFilesEditor
         public void SetLinesToAddToFile(List<FileLineProperties> filesContent)
         {
            LinesToAddToFile=CkeckAllFilters(filesContent);
-           var list = LinesToAddToFile.Select(x => x.LineContent).Distinct().ToList();
+           LinesToAddToFile = LinesToAddToFile.DistinctBy(x => x.LineContent).ToList();
         }
 
         public string PrepareGroupToWrite()
         {
             string Buffor = "";
-            //LinesToAddToFile = LinesToAddToFile.OrderBy(x => x).ToList();
 
             if (LinesToAddToFile.Count > 0)
-            {
-                //using(MemoryStream ms=new MemoryStream())
-                
-                //{                    
-                //    for(int i=0; i<SpaceBefor; i++)
-                //    {
-                //        sw.WriteLine();
-                //    } 
+            {               
+                for (int i = 0; i < SpaceBefor; i++)
+                {
+                    Buffor += String.Format("\n");
+                }
 
-                //    if(string.IsNullOrEmpty(Header)==false){
-                //        sw.WriteLine(Header);
-                //    }
-                   
-                //    LinesToAddToFile.ForEach(x => sw.WriteLine(x));
+                if (string.IsNullOrEmpty(Header) == false)
+                {
+                    Buffor += String.Format("{0}\n", Header);
+                }
 
-                //    if (string.IsNullOrEmpty(Footer) == false){
-                //        sw.WriteLine(Footer);
-                //    }
-              
-                //    for (int i = 0; i < SpaceAfter; i++){
-                //        sw.WriteLine();
-                //    }                   
+                LinesToAddToFile.ForEach(x => Buffor+= String.Format("{0}\n", x.LineContent));
 
-                //    Buffor = sw.ToString();   
-                //}
+                if (string.IsNullOrEmpty(Footer) == false)
+                {
+                    Buffor += String.Format("{0}\n", Footer);
+                }
+
+                for (int i = 0; i < SpaceAfter; i++)
+                {
+                    Buffor += String.Format("\n");
+                }       
             }
 
             return Buffor;

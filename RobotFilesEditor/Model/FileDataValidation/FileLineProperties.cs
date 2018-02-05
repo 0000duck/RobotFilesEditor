@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RobotFilesEditor
 {
-    public class FileLineProperties: IEquatable<FileLineProperties>
+    public class FileLineProperties
     {
         public string FileLinePath
         {
@@ -38,7 +38,7 @@ namespace RobotFilesEditor
                 if (_lineContent != value)
                 {
                     _lineContent = value;
-                    VariableName = GetVariableName(value);
+                    Variable = GetVariable(value);                   
                 }
             }
         }
@@ -49,15 +49,11 @@ namespace RobotFilesEditor
             {
                 if(_variableName!=value)
                 {
-                    _variableName = value;
-                    if(string.IsNullOrEmpty(_variableName))
-                    {
-                        VaribleIndex = GetVaribleIndex(_variableName);
-                    }
+                    _variableName = value;                   
                 }
             }        
         }
-        public int VaribleIndex
+        public int VariableIndex
         {
             get { return _variableIndex; }
             set{
@@ -68,24 +64,54 @@ namespace RobotFilesEditor
                 }
             }      
         }
+        public string Variable
+        {
+            get { return _variable; }
+            set
+            {
+                if(_variable!=value)
+                {
+                    _variable = value;
+                    VariableName = GetVariableName(Variable);
+                    if (string.IsNullOrEmpty(VariableName) == false)
+                    {
+                        VariableIndex = GetVaribleIndex(Variable);
+                    }
+                }
+            }
+        }
 
         private string _fileLinePath;
         private int _lineNumber;
         private string _lineContent;
         private string _variableName;
         private int _variableIndex;
+        private string _variable;
 
         private string GetVariableName(string value)
-        {
-            string varPattern= @"[a-zA-Z]+[a-zA-Z0-9_]*[\[0-9\],]*=";
-            //string varNamePattern= @"[a-zA-Z]+[a-zA-Z0-9_]*[\[0-9\],]*";
+        {               
+            string varNamePattern= @"[a-zA-Z]+[a-zA-Z0-9_]*";
             Match match;
             string variableName = "";
             
-            if(value.Length>0)
+            if(Variable.Length>0)
             {
-                match=Regex.Match(value, varPattern);
-                variableName=match.Value.Replace("=", string.Empty);
+                match=Regex.Match(Variable, varNamePattern);
+                variableName = match.Value;
+            }
+            return variableName;
+        }
+
+        private string GetVariable(string value)
+        {
+            string varPattern = @"[a-zA-Z]+[a-zA-Z0-9_]*[\[0-9\],]*=";            
+            Match match;
+            string variableName = "";
+
+            if (value.Length > 0)
+            {
+                match = Regex.Match(value, varPattern);
+                variableName = match.Value.Replace("=", string.Empty);
             }
 
             return variableName;
@@ -100,10 +126,10 @@ namespace RobotFilesEditor
             string valuePattern = "[0-9]+";
             Regex valueRegex = new Regex(valuePattern);
             Match valueMatch;
-
+                        
             int index = -1;
 
-            indexMatch = indexRegex.Match(value);           
+            indexMatch = indexRegex.Match(Variable);           
 
             if (string.IsNullOrEmpty(indexMatch.Value) == false)
             {
@@ -113,16 +139,6 @@ namespace RobotFilesEditor
             }
 
             return index;
-        }
-
-        public bool Equals(FileLineProperties other)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
+        }     
     }
 }

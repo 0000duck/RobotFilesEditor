@@ -166,6 +166,7 @@ namespace RobotFilesEditor
         {
             List<FileLineProperties> filesContent=LoadFilesContent();
             FiltrContentOnGroups(filesContent);
+            DataFilterGroups.ForEach(x => ValidateText.ValidateLienes(x.LinesToAddToFile));
             SortGroupsContent();
             DataFilterGroups.ForEach(x => x.PrepareGroupToWrite());            
             string destinationFile=GetDestinationFile();
@@ -243,34 +244,30 @@ namespace RobotFilesEditor
         {
             string Buffor = "";
 
+
+            if (string.IsNullOrEmpty(FileHeader) == false)
+            {
+                Buffor += String.Format("{0}\n", FileHeader);
+            }
+
             foreach (var filter in DataFilterGroups)
             {
                 if (filter.LinesToAddToFile.Count > 0)
-                {
-                    using (StreamWriter sw = File.CreateText(""))
+                {  
+                    Buffor += String.Format("{0}", filter.PrepareGroupToWrite());                  
+
+                    for (int i = 0; i < GroupSpace; i++)
                     {
-                        if (string.IsNullOrEmpty(FileHeader) == false)
-                        {
-                            sw.WriteLine(FileHeader);
-                        }
-
-                        filter.PrepareGroupToWrite();
-
-                        if (string.IsNullOrEmpty(FileFooter) == false)
-                        {
-                            sw.WriteLine(FileFooter);
-                        }
-
-                        for (int i = 0; i < GroupSpace; i++)
-                        {
-                            sw.WriteLine();
-                        }
-
-                        Buffor = sw.ToString();
-                    }
+                        Buffor += String.Format("\n");
+                    }                                       
                 }
-           }
-                return Buffor;           
+            }
+
+            if (string.IsNullOrEmpty(FileFooter) == false)
+            {
+                Buffor += String.Format("{0}\n", FileFooter);
+            }
+            return Buffor;           
         }
         private List<FileLineProperties> LoadFilesContent()
         {

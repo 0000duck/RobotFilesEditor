@@ -11,35 +11,20 @@ namespace RobotFilesEditor
     {
         public List<DataFilterGroup> SortOlpDataFiles(List<DataFilterGroup> filterGroups)
         {
-            List<FileLineProperties> linesBuffer = new List<FileLineProperties>();
+           
             
             foreach (DataFilterGroup group in filterGroups)
             {
+                List<FileLineProperties> linesBuffer = new List<FileLineProperties>();
+                var groups = group.LinesToAddToFile.OrderBy(x => x.VariableName).GroupBy(y=>y.VariableName);
 
-                group.LinesToAddToFile.GroupBy(x => x.VariableName);
+                foreach(var g in groups)
+                {
+                    linesBuffer.AddRange(g.OrderBy(x => x.VariableIndex).ToList());
+                }
 
-                //sortBuffer = new Dictionary<string, int>();
-
-                //foreach (string line in group.LinesToAddToFile)
-                //{
-                //    indexMatch = indexRegex.Match(line);
-                //    int value = -1;
-
-                //    if (string.IsNullOrEmpty(indexMatch.Value) == false)
-                //    {
-                //        valueMatch = valueRegex.Match(indexMatch.Value);
-
-                //        int.TryParse(valueMatch.Value, out value);
-
-                //        if (indexMatch.Value.Contains(','))
-                //        {
-                //            sortBuffer = UpValues(sortBuffer, value);
-                //        }
-                //    }
-                //    sortBuffer.Add(line, value);
-                //}
-
-                //group.LinesToAddToFile = GroupByContain(sortBuffer, group);
+                group.LinesToAddToFile.Clear();
+                group.LinesToAddToFile = linesBuffer;               
             }
 
             return filterGroups;
