@@ -25,7 +25,7 @@
                                           </xs:sequence>
                                         </xs:complexType>
                                       </xs:element>
-                                      <xs:element name="NotContainArray">
+                                      <xs:element minOccurs="0" name="NotContainArray">
                                         <xs:complexType>
                                           <xs:sequence>
                                             <xs:element name="NotContain" type="xs:string" />
@@ -61,37 +61,15 @@
                           <xs:element maxOccurs="unbounded" name="DataOperation">
                             <xs:complexType>
                               <xs:sequence>
-                                <xs:element minOccurs="0" name="Filter">
-                                  <xs:complexType>
-                                    <xs:sequence>
-                                      <xs:element name="ContainArray">
-                                        <xs:complexType>
-                                          <xs:sequence>
-                                            <xs:element name="Contain" />
-                                          </xs:sequence>
-                                        </xs:complexType>
-                                      </xs:element>
-                                      <xs:element name="NotContainArray">
-                                        <xs:complexType>
-                                          <xs:sequence>
-                                            <xs:element name="NotContain" />
-                                          </xs:sequence>
-                                        </xs:complexType>
-                                      </xs:element>
-                                    </xs:sequence>
-                                    <xs:attribute name="RegexContain" type="xs:string" use="required" />
-                                    <xs:attribute name="RegexNotContain" type="xs:string" use="required" />
-                                  </xs:complexType>
-                                </xs:element>
-                                <xs:element minOccurs="0" name="DataFilterGroupsArray">
+                                <xs:element name="DataFilterGroupsArray">
                                   <xs:complexType>
                                     <xs:sequence>
                                       <xs:element maxOccurs="unbounded" name="DataFilterGroup">
                                         <xs:complexType>
                                           <xs:sequence>
                                             <xs:element name="Filter">
-                                              <xs:complexType>
-                                                <xs:sequence>
+                                              <xs:complexType mixed="true">
+                                                <xs:sequence minOccurs="0">
                                                   <xs:element name="ContainArray">
                                                     <xs:complexType>
                                                       <xs:sequence>
@@ -109,6 +87,7 @@
                                           <xs:attribute name="GroupFooter" type="xs:string" use="required" />
                                           <xs:attribute name="SpaceBeforGroup" type="xs:unsignedByte" use="required" />
                                           <xs:attribute name="SpaceAfterGroup" type="xs:unsignedByte" use="required" />
+                                          <xs:attribute name="OnlyRegex" type="xs:boolean" use="optional" />
                                         </xs:complexType>
                                       </xs:element>
                                     </xs:sequence>
@@ -119,7 +98,7 @@
                               <xs:attribute name="Priority" type="xs:unsignedByte" use="required" />
                               <xs:attribute name="ActionType" type="xs:string" use="required" />
                               <xs:attribute name="DestinationFilePath" type="xs:string" use="required" />
-                              <xs:attribute name="DestinationFileSource" type="xs:string" use="optional" />
+                              <xs:attribute name="DestinationFileSource" type="xs:string" use="required" />
                               <xs:attribute name="FileHeader" type="xs:string" use="required" />
                               <xs:attribute name="FileFooter" type="xs:string" use="required" />
                               <xs:attribute name="GroupSpace" type="xs:unsignedByte" use="required" />

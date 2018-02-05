@@ -26,8 +26,7 @@ namespace RobotFilesEditor
                 }
 
                 //throw new Exception(errorMessage);
-            }
-          
+            }          
         }
 
         private static string CreateErrorInfo(FileLineProperties fileLineProperties)

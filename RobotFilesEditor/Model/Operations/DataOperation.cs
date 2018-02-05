@@ -116,7 +116,7 @@ namespace RobotFilesEditor
         private string _fileFooter;
         private int _groupSpace;
         private string _writeStart;
-        private string _writeStop;
+        private string _writeStop;      
         private List<DataFilterGroup> _dataFilterGroups;
         private List<string> _filesToPrepare;
 
@@ -156,12 +156,10 @@ namespace RobotFilesEditor
                     break;
             }
         }
-
         public DataOperation()
         {
             DataFilterGroups = new List<DataFilterGroup>();
         }
-
         public bool CopyData()
         {
             List<FileLineProperties> filesContent=LoadFilesContent();
@@ -169,7 +167,7 @@ namespace RobotFilesEditor
             DataFilterGroups.ForEach(x => ValidateText.ValidateLienes(x.LinesToAddToFile));
             SortGroupsContent();
             DataFilterGroups.ForEach(x => x.PrepareGroupToWrite());            
-            string destinationFile=GetDestinationFile();
+            string destinationFile=GetCreatedDestinationFile();
             string fileContent = PreparedDataToWrite();
             WriteTextToFile(destinationFile, fileContent);
             return false;
@@ -178,13 +176,11 @@ namespace RobotFilesEditor
         {
             throw new NotImplementedException();
         }
-
         public bool CreateNewFileFromData()
         {
             throw new NotImplementedException();
         }
-
-        private string GetDestinationFile()
+        private string GetCreatedDestinationFile()
         {
             string destinationFilePath="";
             string destinationFile = "";                 
@@ -197,8 +193,12 @@ namespace RobotFilesEditor
 
             if (string.IsNullOrEmpty(destinationFile)==false)
             {
-                File.Copy(destinationFile, Path.Combine(DestinationFilePath, Path.GetFileName(destinationFile)));
-                return Path.Combine(DestinationFilePath, Path.GetFileName(destinationFile));
+                string destination= Path.Combine(DestinationFilePath, Path.GetFileName(destinationFile));
+                if(File.Exists(destination)==false)
+                {
+                    File.Copy(destinationFile, Path.Combine(DestinationFilePath, Path.GetFileName(destinationFile)));
+                }               
+                return destination;
             }else
             {
                 if (Path.GetFileName(DestinationFileSource).IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) != -1)
@@ -208,13 +208,16 @@ namespace RobotFilesEditor
                 else
                 {
                     destinationFilePath = Path.Combine(DestinationFilePath, Path.GetFileName(DestinationFileSource));
-                    File.CreateText(destinationFilePath);
-
+                                      
+                    if (File.Exists(destinationFilePath) == false)
+                    {
+                        File.CreateText(destinationFilePath).Close();
+                    }               
+                   
                     return destinationFilePath;
                 }
             }            
         }
-
         private List<string>GetAllFilesFromDirectory(string path)
         {
             List<string> files = new List<string>();
@@ -239,11 +242,9 @@ namespace RobotFilesEditor
 
             return files;
         }
-
         private string PreparedDataToWrite()
         {
             string Buffor = "";
-
 
             if (string.IsNullOrEmpty(FileHeader) == false)
             {
@@ -277,8 +278,7 @@ namespace RobotFilesEditor
             int lineNumber;
 
             foreach (string path in _filesToPrepare)
-            {
-                
+            {                
                 lineNumber = 1;
                 fileContent = File.ReadAllLines(path);
                  
@@ -298,7 +298,6 @@ namespace RobotFilesEditor
         {
            DataFilterGroups.ForEach(x => x.SetLinesToAddToFile(filesContent));            
         }
-
         private bool WriteTextToFile(string filePath, string fileContet)
         {
             List<string> destinationFile = File.ReadAllLines(filePath).ToList();
@@ -332,7 +331,7 @@ namespace RobotFilesEditor
                 }
                 else
                 {
-                    if (string.IsNullOrEmpty(WriteStop))
+                    if (string.IsNullOrEmpty(WriteStop)==false)
                     {
                         using (StreamWriter fileStream = new StreamWriter(filePath))
                         {
@@ -367,7 +366,6 @@ namespace RobotFilesEditor
 
             return true;
         }
-
         public bool CutData(string operation)
         {
             throw new NotImplementedException();
@@ -376,7 +374,6 @@ namespace RobotFilesEditor
         {
             throw new NotImplementedException();
         }
-
         void SortGroupsContent()
         {
             if(OperationName.ToLower().Contains("olp"))

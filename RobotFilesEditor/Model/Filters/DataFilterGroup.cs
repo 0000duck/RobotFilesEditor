@@ -61,6 +61,18 @@ namespace RobotFilesEditor
                 }
             }
         }
+        public bool OnlyRegex
+        {
+            get { return _onlyRegex; }
+            set
+            {
+
+                if (_onlyRegex != value)
+                {
+                    _onlyRegex = value;
+                }
+            }
+        }
         public List<FileLineProperties> LinesToAddToFile
         {
             get { return _linesToAddToFile; }
@@ -78,6 +90,7 @@ namespace RobotFilesEditor
         private int _spaceBefor;
         private int _spaceAfter;
         private Filter _filter;
+        private bool _onlyRegex;
         private List<FileLineProperties> _linesToAddToFile;
 
         public DataFilterGroup()
@@ -86,11 +99,11 @@ namespace RobotFilesEditor
             LinesToAddToFile = new List<FileLineProperties>();
         }
 
-        public List<FileLineProperties> CkeckAllFilters(List<FileLineProperties> listToCheck)
+        public List<FileLineProperties> CkeckAllFilters(List<FileLineProperties> listToCheck, bool onlyRegex)
         {
             listToCheck = Filter.FilterContains(listToCheck);
             listToCheck = Filter.FilterNotContains(listToCheck);
-            listToCheck = Filter.FilterRegexContain(listToCheck);
+            listToCheck = Filter.FilterRegexContain(listToCheck, onlyRegex);
             listToCheck = Filter.FilterRegexNotContain(listToCheck);
 
             return listToCheck;
@@ -98,7 +111,7 @@ namespace RobotFilesEditor
 
         public void SetLinesToAddToFile(List<FileLineProperties> filesContent)
         {
-           LinesToAddToFile=CkeckAllFilters(filesContent);
+           LinesToAddToFile=CkeckAllFilters(filesContent, OnlyRegex);
            LinesToAddToFile = LinesToAddToFile.DistinctBy(x => x.LineContent).ToList();
         }
 

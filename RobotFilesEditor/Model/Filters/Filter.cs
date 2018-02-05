@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace RobotFilesEditor
@@ -108,7 +109,7 @@ namespace RobotFilesEditor
         {            
             if(string.IsNullOrEmpty(RegexContain) == false)
             {
-                source = source.Where(x => System.Text.RegularExpressions.Regex.IsMatch(Path.GetFileName(x), RegexContain)).ToList();
+                source = source.Where(x => Regex.IsMatch(Path.GetFileName(x), RegexContain)).ToList();
             }
             return source;
         }
@@ -117,7 +118,7 @@ namespace RobotFilesEditor
         {
             if (string.IsNullOrEmpty(RegexNotContain) == false)
             {
-                source = source.Where(x => System.Text.RegularExpressions.Regex.IsMatch(Path.GetFileName(x), RegexNotContain) == false).ToList();
+                source = source.Where(x => Regex.IsMatch(Path.GetFileName(x), RegexNotContain) == false).ToList();
             }
             return source;
         }
@@ -151,29 +152,45 @@ namespace RobotFilesEditor
             return source;
         }
 
-        public List<FileLineProperties> FilterRegexContain(List<FileLineProperties> source)
+        public List<FileLineProperties> FilterRegexContain(List<FileLineProperties> source, bool regexOnly=false)
         {
             if (string.IsNullOrEmpty(RegexContain) == false)
             {
-                source = source.Where(x => System.Text.RegularExpressions.Regex.IsMatch(x.LineContent, RegexContain)).ToList();
+                source = source.Where(x =>Regex.IsMatch(x.LineContent, RegexContain)).ToList();
+
+                if (regexOnly)
+                {
+                    source.ForEach(x => x.LineContent = GetMachFromRegex(x.LineContent, RegexContain));
+                }
             }
             return source;
+        }
+
+        private string GetMachFromRegex(string source, string pattern)
+        {
+            string result;
+            Match match;
+
+            match = Regex.Match(source, pattern);
+            result = match.Value;
+
+            return result;
         }
 
         public List<FileLineProperties> FilterRegexNotContain(List<FileLineProperties> source)
         {
             if (string.IsNullOrEmpty(RegexNotContain) == false)
             {
-                source = source.Where(x => System.Text.RegularExpressions.Regex.IsMatch(x.LineContent, RegexNotContain) == false).ToList();
+                source = source.Where(x => Regex.IsMatch(x.LineContent, RegexNotContain) == false).ToList();
             }
             return source;
         }
 
-        public List<FileLineProperties> CheckAllFilters(List<FileLineProperties> source)
+        public List<FileLineProperties> CheckAllFilters(List<FileLineProperties> source, bool regexOnly=false)
         {
             source = FilterContains(source);
             source = FilterNotContains(source);
-            source = FilterRegexContain(source);
+            source = FilterRegexContain(source, regexOnly);
             source = FilterRegexNotContain(source);
             return source;
         }

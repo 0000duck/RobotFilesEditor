@@ -103,11 +103,12 @@ namespace RobotFilesEditor.Serializer
                         operation.FileFooter = dataOperations.FileFooter;
                         operation.GroupSpace = dataOperations.GroupSpace;
                         operation.WriteStart = dataOperations.WriteStart;
-                        operation.WriteStop = dataOperations.WriteStop;
+                        operation.WriteStop = dataOperations.WriteStop;                        
                         operation.DestinationPath = destinationPath;
                         operation.SourcePath = sourcePath;
+                        
 
-                        foreach(XmlDataFilterGroup filterGroup in dataOperations.DataFilterGroups)
+                        foreach (XmlDataFilterGroup filterGroup in dataOperations.DataFilterGroups)
                         {
                             operation.DataFilterGroups.Add(ParseXmlDataFilterGroupToDataFilterGroup(filterGroup));
                         }
@@ -145,6 +146,7 @@ namespace RobotFilesEditor.Serializer
             dataFilterGroup.Footer = xmlDataFilterGroup.GroupFooter;
             dataFilterGroup.SpaceBefor = xmlDataFilterGroup.SpaceBeforGroup;
             dataFilterGroup.SpaceAfter = xmlDataFilterGroup.SpaceAfterGroup;
+            dataFilterGroup.OnlyRegex = xmlDataFilterGroup.OnlyRegex;
 
             dataFilterGroup.Filter = ParseXmlFilterToFilter(xmlDataFilterGroup?.Filter);
 

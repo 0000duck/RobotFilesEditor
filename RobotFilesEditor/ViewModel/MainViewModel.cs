@@ -201,16 +201,19 @@ namespace RobotFilesEditor.ViewModel
             CopyFilesOperations.Clear();
             CopyTextFromFilesOperations.Clear();
             RemoveFilesOperations.Clear();
-            List<string> operations = new List<string>();           
+            List<string> operations = new List<string>();
+            var opertionGroups = SelectedControler.Operations.FilesOperations.GroupBy(x => x.OperationName);
 
-            foreach (var filter in SelectedControler.Operations.FilesOperations)
+            foreach (var operationGroup in opertionGroups)
             {
-                if (filter.Priority == 0)
+                var operation = operationGroup.FirstOrDefault();
+                
+                if (operation!= null)
                 {
-                    var controlItem = new ControlItem(filter.OperationName);
+                    var controlItem = new ControlItem(operation.OperationName);
                     controlItem.ControlItemSelected += OperationCommandExecute;
 
-                    switch (filter.ActionType)
+                    switch (operation.ActionType)
                     {
                         case GlobalData.Action.Move:
                             {

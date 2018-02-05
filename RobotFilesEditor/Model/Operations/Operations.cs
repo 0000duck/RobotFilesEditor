@@ -21,7 +21,7 @@ namespace RobotFilesEditor
         }
         public void FollowOperation(string operation)
         {             
-            List<FileOperation>fileOperations = FilesOperations.Where(x => x.OperationName==operation).ToList();
+            List<FileOperation>fileOperations = FilesOperations.Where(x => x.OperationName==operation).OrderBy(x=>x.Priority).ToList();
             string NestedSourcePath = "";
 
             foreach(FileOperation fileOperation in fileOperations)
@@ -34,8 +34,17 @@ namespace RobotFilesEditor
                 if (fileOperation.ActionType.ToString().Contains("Data"))
                 {
                     List<string>filesToPrepare=fileOperation.FollowOperation();
-                    DataOperation operationData = DataOperations.FirstOrDefault(x => x.OperationName == fileOperation.OperationName && x.Priority==fileOperation.Priority);
-                    operationData.FollowOperation(filesToPrepare, Path.Combine(fileOperation.DestinationPath));
+
+                    if(filesToPrepare.Count>0)
+                    {
+                        List<DataOperation> dataOperations = DataOperations.Where(x => x.OperationName == fileOperation.OperationName && x.Priority == fileOperation.Priority).ToList();
+
+                        foreach (var dataOperation in dataOperations)
+                        {
+                            dataOperation.FollowOperation(filesToPrepare, Path.Combine(fileOperation.DestinationPath));
+                        }
+                    }
+                                      
                 }else
                 {
                     fileOperation.FollowOperation();

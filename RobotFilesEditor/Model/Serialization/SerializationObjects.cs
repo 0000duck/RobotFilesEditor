@@ -118,7 +118,10 @@ namespace RobotFilesEditor.Serializer
         public int SpaceAfterGroup { get; set; }
 
         [XmlElement("Filter")]
-        public XmlFilter Filter { get; set; }       
+        public XmlFilter Filter { get; set; }
+
+        [XmlAttribute("OnlyRegex")]
+        public bool OnlyRegex { get; set; }
     }
     
     [Serializable]

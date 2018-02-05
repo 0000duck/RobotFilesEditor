@@ -80,6 +80,17 @@ namespace RobotFilesEditor
                 }
             }
         }
+        public bool HasExeption
+        {
+            get { return _hasExeption; }
+            set
+            {
+                if(_hasExeption!=value)
+                {
+                    _hasExeption = value;
+                }
+            }
+        }
 
         private string _fileLinePath;
         private int _lineNumber;
@@ -87,6 +98,7 @@ namespace RobotFilesEditor
         private string _variableName;
         private int _variableIndex;
         private string _variable;
+        private bool _hasExeption;
 
         private string GetVariableName(string value)
         {               
