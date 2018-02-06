@@ -94,9 +94,11 @@
                 </StackPanel>           
             </StackPanel>
             <StackPanel DockPanel.Dock="Right">
-                <ListView>
+                <CheckBox Content="Continue without confirm" HorizontalAlignment="Right" FlowDirection="RightToLeft" Margin="3" IsChecked="{Binding ContinueWithoutConfirm}"/>
+                <ListView Margin="3">
                     
                 </ListView>
+                <Button Content="Confirm action" HorizontalAlignment="Center" Margin="3" Command="{Binding ConfirmActionCommand}" IsEnabled="{Binding ConfirmButtonEnabled}"/>
             </StackPanel>
         </DockPanel>     
     </StackPanel>

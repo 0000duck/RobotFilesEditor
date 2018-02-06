@@ -95,6 +95,7 @@
     <Compile Include="Model\FileDataValidation\ValidateTextBeforeWrite.cs" />
     <Compile Include="Model\Filters\DistinctBy.cs" />
     <Compile Include="Model\Operations\DataContentSortTool.cs" />
+    <Compile Include="Model\Operations\IOperation.cs" />
     <Compile Include="Model\Operations\Operation.cs" />
     <Compile Include="Model\Serialization\XmlControler.cs" />
     <Compile Include="Model\Serialization\XmlControlersConfiguration.cs" />

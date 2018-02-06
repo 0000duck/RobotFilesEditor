@@ -127,6 +127,24 @@ namespace RobotFilesEditor.ViewModel
                 }              
             }
         }
+
+        public bool ContinueWithoutConfirm
+        {
+            get { return _continueWithoutConfirm; }
+            set
+            {
+                if(_continueWithoutConfirm!=value)
+                {
+                    _continueWithoutConfirm = value;                   
+                    RaisePropertyChanged(nameof(ContinueWithoutConfirm));
+                    RaisePropertyChanged(nameof(ConfirmButtonEnabled));
+                }
+            }
+        }
+        public bool ConfirmButtonEnabled
+        {
+            get { return _continueWithoutConfirm == false; }            
+        }
         #endregion Controls
 
         public Controler SelectedControler
@@ -166,6 +184,7 @@ namespace RobotFilesEditor.ViewModel
         private Controler _selectedControler;
         private string _sourcePath;
         private string _destinationPath;
+        private bool _continueWithoutConfirm;
 
         public MainViewModel(List<Controler> controlers)
         {
@@ -174,7 +193,7 @@ namespace RobotFilesEditor.ViewModel
             CopyFilesOperations = new ObservableCollection<ControlItem>();
             CopyTextFromFilesOperations = new ObservableCollection<ControlItem>();
             RemoveFilesOperations = new ObservableCollection<ControlItem>();
-
+          
             Controlers = controlers;
             SourcePath = Controlers.FirstOrDefault().SourcePath;
             DestinationPath = Controlers.FirstOrDefault().DestinationPath;
@@ -202,7 +221,7 @@ namespace RobotFilesEditor.ViewModel
             CopyTextFromFilesOperations.Clear();
             RemoveFilesOperations.Clear();
             List<string> operations = new List<string>();
-            var opertionGroups = SelectedControler.Operations.FilesOperations.GroupBy(x => x.OperationName);
+            var opertionGroups = SelectedControler.Operations.GroupBy(x => x.OperationName);
 
             foreach (var operationGroup in opertionGroups)
             {
@@ -263,11 +282,13 @@ namespace RobotFilesEditor.ViewModel
         #region Command
         public ICommand SetSourcePathCommand { get; set; }
         public ICommand SetDestinationPathCommand { get; set; }
+        public ICommand ConfirmActionCommand { get; set; }
 
         private void SetCommands()
         {
             SetSourcePathCommand = new RelayCommand(SetSourcePathCommandExecute);
             SetDestinationPathCommand = new RelayCommand(SetDestinationPathCommandExecute);
+            ConfirmActionCommand = new RelayCommand(ConfirmActionCommandExecute);
         }
         #endregion Command
 
@@ -279,7 +300,7 @@ namespace RobotFilesEditor.ViewModel
 
         private void OperationCommandExecute(object sender, ControlItem e)
         {
-            SelectedControler.Operations.FollowOperation(e.Content);
+            SelectedControler.ExecuteOperation(e.Content);
         }
 
         private void SetSourcePathCommandExecute()
@@ -305,6 +326,11 @@ namespace RobotFilesEditor.ViewModel
             }
 
             return path;
+        }
+
+        private void ConfirmActionCommandExecute()
+        {
+
         }
     }
 }

@@ -33,9 +33,10 @@ namespace RobotFilesEditor
 
                 if (fileOperation.ActionType.ToString().Contains("Data"))
                 {
-                    List<string>filesToPrepare=fileOperation.FollowOperation();
+                    fileOperation.ExecuteOperation();
+                    List<string>filesToPrepare=fileOperation.GetOperationResult();
 
-                    if(filesToPrepare.Count>0)
+                    if (filesToPrepare.Count>0)
                     {
                         List<DataOperation> dataOperations = DataOperations.Where(x => x.OperationName == fileOperation.OperationName && x.Priority == fileOperation.Priority).ToList();
 
@@ -47,7 +48,7 @@ namespace RobotFilesEditor
                                       
                 }else
                 {
-                    fileOperation.FollowOperation();
+                    fileOperation.ExecuteOperation();
                 }
                 NestedSourcePath = Path.Combine(fileOperation.DestinationPath, fileOperation.DestinationFolder);
             }           

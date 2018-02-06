@@ -44,7 +44,7 @@ namespace RobotFilesEditor
                     {
                         _destinationPath = value;
                         OnPropertyChanged(nameof(DestinationPath));
-                        Operations.FilesOperations.ForEach(x => x.DestinationPath = DestinationPath);
+                        Operations.ForEach(x => x.DestinationPath = DestinationPath);
                     }
                     else
                     {
@@ -69,7 +69,7 @@ namespace RobotFilesEditor
                     {
                         _sourcePath = value;
                         OnPropertyChanged(nameof(SourcePath));
-                        Operations.FilesOperations.ForEach(x => x.SourcePath = SourcePath);
+                        Operations.ForEach(x => x.SourcePath = SourcePath);
                     }
                     else
                     {
@@ -78,7 +78,7 @@ namespace RobotFilesEditor
                 }
             }
         }
-        public Operations Operations
+        public List<IOperation> Operations
         {
             get { return _operations; }
             set
@@ -92,16 +92,14 @@ namespace RobotFilesEditor
         #endregion Public
 
         #region Events
-
         public event PropertyChangedEventHandler PropertyChanged;
-
-        #endregion
+        #endregion Events
 
         #region Private 
         private string _destinationPath;
         private string _sourcePath;
         private string _contolerType;
-        private Operations _operations;
+        private List<IOperation> _operations;
         #endregion Private 
 
         [NotifyPropertyChangedInvocatorAttribute]
@@ -112,7 +110,15 @@ namespace RobotFilesEditor
 
         public Controler()
         {
-            Operations = new Operations();
+            Operations = new List<IOperation>();
         }       
+
+        public void ExecuteOperation(string operationName)
+        {
+            List<IOperation> activeOperations = new List<IOperation>(); 
+
+            activeOperations = Operations.Where(x => x.OperationName.Equals(operationName)).OrderBy(y=>y.Priority).ToList();
+            activeOperations.ForEach(x => x.ExecuteOperation());         
+        }
     }
 }

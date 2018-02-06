@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RobotFilesEditor
 {
@@ -114,8 +110,5 @@ namespace RobotFilesEditor
         protected int _priority;
         #endregion Private      
 
-        public void FollowOperation()
-        { 
-        }
     }
 }

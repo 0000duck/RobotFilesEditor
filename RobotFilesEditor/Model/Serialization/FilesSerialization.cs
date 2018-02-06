@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
+using System.Linq;
 
 namespace RobotFilesEditor.Serializer
 {
@@ -59,10 +60,10 @@ namespace RobotFilesEditor.Serializer
                 sourcePath = controlersConfiguration.SourcePath;
                 destinationPath = controlersConfiguration.DestinationPath;
 
-                foreach (var controlerXml in controlersConfiguration.Contorolers)
+                foreach (var xmlControler in controlersConfiguration.Contorolers)
                 {
                     controler = new Controler();
-                    var controlerType = controlerXml.ControlerType;
+                    var controlerType = xmlControler.ControlerType;
 
                     if (controlers.Exists(x => x.ContolerType == controlerType))
                     {
@@ -73,48 +74,24 @@ namespace RobotFilesEditor.Serializer
                     controler.DestinationPath = destinationPath;
                     controler.SourcePath = sourcePath;
 
-                    foreach(var filesOperations in controlerXml?.FileOperations)
+                    foreach (var dataOperation in xmlControler?.DataOperations)
                     {
-                        FileOperation operation = new FileOperation();
+                        XmlFileOperation fileOperation = xmlControler.FileOperations.FirstOrDefault(x => x.OperationName == dataOperation.FileOperationName && x.Priority == dataOperation.Priority);
+                        DataOperation operation = ParseXmlDataOperationToDataOperation(dataOperation, fileOperation, sourcePath, destinationPath);
 
-                        operation.ActionType = StringToAction(filesOperations.ActionType);
-                        operation.OperationName = filesOperations.OperationName;
-                        operation.DestinationFolder = filesOperations.DestinationFolder;                        
-                        operation.Priority = filesOperations.Priority;                        
-                        operation.DestinationPath = destinationPath;
-                        operation.SourcePath = sourcePath;
-                        operation.FileExtensions = filesOperations.FilesExtensions;
-                        operation.NestedSourcePath = filesOperations.NestedSourcePath;
-                        operation.Filter = ParseXmlFilterToFilter(filesOperations?.Filter);
-
-                        controler.Operations.FilesOperations.Add(operation);
-                    }
-
-                    foreach (var dataOperations in controlerXml?.DataOperations)
-                    {
-                        DataOperation operation = new DataOperation();                   
-
-                        operation.OperationName = dataOperations.FileOperationName;
-                        operation.DestinationFilePath = dataOperations.DestinationFilePath;
-                        operation.DestinationFileSource = dataOperations.DestinationFileSource;
-                        operation.ActionType = StringToAction(dataOperations.ActionType);
-                        operation.Priority = dataOperations.Priority;
-                        operation.FileHeader = dataOperations.FileHeader;
-                        operation.FileFooter = dataOperations.FileFooter;
-                        operation.GroupSpace = dataOperations.GroupSpace;
-                        operation.WriteStart = dataOperations.WriteStart;
-                        operation.WriteStop = dataOperations.WriteStop;                        
-                        operation.DestinationPath = destinationPath;
-                        operation.SourcePath = sourcePath;
+                        xmlControler.FileOperations.Remove(fileOperation);
                         
-
-                        foreach (XmlDataFilterGroup filterGroup in dataOperations.DataFilterGroups)
-                        {
-                            operation.DataFilterGroups.Add(ParseXmlDataFilterGroupToDataFilterGroup(filterGroup));
-                        }
-
-                        controler.Operations.DataOperations.Add(operation);
+                        controler.Operations.Add(operation);
                     }
+
+                    foreach (var filesOperations in xmlControler?.FileOperations)
+                    {
+                        FileOperation operation = ParseXmlFileOperationToFileOperation(filesOperations, sourcePath, destinationPath);
+                        controler.Operations.Add(operation);
+                    }
+
+                    
+
                     controlers.Add(controler);
                 }
             }
@@ -165,6 +142,46 @@ namespace RobotFilesEditor.Serializer
             {
                 throw new FormatException(nameof(action));
             }            
+        }
+
+        private FileOperation ParseXmlFileOperationToFileOperation(XmlFileOperation xmlFileOperation, string source, string desination)
+        {
+            FileOperation fileOperation = new FileOperation();
+
+            fileOperation.ActionType = StringToAction(xmlFileOperation.ActionType);
+            fileOperation.OperationName = xmlFileOperation.OperationName;
+            fileOperation.DestinationFolder = xmlFileOperation.DestinationFolder;
+            fileOperation.Priority = xmlFileOperation.Priority;
+            fileOperation.DestinationPath = desination;
+            fileOperation.SourcePath = desination;
+            fileOperation.FileExtensions = xmlFileOperation.FilesExtensions;
+            fileOperation.NestedSourcePath = xmlFileOperation.NestedSourcePath;
+            fileOperation.Filter = ParseXmlFilterToFilter(xmlFileOperation?.Filter);
+
+            return fileOperation;
+        }
+
+        private DataOperation ParseXmlDataOperationToDataOperation(XmlDataOperation xmlDataOperation, XmlFileOperation xmlFileOperation, string source, string desination)
+        {
+            DataOperation operation = new DataOperation();
+
+            operation.FileOperation = ParseXmlFileOperationToFileOperation(xmlFileOperation, source, desination);
+            operation.OperationName = xmlDataOperation.FileOperationName;
+            operation.DestinationFilePath = xmlDataOperation.DestinationFilePath;
+            operation.DestinationFileSource = xmlDataOperation.DestinationFileSource;
+            operation.ActionType = StringToAction(xmlDataOperation.ActionType);
+            operation.Priority = xmlDataOperation.Priority;
+            operation.FileHeader = xmlDataOperation.FileHeader;
+            operation.FileFooter = xmlDataOperation.FileFooter;
+            operation.GroupSpace = xmlDataOperation.GroupSpace;
+            operation.WriteStart = xmlDataOperation.WriteStart;
+            operation.WriteStop = xmlDataOperation.WriteStop;
+            operation.DestinationPath = desination;
+            operation.SourcePath = source;
+
+            xmlDataOperation.DataFilterGroups.ForEach(x => operation.DataFilterGroups.Add(ParseXmlDataFilterGroupToDataFilterGroup(x)));
+
+            return operation;
         }
 
     }

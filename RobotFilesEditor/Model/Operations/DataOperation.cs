@@ -7,8 +7,113 @@ using System.Threading.Tasks;
 
 namespace RobotFilesEditor
 {
-    public class DataOperation: Operation, IFileDataOperations
+    public class DataOperation: IOperation, IFileDataOperations
     {
+        public FileOperation FileOperation
+        {
+            get { return _fileOperation; }
+            set
+            {
+                if(_fileOperation!=value)
+                {
+                    _fileOperation = value;
+                }
+            }
+        }
+
+        public string OperationName
+        {
+            get { return _operationName; }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    throw new ArgumentNullException(nameof(OperationName));
+                }
+
+                if (_operationName != value)
+                {
+                    _operationName = value;
+                }
+            }
+        }
+        public GlobalData.Action ActionType
+        {
+            get { return _action; }
+            set
+            {
+                if (_action != value)
+                {
+                    _action = value;
+                }
+            }
+        }
+        public string DestinationFolder
+        {
+            get { return _destinationFolder; }
+            set
+            {
+                if (value == null)
+                {
+                    _destinationFolder = string.Empty;
+                }
+
+                if (_destinationFolder != value)
+                {
+                    _destinationFolder = value;
+                }
+            }
+        }
+        public string SourcePath
+        {
+            get { return _sourcePath; }
+            set
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    throw new ArgumentNullException(nameof(SourcePath));
+                }
+
+                if (_sourcePath != value)
+                {
+                    if (Directory.Exists(value))
+                    {
+                        _sourcePath = value;
+                    }
+                    else
+                    {
+                        throw new DirectoryNotFoundException($"Source: \'{value} \'not exist!");
+                    }
+                }
+            }
+        }
+        public string DestinationPath
+        {
+            get { return _destinationPath; }
+            set
+            {
+                if (value == null)
+                {
+                    _destinationPath = string.Empty;
+                }
+
+                if (_destinationPath != value)
+                {
+                    _destinationPath = value;
+                }
+            }
+        }
+        public int Priority
+        {
+            get { return _priority; }
+            set
+            {
+                if (_priority != value)
+                {
+                    _priority = value;
+                }
+            }
+        }
         public List<DataFilterGroup> DataFilterGroups
         {
             get { return _dataFilterGroups; }
@@ -107,8 +212,18 @@ namespace RobotFilesEditor
                     _writeStop = value;
                 }
             }
-        }       
+        }
 
+       
+        #region Private
+        private FileOperation _fileOperation;
+       
+        protected string _operationName;
+        protected GlobalData.Action _action;
+        protected string _destinationFolder;
+        protected string _sourcePath;
+        protected string _destinationPath;
+        protected int _priority;            
         private Filter _filter;
         private string _destinationFilePath; //check if regex contais in Resources or make new file with this name
         private string _destinationFileSource;
@@ -119,42 +234,11 @@ namespace RobotFilesEditor
         private string _writeStop;      
         private List<DataFilterGroup> _dataFilterGroups;
         private List<string> _filesToPrepare;
+        #endregion Private 
 
         public void FollowOperation(List<string>filesToPrepare, string destinationFilePath)
         {
-            if(string.IsNullOrEmpty(destinationFilePath)==false)
-            {
-                if(Directory.Exists(destinationFilePath)==false)
-                {
-                    Directory.CreateDirectory(destinationFilePath);
-                }
-
-                DestinationFilePath = destinationFilePath;
-            }
-
-            if(filesToPrepare?.Count>0)
-            {
-                _filesToPrepare = filesToPrepare;
-            }
-
-            switch (ActionType)
-            {               
-                case GlobalData.Action.CopyData:
-                    {
-                        CopyData();
-                    }
-                    break;
-                case GlobalData.Action.MoveData:
-                    {
-                        CutData();
-                    }
-                    break;
-                case GlobalData.Action.RemoveData:
-                    {
-
-                    }
-                    break;
-            }
+            
         }
         public DataOperation()
         {
@@ -374,6 +458,7 @@ namespace RobotFilesEditor
         {
             throw new NotImplementedException();
         }
+
         void SortGroupsContent()
         {
             if(OperationName.ToLower().Contains("olp"))
@@ -382,6 +467,48 @@ namespace RobotFilesEditor
 
                 DataFilterGroups=sortTool.SortOlpDataFiles(DataFilterGroups);
             }
+        }
+
+        public void ExecuteOperation()
+        {
+            FileOperation.ExecuteOperation();
+            _filesToPrepare = FileOperation.GetOperationResult();
+            
+            if(_filesToPrepare?.Count()==0 || _filesToPrepare==null)
+            {
+                throw new Exception("No files to prepare");
+            }
+            
+            switch (ActionType)
+            {
+                case GlobalData.Action.CopyData:
+                    {
+                        CopyData();
+                    }
+                    break;
+                case GlobalData.Action.MoveData:
+                    {
+                        CutData();
+                    }
+                    break;
+                case GlobalData.Action.RemoveData:
+                    {
+                        //???
+                    }
+                    break;
+            }
+        }
+
+        public List<string> GetOperationResult()
+        {
+            List<string> result = new List<string>();
+
+            if (_filesToPrepare?.Count>0)
+            {
+                DataFilterGroups.ForEach(x => x.LinesToAddToFile.ForEach(y => result.Add(y.LineContent)));
+            }           
+
+            return result;
         }
     }
 }
