@@ -116,7 +116,6 @@ namespace RobotFilesEditor
 
             return CheckFilesCorrectness(destination, filteredFiles);
         }
-
         public bool RemoveFile()
         {
             List<string> filteredFiles = FiltrFiles();
@@ -124,7 +123,6 @@ namespace RobotFilesEditor
 
             return CheckFilesCorrectness(SourcePath, filteredFiles) == false;
         }
-
         string CreateDestinationFolder()
         {
             string destination = Path.Combine(DestinationPath, DestinationFolder);
@@ -136,7 +134,6 @@ namespace RobotFilesEditor
 
             return destination;
         }
-
         bool CheckFilesCorrectness(string path, List<string> sourceFiles)
         {
             List<string> resultFiles = Directory.GetFiles(path).ToList();
@@ -150,7 +147,6 @@ namespace RobotFilesEditor
                 return true;
             }
         }      
-
         public List<string>GetOperatedFiles()
         {
             _fileredFiles = FiltrFiles();

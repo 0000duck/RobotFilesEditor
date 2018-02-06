@@ -22,7 +22,7 @@ namespace RobotFilesEditor
                     foreach (var file in group)
                     {
                         errorMessage += CreateErrorInfo(file);
-                    }
+                    }                    
                 }
 
                 //throw new Exception(errorMessage);
@@ -33,7 +33,7 @@ namespace RobotFilesEditor
         {
             string text =$"Error in file: {Path.GetFileName(fileLineProperties.FileLinePath)}\n" +
                          $"at line: {fileLineProperties.LineNumber}\n" +
-                         $"for varible: \"{fileLineProperties.VariableName}\"\n\n";
+                         $"for varible: \"{fileLineProperties.Variable}\"\n\n";
 
             return text;
         }

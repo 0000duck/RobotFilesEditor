@@ -41,7 +41,7 @@ namespace RobotFilesEditor
 
                         foreach (var dataOperation in dataOperations)
                         {
-                            dataOperation.FollowOperation(filesToPrepare, Path.Combine(fileOperation.DestinationPath));
+                            dataOperation.FollowOperation(filesToPrepare, Path.Combine(fileOperation.DestinationPath, fileOperation.DestinationFolder));
                         }
                     }
                                       

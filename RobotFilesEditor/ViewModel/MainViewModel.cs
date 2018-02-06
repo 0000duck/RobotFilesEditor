@@ -161,7 +161,7 @@ namespace RobotFilesEditor.ViewModel
                 }
             }
         }
-               
+                       
         private List<Controler> _controlers;
         private Controler _selectedControler;
         private string _sourcePath;
@@ -249,7 +249,6 @@ namespace RobotFilesEditor.ViewModel
             RaisePropertyChanged(nameof(CopyTextFromFilesOperationsVisibility));
             RaisePropertyChanged(nameof(RemoveFilesOperationsVisibility));
         }
-
         public void Dispose()
         {
             ControlerChooser?.ToList().ForEach(item => item.ControlItemSelected -= ControlerChooser_Click);
