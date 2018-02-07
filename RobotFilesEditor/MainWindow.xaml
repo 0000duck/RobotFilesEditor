@@ -3,10 +3,17 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
         xmlns:local="clr-namespace:RobotFilesEditor"
         DataContext="{Binding MainVM, Source={StaticResource Locator}}"
         mc:Ignorable="d"
         Title="{Binding SelectedControler.ContolerType}" Name="window" Width="775">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <cmd:EventToCommand Command="{Binding Path=ClosingCommand}" PassEventArgsToCommand="True" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
     <StackPanel>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -95,8 +102,29 @@
             </StackPanel>
             <StackPanel DockPanel.Dock="Right">
                 <CheckBox Content="Continue without confirm" HorizontalAlignment="Right" FlowDirection="RightToLeft" Margin="3" IsChecked="{Binding ContinueWithoutConfirm}"/>
-                <ListView Margin="3">
-                    
+                <ListView Margin="3"  MinHeight="200" ItemsSource="{Binding ResultView}">
+                    <ListView.View>
+                        <GridView >
+                            <GridView.Columns>
+                                <GridViewColumn>
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Label Background="Transparent" 
+                                                           Content="{Binding Path=Content}" 
+                                                           Foreground="{Binding Path=Color}" 
+                                                           ToolTip="{Binding Path=Description}">
+                                                    <Label.InputBindings>
+                                                        <MouseBinding Command="{Binding Path=OpenInNotepadCommand}" MouseAction="LeftClick"/>
+                                                    </Label.InputBindings>
+                                                </Label>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                            </GridView.Columns>
+                        </GridView>
+                    </ListView.View>
                 </ListView>
                 <Button Content="Confirm action" HorizontalAlignment="Center" Margin="3" Command="{Binding ConfirmActionCommand}" IsEnabled="{Binding ConfirmButtonEnabled}"/>
             </StackPanel>

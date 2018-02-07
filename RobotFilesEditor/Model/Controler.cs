@@ -100,6 +100,7 @@ namespace RobotFilesEditor
         private string _sourcePath;
         private string _contolerType;
         private List<IOperation> _operations;
+        private IOperation _activeOperation;
         #endregion Private 
 
         [NotifyPropertyChangedInvocatorAttribute]
@@ -118,7 +119,21 @@ namespace RobotFilesEditor
             List<IOperation> activeOperations = new List<IOperation>(); 
 
             activeOperations = Operations.Where(x => x.OperationName.Equals(operationName)).OrderBy(y=>y.Priority).ToList();
-            activeOperations.ForEach(x => x.ExecuteOperation());         
+            foreach(var operation in activeOperations)
+            {
+                _activeOperation = operation;
+                _activeOperation.ExecuteOperation();
+            }     
+        }
+
+        public List<ResultInfo>GetTextToPrint()
+        {
+            return _activeOperation.GetOperationResult();
+        }
+
+        public string GetSelectetItemPath(string source)
+        {
+            return _activeOperation.GetResutItemPath(source);
         }
     }
 }

@@ -55,10 +55,7 @@ namespace RobotFilesEditor.Serializer
                 if (string.IsNullOrEmpty(controlersConfiguration.DestinationPath))
                 {
                     throw new NullReferenceException();
-                }
-
-                sourcePath = controlersConfiguration.SourcePath;
-                destinationPath = controlersConfiguration.DestinationPath;
+                }              
 
                 foreach (var xmlControler in controlersConfiguration.Contorolers)
                 {
@@ -70,14 +67,12 @@ namespace RobotFilesEditor.Serializer
                         throw new ArgumentException($"Controler type \'{controlerType}\' already exists!" );
                     }
 
-                    controler.ContolerType = controlerType;
-                    controler.DestinationPath = destinationPath;
-                    controler.SourcePath = sourcePath;
+                    controler.ContolerType = controlerType;           
 
                     foreach (var dataOperation in xmlControler?.DataOperations)
                     {
                         XmlFileOperation fileOperation = xmlControler.FileOperations.FirstOrDefault(x => x.OperationName == dataOperation.FileOperationName && x.Priority == dataOperation.Priority);
-                        DataOperation operation = ParseXmlDataOperationToDataOperation(dataOperation, fileOperation, sourcePath, destinationPath);
+                        DataOperation operation = ParseXmlDataOperationToDataOperation(dataOperation, fileOperation);
 
                         xmlControler.FileOperations.Remove(fileOperation);
                         
@@ -86,11 +81,12 @@ namespace RobotFilesEditor.Serializer
 
                     foreach (var filesOperations in xmlControler?.FileOperations)
                     {
-                        FileOperation operation = ParseXmlFileOperationToFileOperation(filesOperations, sourcePath, destinationPath);
+                        FileOperation operation = ParseXmlFileOperationToFileOperation(filesOperations);
                         controler.Operations.Add(operation);
                     }
 
-                    
+                    controler.SourcePath = controlersConfiguration.SourcePath;
+                    controler.DestinationPath = controlersConfiguration.DestinationPath;
 
                     controlers.Add(controler);
                 }
@@ -144,7 +140,7 @@ namespace RobotFilesEditor.Serializer
             }            
         }
 
-        private FileOperation ParseXmlFileOperationToFileOperation(XmlFileOperation xmlFileOperation, string source, string desination)
+        private FileOperation ParseXmlFileOperationToFileOperation(XmlFileOperation xmlFileOperation)
         {
             FileOperation fileOperation = new FileOperation();
 
@@ -152,8 +148,6 @@ namespace RobotFilesEditor.Serializer
             fileOperation.OperationName = xmlFileOperation.OperationName;
             fileOperation.DestinationFolder = xmlFileOperation.DestinationFolder;
             fileOperation.Priority = xmlFileOperation.Priority;
-            fileOperation.DestinationPath = desination;
-            fileOperation.SourcePath = desination;
             fileOperation.FileExtensions = xmlFileOperation.FilesExtensions;
             fileOperation.NestedSourcePath = xmlFileOperation.NestedSourcePath;
             fileOperation.Filter = ParseXmlFilterToFilter(xmlFileOperation?.Filter);
@@ -161,11 +155,11 @@ namespace RobotFilesEditor.Serializer
             return fileOperation;
         }
 
-        private DataOperation ParseXmlDataOperationToDataOperation(XmlDataOperation xmlDataOperation, XmlFileOperation xmlFileOperation, string source, string desination)
+        private DataOperation ParseXmlDataOperationToDataOperation(XmlDataOperation xmlDataOperation, XmlFileOperation xmlFileOperation)
         {
             DataOperation operation = new DataOperation();
 
-            operation.FileOperation = ParseXmlFileOperationToFileOperation(xmlFileOperation, source, desination);
+            operation.FileOperation = ParseXmlFileOperationToFileOperation(xmlFileOperation);
             operation.OperationName = xmlDataOperation.FileOperationName;
             operation.DestinationFilePath = xmlDataOperation.DestinationFilePath;
             operation.DestinationFileSource = xmlDataOperation.DestinationFileSource;
@@ -176,9 +170,7 @@ namespace RobotFilesEditor.Serializer
             operation.GroupSpace = xmlDataOperation.GroupSpace;
             operation.WriteStart = xmlDataOperation.WriteStart;
             operation.WriteStop = xmlDataOperation.WriteStop;
-            operation.DestinationPath = desination;
-            operation.SourcePath = source;
-
+       
             xmlDataOperation.DataFilterGroups.ForEach(x => operation.DataFilterGroups.Add(ParseXmlDataFilterGroupToDataFilterGroup(x)));
 
             return operation;

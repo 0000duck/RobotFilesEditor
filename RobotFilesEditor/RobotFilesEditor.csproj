@@ -92,11 +92,11 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Model\FileDataValidation\FileLineProperties.cs" />
+    <Compile Include="Model\FileDataValidation\ResultInfo.cs" />
     <Compile Include="Model\FileDataValidation\ValidateTextBeforeWrite.cs" />
     <Compile Include="Model\Filters\DistinctBy.cs" />
     <Compile Include="Model\Operations\DataContentSortTool.cs" />
     <Compile Include="Model\Operations\IOperation.cs" />
-    <Compile Include="Model\Operations\Operation.cs" />
     <Compile Include="Model\Serialization\XmlControler.cs" />
     <Compile Include="Model\Serialization\XmlControlersConfiguration.cs" />
     <Compile Include="Model\Serialization\XmlDataFilterGroup.cs" />
@@ -110,7 +110,6 @@
     <Compile Include="Model\Filters\Filter.cs" />
     <Compile Include="Model\Operations\IFileDataOperations.cs" />
     <Compile Include="Model\Operations\IFileOperations.cs" />
-    <Compile Include="Model\Operations\Operations.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
     <Page Include="MainWindow.xaml">

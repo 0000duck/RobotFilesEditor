@@ -145,6 +145,19 @@ namespace RobotFilesEditor.ViewModel
         {
             get { return _continueWithoutConfirm == false; }            
         }
+
+        public ObservableCollection<ResultInfo>ResultView
+        {
+            get { return _resultView; }
+            set
+            {
+                if(_resultView!=value)
+                {
+                    _resultView = value;
+                    RaisePropertyChanged(nameof(ResultView));
+                }
+            }
+        }
         #endregion Controls
 
         public Controler SelectedControler
@@ -185,6 +198,7 @@ namespace RobotFilesEditor.ViewModel
         private string _sourcePath;
         private string _destinationPath;
         private bool _continueWithoutConfirm;
+        private ObservableCollection<ResultInfo> _resultView;
 
         public MainViewModel(List<Controler> controlers)
         {
@@ -193,6 +207,7 @@ namespace RobotFilesEditor.ViewModel
             CopyFilesOperations = new ObservableCollection<ControlItem>();
             CopyTextFromFilesOperations = new ObservableCollection<ControlItem>();
             RemoveFilesOperations = new ObservableCollection<ControlItem>();
+            ResultView = new ObservableCollection<ResultInfo>();
           
             Controlers = controlers;
             SourcePath = Controlers.FirstOrDefault().SourcePath;
@@ -283,12 +298,13 @@ namespace RobotFilesEditor.ViewModel
         public ICommand SetSourcePathCommand { get; set; }
         public ICommand SetDestinationPathCommand { get; set; }
         public ICommand ConfirmActionCommand { get; set; }
-
+        public ICommand ClosingCommand { get; set; }
         private void SetCommands()
         {
             SetSourcePathCommand = new RelayCommand(SetSourcePathCommandExecute);
             SetDestinationPathCommand = new RelayCommand(SetDestinationPathCommandExecute);
             ConfirmActionCommand = new RelayCommand(ConfirmActionCommandExecute);
+            ClosingCommand = new RelayCommand(ClosingCommandExecute);
         }
         #endregion Command
 
@@ -301,6 +317,9 @@ namespace RobotFilesEditor.ViewModel
         private void OperationCommandExecute(object sender, ControlItem e)
         {
             SelectedControler.ExecuteOperation(e.Content);
+            var tmpResult=SelectedControler.GetTextToPrint();
+            ResultView.Clear();
+            tmpResult.ForEach(x => ResultView.Add(x));
         }
 
         private void SetSourcePathCommandExecute()
@@ -332,5 +351,12 @@ namespace RobotFilesEditor.ViewModel
         {
 
         }
+
+        private void ClosingCommandExecute()
+        {
+
+        }
+
+      
     }
 }

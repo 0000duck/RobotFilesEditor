@@ -14,7 +14,8 @@ namespace RobotFilesEditor
 
         #endregion Public
         void ExecuteOperation();
-        List<string> GetOperationResult();
+        List<ResultInfo> GetOperationResult();
+        string GetResutItemPath(string source);
                         
     }
 }

@@ -79,6 +79,7 @@ namespace RobotFilesEditor
                     if (Directory.Exists(value))
                     {
                         _sourcePath = value;
+                        FileOperation.SourcePath = SourcePath;
                     }
                     else
                     {
@@ -100,6 +101,7 @@ namespace RobotFilesEditor
                 if (_destinationPath != value)
                 {
                     _destinationPath = value;
+                    FileOperation.DestinationPath = DestinationPath;
                 }
             }
         }
@@ -231,41 +233,59 @@ namespace RobotFilesEditor
         private string _fileFooter;
         private int _groupSpace;
         private string _writeStart;
-        private string _writeStop;      
+        private string _writeStop;
+        private List<string> _textToWrite;     
         private List<DataFilterGroup> _dataFilterGroups;
         private List<string> _filesToPrepare;
+        private List<ResultInfo> _resultInfos;
         #endregion Private 
 
-        public void FollowOperation(List<string>filesToPrepare, string destinationFilePath)
-        {
-            
-        }
         public DataOperation()
         {
             DataFilterGroups = new List<DataFilterGroup>();
         }
-        public bool CopyData()
+        public void CopyData()
         {
+            #region LoadData
             List<FileLineProperties> filesContent=LoadFilesContent();
+            #endregion LoadData
+
+            #region FilterData
             FiltrContentOnGroups(filesContent);
-            DataFilterGroups.ForEach(x => ValidateText.ValidateLienes(x.LinesToAddToFile));
+            #endregion FilterData
+
+            #region ValidateData
+            DataFilterGroups.ForEach(x =>x.LinesToAddToFile=ValidateText.ValidateLienes(x.LinesToAddToFile));
+            #endregion
+
+            #region OrganizeData
             SortGroupsContent();
-            DataFilterGroups.ForEach(x => x.PrepareGroupToWrite());            
+            #endregion
+
+            #region PrepareData
+            //DataFilterGroups.ForEach(x => x.PrepareGroupToWrite());
+            #endregion
+
+            #region WriteData
             string destinationFile=GetCreatedDestinationFile();
             string fileContent = PreparedDataToWrite();
-            WriteTextToFile(destinationFile, fileContent);
-            return false;
+            PrepareTextToWrite(destinationFile, fileContent);
+            WriteToFile(destinationFile);
+            #endregion 
+
         }
-        public bool CutData()
+        public void CutData()
         {
             throw new NotImplementedException();
         }
-        public bool CreateNewFileFromData()
+        public void CreateNewFileFromData()
         {
             throw new NotImplementedException();
         }
         private string GetCreatedDestinationFile()
         {
+            DestinationFilePath = FileOperation.CreateDestinationFolderPath(); 
+
             string destinationFilePath="";
             string destinationFile = "";                 
 
@@ -328,31 +348,36 @@ namespace RobotFilesEditor
         }
         private string PreparedDataToWrite()
         {
-            string Buffor = "";
+            string buffor = "";
+            List<ResultInfo> resultInfos = new List<ResultInfo>();
 
             if (string.IsNullOrEmpty(FileHeader) == false)
             {
-                Buffor += String.Format("{0}\n", FileHeader);
+                resultInfos.Add(ResultInfo.CreateResultInfo(FileHeader));               
             }
 
             foreach (var filter in DataFilterGroups)
             {
                 if (filter.LinesToAddToFile.Count > 0)
-                {  
-                    Buffor += String.Format("{0}", filter.PrepareGroupToWrite());                  
+                {
+                    filter.PrepareGroupToWrite(ref resultInfos);
 
                     for (int i = 0; i < GroupSpace; i++)
                     {
-                        Buffor += String.Format("\n");
+                        resultInfos.Add(ResultInfo.CreateResultInfo(String.Format("")));
                     }                                       
                 }
             }
 
             if (string.IsNullOrEmpty(FileFooter) == false)
             {
-                Buffor += String.Format("{0}\n", FileFooter);
+                resultInfos.Add(ResultInfo.CreateResultInfo(FileFooter));               
             }
-            return Buffor;           
+
+            _resultInfos = resultInfos;
+            resultInfos.ForEach(x => buffor += $"{x.Content}\n");
+
+            return buffor;           
         }
         private List<FileLineProperties> LoadFilesContent()
         {
@@ -382,73 +407,79 @@ namespace RobotFilesEditor
         {
            DataFilterGroups.ForEach(x => x.SetLinesToAddToFile(filesContent));            
         }
-        private bool WriteTextToFile(string filePath, string fileContet)
+        private void PrepareTextToWrite(string filePath, string fileContet)
         {
             List<string> destinationFile = File.ReadAllLines(filePath).ToList();
             bool writed = false;
+            List<string> buffer = new List<string>();
 
-            if(destinationFile?.Count>0)
-            {               
+            if (destinationFile?.Count > 0)
+            {
                 if (string.IsNullOrEmpty(WriteStart) == false)
-                {                    
-                        using (StreamWriter fileStream = new StreamWriter(filePath))
+                {
+                    foreach (string line in destinationFile)
+                    {
+                        if (line.Contains(WriteStart))
                         {
-                            foreach (string line in destinationFile)
-                            {
-                                if (line.Contains(WriteStart))
-                                {
-                                    fileStream.WriteLine(line);
-                                    fileStream.Write(fileContet);
-                                    writed = true;
-                                }
-                                else
-                                {
-                                    fileStream.WriteLine(line);
-                                }
-                            }
+                            buffer.Add(line);
+                            buffer.AddRange(fileContet.Split('\n').ToList());
+                            writed = true;
+                        }
+                        else
+                        {
+                            buffer.Add(line);
+                        }
+                    }
 
-                            if(writed!=true)
-                            {
-                                fileStream.Write(fileContet);
-                            }
-                        }                   
+                    if (writed != true)
+                    {
+                        buffer.AddRange(fileContet.Split('\n').ToList());
+                    }
+
+                    _textToWrite=buffer;                   
                 }
                 else
                 {
-                    if (string.IsNullOrEmpty(WriteStop)==false)
-                    {
-                        using (StreamWriter fileStream = new StreamWriter(filePath))
+                    if (string.IsNullOrEmpty(WriteStop) == false)
+                    {                      
+                        foreach (string line in destinationFile)
                         {
-                            foreach (string line in destinationFile)
+                            if (line.Contains(WriteStop))
                             {
-                                if (line.Contains(WriteStop))
-                                {
-                                    fileStream.Write(fileContet);
-                                    fileStream.WriteLine(line);
-                                    writed = true;
-                                }
-                                else
-                                {
-                                    fileStream.WriteLine(line);
-                                }
+                                buffer.AddRange(fileContet.Split('\n').ToList());
+                                buffer.Add(line);
+                                writed = true;
                             }
-
-                            if (writed != true)
+                            else
                             {
-                                fileStream.Write(fileContet);
+                                buffer.Add(line);
                             }
                         }
+
+                        if (writed != true)
+                        {
+                            buffer.AddRange(fileContet.Split('\n').ToList());
+                        }
+                        _textToWrite=buffer;                     
                     }
                 }
-            }else
+            }
+            else
+            {          
+                buffer.AddRange(fileContet.Split('\n').ToList());
+                _textToWrite=buffer;               
+            }
+        }
+
+        private void WriteToFile(string filePath)
+        {    
+            if(_textToWrite?.Count>0)
             {
                 using (StreamWriter fileStream = new StreamWriter(filePath))
                 {
-                    fileStream.Write(fileContet);
+                    _textToWrite.ForEach(x => fileStream.WriteLine(x));                    
                 }
-            }          
-
-            return true;
+            }            
         }
         public bool CutData(string operation)
         {
@@ -472,12 +503,12 @@ namespace RobotFilesEditor
         public void ExecuteOperation()
         {
             FileOperation.ExecuteOperation();
-            _filesToPrepare = FileOperation.GetOperationResult();
+            _filesToPrepare = FileOperation.FilteredFiles;
             
-            if(_filesToPrepare?.Count()==0 || _filesToPrepare==null)
-            {
-                throw new Exception("No files to prepare");
-            }
+            //if(_filesToPrepare?.Count()==0 || _filesToPrepare==null)
+            //{
+            //    throw new Exception("No files to prepare");
+            //}
             
             switch (ActionType)
             {
@@ -499,14 +530,16 @@ namespace RobotFilesEditor
             }
         }
 
-        public List<string> GetOperationResult()
+        public List<ResultInfo> GetOperationResult()
         {
-            List<string> result = new List<string>();
+            return _resultInfos;
+        }
 
-            if (_filesToPrepare?.Count>0)
-            {
-                DataFilterGroups.ForEach(x => x.LinesToAddToFile.ForEach(y => result.Add(y.LineContent)));
-            }           
+        public string GetResutItemPath(string source)
+        {
+            string result = "";
+
+            result = DataFilterGroups.FirstOrDefault(x => x.LinesToAddToFile.Exists(y => y.LineContent.Equals(source))).LinesToAddToFile.FirstOrDefault().FileLinePath;
 
             return result;
         }

@@ -134,6 +134,17 @@ namespace RobotFilesEditor
                 }
             }
         }
+        public List<string>FilteredFiles
+        {
+            get { return _filteredFiles; }
+            set
+            {
+                if(_filteredFiles!=value)
+                {
+                    _filteredFiles = value;
+                }
+            }
+        }
         #endregion Public
 
         #region Private
@@ -146,10 +157,10 @@ namespace RobotFilesEditor
         private List<string> _fileExtensions;
         private Filter _filter;
         private bool _nestedSourcePath;
-        private List<string> _fileredFiles;
+        private List<string> _filteredFiles;
         #endregion Private
     
-        private List<string> FiltrFiles()
+        private void FiltrFiles()
         {
             string[] allFilesAtSourcePath = Directory.GetFiles(SourcePath);
             List<string> filteredFiles = new List<string>();
@@ -163,35 +174,32 @@ namespace RobotFilesEditor
                 filteredFiles = allFilesAtSourcePath.ToList();
             }
 
-            filteredFiles = Filter.CheckAllFilesFilters(filteredFiles);
-
-            return filteredFiles;
+            FilteredFiles = Filter.CheckAllFilesFilters(filteredFiles);            
         }       
         public bool CopyFile()
         {
-            List<string> filteredFiles = FiltrFiles();
-            string destination = CreateDestinationFolder();
-            filteredFiles.ForEach(x => File.Copy(x, Path.Combine(destination, Path.GetFileName(x))));
+            FiltrFiles();
+            string destination = CreateDestinationFolderPath();
+            FilteredFiles.ForEach(x => File.Copy(x, Path.Combine(destination, Path.GetFileName(x))));
 
-            return CheckFilesCorrectness(destination, filteredFiles);
+            return CheckFilesCorrectness(destination);
         }
         public bool MoveFile()
-        {          
-            List<string> filteredFiles = FiltrFiles();
+        {
+            FiltrFiles();
+            string destination = CreateDestinationFolderPath();
+            FilteredFiles.ForEach(x => File.Move(x, Path.Combine(destination, Path.GetFileName(x))));
 
-            string destination = CreateDestinationFolder();
-            filteredFiles.ForEach(x => File.Move(x, Path.Combine(destination, Path.GetFileName(x))));
-
-            return CheckFilesCorrectness(destination, filteredFiles);
+            return CheckFilesCorrectness(destination);
         }
         public bool RemoveFile()
         {
-            List<string> filteredFiles = FiltrFiles();
-            filteredFiles.ForEach(x => File.Delete(x));
+            FiltrFiles();
+            FilteredFiles.ForEach(x => File.Delete(x));
 
-            return CheckFilesCorrectness(SourcePath, filteredFiles) == false;
+            return CheckFilesCorrectness(SourcePath) == false;
         }
-        string CreateDestinationFolder()
+        public string CreateDestinationFolderPath()
         {
             string destination = Path.Combine(DestinationPath, DestinationFolder);
 
@@ -202,11 +210,11 @@ namespace RobotFilesEditor
 
             return destination;
         }
-        bool CheckFilesCorrectness(string path, List<string> sourceFiles)
+        bool CheckFilesCorrectness(string path)
         {
             List<string> resultFiles = Directory.GetFiles(path).ToList();
 
-            if (sourceFiles.Exists(s => resultFiles.Exists(r => Path.GetFileName(r) == Path.GetFileName(s)) == false))
+            if (FilteredFiles.Exists(s => resultFiles.Exists(r => Path.GetFileName(r) == Path.GetFileName(s)) == false))
             {
                 return false;
             }
@@ -216,9 +224,8 @@ namespace RobotFilesEditor
             }
         }      
         public List<string>GetOperatedFiles()
-        {
-            _fileredFiles = FiltrFiles();
-            return _fileredFiles;
+        {           
+            return FilteredFiles;
         }
 
         #region InterfaceImplementation
@@ -245,14 +252,25 @@ namespace RobotFilesEditor
                     break;
                 default :
                     {
-                        _fileredFiles = FiltrFiles();
+                        FiltrFiles();
                     }
                     break;
             }
         }
-        public List<string> GetOperationResult()
+        public List<ResultInfo> GetOperationResult()
         {
-            return _fileredFiles;
+            List<ResultInfo> resultInfos = new List<ResultInfo>();
+            FilteredFiles.ForEach(x => resultInfos.Add(new ResultInfo() { Content = Path.GetFileName(x), Path = x }));         
+                                
+            return resultInfos;
+        }
+
+        public string GetResutItemPath(string source)
+        {
+            string result;
+            result = FilteredFiles.FirstOrDefault(x => x.Equals(source));
+
+            return result;
         }
         #endregion InterfaceImplementation
     }

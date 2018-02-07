@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace RobotFilesEditor
@@ -115,36 +116,40 @@ namespace RobotFilesEditor
            LinesToAddToFile = LinesToAddToFile.DistinctBy(x => x.LineContent).ToList();
         }
 
-        public string PrepareGroupToWrite()
+        public void PrepareGroupToWrite(ref List<ResultInfo> resultInfos)
         {
-            string Buffor = "";
+            if (resultInfos == null)
+            {
+                resultInfos = new List<ResultInfo>();
+            }
 
             if (LinesToAddToFile.Count > 0)
             {               
                 for (int i = 0; i < SpaceBefor; i++)
                 {
-                    Buffor += String.Format("\n");
+                    resultInfos.Add(ResultInfo.CreateResultInfo(""));
                 }
 
                 if (string.IsNullOrEmpty(Header) == false)
                 {
-                    Buffor += String.Format("{0}\n", Header);
+                    resultInfos.Add(ResultInfo.CreateResultInfo(Header));
                 }
 
-                LinesToAddToFile.ForEach(x => Buffor+= String.Format("{0}\n", x.LineContent));
-
+                foreach(var line in LinesToAddToFile)
+                {
+                    resultInfos.Add(ResultInfo.CreateResultInfo(line));
+                }
+               
                 if (string.IsNullOrEmpty(Footer) == false)
                 {
-                    Buffor += String.Format("{0}\n", Footer);
+                    resultInfos.Add(ResultInfo.CreateResultInfo(Footer));
                 }
 
                 for (int i = 0; i < SpaceAfter; i++)
                 {
-                    Buffor += String.Format("\n");
-                }       
-            }
-
-            return Buffor;
-        }       
+                    resultInfos.Add(ResultInfo.CreateResultInfo(String.Format("")));
+                }
+            }                 
+        }
     }
 }
