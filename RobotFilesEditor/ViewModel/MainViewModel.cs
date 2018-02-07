@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
+using System.Windows;
 
 namespace RobotFilesEditor.ViewModel
 {
@@ -316,10 +317,17 @@ namespace RobotFilesEditor.ViewModel
 
         private void OperationCommandExecute(object sender, ControlItem e)
         {
-            SelectedControler.ExecuteOperation(e.Content);
-            var tmpResult=SelectedControler.GetTextToPrint();
-            ResultView.Clear();
-            tmpResult.ForEach(x => ResultView.Add(x));
+            try
+            {
+                SelectedControler.ExecuteOperation(e.Content);
+                var tmpResult=SelectedControler.GetTextToPrint();
+                ResultView.Clear();
+                tmpResult.ForEach(x => ResultView.Add(x));
+            }
+            catch (Exception ex)
+            {
+                MessageBoxResult ExeptionMessage = MessageBox.Show(ex.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error); ;
+            }           
         }
 
         private void SetSourcePathCommandExecute()

@@ -247,32 +247,39 @@ namespace RobotFilesEditor
     }
         public void CopyData()
         {
-            #region LoadData
-            List<FileLineProperties> filesContent=LoadFilesContent();
-            #endregion LoadData
+            try
+            {
+                #region LoadData
+                List<FileLineProperties> filesContent = LoadFilesContent();
+                #endregion LoadData
 
-            #region FilterData
-            FiltrContentOnGroups(filesContent);
-            #endregion FilterData
+                #region FilterData
+                FiltrContentOnGroups(filesContent);
+                #endregion FilterData
 
-            #region ValidateData
-            DataFilterGroups.ForEach(x =>x.LinesToAddToFile=ValidateText.ValidateLienes(x.LinesToAddToFile));
-            #endregion
+                #region ValidateData
+                DataFilterGroups.ForEach(x => x.LinesToAddToFile = ValidateText.ValidateLienes(x.LinesToAddToFile));
+                #endregion
 
-            #region OrganizeData
-            SortGroupsContent();
-            #endregion
+                #region OrganizeData
+                SortGroupsContent();
+                #endregion
 
-            #region PrepareData
-            //DataFilterGroups.ForEach(x => x.PrepareGroupToWrite(ref _resultInfos));
-            #endregion
+                #region PrepareData
+                //DataFilterGroups.ForEach(x => x.PrepareGroupToWrite(ref _resultInfos));
+                #endregion
 
-            #region WriteData
-            string destinationFile=GetCreatedDestinationFile();
-            string fileContent = PreparedDataToWrite();
-            PrepareTextToWrite(destinationFile, fileContent);
-            WriteToFile(destinationFile);
-            #endregion 
+                #region WriteData
+                string destinationFile = GetCreatedDestinationFile();
+                List<string> fileContent = PreparedDataToWrite();
+                PrepareTextToWrite(destinationFile, fileContent);
+                WriteToFile(destinationFile);
+                #endregion 
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }           
         }
         public void CutData()
         {
@@ -284,98 +291,121 @@ namespace RobotFilesEditor
         }
         private string GetCreatedDestinationFile()
         {
-            DestinationFilePath = FileOperation.CreateDestinationFolderPath(); 
-
             string destinationFilePath="";
-            string destinationFile = "";                 
+            string destinationFile = "";
+            
+            try
+            {
+                DestinationFilePath = FileOperation.CreateDestinationFolderPath();
 
-            if(string.IsNullOrEmpty(DestinationFileSource)==false)
-            {
-                string[] files = GetAllFilesFromDirectory(@"...\Resources").ToArray();
-                destinationFile = files.FirstOrDefault(x => System.Text.RegularExpressions.Regex.IsMatch(x, DestinationFileSource));
-            }            
+                if (string.IsNullOrEmpty(DestinationFileSource) == false)
+                {
+                    string[] files = GetAllFilesFromDirectory(@"...\Resources").ToArray();
+                    destinationFile = files.FirstOrDefault(x => System.Text.RegularExpressions.Regex.IsMatch(x, DestinationFileSource));
+                }
 
-            if (string.IsNullOrEmpty(destinationFile)==false)
-            {
-                string destination= Path.Combine(DestinationFilePath, Path.GetFileName(destinationFile));
-                if(File.Exists(destination)==false)
+                if (string.IsNullOrEmpty(destinationFile) == false)
                 {
-                    File.Copy(destinationFile, Path.Combine(DestinationFilePath, Path.GetFileName(destinationFile)));
-                }               
-                return destination;
-            }else
-            {
-                if (Path.GetFileName(DestinationFileSource).IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) != -1)
-                {
-                    throw new FileFormatException(nameof(DestinationFilePath));
+                    string destination = Path.Combine(DestinationFilePath, Path.GetFileName(destinationFile));
+                    if (File.Exists(destination) == false)
+                    {
+                        File.Copy(destinationFile, Path.Combine(DestinationFilePath, Path.GetFileName(destinationFile)));
+                    }
+                    return destination;
                 }
                 else
                 {
-                    destinationFilePath = Path.Combine(DestinationFilePath, Path.GetFileName(DestinationFileSource));
-                                      
-                    if (File.Exists(destinationFilePath) == false)
+                    if (Path.GetFileName(DestinationFileSource).IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) != -1)
                     {
-                        File.CreateText(destinationFilePath).Close();
-                    }               
-                   
-                    return destinationFilePath;
+                        throw new FileFormatException(nameof(DestinationFilePath));
+                    }
+                    else
+                    {
+                        destinationFilePath = Path.Combine(DestinationFilePath, Path.GetFileName(DestinationFileSource));
+
+                        if (File.Exists(destinationFilePath) == false)
+                        {
+                            File.CreateText(destinationFilePath).Close();
+                        }
+
+                        return destinationFilePath;
+                    }
                 }
-            }            
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }                        
         }
         private List<string>GetAllFilesFromDirectory(string path)
         {
             List<string> files = new List<string>();
-            string[] paths = Directory.GetFileSystemEntries(path);
 
-            foreach (var p in paths)
-            {               
-                if (string.IsNullOrEmpty(Path.GetExtension(p)))
+            try
+            {
+                string[] paths = Directory.GetFileSystemEntries(path);
+
+                foreach (var p in paths)
                 {
-                    var temp = GetAllFilesFromDirectory(p);
-
-                    if (temp.Count>0)
+                    if (string.IsNullOrEmpty(Path.GetExtension(p)))
                     {
-                        files.AddRange(temp);
+                        var temp = GetAllFilesFromDirectory(p);
+
+                        if (temp.Count > 0)
+                        {
+                            files.AddRange(temp);
+                        }
                     }
-                }
-                else
+                    else
                     {
                         files.Add(p);
-                    }                
+                    }
+                }
             }
+            catch (Exception ex)
+            {
+                throw ex;
+            }            
 
             return files;
         }
-        private string PreparedDataToWrite()
+        private List<string> PreparedDataToWrite()
         {
-            string buffor = "";
+            List<string> buffor = new List<string>();
             List<ResultInfo> resultInfos = new List<ResultInfo>();
 
-            if (string.IsNullOrEmpty(FileHeader) == false)
+            try
             {
-                resultInfos.Add(ResultInfo.CreateResultInfo(FileHeader));               
-            }
-
-            foreach (var filter in DataFilterGroups)
-            {
-                if (filter.LinesToAddToFile.Count > 0)
+                if (string.IsNullOrEmpty(FileHeader) == false)
                 {
-                    filter.PrepareGroupToWrite(ref resultInfos);
-
-                    for (int i = 0; i < GroupSpace; i++)
-                    {
-                        resultInfos.Add(ResultInfo.CreateResultInfo(String.Format("")));
-                    }                                       
+                    resultInfos.Add(ResultInfo.CreateResultInfo(FileHeader));
                 }
-            }
 
-            if (string.IsNullOrEmpty(FileFooter) == false)
+                foreach (var filter in DataFilterGroups)
+                {
+                    if (filter.LinesToAddToFile.Count > 0)
+                    {
+                        filter.PrepareGroupToWrite(ref resultInfos);
+
+                        for (int i = 0; i < GroupSpace; i++)
+                        {
+                            resultInfos.Add(ResultInfo.CreateResultInfo(String.Format("")));
+                        }
+                    }
+                }
+
+                if (string.IsNullOrEmpty(FileFooter) == false)
+                {
+                    resultInfos.Add(ResultInfo.CreateResultInfo(FileFooter));
+                }
+
+                _resultInfos = resultInfos;
+                resultInfos.ForEach(x => buffor.Add(x.Content));
+            }
+            catch (Exception ex)
             {
-                resultInfos.Add(ResultInfo.CreateResultInfo(FileFooter));               
-            }
-
-            _resultInfos = resultInfos;
-            resultInfos.ForEach(x => buffor += $"{x.Content}\n");
+                throw ex;
+            }          
 
             return buffor;           
         }
@@ -386,68 +416,62 @@ namespace RobotFilesEditor
             string []fileContent;
             int lineNumber;
 
-            foreach (string path in _filesToPrepare)
-            {                
-                lineNumber = 1;
-                fileContent = File.ReadAllLines(path);
-                 
-                foreach(string line in fileContent)
+            try
+            {
+                foreach (string path in _filesToPrepare)
                 {
-                    fileLineProperties = new FileLineProperties();
-                    fileLineProperties.FileLinePath = path;
-                    fileLineProperties.LineContent = line;
-                    fileLineProperties.LineNumber = lineNumber;                    
-                    lineNumber++;
-                    filesContent.Add(fileLineProperties);
-                }                
+                    lineNumber = 1;
+                    fileContent = File.ReadAllLines(path);
+
+                    foreach (string line in fileContent)
+                    {
+                        fileLineProperties = new FileLineProperties();
+                        fileLineProperties.FileLinePath = path;
+                        fileLineProperties.LineContent = line;
+                        fileLineProperties.LineNumber = lineNumber;
+                        lineNumber++;
+                        filesContent.Add(fileLineProperties);
+                    }
+                }
             }
+            catch (Exception ex)
+            {
+                throw ex;
+            }           
+
             return filesContent;
         }
         private void FiltrContentOnGroups(List<FileLineProperties> filesContent)
         {
-           DataFilterGroups.ForEach(x => x.SetLinesToAddToFile(filesContent));            
+            try
+            {
+                DataFilterGroups?.ForEach(x => x.SetLinesToAddToFile(filesContent));
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }               
         }
-        private void PrepareTextToWrite(string filePath, string fileContet)
+        private void PrepareTextToWrite(string filePath, List<string>fileNewContet)
         {
             List<string> destinationFile = File.ReadAllLines(filePath).ToList();
             bool writed = false;
             List<string> buffer = new List<string>();
 
-            if (destinationFile?.Count > 0)
+            ValidateText.ValidateTextWhitExistContent(destinationFile, ref fileNewContet);
+
+            try
             {
-                if (string.IsNullOrEmpty(WriteStart) == false)
+                if (destinationFile?.Count > 0)
                 {
-                    foreach (string line in destinationFile)
+                    if (string.IsNullOrEmpty(WriteStart) == false)
                     {
-                        if (line.Contains(WriteStart))
-                        {
-                            buffer.Add(line);
-                            buffer.AddRange(fileContet.Split('\n').ToList());
-                            writed = true;
-                        }
-                        else
-                        {
-                            buffer.Add(line);
-                        }
-                    }
-
-                    if (writed != true)
-                    {
-                        buffer.AddRange(fileContet.Split('\n').ToList());
-                    }
-
-                    _textToWrite=buffer;                   
-                }
-                else
-                {
-                    if (string.IsNullOrEmpty(WriteStop) == false)
-                    {                      
                         foreach (string line in destinationFile)
                         {
-                            if (line.Contains(WriteStop))
+                            if (line.Contains(WriteStart))
                             {
-                                buffer.AddRange(fileContet.Split('\n').ToList());
                                 buffer.Add(line);
+                                buffer.AddRange(fileNewContet);
                                 writed = true;
                             }
                             else
@@ -458,27 +482,64 @@ namespace RobotFilesEditor
 
                         if (writed != true)
                         {
-                            buffer.AddRange(fileContet.Split('\n').ToList());
+                            buffer.AddRange(fileNewContet);
                         }
-                        _textToWrite=buffer;                     
+
+                        _textToWrite = buffer;
+                    }
+                    else
+                    {
+                        if (string.IsNullOrEmpty(WriteStop) == false)
+                        {
+                            foreach (string line in destinationFile)
+                            {
+                                if (line.Contains(WriteStop))
+                                {
+                                    buffer.AddRange(fileNewContet);
+                                    buffer.Add(line);
+                                    writed = true;
+                                }
+                                else
+                                {
+                                    buffer.Add(line);
+                                }
+                            }
+
+                            if (writed != true)
+                            {
+                                buffer.AddRange(fileNewContet);
+                            }
+                            _textToWrite = buffer;
+                        }
                     }
                 }
+                else
+                {
+                    buffer.AddRange(fileNewContet);
+                    _textToWrite = buffer;
+                }
             }
-            else
-            {          
-                buffer.AddRange(fileContet.Split('\n').ToList());
-                _textToWrite=buffer;               
-            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }           
         }
 
         private void WriteToFile(string filePath)
-        {    
-            if(_textToWrite?.Count>0)
+        {
+            try
             {
-                using (StreamWriter fileStream = new StreamWriter(filePath))
+                if (_textToWrite?.Count > 0)
                 {
-                    _textToWrite.ForEach(x => fileStream.WriteLine(x));                    
+                    using (StreamWriter fileStream = new StreamWriter(filePath))
+                    {
+                        _textToWrite.ForEach(x => fileStream.WriteLine(x));
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                throw ex; 
             }            
         }
         public bool CutData(string operation)
@@ -492,42 +553,55 @@ namespace RobotFilesEditor
 
         void SortGroupsContent()
         {
-            if(OperationName.ToLower().Contains("olp"))
+            DataContentSortTool sortTool = new DataContentSortTool();
+            try
             {
-                DataContentSortTool sortTool = new DataContentSortTool();
-
-                DataFilterGroups=sortTool.SortOlpDataFiles(DataFilterGroups);
+                if (OperationName.ToLower().Contains("olp"))
+                {                    
+                    DataFilterGroups = sortTool.SortOlpDataFiles(DataFilterGroups);
+                }
             }
+            catch (Exception ex)
+            {
+                throw ex;
+            }           
         }
 
         public void ExecuteOperation()
         {
             FileOperation.ExecuteOperation();
             _filesToPrepare = FileOperation.GetOperatedFiles();
-            
-            //if(_filesToPrepare?.Count()==0 || _filesToPrepare==null)
-            //{
-            //    throw new Exception("No files to prepare");
-            //}
-            
-            switch (ActionType)
+
+            if (_filesToPrepare?.Count() == 0 || _filesToPrepare == null)
             {
-                case GlobalData.Action.CopyData:
-                    {
-                        CopyData();
-                    }
-                    break;
-                case GlobalData.Action.MoveData:
-                    {
-                        CutData();
-                    }
-                    break;
-                case GlobalData.Action.RemoveData:
-                    {
-                        //???
-                    }
-                    break;
+                throw new Exception($"No files to prepare in operation: \"{OperationName}\"");
             }
+
+            try
+            {
+                switch (ActionType)
+                {
+                    case GlobalData.Action.CopyData:
+                        {
+                            CopyData();
+                        }
+                        break;
+                    case GlobalData.Action.MoveData:
+                        {
+                            CutData();
+                        }
+                        break;
+                    case GlobalData.Action.RemoveData:
+                        {
+                            //???
+                        }
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }           
         }
 
         public List<ResultInfo> GetOperationResult()

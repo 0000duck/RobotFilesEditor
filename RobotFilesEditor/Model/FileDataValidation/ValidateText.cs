@@ -24,6 +24,27 @@ namespace RobotFilesEditor
                 }
             }
             return listesToCheck;        
-        }        
+        }
+
+        public static void ValidateTextWhitExistContent(List<string> fileExistContent, ref List<string> newText)
+        {
+            List<string> result = new List<string>();
+
+            foreach(string line in fileExistContent)
+            {
+                if(string.IsNullOrEmpty(line)==false && string.IsNullOrWhiteSpace(line)==false)
+                {
+                    result.AddRange(newText.Where(x => line.Contains(x)).ToList());
+                                                         
+                }
+            }
+
+            foreach(var contain in result)
+            {
+                newText.Remove(contain);
+            }
+        }
     }
+
+  
 }

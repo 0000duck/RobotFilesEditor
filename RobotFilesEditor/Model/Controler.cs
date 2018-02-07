@@ -116,14 +116,22 @@ namespace RobotFilesEditor
 
         public void ExecuteOperation(string operationName)
         {
-            List<IOperation> activeOperations = new List<IOperation>(); 
+            List<IOperation> activeOperations = new List<IOperation>();
+            List<string> exeptions = new List<string>();
 
             activeOperations = Operations.Where(x => x.OperationName.Equals(operationName)).OrderBy(y=>y.Priority).ToList();
             foreach(var operation in activeOperations)
             {
-                _activeOperation = operation;
-                _activeOperation.ExecuteOperation();
-            }     
+                try
+                {
+                    _activeOperation = operation;
+                    _activeOperation.ExecuteOperation();
+                }
+                catch (Exception ex)
+                {
+                    throw ex;   
+                }               
+            }
         }
 
         public List<ResultInfo>GetTextToPrint()
