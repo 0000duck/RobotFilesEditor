@@ -503,7 +503,7 @@ namespace RobotFilesEditor
         public void ExecuteOperation()
         {
             FileOperation.ExecuteOperation();
-            _filesToPrepare = FileOperation.FilteredFiles;
+            _filesToPrepare = FileOperation.GetOperatedFiles();
             
             //if(_filesToPrepare?.Count()==0 || _filesToPrepare==null)
             //{

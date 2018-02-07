@@ -45,6 +45,8 @@ namespace RobotFilesEditor.ViewModel
                 MessageBoxResult ExeptionMessage = MessageBox.Show(ex.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
+            GlobalData.SetViewProgram();
+
             SimpleIoc.Default.Register<List<Controler>>(() => { return controlers; });
             SimpleIoc.Default.Register<MainViewModel>();
         }

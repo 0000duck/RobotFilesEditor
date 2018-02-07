@@ -1,5 +1,7 @@
 ﻿using GalaSoft.MvvmLight.Command;
+using Microsoft.Win32;
 using System;
+using System.IO;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -56,7 +58,21 @@ namespace RobotFilesEditor
 
         private void OpenInNotepadCommandExecute()
         {
-            System.Diagnostics.Process.Start("notepad++.exe", Path);
+            if(String.IsNullOrEmpty(Path)==false)
+            {
+                if(File.Exists(Path))
+                {
+                    try
+                    {                
+                        System.Diagnostics.Process.Start(GlobalData.ViewProgram, Path);
+                    }                    
+                    catch (Exception ex)
+                    {
+                        throw ex;                                                                                
+                    }                                                     
+                }                
+            }
+            
         }
     }   
 }

@@ -134,7 +134,7 @@ namespace RobotFilesEditor
                 }
             }
         }
-        public List<string>FilteredFiles
+        public Dictionary<string, string> FilteredFiles
         {
             get { return _filteredFiles; }
             set
@@ -157,9 +157,15 @@ namespace RobotFilesEditor
         private List<string> _fileExtensions;
         private Filter _filter;
         private bool _nestedSourcePath;
-        private List<string> _filteredFiles;
+        private Dictionary<string,string> _filteredFiles;
         #endregion Private
     
+        public  FileOperation()
+        {
+            FileExtensions = new List<string>();
+            FilteredFiles = new Dictionary<string, string>();
+        }
+
         private void FiltrFiles()
         {
             string[] allFilesAtSourcePath = Directory.GetFiles(SourcePath);
@@ -174,13 +180,15 @@ namespace RobotFilesEditor
                 filteredFiles = allFilesAtSourcePath.ToList();
             }
 
-            FilteredFiles = Filter.CheckAllFilesFilters(filteredFiles);            
+            filteredFiles=Filter.CheckAllFilesFilters(filteredFiles);
+
+            filteredFiles.ForEach(x => FilteredFiles.Add(x, ""));                 
         }       
         public bool CopyFile()
         {
             FiltrFiles();
             string destination = CreateDestinationFolderPath();
-            FilteredFiles.ForEach(x => File.Copy(x, Path.Combine(destination, Path.GetFileName(x))));
+            FilteredFiles.Keys.ToList().ForEach(x => File.Copy(x, Path.Combine(destination, Path.GetFileName(x))));
 
             return CheckFilesCorrectness(destination);
         }
@@ -188,14 +196,14 @@ namespace RobotFilesEditor
         {
             FiltrFiles();
             string destination = CreateDestinationFolderPath();
-            FilteredFiles.ForEach(x => File.Move(x, Path.Combine(destination, Path.GetFileName(x))));
+            FilteredFiles.Keys.ToList().ForEach(x => File.Move(x, Path.Combine(destination, Path.GetFileName(x))));
 
             return CheckFilesCorrectness(destination);
         }
         public bool RemoveFile()
         {
             FiltrFiles();
-            FilteredFiles.ForEach(x => File.Delete(x));
+            FilteredFiles.Keys.ToList().ForEach(x => File.Delete(x));
 
             return CheckFilesCorrectness(SourcePath) == false;
         }
@@ -214,7 +222,7 @@ namespace RobotFilesEditor
         {
             List<string> resultFiles = Directory.GetFiles(path).ToList();
 
-            if (FilteredFiles.Exists(s => resultFiles.Exists(r => Path.GetFileName(r) == Path.GetFileName(s)) == false))
+            if (FilteredFiles.Keys.ToList().Exists(s => resultFiles.Exists(r => Path.GetFileName(r) == Path.GetFileName(s)) == false))
             {
                 return false;
             }
@@ -225,7 +233,7 @@ namespace RobotFilesEditor
         }      
         public List<string>GetOperatedFiles()
         {           
-            return FilteredFiles;
+            return FilteredFiles.Keys.ToList();
         }
 
         #region InterfaceImplementation
@@ -260,15 +268,22 @@ namespace RobotFilesEditor
         public List<ResultInfo> GetOperationResult()
         {
             List<ResultInfo> resultInfos = new List<ResultInfo>();
-            FilteredFiles.ForEach(x => resultInfos.Add(new ResultInfo() { Content = Path.GetFileName(x), Path = x }));         
-                                
+            ResultInfo resultInfo = new ResultInfo();
+
+            foreach(var file in FilteredFiles)
+            {
+                resultInfo.Content = Path.GetFileName(file.Key);
+                resultInfo.Path = file.Key;
+                resultInfo.Description = file.Value;                
+            }
+           
             return resultInfos;
         }
 
         public string GetResutItemPath(string source)
         {
             string result;
-            result = FilteredFiles.FirstOrDefault(x => x.Equals(source));
+            result = FilteredFiles.Keys.ToList().FirstOrDefault(x => x.Equals(source));
 
             return result;
         }
