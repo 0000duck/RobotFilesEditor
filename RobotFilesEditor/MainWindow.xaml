@@ -103,28 +103,18 @@
             <StackPanel DockPanel.Dock="Right">
                 <CheckBox Content="Continue without confirm" HorizontalAlignment="Right" FlowDirection="RightToLeft" Margin="3" IsChecked="{Binding ContinueWithoutConfirm}"/>
                 <ListView Margin="3"  MinHeight="200" ItemsSource="{Binding ResultView}">
-                    <ListView.View>
-                        <GridView >
-                            <GridView.Columns>
-                                <GridViewColumn>
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Grid>
-                                                <Label Background="Transparent" 
-                                                           Content="{Binding Path=Content}" 
-                                                           Foreground="{Binding Path=Color}" 
-                                                           ToolTip="{Binding Path=Description}">
-                                                    <Label.InputBindings>
-                                                        <MouseBinding Command="{Binding Path=OpenInNotepadCommand}" MouseAction="LeftClick"/>
-                                                    </Label.InputBindings>
-                                                </Label>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                            </GridView.Columns>
-                        </GridView>
-                    </ListView.View>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Label  Background="Transparent" 
+                                Content="{Binding Path=Content}" 
+                                Foreground="{Binding Path=Color}" 
+                                ToolTip="{Binding Path=Description}">
+                            <Label.InputBindings>
+                                <MouseBinding Command="{Binding Path=OpenInNotepadCommand}" MouseAction="LeftClick"/>
+                            </Label.InputBindings>
+                            </Label>
+                        </DataTemplate>                        
+                    </ListView.ItemTemplate>                   
                 </ListView>
                 <Button Content="Confirm action" HorizontalAlignment="Center" Margin="3" Command="{Binding ConfirmActionCommand}" IsEnabled="{Binding ConfirmButtonEnabled}"/>
             </StackPanel>
