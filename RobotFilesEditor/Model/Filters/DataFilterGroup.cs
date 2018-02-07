@@ -102,11 +102,13 @@ namespace RobotFilesEditor
 
         public List<FileLineProperties> CkeckAllFilters(List<FileLineProperties> listToCheck, bool onlyRegex)
         {
-            listToCheck = Filter.FilterContains(listToCheck);
-            listToCheck = Filter.FilterNotContains(listToCheck);
-            listToCheck = Filter.FilterRegexContain(listToCheck, onlyRegex);
-            listToCheck = Filter.FilterRegexNotContain(listToCheck);
-
+            if(listToCheck?.Count>0)
+            {
+                listToCheck = Filter.FilterContains(listToCheck);
+                listToCheck = Filter.FilterNotContains(listToCheck);
+                listToCheck = Filter.FilterRegexContain(listToCheck, onlyRegex);
+                listToCheck = Filter.FilterRegexNotContain(listToCheck);
+            }
             return listToCheck;
         }
 
@@ -114,6 +116,11 @@ namespace RobotFilesEditor
         {
            LinesToAddToFile=CkeckAllFilters(filesContent, OnlyRegex);
            LinesToAddToFile = LinesToAddToFile.DistinctBy(x => x.LineContent).ToList();
+        }
+
+        public void DistinctLinesToAddToFile()
+        {
+            LinesToAddToFile = LinesToAddToFile.DistinctBy(x => x.LineContent).ToList();
         }
 
         public void PrepareGroupToWrite(ref List<ResultInfo> resultInfos)

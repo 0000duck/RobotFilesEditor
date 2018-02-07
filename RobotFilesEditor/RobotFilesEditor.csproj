@@ -93,7 +93,7 @@
     </ApplicationDefinition>
     <Compile Include="Model\FileDataValidation\FileLineProperties.cs" />
     <Compile Include="Model\FileDataValidation\ResultInfo.cs" />
-    <Compile Include="Model\FileDataValidation\ValidateTextBeforeWrite.cs" />
+    <Compile Include="Model\FileDataValidation\ValidateText.cs" />
     <Compile Include="Model\Filters\DistinctBy.cs" />
     <Compile Include="Model\Operations\DataContentSortTool.cs" />
     <Compile Include="Model\Operations\IOperation.cs" />

@@ -129,11 +129,6 @@ namespace RobotFilesEditor
         public List<ResultInfo>GetTextToPrint()
         {
             return _activeOperation.GetOperationResult();
-        }
-
-        public string GetSelectetItemPath(string source)
-        {
-            return _activeOperation.GetResutItemPath(source);
-        }
+        }        
     }
 }

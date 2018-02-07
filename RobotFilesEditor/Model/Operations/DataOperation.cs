@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RobotFilesEditor
 {
@@ -243,7 +241,10 @@ namespace RobotFilesEditor
         public DataOperation()
         {
             DataFilterGroups = new List<DataFilterGroup>();
-        }
+            _textToWrite=new List<string>();
+            _filesToPrepare=new List<string>();
+            _resultInfos=new List<ResultInfo>();
+    }
         public void CopyData()
         {
             #region LoadData
@@ -263,7 +264,7 @@ namespace RobotFilesEditor
             #endregion
 
             #region PrepareData
-            //DataFilterGroups.ForEach(x => x.PrepareGroupToWrite());
+            //DataFilterGroups.ForEach(x => x.PrepareGroupToWrite(ref _resultInfos));
             #endregion
 
             #region WriteData
@@ -272,7 +273,6 @@ namespace RobotFilesEditor
             PrepareTextToWrite(destinationFile, fileContent);
             WriteToFile(destinationFile);
             #endregion 
-
         }
         public void CutData()
         {
@@ -534,14 +534,6 @@ namespace RobotFilesEditor
         {
             return _resultInfos;
         }
-
-        public string GetResutItemPath(string source)
-        {
-            string result = "";
-
-            result = DataFilterGroups.FirstOrDefault(x => x.LinesToAddToFile.Exists(y => y.LineContent.Equals(source))).LinesToAddToFile.FirstOrDefault().FileLinePath;
-
-            return result;
-        }
+       
     }
 }

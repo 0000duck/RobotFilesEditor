@@ -4,6 +4,7 @@ using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
 using System.Linq;
+using System.Threading;
 
 namespace RobotFilesEditor.Serializer
 {
@@ -85,8 +86,24 @@ namespace RobotFilesEditor.Serializer
                         controler.Operations.Add(operation);
                     }
 
-                    controler.SourcePath = controlersConfiguration.SourcePath;
-                    controler.DestinationPath = controlersConfiguration.DestinationPath;
+
+                    if (Directory.Exists(controlersConfiguration.SourcePath) == false)
+                    {
+                        controler.SourcePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                    }
+                    else
+                    {
+                        controler.SourcePath = controlersConfiguration.SourcePath;
+                    }
+
+                    if (Directory.Exists(controlersConfiguration.DestinationPath) == false)
+                    {
+                        controler.DestinationPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                    }
+                    else
+                    {
+                        controler.DestinationPath = controlersConfiguration.DestinationPath;
+                    }
 
                     controlers.Add(controler);
                 }

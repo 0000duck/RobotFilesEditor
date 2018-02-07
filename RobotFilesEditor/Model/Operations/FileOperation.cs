@@ -170,66 +170,181 @@ namespace RobotFilesEditor
         {
             string[] allFilesAtSourcePath = Directory.GetFiles(SourcePath);
             List<string> filteredFiles = new List<string>();
+            FilteredFiles = new Dictionary<string, string>();
 
-            if (FileExtensions.Count > 0)
+            try
             {
-                filteredFiles = allFilesAtSourcePath.Where(x => FileExtensions.Contains(Path.GetExtension(x))).ToList();
+                if (FileExtensions.Count > 0)
+                {
+                    filteredFiles = allFilesAtSourcePath.Where(x => FileExtensions.Contains(Path.GetExtension(x))).ToList();
+                }
+                else
+                {
+                    filteredFiles = allFilesAtSourcePath.ToList();
+                }
+
+                filteredFiles = Filter.CheckAllFilesFilters(filteredFiles);
+                filteredFiles.ForEach(x => FilteredFiles.Add(x, ""));
             }
-            else
+            catch (Exception ex)
             {
-                filteredFiles = allFilesAtSourcePath.ToList();
-            }
-
-            filteredFiles=Filter.CheckAllFilesFilters(filteredFiles);
-
-            filteredFiles.ForEach(x => FilteredFiles.Add(x, ""));                 
+                throw ex;
+            }                
         }       
         public bool CopyFile()
         {
+            bool result = true;
             FiltrFiles();
             string destination = CreateDestinationFolderPath();
-            FilteredFiles.Keys.ToList().ForEach(x => File.Copy(x, Path.Combine(destination, Path.GetFileName(x))));
+            IDictionary<string, string> filteredFilesIterator = new Dictionary<string, string>(FilteredFiles);
+            
+            foreach(var file in filteredFilesIterator)
+            {
+                try
+                {
+                    string filePath = Path.Combine(destination, Path.GetFileName(file.Key));
 
-            return CheckFilesCorrectness(destination);
+                    if(File.Exists(filePath))
+                    {
+                        throw new IOException($"File \"{Path.GetFileName(file.Key)}\" already exist!");
+                    }
+
+                    File.Copy(file.Key, filePath);
+                }                
+                catch (Exception ex)
+                {
+                    FilteredFiles.Remove(file.Key);
+                    FilteredFiles.Add(file.Key, ex.Message);
+                    result = false;                                
+                }                
+            }
+
+            if(result)
+            {
+                result = CheckFilesCorrectness(destination);
+            }
+
+            return result;
         }
         public bool MoveFile()
         {
-            FiltrFiles();
+            bool result = true;
             string destination = CreateDestinationFolderPath();
+            IDictionary<string, string> filteredFilesIterator = new Dictionary<string, string>(FilteredFiles);
+
+            try
+            {
+                FiltrFiles();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }            
+
             FilteredFiles.Keys.ToList().ForEach(x => File.Move(x, Path.Combine(destination, Path.GetFileName(x))));
 
-            return CheckFilesCorrectness(destination);
+            foreach (var file in filteredFilesIterator)
+            {
+                try
+                {
+                    string filePath = Path.Combine(destination, Path.GetFileName(file.Key));
+
+                    if (File.Exists(filePath))
+                    {
+                        throw new IOException($"File \"{Path.GetFileName(file.Key)}\" already exist!");
+                    }
+
+                    File.Move(file.Key, filePath);
+                }
+                catch (Exception ex)
+                {
+                    FilteredFiles.Remove(file.Key);
+                    FilteredFiles.Add(file.Key, ex.Message);
+                    result = false;
+                }
+            }
+
+            if (result)
+            {
+                result = CheckFilesCorrectness(destination);
+            }
+
+            return result;
         }
         public bool RemoveFile()
         {
-            FiltrFiles();
-            FilteredFiles.Keys.ToList().ForEach(x => File.Delete(x));
+            bool result = true;
+            IDictionary<string, string> filteredFilesIterator = new Dictionary<string, string>(FilteredFiles);
 
-            return CheckFilesCorrectness(SourcePath) == false;
+            try
+            {
+                FiltrFiles();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }        
+
+            foreach (var file in filteredFilesIterator)
+            {
+                try
+                {
+                    File.Delete(file.Key);
+                }
+                catch (Exception ex)
+                {
+                    FilteredFiles.Remove(file.Key);
+                    FilteredFiles.Add(file.Key, ex.Message);
+                    result = false;
+                }
+            }
+
+            if (result)
+            {
+                result = CheckFilesCorrectness(SourcePath)==false;
+            }
+
+            return result;
         }
         public string CreateDestinationFolderPath()
         {
             string destination = Path.Combine(DestinationPath, DestinationFolder);
 
-            if (Directory.Exists(destination) == false)
+            try
             {
-                Directory.CreateDirectory(destination);
+                if (Directory.Exists(destination) == false)
+                {
+                    Directory.CreateDirectory(destination);
+                }
             }
+            catch (Exception ex)
+            {
+                throw ex;
+            }            
 
             return destination;
         }
         bool CheckFilesCorrectness(string path)
         {
-            List<string> resultFiles = Directory.GetFiles(path).ToList();
+            List<string> resultFiles = new List<string>();
 
-            if (FilteredFiles.Keys.ToList().Exists(s => resultFiles.Exists(r => Path.GetFileName(r) == Path.GetFileName(s)) == false))
+            try
             {
-                return false;
+                resultFiles = Directory.GetFiles(path).ToList();
+
+                if (FilteredFiles.Keys.ToList().Exists(s => resultFiles.Exists(r => Path.GetFileName(r) == Path.GetFileName(s)) == false))
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return true;
-            }
+                throw ex;
+            }            
         }      
         public List<string>GetOperatedFiles()
         {           
@@ -241,52 +356,60 @@ namespace RobotFilesEditor
         {
             List<string> result = new List<string>();
 
-            switch (ActionType)
+            try
             {
-                case GlobalData.Action.Copy:
-                    {
-                        CopyFile();
-                    }
-                    break;
-                case GlobalData.Action.Move:
-                    {
-                        MoveFile();
-                    }
-                    break;
-                case GlobalData.Action.Remove:
-                    {
-                        RemoveFile();
-                    }
-                    break;
-                default :
-                    {
-                        FiltrFiles();
-                    }
-                    break;
+                switch (ActionType)
+                {
+                    case GlobalData.Action.Copy:
+                        {
+                            CopyFile();
+                        }
+                        break;
+                    case GlobalData.Action.Move:
+                        {
+                            MoveFile();
+                        }
+                        break;
+                    case GlobalData.Action.Remove:
+                        {
+                            RemoveFile();
+                        }
+                        break;
+                    default:
+                        {
+                            FiltrFiles();
+                        }
+                        break;
+                }
             }
+            catch (Exception ex)
+            {
+                throw ex;
+            }            
         }
         public List<ResultInfo> GetOperationResult()
         {
             List<ResultInfo> resultInfos = new List<ResultInfo>();
             ResultInfo resultInfo = new ResultInfo();
 
-            foreach(var file in FilteredFiles)
+            try
             {
-                resultInfo.Content = Path.GetFileName(file.Key);
-                resultInfo.Path = file.Key;
-                resultInfo.Description = file.Value;                
+                foreach (var file in FilteredFiles)
+                {
+                    resultInfo = new ResultInfo();
+                    resultInfo.Content = Path.GetFileName(file.Key);
+                    resultInfo.Path = file.Key;
+                    resultInfo.Description = file.Value;
+                    resultInfos.Add(resultInfo);
+                }                
             }
-           
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
             return resultInfos;
-        }
-
-        public string GetResutItemPath(string source)
-        {
-            string result;
-            result = FilteredFiles.Keys.ToList().FirstOrDefault(x => x.Equals(source));
-
-            return result;
-        }
+        }        
         #endregion InterfaceImplementation
     }
 }
