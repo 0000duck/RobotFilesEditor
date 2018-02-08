@@ -409,7 +409,12 @@ namespace RobotFilesEditor
             }
 
             return resultInfos;
-        }        
+        }
+
+        public void ClearMemory()
+        {
+            FilteredFiles = new Dictionary<string, string>();
+        }
         #endregion InterfaceImplementation
     }
 }

@@ -258,7 +258,7 @@ namespace RobotFilesEditor
                 #endregion FilterData
 
                 #region ValidateData
-                DataFilterGroups.ForEach(x => x.LinesToAddToFile = ValidateText.ValidateLienes(x.LinesToAddToFile));
+                DataFilterGroups.ForEach(x => x.LinesToAddToFile = ValidateText.FindVaribleDuplicates(x.LinesToAddToFile));
                 #endregion
 
                 #region OrganizeData
@@ -266,13 +266,12 @@ namespace RobotFilesEditor
                 #endregion
 
                 #region PrepareData
-                //DataFilterGroups.ForEach(x => x.PrepareGroupToWrite(ref _resultInfos));
+                List<string> fileContent = PreparedDataToWrite();
                 #endregion
 
                 #region WriteData
-                string destinationFile = GetCreatedDestinationFile();
-                List<string> fileContent = PreparedDataToWrite();
-                PrepareTextToWrite(destinationFile, fileContent);
+                string destinationFile = GetCreatedDestinationFile();               
+                PrepareToWrite(destinationFile, fileContent);
                 WriteToFile(destinationFile);
                 #endregion 
             }
@@ -441,24 +440,24 @@ namespace RobotFilesEditor
 
             return filesContent;
         }
-        private void FiltrContentOnGroups(List<FileLineProperties> filesContent)
+        private void FiltrContentOnGroups(List<FileLineProperties> filesContent, bool deleteDuplicates = true)
         {
             try
             {
-                DataFilterGroups?.ForEach(x => x.SetLinesToAddToFile(filesContent));
+                DataFilterGroups?.ForEach(x => x.SetLinesToAddToFile(filesContent, deleteDuplicates));
             }
             catch (Exception ex)
             {
                 throw ex;
             }               
         }
-        private void PrepareTextToWrite(string filePath, List<string>fileNewContet)
+        private void PrepareToWrite(string filePath, List<string>fileNewContet)
         {
             List<string> destinationFile = File.ReadAllLines(filePath).ToList();
             bool writed = false;
             List<string> buffer = new List<string>();
 
-            ValidateText.ValidateTextWhitExistContent(destinationFile, ref fileNewContet);
+            ValidateText.ValidateReapitingTextWhitExistContent(destinationFile, ref fileNewContet);
 
             try
             {
@@ -524,7 +523,6 @@ namespace RobotFilesEditor
                 throw ex;
             }           
         }
-
         private void WriteToFile(string filePath)
         {
             try
@@ -550,7 +548,6 @@ namespace RobotFilesEditor
         {
             throw new NotImplementedException();
         }
-
         void SortGroupsContent()
         {
             DataContentSortTool sortTool = new DataContentSortTool();
@@ -566,7 +563,6 @@ namespace RobotFilesEditor
                 throw ex;
             }           
         }
-
         public void ExecuteOperation()
         {
             FileOperation.ExecuteOperation();
@@ -574,7 +570,7 @@ namespace RobotFilesEditor
 
             if (_filesToPrepare?.Count() == 0 || _filesToPrepare == null)
             {
-                throw new Exception($"No files to prepare in operation: \"{OperationName}\"");
+                return;
             }
 
             try
@@ -603,11 +599,18 @@ namespace RobotFilesEditor
                 throw ex;
             }           
         }
-
         public List<ResultInfo> GetOperationResult()
         {
             return _resultInfos;
         }
-       
+
+        public void ClearMemory()
+        {
+            DataFilterGroups.ForEach(x => x.ClearResult());
+            List<string> _textToWrite=new List<string>();
+            List<DataFilterGroup> _dataFilterGroups=new List<DataFilterGroup>();
+            List<string> _filesToPrepare=new List<string>();
+            List<ResultInfo> _resultInfos=new List<ResultInfo>();
+        }
     }
 }

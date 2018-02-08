@@ -97,12 +97,14 @@
     <Compile Include="Model\Filters\DistinctBy.cs" />
     <Compile Include="Model\Operations\DataContentSortTool.cs" />
     <Compile Include="Model\Operations\IOperation.cs" />
-    <Compile Include="Model\Serialization\XmlControler.cs" />
-    <Compile Include="Model\Serialization\XmlControlersConfiguration.cs" />
-    <Compile Include="Model\Serialization\XmlDataFilterGroup.cs" />
-    <Compile Include="Model\Serialization\XmlDataOperation.cs" />
-    <Compile Include="Model\Serialization\XmlFileOperation.cs" />
-    <Compile Include="Model\Serialization\XmlFilter.cs" />
+    <Compile Include="Model\Serialization\Operations\FileDeseralization.cs" />
+    <Compile Include="Model\Serialization\Operations\Serialization.cs" />
+    <Compile Include="Model\Serialization\Objects\XmlControler.cs" />
+    <Compile Include="Model\Serialization\Objects\XmlControlersConfiguration.cs" />
+    <Compile Include="Model\Serialization\Objects\XmlDataFilterGroup.cs" />
+    <Compile Include="Model\Serialization\Objects\XmlDataOperation.cs" />
+    <Compile Include="Model\Serialization\Objects\XmlFileOperation.cs" />
+    <Compile Include="Model\Serialization\Objects\XmlFilter.cs" />
     <Compile Include="ViewModel\ControlItem.cs" />
     <Compile Include="Model\Operations\DataOperation.cs" />
     <Compile Include="Model\Operations\FileOperation.cs" />
@@ -121,7 +123,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Model\Controler.cs" />
-    <Compile Include="Model\Serialization\FilesSerialization.cs" />
+    <Compile Include="Model\Serialization\Operations\FilesSerialization.cs" />
     <Compile Include="Model\GlobalData.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -149,7 +151,6 @@
     </EmbeddedResource>
     <None Include="Application.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
     </None>
     <None Include="ConfigurationSchema.xsd">
       <SubType>Designer</SubType>

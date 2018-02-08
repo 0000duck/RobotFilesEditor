@@ -8,40 +8,15 @@ using System.Threading;
 
 namespace RobotFilesEditor.Serializer
 {
-    public class FilesSerialization
+    public class FilesSerialization: Serialization
     {
         public FilesSerialization()
-        {}
-
-        public XmlControlersConfiguration ReadAplicationConfiguration()
-        {            
-            XmlControlersConfiguration controlerConfiguration;
-
-            if (String.IsNullOrEmpty(GlobalData.ConfigurationFileName))
-            {
-                throw new ArgumentNullException();
-            }
-
-            try
-            {
-                XmlSerializer serializer = new XmlSerializer(typeof(XmlControlersConfiguration));
-                FileStream fileStream = new FileStream(GlobalData.ConfigurationFileName, FileMode.Open);
-                XmlReader reader = XmlReader.Create(fileStream); 
-                controlerConfiguration = (XmlControlersConfiguration)serializer.Deserialize(reader);
-                fileStream.Close();                
-            }catch(Exception ex)
-            {
-                throw ex;
-            }
-            return controlerConfiguration;
-        }
+        {}        
 
         public List<RobotFilesEditor.Controler> GetControlersConfigurations()
         {            
             XmlControlersConfiguration controlersConfiguration;
-            List<Controler> controlers = new List<Controler>();
-            string destinationPath;
-            string sourcePath;
+            List<Controler> controlers = new List<Controler>();          
             Controler controler;
 
             try
@@ -129,16 +104,23 @@ namespace RobotFilesEditor.Serializer
         }
 
         private DataFilterGroup ParseXmlDataFilterGroupToDataFilterGroup(XmlDataFilterGroup xmlDataFilterGroup)
-        {
-            DataFilterGroup dataFilterGroup = new DataFilterGroup();           
+        {            
+            DataFilterGroup dataFilterGroup = new DataFilterGroup();
 
-            dataFilterGroup.Header = xmlDataFilterGroup.GroupHeader;
-            dataFilterGroup.Footer = xmlDataFilterGroup.GroupFooter;
-            dataFilterGroup.SpaceBefor = xmlDataFilterGroup.SpaceBeforGroup;
-            dataFilterGroup.SpaceAfter = xmlDataFilterGroup.SpaceAfterGroup;
-            dataFilterGroup.OnlyRegex = xmlDataFilterGroup.OnlyRegex;
+            try
+            {
+                dataFilterGroup.Header = xmlDataFilterGroup.GroupHeader;
+                dataFilterGroup.Footer = xmlDataFilterGroup.GroupFooter;
+                dataFilterGroup.SpaceBefor = xmlDataFilterGroup.SpaceBeforGroup;
+                dataFilterGroup.SpaceAfter = xmlDataFilterGroup.SpaceAfterGroup;
+                dataFilterGroup.OnlyRegex = xmlDataFilterGroup.OnlyRegex;
 
-            dataFilterGroup.Filter = ParseXmlFilterToFilter(xmlDataFilterGroup?.Filter);
+                dataFilterGroup.Filter = ParseXmlFilterToFilter(xmlDataFilterGroup?.Filter);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }           
 
             return dataFilterGroup;
         }
@@ -161,13 +143,20 @@ namespace RobotFilesEditor.Serializer
         {
             FileOperation fileOperation = new FileOperation();
 
-            fileOperation.ActionType = StringToAction(xmlFileOperation.ActionType);
-            fileOperation.OperationName = xmlFileOperation.OperationName;
-            fileOperation.DestinationFolder = xmlFileOperation.DestinationFolder;
-            fileOperation.Priority = xmlFileOperation.Priority;
-            fileOperation.FileExtensions = xmlFileOperation.FilesExtensions;
-            fileOperation.NestedSourcePath = xmlFileOperation.NestedSourcePath;
-            fileOperation.Filter = ParseXmlFilterToFilter(xmlFileOperation?.Filter);
+            try
+            {
+                fileOperation.ActionType = StringToAction(xmlFileOperation.ActionType);
+                fileOperation.OperationName = xmlFileOperation.OperationName;
+                fileOperation.DestinationFolder = xmlFileOperation.DestinationFolder;
+                fileOperation.Priority = xmlFileOperation.Priority;
+                fileOperation.FileExtensions = xmlFileOperation.FilesExtensions;
+                fileOperation.NestedSourcePath = xmlFileOperation.NestedSourcePath;
+                fileOperation.Filter = ParseXmlFilterToFilter(xmlFileOperation?.Filter);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }          
 
             return fileOperation;
         }
@@ -176,19 +165,26 @@ namespace RobotFilesEditor.Serializer
         {
             DataOperation operation = new DataOperation();
 
-            operation.FileOperation = ParseXmlFileOperationToFileOperation(xmlFileOperation);
-            operation.OperationName = xmlDataOperation.FileOperationName;
-            operation.DestinationFilePath = xmlDataOperation.DestinationFilePath;
-            operation.DestinationFileSource = xmlDataOperation.DestinationFileSource;
-            operation.ActionType = StringToAction(xmlDataOperation.ActionType);
-            operation.Priority = xmlDataOperation.Priority;
-            operation.FileHeader = xmlDataOperation.FileHeader;
-            operation.FileFooter = xmlDataOperation.FileFooter;
-            operation.GroupSpace = xmlDataOperation.GroupSpace;
-            operation.WriteStart = xmlDataOperation.WriteStart;
-            operation.WriteStop = xmlDataOperation.WriteStop;
-       
-            xmlDataOperation.DataFilterGroups.ForEach(x => operation.DataFilterGroups.Add(ParseXmlDataFilterGroupToDataFilterGroup(x)));
+            try
+            {
+                operation.FileOperation = ParseXmlFileOperationToFileOperation(xmlFileOperation);
+                operation.OperationName = xmlDataOperation.FileOperationName;
+                operation.DestinationFilePath = xmlDataOperation.DestinationFilePath;
+                operation.DestinationFileSource = xmlDataOperation.DestinationFileSource;
+                operation.ActionType = StringToAction(xmlDataOperation.ActionType);
+                operation.Priority = xmlDataOperation.Priority;
+                operation.FileHeader = xmlDataOperation.FileHeader;
+                operation.FileFooter = xmlDataOperation.FileFooter;
+                operation.GroupSpace = xmlDataOperation.GroupSpace;
+                operation.WriteStart = xmlDataOperation.WriteStart;
+                operation.WriteStop = xmlDataOperation.WriteStop;
+
+                xmlDataOperation.DataFilterGroups.ForEach(x => operation.DataFilterGroups.Add(ParseXmlDataFilterGroupToDataFilterGroup(x)));
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
 
             return operation;
         }

@@ -112,7 +112,7 @@ namespace RobotFilesEditor
             return listToCheck;
         }
 
-        public void SetLinesToAddToFile(List<FileLineProperties> filesContent)
+        public void SetLinesToAddToFile(List<FileLineProperties> filesContent, bool deleteDuplicates=true)
         {
            LinesToAddToFile=CkeckAllFilters(filesContent, OnlyRegex);
            LinesToAddToFile = LinesToAddToFile.DistinctBy(x => x.LineContent).ToList();
@@ -157,6 +157,11 @@ namespace RobotFilesEditor
                     resultInfos.Add(ResultInfo.CreateResultInfo(String.Format("")));
                 }
             }                 
+        }
+
+        public void ClearResult()
+        {
+            LinesToAddToFile = new List<FileLineProperties>();
         }
     }
 }

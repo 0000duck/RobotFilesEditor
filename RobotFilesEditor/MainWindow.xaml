@@ -32,7 +32,7 @@
             <TextBox Margin="5" Text="{Binding DestinationPath}" Grid.Column="1" Grid.Row="1"/>
             <Button Content="Browse.." Margin="5" Width="75" Command="{Binding SetDestinationPathCommand}" Grid.Column="2" Grid.Row="1"/>         
         </Grid>
-        <DockPanel>
+        <DockPanel Height="431">
             <StackPanel DockPanel.Dock="Left">
                 <StackPanel>
                     <Expander IsExpanded="True" Header="Controlers" UseLayoutRounding="False" DockPanel.Dock="Left" HorizontalAlignment="Left">
@@ -102,7 +102,7 @@
             </StackPanel>
             <StackPanel DockPanel.Dock="Right">
                 <CheckBox Content="Continue without confirm" HorizontalAlignment="Right" FlowDirection="RightToLeft" Margin="3" IsChecked="{Binding ContinueWithoutConfirm}"/>
-                <ListView Margin="3"  MinHeight="200" ItemsSource="{Binding ResultView}">
+                <ListView Margin="3"  MaxHeight="350" ItemsSource="{Binding ResultView}" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Label  Background="Transparent" 

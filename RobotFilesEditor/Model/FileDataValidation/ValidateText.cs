@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RobotFilesEditor
 {
     public static class ValidateText
     {
-        public static List<FileLineProperties>ValidateLienes(List<FileLineProperties>listesToCheck)
+        public static List<FileLineProperties>FindVaribleDuplicates(List<FileLineProperties>listesToCheck)
         {
             if(listesToCheck?.Count>0)
             {
@@ -25,8 +21,7 @@ namespace RobotFilesEditor
             }
             return listesToCheck;        
         }
-
-        public static void ValidateTextWhitExistContent(List<string> fileExistContent, ref List<string> newText)
+        public static void ValidateReapitingTextWhitExistContent(List<string> fileExistContent, ref List<string> newText)
         {
             List<string> result = new List<string>();
 
@@ -34,8 +29,7 @@ namespace RobotFilesEditor
             {
                 if(string.IsNullOrEmpty(line)==false && string.IsNullOrWhiteSpace(line)==false)
                 {
-                    result.AddRange(newText.Where(x => line.Contains(x)).ToList());
-                                                         
+                    result.AddRange(newText.Where(x => line.Contains(x)).ToList());                                                        
                 }
             }
 

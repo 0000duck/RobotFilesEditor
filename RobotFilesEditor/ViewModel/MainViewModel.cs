@@ -362,7 +362,8 @@ namespace RobotFilesEditor.ViewModel
 
         private void ClosingCommandExecute()
         {
-
+            FileDeseralization fileDeserialization = new FileDeseralization();
+            fileDeserialization.SaveNewPaths(SourcePath, DestinationPath);
         }
 
       

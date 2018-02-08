@@ -88,7 +88,7 @@ namespace RobotFilesEditor
                     _operations = value;
                 }
             }
-        }
+        }      
         #endregion Public
 
         #region Events
@@ -101,6 +101,7 @@ namespace RobotFilesEditor
         private string _contolerType;
         private List<IOperation> _operations;
         private IOperation _activeOperation;
+        private List<ResultInfo> _resultInfos;
         #endregion Private 
 
         [NotifyPropertyChangedInvocatorAttribute]
@@ -112,20 +113,27 @@ namespace RobotFilesEditor
         public Controler()
         {
             Operations = new List<IOperation>();
+            _resultInfos = new List<ResultInfo>();
         }       
 
         public void ExecuteOperation(string operationName)
         {
             List<IOperation> activeOperations = new List<IOperation>();
             List<string> exeptions = new List<string>();
+            _resultInfos = new List<ResultInfo>();
 
             activeOperations = Operations.Where(x => x.OperationName.Equals(operationName)).OrderBy(y=>y.Priority).ToList();
             foreach(var operation in activeOperations)
             {
                 try
                 {
+                    if(_activeOperation!=null)
+                    {
+                        _activeOperation.ClearMemory();
+                    }                   
                     _activeOperation = operation;
                     _activeOperation.ExecuteOperation();
+                    _resultInfos.AddRange(_activeOperation.GetOperationResult());
                 }
                 catch (Exception ex)
                 {
@@ -136,7 +144,7 @@ namespace RobotFilesEditor
 
         public List<ResultInfo>GetTextToPrint()
         {
-            return _activeOperation.GetOperationResult();
+            return _resultInfos;
         }        
     }
 }
