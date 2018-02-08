@@ -311,8 +311,15 @@ namespace RobotFilesEditor.ViewModel
 
         private void ControlerChooser_Click(object sender, ControlItem e)
         {
-            SelectedControler = Controlers.FirstOrDefault(x => x.ContolerType == e.Content);
-            CreateOperationsControls();
+            try
+            {
+                SelectedControler = Controlers.FirstOrDefault(x => x.ContolerType == e.Content);
+                CreateOperationsControls();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }           
         }
 
         private void OperationCommandExecute(object sender, ControlItem e)
@@ -326,31 +333,52 @@ namespace RobotFilesEditor.ViewModel
             }
             catch (Exception ex)
             {
-                MessageBoxResult ExeptionMessage = MessageBox.Show(ex.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error); ;
+                MessageBoxResult ExeptionMessage = MessageBox.Show(ex.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error); 
             }           
         }
 
         private void SetSourcePathCommandExecute()
         {
-            SourcePath = SetPath(SourcePath);
+            try
+            {
+                SourcePath = SetPath(SourcePath);
+            }
+            catch (Exception ex)
+            {
+                MessageBoxResult ExeptionMessage = MessageBox.Show(ex.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }          
         }
 
         private void SetDestinationPathCommandExecute()
         {
-            DestinationPath=SetPath(DestinationPath);
+            try
+            {
+                DestinationPath = SetPath(DestinationPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBoxResult ExeptionMessage = MessageBox.Show(ex.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }          
         }
 
         private string SetPath(string path)
         {
-            using (var folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog())
+            try
             {
-                folderBrowserDialog.SelectedPath = path;
-                System.Windows.Forms.DialogResult result = folderBrowserDialog.ShowDialog();
-                if (result == System.Windows.Forms.DialogResult.OK)
+                using (var folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog())
                 {
-                    path = folderBrowserDialog.SelectedPath;
+                    folderBrowserDialog.SelectedPath = path;
+                    System.Windows.Forms.DialogResult result = folderBrowserDialog.ShowDialog();
+                    if (result == System.Windows.Forms.DialogResult.OK)
+                    {
+                        path = folderBrowserDialog.SelectedPath;
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                throw ex;
+            }          
 
             return path;
         }
@@ -362,10 +390,15 @@ namespace RobotFilesEditor.ViewModel
 
         private void ClosingCommandExecute()
         {
-            FileDeseralization fileDeserialization = new FileDeseralization();
-            fileDeserialization.SaveNewPaths(SourcePath, DestinationPath);
-        }
-
-      
+            try
+            {
+                FileDeseralization fileDeserialization = new FileDeseralization();
+                fileDeserialization.SaveNewPaths(SourcePath, DestinationPath);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }          
+        }     
     }
 }

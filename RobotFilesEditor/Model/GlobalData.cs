@@ -17,29 +17,45 @@ namespace RobotFilesEditor
       
         public static void SetViewProgram()
         {
-            foreach(var program in _viewerPrograms)
+            try
             {
-                if (CheckIfInstaled(program) == true)
+                foreach (var program in _viewerPrograms)
                 {
-                    ViewProgram = program;
-                    return;
+                    if (CheckIfInstaled(program) == true)
+                    {
+                        ViewProgram = program;
+                        return;
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }          
         } 
 
         private static bool CheckIfInstaled(string programName)
         {
             string regKey = @"SOFTWARE\Microsoft\Windows\CurrentVersion\App Paths";
-            using (Microsoft.Win32.RegistryKey key = Registry.LocalMachine.OpenSubKey(regKey))
+
+            try
             {
-                foreach(string subkeyName in key.GetSubKeyNames())
+                using (Microsoft.Win32.RegistryKey key = Registry.LocalMachine.OpenSubKey(regKey))
                 {
-                    if(subkeyName.Equals(programName))
+                    foreach (string subkeyName in key.GetSubKeyNames())
                     {
-                        return true;
-                    }                       
+                        if (subkeyName.Equals(programName))
+                        {
+                            return true;
+                        }
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+                       
             return false;
         }
     }

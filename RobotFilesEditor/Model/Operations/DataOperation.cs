@@ -603,7 +603,6 @@ namespace RobotFilesEditor
         {
             return _resultInfos;
         }
-
         public void ClearMemory()
         {
             DataFilterGroups.ForEach(x => x.ClearResult());

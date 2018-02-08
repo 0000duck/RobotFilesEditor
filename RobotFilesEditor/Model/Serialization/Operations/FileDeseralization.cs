@@ -8,24 +8,33 @@ namespace RobotFilesEditor
         public void SaveNewPaths(string sourcePath, string destinationPath)
         {
             bool needChange = false;
-            XmlControlersConfiguration xmlConfiguration=ReadAplicationConfiguration();
 
-            if(xmlConfiguration.DestinationPath!=destinationPath && Directory.Exists(destinationPath))
+            try
             {
-                xmlConfiguration.DestinationPath = destinationPath;
-                needChange = true;
+                XmlControlersConfiguration xmlConfiguration = ReadAplicationConfiguration();
+
+                if (xmlConfiguration.DestinationPath != destinationPath && Directory.Exists(destinationPath))
+                {
+                    xmlConfiguration.DestinationPath = destinationPath;
+                    needChange = true;
+                }
+
+                if (xmlConfiguration.SourcePath != sourcePath && Directory.Exists(sourcePath))
+                {
+                    xmlConfiguration.SourcePath = sourcePath;
+                    needChange = true;
+                }
+
+                if (needChange)
+                {
+                    SaveAplicationConfiguration(xmlConfiguration);
+                }
             }
-
-            if (xmlConfiguration.SourcePath != sourcePath && Directory.Exists(sourcePath))
+            catch (Exception ex)
             {
-                xmlConfiguration.SourcePath = sourcePath;
-                needChange = true;
+                throw ex;
             }
-
-            if(needChange)
-            {
-                SaveAplicationConfiguration(xmlConfiguration);
-            }            
+           
         }
     }
 }

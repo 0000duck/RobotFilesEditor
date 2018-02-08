@@ -161,7 +161,7 @@ namespace RobotFilesEditor
 
         public void ClearResult()
         {
-            LinesToAddToFile = new List<FileLineProperties>();
+            LinesToAddToFile = new List<FileLineProperties>();           
         }
     }
 }

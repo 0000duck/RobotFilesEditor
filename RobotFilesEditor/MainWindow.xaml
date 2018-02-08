@@ -117,7 +117,7 @@
                     </ListView.ItemTemplate>                   
                 </ListView>
                 <Button Content="Confirm action" HorizontalAlignment="Center" Margin="3" Command="{Binding ConfirmActionCommand}" IsEnabled="{Binding ConfirmButtonEnabled}"/>
-            </StackPanel>
+            </StackPanel>            
         </DockPanel>     
     </StackPanel>
 </Window>
