@@ -73,16 +73,9 @@ namespace RobotFilesEditor
                 }
 
                 if (_sourcePath != value)
-                {
-                    if (Directory.Exists(value))
-                    {
-                        _sourcePath = value;
-                        FileOperation.SourcePath = SourcePath;
-                    }
-                    else
-                    {
-                        throw new DirectoryNotFoundException($"Source: \'{value} \'not exist!");
-                    }
+                {                         
+                    FileOperation.SourcePath = value;
+                    _sourcePath = FileOperation.SourcePath;                 
                 }
             }
         }
@@ -97,9 +90,9 @@ namespace RobotFilesEditor
                 }
 
                 if (_destinationPath != value)
-                {
-                    _destinationPath = value;
-                    FileOperation.DestinationPath = DestinationPath;
+                {                   
+                    FileOperation.DestinationPath = value;
+                    _destinationPath = FileOperation.DestinationPath;
                 }
             }
         }
@@ -249,6 +242,7 @@ namespace RobotFilesEditor
         {
             try
             {
+                //Zrobić podział na Preview i na Wykonanie samej akcji
                 #region LoadData
                 List<FileLineProperties> filesContent = LoadFilesContent();
                 #endregion LoadData
@@ -258,11 +252,13 @@ namespace RobotFilesEditor
                 #endregion FilterData
 
                 #region ValidateData
+                //dodać ifa czy ma sprawdzać występowianie duplikatów // ewentualnie czy ma robić Distinct po wynikach
                 DataFilterGroups.ForEach(x => x.LinesToAddToFile = ValidateText.FindVaribleDuplicates(x.LinesToAddToFile));
                 #endregion
 
                 #region OrganizeData
-                SortGroupsContent();
+                //Ulepszyć to dodać sposób sortowania
+                DataFilterGroups = DataContentSortTool.SortData(DataFilterGroups, "olp");
                 #endregion
 
                 #region PrepareData
@@ -292,7 +288,8 @@ namespace RobotFilesEditor
         {
             string destinationFilePath="";
             string destinationFile = "";
-            
+            //Poprawiedzie działania sprawdza, czy podana ściezka do pobierania istnieje, jeśli nie ma nic takiego, tworzy nowy plik
+
             try
             {
                 DestinationFilePath = FileOperation.CreateDestinationFolderPath();
@@ -372,7 +369,7 @@ namespace RobotFilesEditor
         {
             List<string> buffor = new List<string>();
             List<ResultInfo> resultInfos = new List<ResultInfo>();
-
+            //Dodać nagłówki do wyświetlanego wyniku
             try
             {
                 if (string.IsNullOrEmpty(FileHeader) == false)
@@ -452,11 +449,13 @@ namespace RobotFilesEditor
             }               
         }
         private void PrepareToWrite(string filePath, List<string>fileNewContet)
-        {
+        { 
+            //Przy wyświetlaniu do listy ResultInfo dodać treść, która znajduje się w pliku
             List<string> destinationFile = File.ReadAllLines(filePath).ToList();
             bool writed = false;
             List<string> buffer = new List<string>();
 
+            //Sprawdza czy treść w ostatenym pliku się powtarza i nie dopucza do tego usuwając z tych dodanych
             ValidateText.ValidateReapitingTextWhitExistContent(destinationFile, ref fileNewContet);
 
             try
@@ -548,21 +547,7 @@ namespace RobotFilesEditor
         {
             throw new NotImplementedException();
         }
-        void SortGroupsContent()
-        {
-            DataContentSortTool sortTool = new DataContentSortTool();
-            try
-            {
-                if (OperationName.ToLower().Contains("olp"))
-                {                    
-                    DataFilterGroups = sortTool.SortOlpDataFiles(DataFilterGroups);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }           
-        }
+       
         public void ExecuteOperation()
         {
             FileOperation.ExecuteOperation();

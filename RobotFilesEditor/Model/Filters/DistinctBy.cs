@@ -19,5 +19,15 @@ namespace RobotFilesEditor
                 }
             }
         }
+
+        //public static Dictionary<int, string> ConvertToFilterDictionary<TSource, TKey>(this Dictionary<int, TSource> source, Func<TSource, TKey> keySelector)
+        //{
+        //    Dictionary<int, string> result = new Dictionary<int, string>();        
+
+        //    foreach (var element in source)
+        //    {
+        //        yield return (element.Key, keySelector(element.Value).ToString());               
+        //    }            
+        //}
     }
 }

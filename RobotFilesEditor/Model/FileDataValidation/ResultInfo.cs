@@ -56,6 +56,14 @@ namespace RobotFilesEditor
             return resultInfo;
         }
 
+        public static ResultInfo CreateResultInfoHeder(string header, string filePath)
+        {
+            ResultInfo resultInfo = new ResultInfo();
+            resultInfo.Content = header;
+            resultInfo.Path = filePath;
+            return resultInfo;
+        }
+
         private void OpenInNotepadCommandExecute()
         {
             if(String.IsNullOrEmpty(Path)==false)

@@ -28,6 +28,6 @@ namespace RobotFilesEditor
         public List<string> FilesExtensions;
 
         [XmlAttribute("NestedSourcePath")]
-        public bool NestedSourcePath { get; set; }
+        public string NestedSourcePath { get; set; }
     }
 }

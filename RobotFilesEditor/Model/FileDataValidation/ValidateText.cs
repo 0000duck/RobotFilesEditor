@@ -38,6 +38,18 @@ namespace RobotFilesEditor
                 newText.Remove(contain);
             }
         }
+
+        public static string CheckExtensionCorrectness(string extension)
+        {
+            if(extension.Contains(".")==false)
+            {
+                return $".{extension}";
+            }
+            else
+            {
+                return extension;
+            }
+        }
     }
 
   

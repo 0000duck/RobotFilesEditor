@@ -104,16 +104,14 @@ namespace RobotFilesEditor
         {
             if(listToCheck?.Count>0)
             {
-                listToCheck = Filter.FilterContains(listToCheck);
-                listToCheck = Filter.FilterNotContains(listToCheck);
-                listToCheck = Filter.FilterRegexContain(listToCheck, onlyRegex);
-                listToCheck = Filter.FilterRegexNotContain(listToCheck);
+                listToCheck = Filter.CheckAllFilters(listToCheck);
             }
             return listToCheck;
         }
 
         public void SetLinesToAddToFile(List<FileLineProperties> filesContent, bool deleteDuplicates=true)
         {
+            //dodać zmienną i do konfiguracji
            LinesToAddToFile=CkeckAllFilters(filesContent, OnlyRegex);
            LinesToAddToFile = LinesToAddToFile.DistinctBy(x => x.LineContent).ToList();
         }

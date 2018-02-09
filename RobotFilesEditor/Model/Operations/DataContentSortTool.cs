@@ -4,9 +4,9 @@ using System.Linq;
 
 namespace RobotFilesEditor
 {
-    public class DataContentSortTool
+    public static class DataContentSortTool
     {
-        public List<DataFilterGroup> SortOlpDataFiles(List<DataFilterGroup> filterGroups)
+        private static List<DataFilterGroup> SortOlpDataFiles(List<DataFilterGroup> filterGroups)
         {
             try
             {
@@ -30,6 +30,24 @@ namespace RobotFilesEditor
             }    
 
             return filterGroups;
-        }      
+        }   
+        
+        public static List<DataFilterGroup>SortData(List<DataFilterGroup> dataToSort, string sortType)
+        {
+            List<DataFilterGroup> result=new List<DataFilterGroup>();
+
+            try
+            {
+                if (sortType.ToLower().Contains("olp"))
+                {
+                    result = SortOlpDataFiles(dataToSort);
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }   
     }
 }

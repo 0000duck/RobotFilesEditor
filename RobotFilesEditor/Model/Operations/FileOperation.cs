@@ -62,15 +62,16 @@ namespace RobotFilesEditor
                 }
 
                 if (_sourcePath != value)
-                {
-                    if (Directory.Exists(value))
+                {                          
+                    if (string.IsNullOrEmpty(NestedSourcePath) == false && 
+                        value.Contains(NestedSourcePath) == false && 
+                        string.IsNullOrEmpty(_destinationPath)==false)
+                    {
+                        _sourcePath = Path.Combine(_destinationPath, NestedSourcePath);
+                    }else
                     {
                         _sourcePath = value;
-                    }
-                    else
-                    {
-                        throw new DirectoryNotFoundException($"Source: \'{value} \'not exist!");
-                    }
+                    }                  
                 }
             }
         }
@@ -79,14 +80,21 @@ namespace RobotFilesEditor
             get { return _destinationPath; }
             set
             {
-                if (value == null)
+                if (string.IsNullOrEmpty(value))
                 {
-                    _destinationPath = string.Empty;
+                    throw new ArgumentNullException(nameof(SourcePath));
                 }
 
                 if (_destinationPath != value)
-                {
-                    _destinationPath = value;
+                {                    
+                    if (Directory.Exists(value))
+                    {
+                        if (string.IsNullOrEmpty(NestedSourcePath) == false && value.Contains(NestedSourcePath) == false)
+                        {                            
+                            SourcePath = Path.Combine(value, NestedSourcePath);
+                        }
+                            _destinationPath = value;                       
+                    }
                 }
             }
         }
@@ -119,11 +127,12 @@ namespace RobotFilesEditor
             {
                 if (_fileExtensions != value)
                 {
-                    _fileExtensions = value;                    
+                    _fileExtensions = value;
+                    _fileExtensions.ForEach(x =>x=ValidateText.CheckExtensionCorrectness(x));                                              
                 }
             }
         }     
-        public bool NestedSourcePath
+        public string NestedSourcePath
         {
             get { return _nestedSourcePath; }
             set
@@ -156,7 +165,7 @@ namespace RobotFilesEditor
         protected int _priority;
         private List<string> _fileExtensions;
         private Filter _filter;
-        private bool _nestedSourcePath;
+        private string _nestedSourcePath;
         private Dictionary<string,string> _filteredFiles;
         #endregion Private
     

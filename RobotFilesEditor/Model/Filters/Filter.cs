@@ -133,7 +133,7 @@ namespace RobotFilesEditor
         }
         #endregion FileFilter
 
-        #region CommonFilter
+        #region FileLinePropertiesFilter
         public List<FileLineProperties> FilterContains(List<FileLineProperties> source)
         {
             if (Contain?.Count > 0)
@@ -194,6 +194,6 @@ namespace RobotFilesEditor
             source = FilterRegexNotContain(source);
             return source;
         }
-        #endregion CommonFilter
+        #endregion FileLinePropertiesFilter
     }
 }
