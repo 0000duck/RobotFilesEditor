@@ -32,17 +32,23 @@ namespace RobotFilesEditor
             return filterGroups;
         }   
         
-        public static List<DataFilterGroup>SortData(List<DataFilterGroup> dataToSort, string sortType)
+        public static List<DataFilterGroup>SortData(List<DataFilterGroup> dataToSort, GlobalData.SortType sortType)
         {
             List<DataFilterGroup> result=new List<DataFilterGroup>();
 
             try
             {
-                if (sortType.ToLower().Contains("olp"))
+                switch(sortType)
                 {
-                    result = SortOlpDataFiles(dataToSort);
+                    case GlobalData.SortType.None: {
+                            return dataToSort;
+                        } break;
+                    case GlobalData.SortType.OrderByVariable: {
+                            result=SortOlpDataFiles(dataToSort);
+                        } break;
                 }
-                return result;
+
+                return result;              
             }
             catch (Exception ex)
             {

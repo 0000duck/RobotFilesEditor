@@ -48,7 +48,7 @@ namespace RobotFilesEditor
         }
         public string DestinationFolder
         {
-            get { return _destinationFolder; }
+            get { return FileOperation.DestinationFolder; }
             set
             {
                 if (value == null)
@@ -58,7 +58,7 @@ namespace RobotFilesEditor
 
                 if (_destinationFolder != value)
                 {
-                    _destinationFolder = value;
+                    FileOperation.DestinationFolder = value;
                 }
             }
         }
@@ -129,17 +129,7 @@ namespace RobotFilesEditor
                 }
             }
         }
-        public string DestinationFilePath
-        {
-            get { return _destinationFilePath; }
-            set
-            {
-                if (_destinationFilePath != value)
-                {
-                    _destinationFilePath = value;
-                }
-            }
-        }
+
         public string DestinationFileSource
         {
             get { return _destinationFileSource; }
@@ -206,6 +196,18 @@ namespace RobotFilesEditor
                 }
             }
         }
+        public GlobalData.SortType SortType
+        {
+            get { return _sortType; }
+            set
+            {
+                if (_sortType != value)
+                {
+                    _sortType = value;
+                }
+            }
+        }
+
 
        
         #region Private
@@ -225,6 +227,7 @@ namespace RobotFilesEditor
         private int _groupSpace;
         private string _writeStart;
         private string _writeStop;
+        public GlobalData.SortType _sortType;
         private List<string> _textToWrite;     
         private List<DataFilterGroup> _dataFilterGroups;
         private List<string> _filesToPrepare;
@@ -258,7 +261,7 @@ namespace RobotFilesEditor
 
                 #region OrganizeData
                 //Ulepszyć to dodać sposób sortowania
-                DataFilterGroups = DataContentSortTool.SortData(DataFilterGroups, "olp");
+                DataFilterGroups = DataContentSortTool.SortData(DataFilterGroups, SortType);
                 #endregion
 
                 #region PrepareData
@@ -286,52 +289,41 @@ namespace RobotFilesEditor
         }
         private string GetCreatedDestinationFile()
         {
-            string destinationFilePath="";
-            string destinationFile = "";
-            //Poprawiedzie działania sprawdza, czy podana ściezka do pobierania istnieje, jeśli nie ma nic takiego, tworzy nowy plik
-
+            string source = Path.Combine(Directory.GetCurrentDirectory(), DestinationFileSource);
+            string destinationPath= Path.Combine(DestinationPath, DestinationFolder);            
+            string destinationFile = Path.Combine(destinationPath, Path.GetFileName(DestinationFileSource));
+                      
             try
             {
-                DestinationFilePath = FileOperation.CreateDestinationFolderPath();
-
-                if (string.IsNullOrEmpty(DestinationFileSource) == false)
+                if(string.IsNullOrEmpty(DestinationFileSource))
                 {
-                    string[] files = GetAllFilesFromDirectory(@"...\Resources").ToArray();
-                    destinationFile = files.FirstOrDefault(x => System.Text.RegularExpressions.Regex.IsMatch(x, DestinationFileSource));
+                    throw new ArgumentNullException(nameof(DestinationFileSource));
                 }
 
-                if (string.IsNullOrEmpty(destinationFile) == false)
+                if (Directory.Exists(destinationPath) == false)
                 {
-                    string destination = Path.Combine(DestinationFilePath, Path.GetFileName(destinationFile));
-                    if (File.Exists(destination) == false)
+                    Directory.CreateDirectory(destinationPath);
+                }
+
+                if (File.Exists(source)==false)
+                { 
+                    if(File.Exists(destinationFile)==false)
                     {
-                        File.Copy(destinationFile, Path.Combine(DestinationFilePath, Path.GetFileName(destinationFile)));
+                        File.CreateText(destinationFile).Close();
                     }
-                    return destination;
+                    
+                    return destinationFile;
                 }
                 else
                 {
-                    if (Path.GetFileName(DestinationFileSource).IndexOfAny(System.IO.Path.GetInvalidFileNameChars()) != -1)
-                    {
-                        throw new FileFormatException(nameof(DestinationFilePath));
-                    }
-                    else
-                    {
-                        destinationFilePath = Path.Combine(DestinationFilePath, Path.GetFileName(DestinationFileSource));
-
-                        if (File.Exists(destinationFilePath) == false)
-                        {
-                            File.CreateText(destinationFilePath).Close();
-                        }
-
-                        return destinationFilePath;
-                    }
+                    File.Copy(source, destinationFile);
+                    return destinationFile;
                 }
             }
             catch (Exception ex)
             {
-                throw ex;
-            }                        
+                throw  ex;
+            }             
         }
         private List<string>GetAllFilesFromDirectory(string path)
         {

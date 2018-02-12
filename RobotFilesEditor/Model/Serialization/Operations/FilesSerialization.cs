@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml;
-using System.Xml.Serialization;
 using System.Linq;
-using System.Threading;
 
 namespace RobotFilesEditor.Serializer
 {
@@ -82,13 +79,12 @@ namespace RobotFilesEditor.Serializer
 
                     controlers.Add(controler);
                 }
+                    return controlers;
             }
             catch (Exception ex)
             {
                 throw ex;
-            }
-
-            return controlers;
+            }           
         }
 
         private Filter ParseXmlFilterToFilter(XmlFilter xmlFilter)
@@ -129,6 +125,11 @@ namespace RobotFilesEditor.Serializer
         {
             GlobalData.Action actionType;
 
+            if (string.IsNullOrEmpty(action))
+            {
+                return GlobalData.Action.None;
+            }
+
             if (Enum.TryParse(action, out actionType))
             {
                 return actionType;
@@ -137,6 +138,24 @@ namespace RobotFilesEditor.Serializer
             {
                 throw new FormatException(nameof(action));
             }            
+        }
+
+        private GlobalData.SortType StringToSortType(string type)
+        {
+            GlobalData.SortType sortType;
+            if(string.IsNullOrEmpty(type))
+            {
+                return GlobalData.SortType.None;
+            }
+
+            if (Enum.TryParse(type, out sortType))
+            {
+                return sortType;
+            }
+            else
+            {
+                throw new FormatException(nameof(type));
+            }
         }
 
         private FileOperation ParseXmlFileOperationToFileOperation(XmlFileOperation xmlFileOperation)
@@ -169,9 +188,9 @@ namespace RobotFilesEditor.Serializer
             {
                 operation.FileOperation = ParseXmlFileOperationToFileOperation(xmlFileOperation);
                 operation.OperationName = xmlDataOperation.FileOperationName;
-                operation.DestinationFilePath = xmlDataOperation.DestinationFilePath;
                 operation.DestinationFileSource = xmlDataOperation.DestinationFileSource;
                 operation.ActionType = StringToAction(xmlDataOperation.ActionType);
+                operation.SortType = StringToSortType(xmlDataOperation.SortType);
                 operation.Priority = xmlDataOperation.Priority;
                 operation.FileHeader = xmlDataOperation.FileHeader;
                 operation.FileFooter = xmlDataOperation.FileFooter;

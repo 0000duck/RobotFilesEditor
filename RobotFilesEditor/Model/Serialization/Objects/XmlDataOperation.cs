@@ -34,12 +34,13 @@ namespace RobotFilesEditor
 
         [XmlArray("DataFilterGroupsArray")]
         [XmlArrayItem("DataFilterGroup")]
-        public List<XmlDataFilterGroup> DataFilterGroups { get; set; }
-
-        [XmlAttribute("DestinationFilePath")]
-        public string DestinationFilePath { get; set; }
+        public List<XmlDataFilterGroup> DataFilterGroups { get; set; }      
 
         [XmlAttribute("DestinationFileSource")]
         public string DestinationFileSource { get; set; }
+
+        [XmlAttribute("SortType")]
+        public string SortType { get; set; }
+
     }
 }

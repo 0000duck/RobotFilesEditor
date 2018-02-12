@@ -104,6 +104,7 @@
                               <xs:attribute name="GroupSpace" type="xs:unsignedByte" use="required" />
                               <xs:attribute name="WriteStart" type="xs:string" use="required" />
                               <xs:attribute name="WriteStop" type="xs:string" use="required" />
+                              <xs:attribute name="SortType" type="xs:string" use="optional" />
                             </xs:complexType>
                           </xs:element>
                         </xs:sequence>
