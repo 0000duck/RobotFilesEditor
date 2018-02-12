@@ -42,5 +42,8 @@ namespace RobotFilesEditor
         [XmlAttribute("SortType")]
         public string SortType { get; set; }
 
+        [XmlAttribute("DetectDuplicates")]
+        public bool DetectDuplicates { get; set; }
+
     }
 }

@@ -129,7 +129,17 @@ namespace RobotFilesEditor
                 }
             }
         }
-
+        public bool DetectDuplicates
+        {
+            get { return _detectDuplicates; }
+            set
+            {
+                if (_detectDuplicates != value)
+                {
+                    _detectDuplicates = value;
+                }
+            }
+        }
         public string DestinationFileSource
         {
             get { return _destinationFileSource; }
@@ -208,7 +218,6 @@ namespace RobotFilesEditor
             }
         }
 
-
        
         #region Private
         private FileOperation _fileOperation;
@@ -220,13 +229,13 @@ namespace RobotFilesEditor
         protected string _destinationPath;
         protected int _priority;            
         private Filter _filter;
-        private string _destinationFilePath; //check if regex contais in Resources or make new file with this name
         private string _destinationFileSource;
         private string _fileHeader;
         private string _fileFooter;
         private int _groupSpace;
         private string _writeStart;
         private string _writeStop;
+        private bool _detectDuplicates;
         public GlobalData.SortType _sortType;
         private List<string> _textToWrite;     
         private List<DataFilterGroup> _dataFilterGroups;
@@ -256,7 +265,10 @@ namespace RobotFilesEditor
 
                 #region ValidateData
                 //dodać ifa czy ma sprawdzać występowianie duplikatów // ewentualnie czy ma robić Distinct po wynikach
-                DataFilterGroups.ForEach(x => x.LinesToAddToFile = ValidateText.FindVaribleDuplicates(x.LinesToAddToFile));
+                if(DetectDuplicates)
+                {
+                    DataFilterGroups.ForEach(x => x.LinesToAddToFile = ValidateText.FindVaribleDuplicates(x.LinesToAddToFile));
+                }              
                 #endregion
 
                 #region OrganizeData

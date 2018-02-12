@@ -91,12 +91,18 @@ namespace RobotFilesEditor.Serializer
         {
             Filter filter = new Filter();
 
-            filter.Contain = xmlFilter?.Contains;
-            filter.NotContain = xmlFilter?.NotContains;
-            filter.RegexContain = xmlFilter?.RegexContain;
-            filter.RegexNotContain = xmlFilter?.RegexNotContain;
-
-            return filter;
+            try
+            {
+                filter.Contain = xmlFilter?.Contains;
+                filter.NotContain = xmlFilter?.NotContains;
+                filter.RegexContain = xmlFilter?.RegexContain;
+                filter.RegexNotContain = xmlFilter?.RegexNotContain;
+                return filter;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         private DataFilterGroup ParseXmlDataFilterGroupToDataFilterGroup(XmlDataFilterGroup xmlDataFilterGroup)
@@ -112,13 +118,12 @@ namespace RobotFilesEditor.Serializer
                 dataFilterGroup.OnlyRegex = xmlDataFilterGroup.OnlyRegex;
 
                 dataFilterGroup.Filter = ParseXmlFilterToFilter(xmlDataFilterGroup?.Filter);
+                return dataFilterGroup;
             }
             catch (Exception ex)
             {
                 throw ex;
-            }           
-
-            return dataFilterGroup;
+            }
         }
 
         private GlobalData.Action StringToAction(string action)
@@ -171,13 +176,12 @@ namespace RobotFilesEditor.Serializer
                 fileOperation.FileExtensions = xmlFileOperation.FilesExtensions;
                 fileOperation.NestedSourcePath = xmlFileOperation.NestedSourcePath;
                 fileOperation.Filter = ParseXmlFilterToFilter(xmlFileOperation?.Filter);
+                return fileOperation;
             }
             catch (Exception ex)
             {
                 throw ex;
-            }          
-
-            return fileOperation;
+            }         
         }
 
         private DataOperation ParseXmlDataOperationToDataOperation(XmlDataOperation xmlDataOperation, XmlFileOperation xmlFileOperation)
@@ -197,15 +201,17 @@ namespace RobotFilesEditor.Serializer
                 operation.GroupSpace = xmlDataOperation.GroupSpace;
                 operation.WriteStart = xmlDataOperation.WriteStart;
                 operation.WriteStop = xmlDataOperation.WriteStop;
+                operation.DetectDuplicates = xmlDataOperation.DetectDuplicates;
 
                 xmlDataOperation.DataFilterGroups.ForEach(x => operation.DataFilterGroups.Add(ParseXmlDataFilterGroupToDataFilterGroup(x)));
+                return operation;
             }
             catch (Exception ex)
             {
                 throw ex;
             }
 
-            return operation;
+            
         }
 
     }

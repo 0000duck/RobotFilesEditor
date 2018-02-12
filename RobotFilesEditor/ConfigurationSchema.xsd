@@ -105,6 +105,7 @@
                               <xs:attribute name="WriteStart" type="xs:string" use="required" />
                               <xs:attribute name="WriteStop" type="xs:string" use="required" />
                               <xs:attribute name="SortType" type="xs:string" use="optional" />
+                              <xs:attribute name="DetectDuplicates" type="xs:boolean" use="optional" />
                             </xs:complexType>
                           </xs:element>
                         </xs:sequence>
