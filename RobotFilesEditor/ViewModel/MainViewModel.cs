@@ -39,6 +39,12 @@ namespace RobotFilesEditor.ViewModel
             set;           
         }
 
+        public ObservableCollection<ControlItem> AllOperations
+        {
+            get;
+            set;
+        }
+
         public string MoveFilesOperationsVisibility
         {
             get {
@@ -48,7 +54,7 @@ namespace RobotFilesEditor.ViewModel
                 }
                 else
                 {
-                    return "Hidden";
+                    return "Collapsed";
                 }
             }
         }
@@ -62,7 +68,7 @@ namespace RobotFilesEditor.ViewModel
                 }
                 else
                 {
-                    return "Hidden";
+                    return "Collapsed";
                 }
             }
         }
@@ -76,7 +82,7 @@ namespace RobotFilesEditor.ViewModel
                 }
                 else
                 {
-                    return "Hidden";
+                    return "Collapsed";
                 }
             }
         }
@@ -90,7 +96,7 @@ namespace RobotFilesEditor.ViewModel
                 }
                 else
                 {
-                    return "Hidden";
+                    return "Collapsed";
                 }
             }
         }
@@ -209,6 +215,7 @@ namespace RobotFilesEditor.ViewModel
             CopyTextFromFilesOperations = new ObservableCollection<ControlItem>();
             RemoveFilesOperations = new ObservableCollection<ControlItem>();
             ResultView = new ObservableCollection<ResultInfo>();
+            AllOperations = new ObservableCollection<ControlItem>();
           
             Controlers = controlers;
             SourcePath = Controlers.FirstOrDefault().SourcePath;
@@ -232,57 +239,70 @@ namespace RobotFilesEditor.ViewModel
 
         private void CreateOperationsControls()
         {
-            MoveFilesOperations.Clear();
-            CopyFilesOperations.Clear();
-            CopyTextFromFilesOperations.Clear();
-            RemoveFilesOperations.Clear();
-            List<string> operations = new List<string>();
-            var opertionGroups = SelectedControler.Operations.GroupBy(x => x.OperationName);
-
-            foreach (var operationGroup in opertionGroups)
+            try
             {
-                var operation = operationGroup.FirstOrDefault();
-                
-                if (operation!= null)
+                MoveFilesOperations.Clear();
+                CopyFilesOperations.Clear();
+                CopyTextFromFilesOperations.Clear();
+                RemoveFilesOperations.Clear();
+                AllOperations.Clear();
+                List<string> operations = new List<string>();
+                var opertionGroups = SelectedControler.Operations.GroupBy(x => x.OperationName);
+
+                foreach (var operationGroup in opertionGroups)
                 {
-                    var controlItem = new ControlItem(operation.OperationName);
-                    controlItem.ControlItemSelected += OperationCommandExecute;
+                    var operation = operationGroup.FirstOrDefault();
 
-                    switch (operation.ActionType)
+                    if (operation != null)
                     {
-                        case GlobalData.Action.Move:
-                            {
-                                MoveFilesOperations.Add(controlItem);
-                            }
-                            break;
-                        case GlobalData.Action.Copy:
-                            {
-                                CopyFilesOperations.Add(controlItem);
-                            }
-                            break;
-                        case GlobalData.Action.CopyData:
-                            {
-                                CopyTextFromFilesOperations.Add(controlItem);
-                            }
-                            break;
-                        case GlobalData.Action.Remove:
-                            {
-                                RemoveFilesOperations.Add(controlItem);
-                            }
-                            break;
+                        var controlItem = new ControlItem(operation.OperationName);
+                        controlItem.ControlItemSelected += OperationCommandExecute;
+
+                        switch (operation.ActionType)
+                        {
+                            case GlobalData.Action.Move:
+                                {
+                                    MoveFilesOperations.Add(controlItem);
+                                }
+                                break;
+                            case GlobalData.Action.Copy:
+                                {
+                                    CopyFilesOperations.Add(controlItem);
+                                }
+                                break;
+                            case GlobalData.Action.CopyData:
+                                {
+                                    CopyTextFromFilesOperations.Add(controlItem);
+                                }
+                                break;
+                            case GlobalData.Action.Remove:
+                                {
+                                    RemoveFilesOperations.Add(controlItem);
+                                }
+                                break;
+                        }
+
+                        AllOperations.Add(controlItem);
                     }
-                }                
+                }
+
+                MoveFilesOperations.Distinct();
+                CopyFilesOperations.Distinct();
+                CopyTextFromFilesOperations.Distinct();
+                RemoveFilesOperations.Distinct();
+                AllOperations.Distinct();
+
+                RaisePropertyChanged(nameof(MoveFilesOperationsVisibility));
+                RaisePropertyChanged(nameof(CopyFilesOperationsVisibility));
+                RaisePropertyChanged(nameof(CopyTextFromFilesOperationsVisibility));
+                RaisePropertyChanged(nameof(RemoveFilesOperationsVisibility));
+
+                LoadOperations();
             }
-
-            MoveFilesOperations.Distinct();
-            CopyFilesOperations.Distinct();
-            CopyTextFromFilesOperations.Distinct();
-            RemoveFilesOperations.Distinct();
-
-            RaisePropertyChanged(nameof(MoveFilesOperationsVisibility));
-            RaisePropertyChanged(nameof(CopyFilesOperationsVisibility));
-            RaisePropertyChanged(nameof(CopyTextFromFilesOperationsVisibility));
-            RaisePropertyChanged(nameof(RemoveFilesOperationsVisibility));
+            catch (Exception ex)
+            {
+                throw ex;
+            }          
         }
         public void Dispose()
         {
@@ -400,5 +420,13 @@ namespace RobotFilesEditor.ViewModel
                 throw ex;
             }          
         }     
+
+        private void LoadOperations()
+        {
+            foreach(var operation in AllOperations)
+            {
+                operation.Operations = SelectedControler.Operations.Where(x => x.OperationName == operation.Content).ToList();
+            }
+        }
     }
 }
