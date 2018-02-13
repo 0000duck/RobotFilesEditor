@@ -10,6 +10,5 @@ namespace RobotFilesEditor
     {
         void CopyData();
         void CutData();
-        void CreateNewFileFromData();
     }
 }

@@ -249,7 +249,7 @@ namespace RobotFilesEditor
             _textToWrite=new List<string>();
             _filesToPrepare=new List<string>();
             _resultInfos=new List<ResultInfo>();
-    }
+        }
         public void CopyData()
         {
             try
@@ -281,7 +281,7 @@ namespace RobotFilesEditor
                 #endregion
 
                 #region WriteData
-                string destinationFile = GetCreatedDestinationFile();               
+                string destinationFile = GetDestinationFile();               
                 PrepareToWrite(destinationFile, fileContent);
                 WriteToFile(destinationFile);
                 #endregion 
@@ -291,15 +291,95 @@ namespace RobotFilesEditor
                 throw ex;
             }           
         }
+
+        public void PrepareCopyData()
+        {
+            try
+            {
+                //Zrobić podział na Preview i na Wykonanie samej akcji
+                #region LoadData
+                List<FileLineProperties> filesContent = LoadFilesContent();
+                #endregion LoadData
+
+                #region FilterData
+                FiltrContentOnGroups(filesContent);
+                #endregion FilterData
+
+                #region ValidateData
+                //dodać ifa czy ma sprawdzać występowianie duplikatów // ewentualnie czy ma robić Distinct po wynikach
+                if (DetectDuplicates)
+                {
+                    DataFilterGroups.ForEach(x => x.LinesToAddToFile = ValidateText.FindVaribleDuplicates(x.LinesToAddToFile));
+                }
+                #endregion
+
+                #region OrganizeData
+                //Ulepszyć to dodać sposób sortowania
+                DataFilterGroups = DataContentSortTool.SortData(DataFilterGroups, SortType);
+                #endregion
+
+                #region PrepareData
+                List<string> fileContent = PreparedDataToWrite();
+                #endregion
+
+                #region WriteData
+                string destinationFile = GetDestinationFile();
+                PrepareToWrite(destinationFile, fileContent);
+                destinationFile = CreateDestinationFileFromData(destinationFile);
+                WriteToFile(destinationFile);
+                #endregion 
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public void CutData()
         {
             throw new NotImplementedException();
         }
-        public void CreateNewFileFromData()
+        public string CreateDestinationFileFromData(string path)
         {
-            throw new NotImplementedException();
+            string source = path;
+            string destinationPath = Path.Combine(DestinationPath, DestinationFolder);
+            string destinationFile = Path.Combine(destinationPath, Path.GetFileName(DestinationFileSource));
+
+            try
+            {
+                if (string.IsNullOrEmpty(path))
+                {
+                    throw new ArgumentNullException(nameof(path));
+                }
+
+                if (Directory.Exists(destinationPath) == false)
+                {
+                    Directory.CreateDirectory(destinationPath);
+                }            
+
+                if (File.Exists(source) == false)
+                {
+                    if (File.Exists(destinationFile) == false)
+                    {
+                        File.CreateText(destinationFile).Close();
+                        return destinationFile;
+                    }
+
+                    return destinationFile;
+                }else
+                {
+                    File.Copy(source, destinationFile);
+                }
+
+                return DestinationFileSource;
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
-        private string GetCreatedDestinationFile()
+        private string GetDestinationFile()
         {
             string source = Path.Combine(Directory.GetCurrentDirectory(), DestinationFileSource);
             string destinationPath= Path.Combine(DestinationPath, DestinationFolder);            
@@ -312,25 +392,18 @@ namespace RobotFilesEditor
                     throw new ArgumentNullException(nameof(DestinationFileSource));
                 }
 
-                if (Directory.Exists(destinationPath) == false)
+                if (File.Exists(destinationFile) == false)
                 {
-                    Directory.CreateDirectory(destinationPath);
+                    return destinationFile;
                 }
 
-                if (File.Exists(source)==false)
-                { 
-                    if(File.Exists(destinationFile)==false)
-                    {
-                        File.CreateText(destinationFile).Close();
-                    }
-                    
-                    return destinationFile;
-                }
-                else
+                if (File.Exists(source))
                 {
-                    File.Copy(source, destinationFile);
-                    return destinationFile;
+                    return source;
                 }
+
+                return DestinationFileSource;
+                
             }
             catch (Exception ex)
             {
@@ -376,6 +449,8 @@ namespace RobotFilesEditor
             //Dodać nagłówki do wyświetlanego wyniku
             try
             {
+                //resultInfos.Add(ResultInfo.CreateResultInfoHeder(Path.GetFileName(DestinationFileSource),  ) );
+
                 if (string.IsNullOrEmpty(FileHeader) == false)
                 {
                     resultInfos.Add(ResultInfo.CreateResultInfo(FileHeader));
@@ -600,10 +675,41 @@ namespace RobotFilesEditor
             List<string> _filesToPrepare=new List<string>();
             List<ResultInfo> _resultInfos=new List<ResultInfo>();
         }
-
         public void PrepareOperation()
         {
-            throw new NotImplementedException();
+            FileOperation.PrepareOperation();
+            _filesToPrepare = FileOperation.GetOperatedFiles();
+
+            if (_filesToPrepare?.Count() == 0 || _filesToPrepare == null)
+            {
+                return;
+            }
+
+            try
+            {
+                switch (ActionType)
+                {
+                    case GlobalData.Action.CopyData:
+                        {
+                            CopyData();
+                        }
+                        break;
+                    case GlobalData.Action.MoveData:
+                        {
+                            CutData();
+                        }
+                        break;
+                    case GlobalData.Action.RemoveData:
+                        {
+                            //???
+                        }
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

@@ -277,30 +277,11 @@ namespace RobotFilesEditor
         public void CopyFiles()
         {          
             FiltrFiles();
-            string destination = CreateDestinationFolderPath();
-            IDictionary<string, string> filteredFilesIterator = new Dictionary<string, string>(FilteredFiles);
-            
-            foreach(var file in filteredFilesIterator)
-            {
-                try
-                {
-                    string filePath = Path.Combine(destination, Path.GetFileName(file.Key));
+            string destination = FilesTool.CreateDestinationFolderPath(DestinationPath,DestinationFolder);
 
-                    if(File.Exists(filePath))
-                    {
-                        throw new IOException($"File \"{Path.GetFileName(file.Key)}\" already exist!");
-                    }
+            FilteredFiles = FilesTool.CopyFiles(FilteredFiles, destination);
 
-                    File.Copy(file.Key, filePath);
-                }                
-                catch (Exception ex)
-                {
-                    FilteredFiles.Remove(file.Key);
-                    FilteredFiles.Add(file.Key, ex.Message);                                              
-                }                
-            }
-
-            if (CheckFilesCorrectness(destination) == false)
+            if (FilesTool.CheckFilesCorrectness(destination, FilteredFiles.Keys.ToList()) == false)
             {
                 throw new Exception("Copy files veryfication not pass!");
             }
@@ -308,47 +289,25 @@ namespace RobotFilesEditor
         public bool MoveFile()
         {
             bool result = true;
-            string destination = CreateDestinationFolderPath();
-            IDictionary<string, string> filteredFilesIterator = new Dictionary<string, string>(FilteredFiles);
+            string destination = FilesTool.CreateDestinationFolderPath(DestinationPath, DestinationFolder);            
 
             try
             {
                 FiltrFiles();
+
+                FilteredFiles = FilesTool.MoveFiles(FilteredFiles, destination);
+
+                if (result)
+                {
+                    result = FilesTool.CheckFilesCorrectness(destination, FilteredFiles.Keys.ToList());
+                }
+
+                return result;
             }
             catch (Exception ex)
             {
                 throw ex;
-            }            
-
-            FilteredFiles.Keys.ToList().ForEach(x => File.Move(x, Path.Combine(destination, Path.GetFileName(x))));
-
-            foreach (var file in filteredFilesIterator)
-            {
-                try
-                {
-                    string filePath = Path.Combine(destination, Path.GetFileName(file.Key));
-
-                    if (File.Exists(filePath))
-                    {
-                        throw new IOException($"File \"{Path.GetFileName(file.Key)}\" already exist!");
-                    }
-
-                    File.Move(file.Key, filePath);
-                }
-                catch (Exception ex)
-                {
-                    FilteredFiles.Remove(file.Key);
-                    FilteredFiles.Add(file.Key, ex.Message);
-                    result = false;
-                }
-            }
-
-            if (result)
-            {
-                result = CheckFilesCorrectness(destination);
-            }
-
-            return result;
+            }           
         }
         public bool RemoveFile()
         {
@@ -358,76 +317,24 @@ namespace RobotFilesEditor
             try
             {
                 FiltrFiles();
+
+                FilteredFiles = FilesTool.RemoveFile(FilteredFiles);
+
+                if (result)
+                {
+                    result = FilesTool.CheckFilesCorrectness(SourcePath, FilteredFiles.Keys.ToList()) == false;
+                }
+
+                return result;
             }
             catch (Exception ex)
             {
                 throw ex;
-            }        
-
-            foreach (var file in filteredFilesIterator)
-            {
-                try
-                {
-                    File.Delete(file.Key);
-                }
-                catch (Exception ex)
-                {
-                    FilteredFiles.Remove(file.Key);
-                    FilteredFiles.Add(file.Key, ex.Message);
-                    result = false;
-                }
-            }
-
-            if (result)
-            {
-                result = CheckFilesCorrectness(SourcePath)==false;
-            }
-
-            return result;
+            }           
         }
         #endregion Operations
 
-        #region FilesPreparing
-        public string CreateDestinationFolderPath()
-        {
-            string destination = Path.Combine(DestinationPath, DestinationFolder);
-
-            try
-            {
-                if (Directory.Exists(destination) == false)
-                {
-                    Directory.CreateDirectory(destination);
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }            
-
-            return destination;
-        }
-        bool CheckFilesCorrectness(string path)
-        {
-            List<string> resultFiles = new List<string>();
-
-            try
-            {
-                resultFiles = Directory.GetFiles(path).ToList();
-
-                if (FilteredFiles.Keys.ToList().Exists(s => resultFiles.Exists(r => Path.GetFileName(r) == Path.GetFileName(s)) == false))
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }            
-        }      
+        #region FilesPreparing      
         public List<string>GetOperatedFiles()
         {           
             return FilteredFiles.Keys.ToList();
@@ -493,12 +400,10 @@ namespace RobotFilesEditor
 
             return resultInfos;
         }
-
         public void ClearMemory()
         {
             FilteredFiles = new Dictionary<string, string>();
         }
-
         public void PrepareOperation()
         {
             try

@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -73,17 +71,17 @@ namespace RobotFilesEditor
 
         private void ExecuteOperationCommandExecute()
         {
-            if(DetectExceptions()==false)
+            try
             {
-                IOperation activeOperation;
-                List<string> exeptions = new List<string>();
-                List<ResultInfo> result = new List<ResultInfo>();
-                OperationResult.Clear();
-
-                Operations.OrderBy(y => y.Priority).ToList();
-                foreach (var operation in Operations)
+                if (DetectExceptions() == false)
                 {
-                    try
+                    IOperation activeOperation;
+                    List<string> exeptions = new List<string>();
+                    List<ResultInfo> result = new List<ResultInfo>();
+                    OperationResult.Clear();
+
+                    Operations.OrderBy(y => y.Priority).ToList();
+                    foreach (var operation in Operations)
                     {
                         activeOperation = operation;
                         activeOperation.ExecuteOperation();
@@ -103,32 +101,34 @@ namespace RobotFilesEditor
                             activeOperation?.ClearMemory();
                         }
                     }
-                    catch (Exception ex)
+                }
+                else
+                {
+                    MessageBoxResult result = MessageBox.Show($"Refresh preview?", "Error!", MessageBoxButton.YesNo);
+
+                    if (result == MessageBoxResult.Yes)
                     {
-                        throw ex;
+                        PreviewOperationCommandExecute();
                     }
                 }
-            }else
+            }
+            catch (Exception ex)
             {
-                MessageBoxResult result = MessageBox.Show($"Refresh preview?", "Error!", MessageBoxButton.YesNo);
-
-                if (result == MessageBoxResult.Yes)
-                {
-                    PreviewOperationCommandExecute();
-                }
-            }          
+                MessageBox.Show(ex.Message, "Error!", MessageBoxButton.OK);
+            }            
         }
         private void PreviewOperationCommandExecute()
         {
             IOperation activeOperation;
             List<string> exeptions = new List<string>();
             List<ResultInfo> result = new List<ResultInfo>();
-            OperationResult.Clear();
 
-            Operations.OrderBy(y => y.Priority).ToList();
-            foreach (var operation in Operations)
+            try
             {
-                try
+                OperationResult.Clear();
+
+                Operations.OrderBy(y => y.Priority).ToList();
+                foreach (var operation in Operations)
                 {
                     activeOperation = operation;
                     activeOperation.PrepareOperation();
@@ -149,11 +149,11 @@ namespace RobotFilesEditor
                         activeOperation?.ClearMemory();
                     }
                 }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Error!", MessageBoxButton.OK);
+            }          
         }
 
         private bool DetectExceptions()
@@ -164,7 +164,7 @@ namespace RobotFilesEditor
 
             foreach(var exeption in Exceptions)
             {
-                MessageBoxResult result = MessageBox.Show($"Error: {exeption.Description}.\nOpen file?", "Error!", MessageBoxButton.YesNo);
+                MessageBoxResult result = MessageBox.Show($"Error: {exeption.Description}.\nOpen file?", $"Error on {Title}", MessageBoxButton.YesNo);
 
                 if (result==MessageBoxResult.Yes)
                 {

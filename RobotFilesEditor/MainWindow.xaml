@@ -5,10 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
-        xmlns:local="clr-namespace:RobotFilesEditor"
+        xmlns:local="clr-namespace:RobotFilesEditor"           
         DataContext="{Binding MainVM, Source={StaticResource Locator}}"
         mc:Ignorable="d"
-        Title="{Binding SelectedControler.ContolerType}" Name="window" Width="890" Height="661">
+        Title="Robot File Harvester" Name="window" Width="890" Height="661"
+        >
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closing">
             <cmd:EventToCommand Command="{Binding Path=ClosingCommand}" PassEventArgsToCommand="True" />

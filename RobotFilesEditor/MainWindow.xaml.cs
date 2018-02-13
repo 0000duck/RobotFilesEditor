@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 
 namespace RobotFilesEditor
 {
@@ -17,6 +18,13 @@ namespace RobotFilesEditor
         public MainWindow()
         {
             InitializeComponent();
+            setIconToApp();
+        }
+
+        private void setIconToApp()
+        {
+            Uri icon = new Uri(".../Resources/Harvester.ico", UriKind.RelativeOrAbsolute);
+            this.Icon = BitmapFrame.Create(icon);
         }
     }
 }
