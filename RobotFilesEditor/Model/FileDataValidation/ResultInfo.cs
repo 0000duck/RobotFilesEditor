@@ -64,7 +64,7 @@ namespace RobotFilesEditor
             return resultInfo;
         }
 
-        private void OpenInNotepadCommandExecute()
+        public void OpenInNotepadCommandExecute()
         {
             if(String.IsNullOrEmpty(Path)==false)
             {

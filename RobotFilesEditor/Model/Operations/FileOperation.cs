@@ -199,10 +199,83 @@ namespace RobotFilesEditor
             {
                 throw ex;
             }                
-        }       
-        public bool CopyFile()
+        }
+
+        #region Prepare
+        public void PrepareToCopyFiles()
+        {            
+            FiltrFiles();
+            string destination = Path.Combine(DestinationPath, DestinationFolder);
+            IDictionary<string, string> filteredFilesIterator = new Dictionary<string, string>(FilteredFiles);
+
+            foreach (var file in filteredFilesIterator)
+            {
+                try
+                {
+                    string filePath = Path.Combine(destination, Path.GetFileName(file.Key));
+
+                    if (File.Exists(filePath))
+                    {
+                        throw new IOException($"File \"{Path.GetFileName(file.Key)}\" already exist!");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    FilteredFiles.Remove(file.Key);
+                    FilteredFiles.Add(file.Key, ex.Message);                   
+                }
+            }
+        }
+        public void PrepareToMoveFiles()
         {
-            bool result = true;
+            string destination = Path.Combine(DestinationPath, DestinationFolder);
+            IDictionary<string, string> filteredFilesIterator = new Dictionary<string, string>(FilteredFiles);
+
+            try
+            {
+                FiltrFiles();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            foreach (var file in filteredFilesIterator)
+            {
+                try
+                {
+                    string filePath = Path.Combine(destination, Path.GetFileName(file.Key));
+
+                    if (File.Exists(filePath))
+                    {
+                        throw new IOException($"File \"{Path.GetFileName(file.Key)}\" already exist!");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    FilteredFiles.Remove(file.Key);
+                    FilteredFiles.Add(file.Key, ex.Message);                    
+                }
+            }            
+        }
+        public void PrepareToRemoveFile()
+        {            
+            IDictionary<string, string> filteredFilesIterator = new Dictionary<string, string>(FilteredFiles);
+
+            try
+            {
+                FiltrFiles();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion Prepare
+
+        #region Operations
+        public void CopyFiles()
+        {          
             FiltrFiles();
             string destination = CreateDestinationFolderPath();
             IDictionary<string, string> filteredFilesIterator = new Dictionary<string, string>(FilteredFiles);
@@ -223,17 +296,14 @@ namespace RobotFilesEditor
                 catch (Exception ex)
                 {
                     FilteredFiles.Remove(file.Key);
-                    FilteredFiles.Add(file.Key, ex.Message);
-                    result = false;                                
+                    FilteredFiles.Add(file.Key, ex.Message);                                              
                 }                
             }
 
-            if(result)
+            if (CheckFilesCorrectness(destination) == false)
             {
-                result = CheckFilesCorrectness(destination);
+                throw new Exception("Copy files veryfication not pass!");
             }
-
-            return result;
         }
         public bool MoveFile()
         {
@@ -315,6 +385,9 @@ namespace RobotFilesEditor
 
             return result;
         }
+        #endregion Operations
+
+        #region FilesPreparing
         public string CreateDestinationFolderPath()
         {
             string destination = Path.Combine(DestinationPath, DestinationFolder);
@@ -359,6 +432,7 @@ namespace RobotFilesEditor
         {           
             return FilteredFiles.Keys.ToList();
         }
+        #endregion FilesPreparing
 
         #region InterfaceImplementation
         public void ExecuteOperation()
@@ -371,7 +445,7 @@ namespace RobotFilesEditor
                 {
                     case GlobalData.Action.Copy:
                         {
-                            CopyFile();
+                            CopyFiles();
                         }
                         break;
                     case GlobalData.Action.Move:
@@ -427,25 +501,23 @@ namespace RobotFilesEditor
 
         public void PrepareOperation()
         {
-            List<string> result = new List<string>();
-
             try
             {
                 switch (ActionType)
                 {
                     case GlobalData.Action.Copy:
                         {
-                            CopyFile();
+                            PrepareToCopyFiles();
                         }
                         break;
                     case GlobalData.Action.Move:
                         {
-                            MoveFile();
+                            PrepareToMoveFiles();
                         }
                         break;
                     case GlobalData.Action.Remove:
                         {
-                            RemoveFile();
+                            PrepareToRemoveFile();
                         }
                         break;
                     default:

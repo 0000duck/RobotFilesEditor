@@ -33,6 +33,7 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-        </Expander>       
+        </Expander>
+        <GridSplitter/>       
     </StackPanel>
 </UserControl>
