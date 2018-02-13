@@ -424,6 +424,42 @@ namespace RobotFilesEditor
         {
             FilteredFiles = new Dictionary<string, string>();
         }
+
+        public void PrepareOperation()
+        {
+            List<string> result = new List<string>();
+
+            try
+            {
+                switch (ActionType)
+                {
+                    case GlobalData.Action.Copy:
+                        {
+                            CopyFile();
+                        }
+                        break;
+                    case GlobalData.Action.Move:
+                        {
+                            MoveFile();
+                        }
+                        break;
+                    case GlobalData.Action.Remove:
+                        {
+                            RemoveFile();
+                        }
+                        break;
+                    default:
+                        {
+                            FiltrFiles();
+                        }
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
         #endregion InterfaceImplementation
     }
 }

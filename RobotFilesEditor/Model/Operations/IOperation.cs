@@ -14,6 +14,7 @@ namespace RobotFilesEditor
 
         #endregion Public
         void ExecuteOperation();
+        void PrepareOperation();
         List<ResultInfo> GetOperationResult();
         void ClearMemory();
     }

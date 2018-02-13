@@ -600,5 +600,10 @@ namespace RobotFilesEditor
             List<string> _filesToPrepare=new List<string>();
             List<ResultInfo> _resultInfos=new List<ResultInfo>();
         }
+
+        public void PrepareOperation()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -7,30 +7,32 @@
              mc:Ignorable="d">
     <StackPanel Background="White">
         <DockPanel>
-            <Label Content="{Binding Content}"   DockPanel.Dock="Left" Margin="5" />
+            <Label Content="{Binding Title}"   DockPanel.Dock="Left" Margin="5"/>
             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" >
                 <Button Content="Execute" Command="{Binding ExecuteOperationCommand}" Margin="5" HorizontalContentAlignment="Right"/>
                 <Button Content="Preview" Command="{Binding PreviewOperationCommand}" Margin="5" HorizontalContentAlignment="Right"/>
             </StackPanel>         
-        </DockPanel>       
-        <ListView Margin="3"  MaxHeight="100" MinHeight="30"
+        </DockPanel>
+        <Expander IsExpanded="True" Padding="15,0,0,0" Visibility="{Binding ViewWindowVisibility}">
+            <ListView 
+                  Margin="3"  MaxHeight="200" Height="Auto"
                   ItemsSource="{Binding OperationResult}" 
                   ScrollViewer.CanContentScroll="True" 
                   ScrollViewer.VerticalScrollBarVisibility="Auto" 
                   ScrollViewer.HorizontalScrollBarVisibility="Auto">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <Label  Background="Transparent" 
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Label  Background="Transparent" 
                             Content="{Binding Path=Content}" 
                             Foreground="{Binding Path=Color}" 
                             ToolTip="{Binding Path=Description}">
-                        <Label.InputBindings>
-                            <MouseBinding Command="{Binding Path=OpenInNotepadCommand}" MouseAction="LeftClick"/>
-                        </Label.InputBindings>
-                    </Label>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                            <Label.InputBindings>
+                                <MouseBinding Command="{Binding Path=OpenInNotepadCommand}" MouseAction="LeftClick"/>
+                            </Label.InputBindings>
+                        </Label>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Expander>       
     </StackPanel>
-
 </UserControl>

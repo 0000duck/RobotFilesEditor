@@ -1,4 +1,5 @@
-﻿using GalaSoft.MvvmLight.Command;
+﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,7 +10,7 @@ using System.Windows.Input;
 
 namespace RobotFilesEditor
 {
-    public class ControlItem
+    public class ControlItem: ViewModelBase
     {       
         #region events
 
@@ -19,13 +20,26 @@ namespace RobotFilesEditor
 
         #region Property
 
-        public string Content { get; set; }
-        public IObservable<ResultInfo> OperationResult { get; set; }
-
+        public string Title { get; set; }
+        public ObservableCollection<ResultInfo> OperationResult { get; set; }
         public ICommand ClickedCommand { get; set; }
         public ICommand ExecuteOperationCommand { get; set; }
         public ICommand PreviewOperationCommand { get; set; }
         public List<IOperation> Operations { get; set; }
+        public string ViewWindowVisibility
+        {
+            get
+            {
+                if(OperationResult.Count>0)
+                {
+                    return "Visible";
+                }
+                else
+                {
+                    return "Collapsed";
+                }
+            }
+        }
 
         #endregion
 
@@ -33,9 +47,9 @@ namespace RobotFilesEditor
 
         public ControlItem(string title)
         {
-            Content = title;
+            Title = title;
             Operations = new List<IOperation>();
-            OperationResult = new IObservable<ResultInfo>();
+            OperationResult = new ObservableCollection<ResultInfo>();
             ClickedCommand = new RelayCommand(ClickedCommandExecute);
             ExecuteOperationCommand = new RelayCommand(ExecuteOperationCommandExecute);
             PreviewOperationCommand = new RelayCommand(PreviewOperationCommandExecute);
@@ -58,7 +72,8 @@ namespace RobotFilesEditor
         private void ExecuteOperationCommandExecute()
         {
             IOperation activeOperation;
-            List<string> exeptions = new List<string>();           
+            List<string> exeptions = new List<string>();
+            List<ResultInfo> result=new List<ResultInfo>();           
 
             Operations.OrderBy(y => y.Priority).ToList();
             foreach (var operation in Operations)
@@ -72,7 +87,16 @@ namespace RobotFilesEditor
 
                     activeOperation = operation;
                     activeOperation.ExecuteOperation();
-                    OperationResult = new ObservableCollection(activeOperation.GetOperationResult());
+                    result = activeOperation.GetOperationResult();
+                    if (result?.Count > 0)
+                    {
+                        result.ForEach(x => OperationResult.Add(x));
+                    }
+                    else
+                    {
+                        OperationResult.Add(new ResultInfo() { Content = "No result to show" });
+                    }
+                        RaisePropertyChanged(nameof(ViewWindowVisibility));
                 }
                 catch (Exception ex)
                 {

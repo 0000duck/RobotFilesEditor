@@ -129,8 +129,7 @@ namespace RobotFilesEditor.ViewModel
                     if (SelectedControler != null)
                     {
                         SelectedControler.DestinationPath = DestinationPath;
-                    }
-                    
+                    }                    
                 }              
             }
         }
@@ -176,10 +175,12 @@ namespace RobotFilesEditor.ViewModel
                 {
                     _selectedControler = value;
                     RaisePropertyChanged(nameof(SelectedControler));
+
                     if(SelectedControler?.SourcePath!=SourcePath)
                     {
                         SelectedControler.SourcePath = SourcePath;
                     }
+
                     if(SelectedControler?.DestinationPath!=DestinationPath)
                     {
                         SelectedControler.DestinationPath = DestinationPath;
@@ -333,7 +334,7 @@ namespace RobotFilesEditor.ViewModel
         {
             try
             {
-                SelectedControler = Controlers.FirstOrDefault(x => x.ContolerType == e.Content);
+                SelectedControler = Controlers.FirstOrDefault(x => x.ContolerType == e.Title);
                 CreateOperationsControls();
             }
             catch (Exception ex)
@@ -346,7 +347,7 @@ namespace RobotFilesEditor.ViewModel
         {
             try
             {
-                SelectedControler.ExecuteOperation(e.Content);
+                SelectedControler.ExecuteOperation(e.Title);
                 var tmpResult=SelectedControler.GetTextToPrint();
                 ResultView.Clear();
                 tmpResult.ForEach(x => ResultView.Add(x));
@@ -425,7 +426,7 @@ namespace RobotFilesEditor.ViewModel
         {
             foreach(var operation in AllOperations)
             {
-                operation.Operations = SelectedControler.Operations.Where(x => x.OperationName == operation.Content).ToList();
+                operation.Operations = SelectedControler.Operations.Where(x => x.OperationName == operation.Title).ToList();
             }
         }
     }
