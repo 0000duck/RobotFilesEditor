@@ -5,8 +5,9 @@ using System.Linq;
 
 namespace RobotFilesEditor
 {
-    public class DataOperation: IOperation, IFileDataOperations
+    public class DataOperation: IOperation
     {
+        #region Public
         public FileOperation FileOperation
         {
             get { return _fileOperation; }
@@ -89,10 +90,10 @@ namespace RobotFilesEditor
                     _destinationPath = string.Empty;
                 }
 
-                if (_destinationPath != value)
+                if (FileOperation.DestinationPath != value)
                 {                   
                     FileOperation.DestinationPath = value;
-                    _destinationPath = FileOperation.DestinationPath;
+                    _destinationPath = Path.Combine(FileOperation.DestinationPath, FileOperation.DestinationFolder);
                 }
             }
         }
@@ -217,8 +218,8 @@ namespace RobotFilesEditor
                 }
             }
         }
+        #endregion Public
 
-       
         #region Private
         private FileOperation _fileOperation;
        
@@ -250,41 +251,47 @@ namespace RobotFilesEditor
             _filesToPrepare=new List<string>();
             _resultInfos=new List<ResultInfo>();
         }
-        public void CopyData()
+
+        #region DataPreparing
+        public void PrepareDataToCopy()
         {
+            List<FileLineProperties> filesContent = FilesTool.LoadTextFromFiles(_filesToPrepare);
+            FiltrContentOnGroups(filesContent);
+
+            if (DetectDuplicates)
+            {
+                DataFilterGroups.ForEach(x => x.LinesToAddToFile = ValidateText.FindVaribleDuplicates(x.LinesToAddToFile));
+            }
+
+            DataFilterGroups = DataContentSortTool.SortData(DataFilterGroups, SortType);              
+        }
+        #endregion DataPreparing
+        
+
+        #region DataPreview
+        public void PreviewCopyData()
+        {
+            PrepareDataToCopy();
+            string sourcePath = FilesTool.GetSourceFilePath(DestinationFileSource, DestinationPath);
+            List<string> sourceText = FilesTool.GetSourceFileText(sourcePath);
+            CreateResultToShow(sourceText, true);
+        }
+        #endregion DataPreview
+
+        #region DataExecute
+        public void ExecuteCopyData()
+        {
+            List<string> newFileText = new List<string>();
             try
             {
-                //Zrobić podział na Preview i na Wykonanie samej akcji
-                #region LoadData
-                List<FileLineProperties> filesContent = LoadFilesContent();
-                #endregion LoadData
+                PrepareDataToCopy();
+                string sourcePath = FilesTool.GetSourceFilePath(DestinationFileSource, DestinationPath);
+                List<string> sourceText = FilesTool.GetSourceFileText(sourcePath);
+                newFileText = CreateResultToWrite(sourceText);
 
-                #region FilterData
-                FiltrContentOnGroups(filesContent);
-                #endregion FilterData
-
-                #region ValidateData
-                //dodać ifa czy ma sprawdzać występowianie duplikatów // ewentualnie czy ma robić Distinct po wynikach
-                if(DetectDuplicates)
-                {
-                    DataFilterGroups.ForEach(x => x.LinesToAddToFile = ValidateText.FindVaribleDuplicates(x.LinesToAddToFile));
-                }              
-                #endregion
-
-                #region OrganizeData
-                //Ulepszyć to dodać sposób sortowania
-                DataFilterGroups = DataContentSortTool.SortData(DataFilterGroups, SortType);
-                #endregion
-
-                #region PrepareData
-                List<string> fileContent = PreparedDataToWrite();
-                #endregion
-
-                #region WriteData
-                string destinationFile = GetDestinationFile();               
-                PrepareToWrite(destinationFile, fileContent);
-                WriteToFile(destinationFile);
-                #endregion 
+                string destinationPath = FilesTool.CombineFilePath(DestinationPath, DestinationFileSource);
+                FilesTool.CreateDestinationFile(DestinationFileSource, destinationPath);
+                FilesTool.WriteTextToFile(newFileText, destinationPath);
             }
             catch (Exception ex)
             {
@@ -292,165 +299,56 @@ namespace RobotFilesEditor
             }           
         }
 
-        public void PrepareCopyData()
-        {
-            try
-            {
-                //Zrobić podział na Preview i na Wykonanie samej akcji
-                #region LoadData
-                List<FileLineProperties> filesContent = LoadFilesContent();
-                #endregion LoadData
-
-                #region FilterData
-                FiltrContentOnGroups(filesContent);
-                #endregion FilterData
-
-                #region ValidateData
-                //dodać ifa czy ma sprawdzać występowianie duplikatów // ewentualnie czy ma robić Distinct po wynikach
-                if (DetectDuplicates)
-                {
-                    DataFilterGroups.ForEach(x => x.LinesToAddToFile = ValidateText.FindVaribleDuplicates(x.LinesToAddToFile));
-                }
-                #endregion
-
-                #region OrganizeData
-                //Ulepszyć to dodać sposób sortowania
-                DataFilterGroups = DataContentSortTool.SortData(DataFilterGroups, SortType);
-                #endregion
-
-                #region PrepareData
-                List<string> fileContent = PreparedDataToWrite();
-                #endregion
-
-                #region WriteData
-                string destinationFile = GetDestinationFile();
-                PrepareToWrite(destinationFile, fileContent);
-                destinationFile = CreateDestinationFileFromData(destinationFile);
-                WriteToFile(destinationFile);
-                #endregion 
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-
         public void CutData()
         {
             throw new NotImplementedException();
-        }
-        public string CreateDestinationFileFromData(string path)
-        {
-            string source = path;
-            string destinationPath = Path.Combine(DestinationPath, DestinationFolder);
-            string destinationFile = Path.Combine(destinationPath, Path.GetFileName(DestinationFileSource));
+        }    
+        #endregion DataExecute
 
+
+
+        private void CreateResultToShow(List<string> sourceText, bool showOnly=false)
+        {
+            List<ResultInfo> resultInfos = new List<ResultInfo>();            
+
+            resultInfos=PrepareFilterGroups(resultInfos);
+
+            if (sourceText?.Count > 0)
+            {
+                resultInfos= WriteNewTextToOldFileContent(sourceText, resultInfos, showOnly);
+            }
+
+            _resultInfos = resultInfos;
+        }        
+        private List<string> CreateResultToWrite(List<string> sourceText)
+        {
+            List<string> newFileText = new List<string>();
+            CreateResultToShow(sourceText, false);
+            _resultInfos.ForEach(x => newFileText.Add(x.Content));
+            return newFileText;
+        }
+
+        #region PrepareData
+        private void FiltrContentOnGroups(List<FileLineProperties> filesContent, bool deleteDuplicates = true)
+        {
             try
             {
-                if (string.IsNullOrEmpty(path))
-                {
-                    throw new ArgumentNullException(nameof(path));
-                }
-
-                if (Directory.Exists(destinationPath) == false)
-                {
-                    Directory.CreateDirectory(destinationPath);
-                }            
-
-                if (File.Exists(source) == false)
-                {
-                    if (File.Exists(destinationFile) == false)
-                    {
-                        File.CreateText(destinationFile).Close();
-                        return destinationFile;
-                    }
-
-                    return destinationFile;
-                }else
-                {
-                    File.Copy(source, destinationFile);
-                }
-
-                return DestinationFileSource;
-
+                DataFilterGroups?.ForEach(x => x.SetLinesToAddToFile(filesContent, deleteDuplicates));
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
-        private string GetDestinationFile()
+        private List<ResultInfo> PrepareFilterGroups(List<ResultInfo> resultInfos)
         {
-            string source = Path.Combine(Directory.GetCurrentDirectory(), DestinationFileSource);
-            string destinationPath= Path.Combine(DestinationPath, DestinationFolder);            
-            string destinationFile = Path.Combine(destinationPath, Path.GetFileName(DestinationFileSource));
-                      
-            try
+            if(resultInfos==null)
             {
-                if(string.IsNullOrEmpty(DestinationFileSource))
-                {
-                    throw new ArgumentNullException(nameof(DestinationFileSource));
-                }
-
-                if (File.Exists(destinationFile) == false)
-                {
-                    return destinationFile;
-                }
-
-                if (File.Exists(source))
-                {
-                    return source;
-                }
-
-                return DestinationFileSource;
-                
+                resultInfos = new List<ResultInfo>();
             }
-            catch (Exception ex)
-            {
-                throw  ex;
-            }             
-        }
-        private List<string>GetAllFilesFromDirectory(string path)
-        {
-            List<string> files = new List<string>();
-
+            
             try
             {
-                string[] paths = Directory.GetFileSystemEntries(path);
-
-                foreach (var p in paths)
-                {
-                    if (string.IsNullOrEmpty(Path.GetExtension(p)))
-                    {
-                        var temp = GetAllFilesFromDirectory(p);
-
-                        if (temp.Count > 0)
-                        {
-                            files.AddRange(temp);
-                        }
-                    }
-                    else
-                    {
-                        files.Add(p);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }            
-
-            return files;
-        }
-        private List<string> PreparedDataToWrite()
-        {
-            List<string> buffor = new List<string>();
-            List<ResultInfo> resultInfos = new List<ResultInfo>();
-            //Dodać nagłówki do wyświetlanego wyniku
-            try
-            {
-                //resultInfos.Add(ResultInfo.CreateResultInfoHeder(Path.GetFileName(DestinationFileSource),  ) );
-
                 if (string.IsNullOrEmpty(FileHeader) == false)
                 {
                     resultInfos.Add(ResultInfo.CreateResultInfo(FileHeader));
@@ -474,159 +372,140 @@ namespace RobotFilesEditor
                     resultInfos.Add(ResultInfo.CreateResultInfo(FileFooter));
                 }
 
-                _resultInfos = resultInfos;
-                resultInfos.ForEach(x => buffor.Add(x.Content));
+                return resultInfos;
             }
             catch (Exception ex)
             {
                 throw ex;
-            }          
-
-            return buffor;           
+            }
         }
-        private List<FileLineProperties> LoadFilesContent()
+        private List<ResultInfo> WriteNewTextToOldFileContent(List<string> sourceText, List<ResultInfo> newText, bool addHeader)
         {
-            List<FileLineProperties> filesContent = new List<FileLineProperties>();
-            FileLineProperties fileLineProperties;
-            string []fileContent;
-            int lineNumber;
+            List<ResultInfo> resultInfos = new List<ResultInfo>();
 
             try
             {
-                foreach (string path in _filesToPrepare)
+                if (sourceText?.Count > 0)
                 {
-                    lineNumber = 1;
-                    fileContent = File.ReadAllLines(path);
-
-                    foreach (string line in fileContent)
-                    {
-                        fileLineProperties = new FileLineProperties();
-                        fileLineProperties.FileLinePath = path;
-                        fileLineProperties.LineContent = line;
-                        fileLineProperties.LineNumber = lineNumber;
-                        lineNumber++;
-                        filesContent.Add(fileLineProperties);
-                    }
+                    newText = WriteNewTextExistingToFile(sourceText, newText);
                 }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }           
 
-            return filesContent;
-        }
-        private void FiltrContentOnGroups(List<FileLineProperties> filesContent, bool deleteDuplicates = true)
-        {
-            try
-            {
-                DataFilterGroups?.ForEach(x => x.SetLinesToAddToFile(filesContent, deleteDuplicates));
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }               
-        }
-        private void PrepareToWrite(string filePath, List<string>fileNewContet)
-        { 
-            //Przy wyświetlaniu do listy ResultInfo dodać treść, która znajduje się w pliku
-            List<string> destinationFile = File.ReadAllLines(filePath).ToList();
-            bool writed = false;
-            List<string> buffer = new List<string>();
-
-            //Sprawdza czy treść w ostatenym pliku się powtarza i nie dopucza do tego usuwając z tych dodanych
-            ValidateText.ValidateReapitingTextWhitExistContent(destinationFile, ref fileNewContet);
-
-            try
-            {
-                if (destinationFile?.Count > 0)
+                if(addHeader)
                 {
-                    if (string.IsNullOrEmpty(WriteStart) == false)
+                    resultInfos = new List<ResultInfo>();
+                    resultInfos.Add(ResultInfo.CreateResultInfo(Path.GetFileName(SourcePath)));
+                    resultInfos.Add(ResultInfo.CreateResultInfo(Path.GetFileName(string.Empty)));
+                    resultInfos.AddRange(newText);
+                    resultInfos.Add(ResultInfo.CreateResultInfo(Path.GetFileName(string.Empty)));
+                    return resultInfos;
+                }
+
+                return newText;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        private List<ResultInfo> WriteNewTextExistingToFile(List<string> sourceText, List<ResultInfo> newText)
+        {
+            bool writed = false;
+            List<ResultInfo> sourceFile = new List<ResultInfo>();
+            List<ResultInfo> newFileText = new List<ResultInfo>();
+
+            sourceText.ForEach(x => sourceFile.Add(ResultInfo.CreateResultInfo(x)));
+            ValidateText.ValidateReapitingTextWhitExistContent(sourceFile, ref newText);
+
+            if (string.IsNullOrEmpty(WriteStart) == false)
+            {
+                foreach (ResultInfo line in sourceFile)
+                {
+                    if (line.Content.Contains(WriteStart))
                     {
-                        foreach (string line in destinationFile)
-                        {
-                            if (line.Contains(WriteStart))
-                            {
-                                buffer.Add(line);
-                                buffer.AddRange(fileNewContet);
-                                writed = true;
-                            }
-                            else
-                            {
-                                buffer.Add(line);
-                            }
-                        }
-
-                        if (writed != true)
-                        {
-                            buffer.AddRange(fileNewContet);
-                        }
-
-                        _textToWrite = buffer;
+                        newFileText.Add(line);
+                        newFileText.AddRange(newText);
+                        writed = true;
                     }
                     else
                     {
-                        if (string.IsNullOrEmpty(WriteStop) == false)
-                        {
-                            foreach (string line in destinationFile)
-                            {
-                                if (line.Contains(WriteStop))
-                                {
-                                    buffer.AddRange(fileNewContet);
-                                    buffer.Add(line);
-                                    writed = true;
-                                }
-                                else
-                                {
-                                    buffer.Add(line);
-                                }
-                            }
-
-                            if (writed != true)
-                            {
-                                buffer.AddRange(fileNewContet);
-                            }
-                            _textToWrite = buffer;
-                        }
+                        newFileText.Add(line);
                     }
                 }
-                else
+
+                if (writed != true)
                 {
-                    buffer.AddRange(fileNewContet);
-                    _textToWrite = buffer;
+                    newFileText.AddRange(newText);
+                }
+
+                return newFileText;
+            }
+            else
+            {
+                if (string.IsNullOrEmpty(WriteStop) == false)
+                {
+                    foreach (ResultInfo line in sourceFile)
+                    {
+                        if (line.Content.Contains(WriteStop))
+                        {
+                            newFileText.AddRange(newText);
+                            newFileText.Add(line);
+                            writed = true;
+                        }
+                        else
+                        {
+                            newFileText.Add(line);
+                        }
+                    }
+
+                    if (writed != true)
+                    {
+                        newFileText.AddRange(newText);
+                    }
+                    return newFileText;
+                }
+            }
+
+            return newText;
+        }
+        #endregion PrepareData     
+
+        #region InterfaceImplementation
+        public void PrepareOperation()
+        {
+            FileOperation.PrepareOperation();
+            _filesToPrepare = FileOperation.GetOperatedFiles();
+
+            if (_filesToPrepare?.Count() == 0 || _filesToPrepare == null)
+            {
+                return;
+            }
+
+            try
+            {
+                switch (ActionType)
+                {
+                    case GlobalData.Action.CopyData:
+                        {
+                            PreviewCopyData();
+                        }
+                        break;
+                    case GlobalData.Action.MoveData:
+                        {
+                            //CutData();
+                        }
+                        break;
+                    case GlobalData.Action.RemoveData:
+                        {
+                            //???
+                        }
+                        break;
                 }
             }
             catch (Exception ex)
             {
                 throw ex;
-            }           
-        }
-        private void WriteToFile(string filePath)
-        {
-            try
-            {
-                if (_textToWrite?.Count > 0)
-                {
-                    using (StreamWriter fileStream = new StreamWriter(filePath))
-                    {
-                        _textToWrite.ForEach(x => fileStream.WriteLine(x));
-                    }
-                }
             }
-            catch (Exception ex)
-            {
-                throw ex; 
-            }            
         }
-        public bool CutData(string operation)
-        {
-            throw new NotImplementedException();
-        }
-        public bool CreateNewFileFromData(string operation)
-        {
-            throw new NotImplementedException();
-        }
-       
         public void ExecuteOperation()
         {
             FileOperation.ExecuteOperation();
@@ -643,7 +522,7 @@ namespace RobotFilesEditor
                 {
                     case GlobalData.Action.CopyData:
                         {
-                            CopyData();
+                            ExecuteCopyData();
                         }
                         break;
                     case GlobalData.Action.MoveData:
@@ -674,42 +553,7 @@ namespace RobotFilesEditor
             List<DataFilterGroup> _dataFilterGroups=new List<DataFilterGroup>();
             List<string> _filesToPrepare=new List<string>();
             List<ResultInfo> _resultInfos=new List<ResultInfo>();
-        }
-        public void PrepareOperation()
-        {
-            FileOperation.PrepareOperation();
-            _filesToPrepare = FileOperation.GetOperatedFiles();
-
-            if (_filesToPrepare?.Count() == 0 || _filesToPrepare == null)
-            {
-                return;
-            }
-
-            try
-            {
-                switch (ActionType)
-                {
-                    case GlobalData.Action.CopyData:
-                        {
-                            CopyData();
-                        }
-                        break;
-                    case GlobalData.Action.MoveData:
-                        {
-                            CutData();
-                        }
-                        break;
-                    case GlobalData.Action.RemoveData:
-                        {
-                            //???
-                        }
-                        break;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+        }   
+        #endregion InterfaceImplementation
     }
 }

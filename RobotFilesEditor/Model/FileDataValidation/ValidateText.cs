@@ -21,19 +21,37 @@ namespace RobotFilesEditor
             }
             return listesToCheck;        
         }
-        public static void ValidateReapitingTextWhitExistContent(List<string> fileExistContent, ref List<string> newText)
-        {
-            List<string> result = new List<string>();
+        //public static void ValidateReapitingTextWhitExistContent(List<string> fileExistContent, ref List<string> newText)
+        //{
+        //    List<string> result = new List<string>();
 
-            foreach(string line in fileExistContent)
+        //    foreach(string line in fileExistContent)
+        //    {
+        //        if(string.IsNullOrEmpty(line)==false && string.IsNullOrWhiteSpace(line)==false)
+        //        {
+        //            result.AddRange(newText.Where(x => line.Contains(x)).ToList());                                                        
+        //        }
+        //    }
+
+        //    foreach(var contain in result)
+        //    {
+        //        newText.Remove(contain);
+        //    }
+        //}
+
+        public static void ValidateReapitingTextWhitExistContent(List<ResultInfo> fileExistContent, ref List<ResultInfo> newText)
+        {
+            List<ResultInfo> result = new List<ResultInfo>();
+
+            foreach (ResultInfo line in fileExistContent)
             {
-                if(string.IsNullOrEmpty(line)==false && string.IsNullOrWhiteSpace(line)==false)
+                if (string.IsNullOrEmpty(line.Content) == false && string.IsNullOrWhiteSpace(line.Content) == false)
                 {
-                    result.AddRange(newText.Where(x => line.Contains(x)).ToList());                                                        
+                    result.AddRange(newText.Where(x => line.Content.Contains(x.Content)).ToList());
                 }
             }
 
-            foreach(var contain in result)
+            foreach (var contain in result)
             {
                 newText.Remove(contain);
             }

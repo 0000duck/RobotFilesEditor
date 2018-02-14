@@ -273,7 +273,7 @@ namespace RobotFilesEditor
         }
         #endregion Prepare
 
-        #region Operations
+        #region ExecuteOperations
         public void CopyFiles()
         {          
             FiltrFiles();
@@ -332,7 +332,7 @@ namespace RobotFilesEditor
                 throw ex;
             }           
         }
-        #endregion Operations
+        #endregion ExecuteOperations
 
         #region FilesPreparing      
         public List<string>GetOperatedFiles()
