@@ -90,10 +90,7 @@ namespace RobotFilesEditor
                         {
                             result.ForEach(x => OperationResult.Add(x));
                         }
-                        else
-                        {
-                            OperationResult.Add(new ResultInfo() { Content = "No result to show" });
-                        }
+                       
                         RaisePropertyChanged(nameof(ViewWindowVisibility));
 
                         if (activeOperation != null)
@@ -131,15 +128,11 @@ namespace RobotFilesEditor
                 foreach (var operation in Operations)
                 {
                     activeOperation = operation;
-                    activeOperation.PrepareOperation();
+                    activeOperation.PreviewOperation();
                     result = activeOperation.GetOperationResult();
                     if (result?.Count > 0)
                     {
                         result.ForEach(x => OperationResult.Add(x));
-                    }
-                    else
-                    {
-                        OperationResult.Add(new ResultInfo() { Content = "No result to show" });
                     }
 
                     RaisePropertyChanged(nameof(ViewWindowVisibility));

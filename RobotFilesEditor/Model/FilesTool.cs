@@ -213,7 +213,7 @@ namespace RobotFilesEditor
 
             try
             {
-                if (string.IsNullOrEmpty(path))
+                if (string.IsNullOrEmpty(path)==false)
                 {
                     text = File.ReadAllLines(path).ToList();
                 }
@@ -228,7 +228,7 @@ namespace RobotFilesEditor
 
         public static string GetSourceFilePath(string sourcePath, string destinationPath)
         {
-            destinationPath = CombineFilePath(destinationPath, sourcePath);
+            destinationPath = CombineFilePath(sourcePath, destinationPath);
 
             try
             {
@@ -254,22 +254,26 @@ namespace RobotFilesEditor
         {
             try
             {
+                if (string.IsNullOrEmpty(destinationPath))
+                {
+                    throw new Exception($"Destination file {destinationPath} exeption!");
+                }
+
+                if (Directory.Exists(Path.GetDirectoryName(destinationPath))==false)
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
+                }
+
                 if (string.IsNullOrEmpty(sourcePath))
                 {
                     File.CreateText(destinationPath).Close();
                     return;
                 }
-                
-                if(File.Exists(destinationPath)==false)
-                {
-                    destinationPath = CombineFilePath(sourcePath, destinationPath);
-                }
 
                 if (sourcePath.Equals(destinationPath))
                 {
                     return;
-                }               
-
+                }
                 File.Copy(sourcePath, destinationPath);
             }
             catch (Exception ex)

@@ -404,7 +404,7 @@ namespace RobotFilesEditor
         {
             FilteredFiles = new Dictionary<string, string>();
         }
-        public void PrepareOperation()
+        public void PreviewOperation()
         {
             try
             {

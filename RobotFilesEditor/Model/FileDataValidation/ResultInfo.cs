@@ -27,7 +27,22 @@ namespace RobotFilesEditor
             }        
         }
         public ICommand OpenInNotepadCommand { get; set; }
+        public string FontWeight
+        {
+            get
+            {
+                if (Bold)
+                {
+                    return "Bold";
+                }
+                else
+                {
+                    return "Normal";
+                }
+            }
+        }
 
+        public bool Bold { get; set; }
         public ResultInfo()
         {
             OpenInNotepadCommand = new RelayCommand(OpenInNotepadCommandExecute);

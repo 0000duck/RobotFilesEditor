@@ -54,10 +54,10 @@ namespace RobotFilesEditor
             {
                 if (value == null)
                 {
-                    _destinationFolder = string.Empty;
+                    FileOperation.DestinationFolder = string.Empty;
                 }
 
-                if (_destinationFolder != value)
+                if (FileOperation.DestinationFolder != value)
                 {
                     FileOperation.DestinationFolder = value;
                 }
@@ -148,7 +148,7 @@ namespace RobotFilesEditor
             {
                 if (_destinationFileSource != value)
                 {
-                    _destinationFileSource = value;
+                    _destinationFileSource = Path.Combine(Directory.GetCurrentDirectory(), value);
                 }
             }
         }
@@ -289,7 +289,7 @@ namespace RobotFilesEditor
                 List<string> sourceText = FilesTool.GetSourceFileText(sourcePath);
                 newFileText = CreateResultToWrite(sourceText);
 
-                string destinationPath = FilesTool.CombineFilePath(DestinationPath, DestinationFileSource);
+                string destinationPath = FilesTool.CombineFilePath(DestinationFileSource, DestinationPath);
                 FilesTool.CreateDestinationFile(DestinationFileSource, destinationPath);
                 FilesTool.WriteTextToFile(newFileText, destinationPath);
             }
@@ -304,19 +304,15 @@ namespace RobotFilesEditor
             throw new NotImplementedException();
         }    
         #endregion DataExecute
+        
 
-
-
-        private void CreateResultToShow(List<string> sourceText, bool showOnly=false)
+        private void CreateResultToShow(List<string> sourceText, bool addHeader=false)
         {
             List<ResultInfo> resultInfos = new List<ResultInfo>();            
 
             resultInfos=PrepareFilterGroups(resultInfos);
 
-            if (sourceText?.Count > 0)
-            {
-                resultInfos= WriteNewTextToOldFileContent(sourceText, resultInfos, showOnly);
-            }
+            resultInfos= WriteNewTextToOldFileContent(sourceText, resultInfos, addHeader);         
 
             _resultInfos = resultInfos;
         }        
@@ -382,10 +378,11 @@ namespace RobotFilesEditor
         private List<ResultInfo> WriteNewTextToOldFileContent(List<string> sourceText, List<ResultInfo> newText, bool addHeader)
         {
             List<ResultInfo> resultInfos = new List<ResultInfo>();
+            string resultHeader = Path.Combine(DestinationFolder, Path.GetFileName(DestinationFileSource));
 
             try
             {
-                if (sourceText?.Count > 0)
+                if ((sourceText?.Count > 0 && addHeader==false) || (newText?.Count>0 && addHeader))
                 {
                     newText = WriteNewTextExistingToFile(sourceText, newText);
                 }
@@ -393,10 +390,20 @@ namespace RobotFilesEditor
                 if(addHeader)
                 {
                     resultInfos = new List<ResultInfo>();
-                    resultInfos.Add(ResultInfo.CreateResultInfo(Path.GetFileName(SourcePath)));
-                    resultInfos.Add(ResultInfo.CreateResultInfo(Path.GetFileName(string.Empty)));
-                    resultInfos.AddRange(newText);
-                    resultInfos.Add(ResultInfo.CreateResultInfo(Path.GetFileName(string.Empty)));
+
+                    if(newText?.Count > 0)
+                    {
+                        resultInfos.Add(ResultInfo.CreateResultInfo(resultHeader));
+                        resultInfos.Last().Bold = true;
+                        resultInfos.AddRange(newText);
+                        resultInfos.Add(ResultInfo.CreateResultInfo(Path.GetFileName(string.Empty)));
+                    }
+                    else
+                    {
+                        resultInfos.Add(ResultInfo.CreateResultInfo(resultHeader));
+                        resultInfos.Last().Bold = true;
+                        resultInfos.Add(ResultInfo.CreateResultInfo(Path.GetFileName("No result to show")));
+                    }                   
                     return resultInfos;
                 }
 
@@ -470,15 +477,15 @@ namespace RobotFilesEditor
         #endregion PrepareData     
 
         #region InterfaceImplementation
-        public void PrepareOperation()
+        public void PreviewOperation()
         {
-            FileOperation.PrepareOperation();
+            FileOperation.PreviewOperation();
             _filesToPrepare = FileOperation.GetOperatedFiles();
 
-            if (_filesToPrepare?.Count() == 0 || _filesToPrepare == null)
-            {
-                return;
-            }
+            //if (_filesToPrepare?.Count() == 0 || _filesToPrepare == null)
+            //{
+            //    return;
+            //}
 
             try
             {
@@ -511,10 +518,10 @@ namespace RobotFilesEditor
             FileOperation.ExecuteOperation();
             _filesToPrepare = FileOperation.GetOperatedFiles();
 
-            if (_filesToPrepare?.Count() == 0 || _filesToPrepare == null)
-            {
-                return;
-            }
+            //if (_filesToPrepare?.Count() == 0 || _filesToPrepare == null)
+            //{
+            //    return;
+            //}
 
             try
             {

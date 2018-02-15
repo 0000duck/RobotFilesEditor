@@ -30,17 +30,21 @@
         </DockPanel>
         <Expander IsExpanded="True" Padding="15,0,0,0" Visibility="{Binding ViewWindowVisibility}" Grid.Row="1" Background="{x:Null}">
             <ListView 
-                Margin="3"                 
+                Margin="3" 
+                MaxHeight="500"                
                 ItemsSource="{Binding OperationResult}" 
                 ScrollViewer.CanContentScroll="True" 
                 ScrollViewer.VerticalScrollBarVisibility="Auto" 
                 ScrollViewer.HorizontalScrollBarVisibility="Auto" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
                 <ListView.ItemTemplate>
                     <DataTemplate>
-                        <Label  Background="Transparent" 
+                        <Label  
+                        Background="Transparent" 
                         Content="{Binding Content}" 
                         Foreground="{Binding Color}" 
-                        ToolTip="{Binding Description}">
+                        ToolTip="{Binding Description}" 
+                        FontWeight="{Binding FontWeight}"                      
+                        >
                             <Label.InputBindings>
                                 <MouseBinding Command="{Binding OpenInNotepadCommand}" MouseAction="LeftClick"/>
                             </Label.InputBindings>
