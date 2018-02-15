@@ -8,7 +8,7 @@
     <Grid Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}" Margin="5"> 
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" MinHeight="30" MaxHeight="500"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -30,6 +30,7 @@
         </DockPanel>
         <Expander IsExpanded="True" Padding="15,0,0,0" Visibility="{Binding ViewWindowVisibility}" Grid.Row="1" Background="{x:Null}">
             <ListView 
+                Name="ListOfResults"
                 Margin="3" 
                 MaxHeight="500"                
                 ItemsSource="{Binding OperationResult}" 

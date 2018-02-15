@@ -104,7 +104,7 @@ namespace RobotFilesEditor
         {
             if(listToCheck?.Count>0)
             {
-                listToCheck = Filter.CheckAllFilters(listToCheck);
+                listToCheck = Filter.CheckAllFilters(listToCheck, onlyRegex);
             }
             return listToCheck;
         }
