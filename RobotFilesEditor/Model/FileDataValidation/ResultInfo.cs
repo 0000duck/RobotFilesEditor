@@ -94,8 +94,7 @@ namespace RobotFilesEditor
                         throw ex;                                                                                
                     }                                                     
                 }                
-            }
-            
+            }            
         }
     }   
 }

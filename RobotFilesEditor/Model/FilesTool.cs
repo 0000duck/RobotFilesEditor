@@ -157,7 +157,6 @@ namespace RobotFilesEditor
 
         public static void WriteTextToFile(List<string> fileText, string path)
         {
-
             try
             {
                 if (fileText?.Count > 0)

@@ -69,7 +69,7 @@ namespace RobotFilesEditor
             ControlItemSelected?.Invoke(this, this);
         }
 
-        private void ExecuteOperationCommandExecute()
+        public void ExecuteOperationCommandExecute()
         {
             try
             {
@@ -114,7 +114,7 @@ namespace RobotFilesEditor
                 MessageBox.Show(ex.Message, "Error!", MessageBoxButton.OK);
             }            
         }
-        private void PreviewOperationCommandExecute()
+        public void PreviewOperationCommandExecute()
         {
             IOperation activeOperation;
             List<string> exeptions = new List<string>();

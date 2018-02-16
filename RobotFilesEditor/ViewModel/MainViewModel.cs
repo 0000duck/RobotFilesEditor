@@ -206,7 +206,6 @@ namespace RobotFilesEditor.ViewModel
         private string _sourcePath;
         private string _destinationPath;
         private bool _continueWithoutConfirm;
-        private ObservableCollection<ResultInfo> _resultView;
 
         public MainViewModel(List<Controler> controlers)
         {
@@ -319,13 +318,13 @@ namespace RobotFilesEditor.ViewModel
         #region Command
         public ICommand SetSourcePathCommand { get; set; }
         public ICommand SetDestinationPathCommand { get; set; }
-        public ICommand ConfirmActionCommand { get; set; }
+        public ICommand ExecuteAllOperationsCommand { get; set; }
         public ICommand ClosingCommand { get; set; }
         private void SetCommands()
         {
             SetSourcePathCommand = new RelayCommand(SetSourcePathCommandExecute);
             SetDestinationPathCommand = new RelayCommand(SetDestinationPathCommandExecute);
-            ConfirmActionCommand = new RelayCommand(ConfirmActionCommandExecute);
+            ExecuteAllOperationsCommand = new RelayCommand(ExecuteAllOperationsCommandExecute);
             ClosingCommand = new RelayCommand(ClosingCommandExecute);
         }
         #endregion Command
@@ -404,11 +403,6 @@ namespace RobotFilesEditor.ViewModel
             return path;
         }
 
-        private void ConfirmActionCommandExecute()
-        {
-
-        }
-
         private void ClosingCommandExecute()
         {
             try
@@ -427,6 +421,27 @@ namespace RobotFilesEditor.ViewModel
             foreach(var operation in AllOperations)
             {
                 operation.Operations = SelectedControler.Operations.Where(x => x.OperationName == operation.Title).ToList();
+            }
+        }
+
+        private void ExecuteAllOperationsCommandExecute()
+        {
+            if ((AllOperations?.Count > 0) == false)
+            {
+                MessageBoxResult ExeptionMessage = MessageBox.Show("No selected controler", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
+            foreach (var operation in AllOperations)
+            {
+                operation.ExecuteOperationCommandExecute();
+            }          
+        }
+
+        private void ShowAllOperations()
+        {
+            foreach (var operation in AllOperations)
+            {
+                operation.PreviewOperationCommandExecute();
             }
         }
     }
