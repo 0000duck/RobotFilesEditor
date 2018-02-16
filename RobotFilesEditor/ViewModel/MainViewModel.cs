@@ -151,19 +151,7 @@ namespace RobotFilesEditor.ViewModel
         {
             get { return _continueWithoutConfirm == false; }            
         }
-
-        public ObservableCollection<ResultInfo>ResultView
-        {
-            get { return _resultView; }
-            set
-            {
-                if(_resultView!=value)
-                {
-                    _resultView = value;
-                    RaisePropertyChanged(nameof(ResultView));
-                }
-            }
-        }
+      
         #endregion Controls
 
         public Controler SelectedControler
@@ -214,7 +202,7 @@ namespace RobotFilesEditor.ViewModel
             CopyFilesOperations = new ObservableCollection<ControlItem>();
             CopyTextFromFilesOperations = new ObservableCollection<ControlItem>();
             RemoveFilesOperations = new ObservableCollection<ControlItem>();
-            ResultView = new ObservableCollection<ResultInfo>();
+          
             AllOperations = new ObservableCollection<ControlItem>();
           
             Controlers = controlers;
@@ -256,7 +244,6 @@ namespace RobotFilesEditor.ViewModel
                     if (operation != null)
                     {
                         var controlItem = new ControlItem(operation.OperationName);
-                        controlItem.ControlItemSelected += OperationCommandExecute;
 
                         switch (operation.ActionType)
                         {
@@ -307,10 +294,6 @@ namespace RobotFilesEditor.ViewModel
         public void Dispose()
         {
             ControlerChooser?.ToList().ForEach(item => item.ControlItemSelected -= ControlerChooser_Click);
-            MoveFilesOperations?.ToList().ForEach(item => item.ControlItemSelected -= OperationCommandExecute);
-            CopyFilesOperations?.ToList().ForEach(item => item.ControlItemSelected -= OperationCommandExecute);
-            CopyTextFromFilesOperations?.ToList().ForEach(item => item.ControlItemSelected -= OperationCommandExecute);
-            RemoveFilesOperations?.ToList().ForEach(item => item.ControlItemSelected -= OperationCommandExecute);
         }
 
         #endregion ControlersCreator
@@ -335,33 +318,20 @@ namespace RobotFilesEditor.ViewModel
             {
                 SelectedControler = Controlers.FirstOrDefault(x => x.ContolerType == e.Title);
                 CreateOperationsControls();
+                ShowAllOperationsResults();
             }
             catch (Exception ex)
             {
                 throw ex;
             }           
-        }
-
-        private void OperationCommandExecute(object sender, ControlItem e)
-        {
-            try
-            {
-                SelectedControler.ExecuteOperation(e.Title);
-                var tmpResult=SelectedControler.GetTextToPrint();
-                ResultView.Clear();
-                tmpResult.ForEach(x => ResultView.Add(x));
-            }
-            catch (Exception ex)
-            {
-                MessageBoxResult ExeptionMessage = MessageBox.Show(ex.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error); 
-            }           
-        }
+        }     
 
         private void SetSourcePathCommandExecute()
         {
             try
             {
                 SourcePath = SetPath(SourcePath);
+                ShowAllOperationsResults();
             }
             catch (Exception ex)
             {
@@ -374,6 +344,7 @@ namespace RobotFilesEditor.ViewModel
             try
             {
                 DestinationPath = SetPath(DestinationPath);
+                ShowAllOperationsResults();
             }
             catch (Exception ex)
             {
@@ -437,7 +408,7 @@ namespace RobotFilesEditor.ViewModel
             }          
         }
 
-        private void ShowAllOperations()
+        private void ShowAllOperationsResults()
         {
             foreach (var operation in AllOperations)
             {

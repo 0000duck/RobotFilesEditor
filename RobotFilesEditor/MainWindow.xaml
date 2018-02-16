@@ -60,91 +60,72 @@
                         </StackPanel>
                     </StackPanel>
                 </Border>
-                <Border BorderBrush="Black" BorderThickness="2" Margin="3" DockPanel.Dock="Bottom" >
-                    <StackPanel>
-                        <Button Content="Execute all" Command="{Binding ExecuteAllOperationsCommand}"/>
-                        <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
-                            <StackPanel ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto">
-                                <Border BorderBrush="Black" BorderThickness="1" Visibility="{Binding MoveFilesOperationsVisibility}" Margin="3" Background="White">
-                                    <StackPanel Margin="5">
-                                        <Expander  IsExpanded="True" Header="Move files">
-                                            <GroupItem x:Name="MoveFilesOperationsGroupBox">
-                                                <ItemsControl Name="MoveFilesOperations" VerticalAlignment="Top" ItemsSource="{Binding MoveFilesOperations, NotifyOnSourceUpdated=True}">
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <local:OperationControl/>
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-                                                </ItemsControl>
-                                            </GroupItem>
-                                        </Expander>
-                                    </StackPanel>
-                                </Border>
-                                <Border BorderBrush="Black" BorderThickness="1" Visibility="{Binding CopyFilesOperationsVisibility}" Margin="3" Background="White" >
-                                    <StackPanel Margin="5">
-                                        <Expander IsExpanded="True" Header="Copy files">
-                                            <GroupItem x:Name="Copy">
-                                                <ItemsControl Name="CopyFilesOperationsGroupBox" VerticalAlignment="Top" ItemsSource="{Binding CopyFilesOperations}">
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <!--<Button Content="{Binding Content}" Command="{Binding ClickedCommand}" Margin="5" HorizontalContentAlignment="Left"/>-->
-                                                            <local:OperationControl/>
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-                                                </ItemsControl>
-                                            </GroupItem>
-                                        </Expander>
-                                    </StackPanel>
-                                </Border>
-                                <Border BorderBrush="Black" BorderThickness="1" Visibility="{Binding CopyTextFromFilesOperationsVisibility}" Background="White" Margin="3">
-                                    <StackPanel Margin="5">
-                                        <Expander IsExpanded="True" Header="Copy text from files" >
-                                            <GroupItem x:Name="CopyTextFromFilesOperationsGroupBox">
-                                                <ItemsControl Name="CopyTextFromFilesOperations" VerticalAlignment="Top" ItemsSource="{Binding CopyTextFromFilesOperations}">
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <local:OperationControl/>
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-                                                </ItemsControl>
-                                            </GroupItem>
-                                        </Expander>
-                                    </StackPanel >
-                                </Border>
-                                <Border BorderBrush="Black" BorderThickness="1" Visibility="{Binding RemoveFilesOperationsVisibility}" Margin="3" Background="White">
-                                    <StackPanel Margin="5">
-                                        <Expander IsExpanded="True" Header="Remove files">
-                                            <GroupItem x:Name="RemoveFilesOperationsGroupBox">
-                                                <ItemsControl x:Name="RemoveFilesOperations" VerticalAlignment="Top" ItemsSource="{Binding RemoveFilesOperations}">
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <local:OperationControl/>
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-                                                </ItemsControl>
-                                            </GroupItem>
-                                        </Expander>
-                                    </StackPanel>
-                                </Border>
-                                <!--<CheckBox Content="Continue without confirm" HorizontalAlignment="Right" FlowDirection="RightToLeft" Margin="3" IsChecked="{Binding ContinueWithoutConfirm}"/>-->
-                                <!--<ListView Margin="3"  MaxHeight="350" ItemsSource="{Binding ResultView}" ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto" ScrollViewer.HorizontalScrollBarVisibility="Auto">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Label  Background="Transparent" 
-                                Content="{Binding Path=Content}" 
-                                Foreground="{Binding Path=Color}" 
-                                ToolTip="{Binding Path=Description}">
-                                <Label.InputBindings>
-                                    <MouseBinding Command="{Binding Path=OpenInNotepadCommand}" MouseAction="LeftClick"/>
-                                </Label.InputBindings>
-                            </Label>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
-                <Button Content="Confirm action" HorizontalAlignment="Center" Margin="3" Command="{Binding ConfirmActionCommand}" IsEnabled="{Binding ConfirmButtonEnabled}"/>-->
-                            </StackPanel>
-                        </ScrollViewer>
-                    </StackPanel>                             
+                <Border BorderBrush="Black" BorderThickness="2" Margin="3" DockPanel.Dock="Bottom" >  
+                    <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
+                        <StackPanel ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                            <Button Content="Execute all" Command="{Binding ExecuteAllOperationsCommand}" Margin="3"/>
+                            <Border BorderBrush="Black" BorderThickness="1" Visibility="{Binding MoveFilesOperationsVisibility}" Margin="3" Background="White">
+                                <StackPanel Margin="5">
+                                    <Expander  IsExpanded="True" Header="Move files">
+                                        <GroupItem x:Name="MoveFilesOperationsGroupBox">
+                                            <ItemsControl Name="MoveFilesOperations" VerticalAlignment="Top" ItemsSource="{Binding MoveFilesOperations, NotifyOnSourceUpdated=True}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <local:OperationControl/>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </GroupItem>
+                                    </Expander>
+                                </StackPanel>
+                            </Border>
+                            <Border BorderBrush="Black" BorderThickness="1" Visibility="{Binding CopyFilesOperationsVisibility}" Margin="3" Background="White" >
+                                <StackPanel Margin="5">
+                                    <Expander IsExpanded="True" Header="Copy files">
+                                        <GroupItem x:Name="Copy">
+                                            <ItemsControl Name="CopyFilesOperationsGroupBox" VerticalAlignment="Top" ItemsSource="{Binding CopyFilesOperations}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>                                                        
+                                                        <local:OperationControl/>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </GroupItem>
+                                    </Expander>
+                                </StackPanel>
+                            </Border>
+                            <Border BorderBrush="Black" BorderThickness="1" Visibility="{Binding CopyTextFromFilesOperationsVisibility}" Background="White" Margin="3">
+                                <StackPanel Margin="5">
+                                    <Expander IsExpanded="True" Header="Copy text from files" >
+                                        <GroupItem x:Name="CopyTextFromFilesOperationsGroupBox">
+                                            <ItemsControl Name="CopyTextFromFilesOperations" VerticalAlignment="Top" ItemsSource="{Binding CopyTextFromFilesOperations}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <local:OperationControl/>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </GroupItem>
+                                    </Expander>
+                                </StackPanel >
+                            </Border>
+                            <Border BorderBrush="Black" BorderThickness="1" Visibility="{Binding RemoveFilesOperationsVisibility}" Margin="3" Background="White">
+                                <StackPanel Margin="5">
+                                    <Expander IsExpanded="True" Header="Remove files">
+                                        <GroupItem x:Name="RemoveFilesOperationsGroupBox">
+                                            <ItemsControl x:Name="RemoveFilesOperations" VerticalAlignment="Top" ItemsSource="{Binding RemoveFilesOperations}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <local:OperationControl/>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </GroupItem>
+                                    </Expander>
+                                </StackPanel>
+                            </Border>                           
+                        </StackPanel>
+                    </ScrollViewer>
                 </Border>
             </DockPanel>
         </Grid>
