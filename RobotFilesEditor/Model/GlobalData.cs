@@ -5,7 +5,7 @@ namespace RobotFilesEditor
     public static class GlobalData
     {
         public const string ConfigurationFileName = "Application.config";       
-        public enum Action {None, Move, Remove, Copy, CopyData, MoveData, RemoveData}
+        public enum Action {None, Move, Remove, Copy, CopyData, CutData, RemoveData}
         public enum SortType {None, OrderByVariable }
 
         public static string ViewProgram { get; private set; } = "notepad.exe";

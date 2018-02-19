@@ -28,15 +28,21 @@ namespace RobotFilesEditor.ViewModel
             get;
             set;
         }
+        public ObservableCollection<ControlItem> RemoveFilesOperations
+        {
+            get;
+            set;
+        }
+
         public ObservableCollection<ControlItem> CopyTextFromFilesOperations
         {
             get;
             set;
         }
-        public ObservableCollection<ControlItem> RemoveFilesOperations
+        public ObservableCollection<ControlItem> CutTextFromFilesOperations
         {
             get;
-            set;           
+            set;
         }
 
         public ObservableCollection<ControlItem> AllOperations
@@ -77,6 +83,20 @@ namespace RobotFilesEditor.ViewModel
             get
             {
                 if (CopyTextFromFilesOperations.Count > 0)
+                {
+                    return "Visible";
+                }
+                else
+                {
+                    return "Collapsed";
+                }
+            }
+        }
+        public string CutTextFromFilesOperationsVisibility
+        {
+            get
+            {
+                if (CutTextFromFilesOperations.Count > 0)
                 {
                     return "Visible";
                 }
@@ -202,6 +222,7 @@ namespace RobotFilesEditor.ViewModel
             CopyFilesOperations = new ObservableCollection<ControlItem>();
             CopyTextFromFilesOperations = new ObservableCollection<ControlItem>();
             RemoveFilesOperations = new ObservableCollection<ControlItem>();
+            CutTextFromFilesOperations = new ObservableCollection<ControlItem>();
           
             AllOperations = new ObservableCollection<ControlItem>();
           
@@ -233,6 +254,7 @@ namespace RobotFilesEditor.ViewModel
                 CopyFilesOperations.Clear();
                 CopyTextFromFilesOperations.Clear();
                 RemoveFilesOperations.Clear();
+                CutTextFromFilesOperations.Clear();
                 AllOperations.Clear();
                 List<string> operations = new List<string>();
                 var opertionGroups = SelectedControler.Operations.GroupBy(x => x.OperationName);
@@ -267,6 +289,10 @@ namespace RobotFilesEditor.ViewModel
                                     RemoveFilesOperations.Add(controlItem);
                                 }
                                 break;
+                            case GlobalData.Action.CutData:
+                                {
+                                    CutTextFromFilesOperations.Add(controlItem);
+                                }break;
                         }
 
                         AllOperations.Add(controlItem);
@@ -277,12 +303,14 @@ namespace RobotFilesEditor.ViewModel
                 CopyFilesOperations.Distinct();
                 CopyTextFromFilesOperations.Distinct();
                 RemoveFilesOperations.Distinct();
+                CutTextFromFilesOperations.Distinct();
                 AllOperations.Distinct();
 
                 RaisePropertyChanged(nameof(MoveFilesOperationsVisibility));
                 RaisePropertyChanged(nameof(CopyFilesOperationsVisibility));
                 RaisePropertyChanged(nameof(CopyTextFromFilesOperationsVisibility));
                 RaisePropertyChanged(nameof(RemoveFilesOperationsVisibility));
+                RaisePropertyChanged(nameof(CutTextFromFilesOperationsVisibility));
 
                 LoadOperations();
             }

@@ -173,37 +173,127 @@ namespace RobotFilesEditor
             }
         }
 
-        public static List<FileLineProperties> LoadTextFromFiles(List<string> filesPaths)
+        public static bool WriteTextToExistingFile(string destination, string source, List<string>textToWrite, string befor, string after)
         {
-            List<FileLineProperties> filesContent = new List<FileLineProperties>();
-            FileLineProperties fileLineProperties;
-            string[] fileContent;
-            int lineNumber;
+            bool writed = false;
+            string filePath = "";
 
             try
             {
-                foreach (string path in filesPaths)
-                {
-                    lineNumber = 1;
-                    fileContent = File.ReadAllLines(path);
+                filePath = GetSourceFilePath(source, destination);
+                CreateDestinationFile(filePath, destination);
 
-                    foreach (string line in fileContent)
+                if (string.IsNullOrEmpty(filePath) == false)
+                {
+                    List<string> newFileText = new List<string>();
+                    List<string> fileContent = new List<string>();
+                    fileContent = LoadFileContent(filePath).Select(x => x.LineContent).ToList();
+
+                    ValidateText.ValidateReapitingTextWhitExistContent(fileContent, ref textToWrite);
+
+                    if (textToWrite?.Count > 0 && fileContent?.Count > 0)
                     {
-                        fileLineProperties = new FileLineProperties();
-                        fileLineProperties.FileLinePath = path;
-                        fileLineProperties.LineContent = line;
-                        fileLineProperties.LineNumber = lineNumber;
-                        lineNumber++;
-                        filesContent.Add(fileLineProperties);
+                        if (string.IsNullOrEmpty(after) == false)
+                        {
+                            foreach (string line in fileContent)
+                            {
+                                if (line.Contains(after))
+                                {
+                                    newFileText.Add(line);
+                                    newFileText.AddRange(textToWrite);
+                                    writed = true;
+                                }
+                                else
+                                {
+                                    newFileText.Add(line);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (string.IsNullOrEmpty(befor) == false)
+                            {
+                                foreach (string line in fileContent)
+                                {
+                                    if (line.Contains(befor))
+                                    {
+                                        newFileText.AddRange(textToWrite);
+                                        newFileText.Add(line);
+                                        writed = true;
+                                    }
+                                    else
+                                    {
+                                        newFileText.Add(line);
+                                    }
+                                }
+                            }
+                        }
                     }
+
+                    WriteTextToFile(newFileText, destination);
+                    return true;
+                }
+
+                if (writed != true || string.IsNullOrEmpty(filePath))
+                {
+                    WriteTextToFile(textToWrite, destination);
+                    return true;
                 }
             }
             catch (Exception ex)
             {
                 throw ex;
             }
+            return false;
+        }
 
-            return filesContent;
+        public static List<FileLineProperties> LoadTextFromFiles(List<string> filesPaths)
+        {
+            List<FileLineProperties> filesContent = new List<FileLineProperties>();        
+            try
+            {
+                foreach (string path in filesPaths)
+                {
+                    filesContent.AddRange(LoadFileContent(path));
+                }
+
+                return filesContent;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }           
+        }
+
+        public static List<FileLineProperties>LoadFileContent(string path)
+        {
+            List<FileLineProperties> fileContent = new List<FileLineProperties>();
+            FileLineProperties fileLineProperties;
+            string[] file;
+            int lineNumber=1;
+
+            try
+            {
+                file = File.ReadAllLines(path);
+
+                foreach (string line in file)
+                {
+                    fileLineProperties = new FileLineProperties();
+                    fileLineProperties.FileLinePath = path;
+                    fileLineProperties.LineContent = line;
+                    fileLineProperties.LineNumber = lineNumber;
+                    lineNumber++;
+                    fileContent.Add(fileLineProperties);
+                }
+
+                return fileContent;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+           
+
         }
 
         public static List<string> GetSourceFileText(string path)
@@ -284,6 +374,38 @@ namespace RobotFilesEditor
         public static string CombineFilePath(string sourcePath, string destinationPath)
         {
             return Path.Combine(destinationPath, Path.GetFileName(sourcePath));
+        }
+
+        public static void DeleteFromFile(string filePath, string fragmentToRemove)
+        {
+            List<string> fileContent = new List<string>();
+            var file = LoadFileContent(filePath);
+            fileContent=file.Select(x =>x.LineContent).ToList();
+            fileContent.RemoveAll(x => x.Contains(fragmentToRemove));
+            WriteTextToFile(fileContent, filePath);            
+        }       
+
+        public static void CutData(List<string>deletedFromPaths, string destinationSourceFilePath, string destinationPastPath, string cutedFragment, string writeBefor, string writeAfter)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(cutedFragment))
+                {
+                    bool result = WriteTextToExistingFile(destinationPastPath, destinationSourceFilePath, new List<string>() { cutedFragment }, writeBefor, writeAfter);
+
+                    if (result == true)
+                    {
+                        foreach (string path in deletedFromPaths)
+                        {
+                            DeleteFromFile(path, cutedFragment);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

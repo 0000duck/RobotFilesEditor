@@ -19,7 +19,7 @@
         <Expander IsExpanded="True" Padding="15,0,0,0" Visibility="{Binding ViewWindowVisibility}" >
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" MaxHeight="500" MinHeight="40"/>
+                    <RowDefinition Height="Auto" MaxHeight="500" MinHeight="0"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
@@ -35,8 +35,7 @@
                 BorderThickness="0">
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Label  
-                                    Background="Transparent" 
+                            <Label  Background="Transparent" 
                                     Content="{Binding Content}" 
                                     Foreground="{Binding Color}" 
                                     ToolTip="{Binding Description}" 

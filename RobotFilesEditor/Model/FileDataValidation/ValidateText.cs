@@ -45,9 +45,27 @@ namespace RobotFilesEditor
 
             foreach (ResultInfo line in fileExistContent)
             {
-                if (string.IsNullOrEmpty(line.Content) == false && string.IsNullOrWhiteSpace(line.Content) == false)
+                if (string.IsNullOrWhiteSpace(line.Content) == false)
                 {
                     result.AddRange(newText.Where(x => line.Content.Contains(x.Content)).ToList());
+                }
+            }
+
+            foreach (var contain in result)
+            {
+                newText.Remove(contain);
+            }
+        }
+
+        public static void ValidateReapitingTextWhitExistContent(List<string> fileExistContent, ref List<string> newText)
+        {
+            List<string> result = new List<string>();
+
+            foreach (string line in fileExistContent)
+            {
+                if (string.IsNullOrWhiteSpace(line) == false)
+                {
+                    result.AddRange(newText.Where(x => line.Contains(x)).ToList());
                 }
             }
 

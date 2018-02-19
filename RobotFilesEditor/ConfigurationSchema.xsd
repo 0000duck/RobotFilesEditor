@@ -83,10 +83,10 @@
                                               </xs:complexType>
                                             </xs:element>
                                           </xs:sequence>
-                                          <xs:attribute name="GroupHeader" type="xs:string" use="required" />
-                                          <xs:attribute name="GroupFooter" type="xs:string" use="required" />
-                                          <xs:attribute name="SpaceBeforGroup" type="xs:unsignedByte" use="required" />
-                                          <xs:attribute name="SpaceAfterGroup" type="xs:unsignedByte" use="required" />
+                                          <xs:attribute name="GroupHeader" type="xs:string" use="optional" />
+                                          <xs:attribute name="GroupFooter" type="xs:string" use="optional" />
+                                          <xs:attribute name="SpaceBeforGroup" type="xs:unsignedByte" use="optional" />
+                                          <xs:attribute name="SpaceAfterGroup" type="xs:unsignedByte" use="optional" />
                                           <xs:attribute name="OnlyRegex" type="xs:boolean" use="optional" />
                                         </xs:complexType>
                                       </xs:element>
@@ -97,13 +97,13 @@
                               <xs:attribute name="FileOperationName" type="xs:string" use="required" />
                               <xs:attribute name="Priority" type="xs:unsignedByte" use="required" />
                               <xs:attribute name="ActionType" type="xs:string" use="required" />
-                              <xs:attribute name="DestinationFilePath" type="xs:string" use="required" />
+                              <xs:attribute name="DestinationFilePath" type="xs:string" use="optional" />
                               <xs:attribute name="DestinationFileSource" type="xs:string" use="required" />
-                              <xs:attribute name="FileHeader" type="xs:string" use="required" />
-                              <xs:attribute name="FileFooter" type="xs:string" use="required" />
-                              <xs:attribute name="GroupSpace" type="xs:unsignedByte" use="required" />
-                              <xs:attribute name="WriteStart" type="xs:string" use="required" />
-                              <xs:attribute name="WriteStop" type="xs:string" use="required" />
+                              <xs:attribute name="FileHeader" type="xs:string" use="optional" />
+                              <xs:attribute name="FileFooter" type="xs:string" use="optional" />
+                              <xs:attribute name="GroupSpace" type="xs:unsignedByte" use="optional" />
+                              <xs:attribute name="WriteStart" type="xs:string" use="optional" />
+                              <xs:attribute name="WriteStop" type="xs:string" use="optional" />
                               <xs:attribute name="SortType" type="xs:string" use="optional" />
                               <xs:attribute name="DetectDuplicates" type="xs:boolean" use="optional" />
                             </xs:complexType>
