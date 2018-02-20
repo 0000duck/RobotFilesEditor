@@ -173,8 +173,8 @@
     </EmbeddedResource>
     <None Include="app.config" />
     <None Include="Application.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="ConfigurationSchema.xsd">
       <SubType>Designer</SubType>

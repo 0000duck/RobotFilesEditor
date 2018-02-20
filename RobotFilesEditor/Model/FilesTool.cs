@@ -321,13 +321,13 @@ namespace RobotFilesEditor
 
         public static string GetSourceFilePath(string sourcePath, string destinationPath)
         {
-            destinationPath = CombineFilePath(sourcePath, destinationPath);
+            string destination = CombineFilePath(sourcePath, destinationPath);
 
             try
             {
-                if (File.Exists(destinationPath))
+                if (File.Exists(destination))
                 {
-                    return destinationPath;
+                    return destination;
                 }
 
                 if (File.Exists(sourcePath))
@@ -379,7 +379,7 @@ namespace RobotFilesEditor
 
         public static string CombineFilePath(string sourcePath, string destinationPath)
         {
-            return Path.Combine(Path.GetDirectoryName(destinationPath), Path.GetFileName(sourcePath));
+            return Path.Combine(destinationPath, Path.GetFileName(sourcePath));
         }
 
         public static bool DeleteFromFile(string filePath, string fragmentToRemove)

@@ -9,7 +9,7 @@ namespace RobotFilesEditor
     interface IFileOperations
     {
         void CopyFiles();
-        bool MoveFile();
-        bool RemoveFile();
+        void MoveFile();
+        void RemoveFile();
     }
 }

@@ -73,7 +73,7 @@ namespace RobotFilesEditor
                     throw new ArgumentNullException(nameof(SourcePath));
                 }
 
-                if (_sourcePath != value)
+                if (FileOperation.SourcePath != value)
                 {                         
                     FileOperation.SourcePath = value;
                     _sourcePath = FileOperation.SourcePath;                 
@@ -82,7 +82,7 @@ namespace RobotFilesEditor
         }
         public string DestinationPath
         {
-            get { return _destinationPath; }
+            get { return Path.Combine(FileOperation.DestinationPath, FileOperation.DestinationFolder); }
             set
             {
                 if (value == null)
@@ -93,7 +93,6 @@ namespace RobotFilesEditor
                 if (FileOperation.DestinationPath != value)
                 {                   
                     FileOperation.DestinationPath = value;
-                    _destinationPath = Path.Combine(FileOperation.DestinationPath, FileOperation.DestinationFolder);
                 }
             }
         }
@@ -253,93 +252,64 @@ namespace RobotFilesEditor
             _filesToPrepare=new List<string>();
             _resultInfos=new List<ResultInfo>();
             _resultToWrite = new List<string>();
+            _usedFiles = new List<string>();
         }
 
         #region DataPreparing
         public void PrepareDataToCopy()
         {
-            List<FileLineProperties> filesContent = FilesTool.LoadTextFromFiles(_filesToPrepare);
-            FiltrContentOnGroups(filesContent);
-
-            if (DetectDuplicates)
+            try
             {
-                DataFilterGroups.ForEach(x => x.LinesToAddToFile = ValidateText.FindVaribleDuplicates(x.LinesToAddToFile));
+                List<FileLineProperties> filesContent = FilesTool.LoadTextFromFiles(_filesToPrepare);
+                FiltrContentOnGroups(filesContent);
+
+                if (DetectDuplicates)
+                {
+                    DataFilterGroups.ForEach(x => x.LinesToAddToFile = ValidateText.FindVaribleDuplicates(x.LinesToAddToFile));
+                }
+                DataFilterGroups = DataContentSortTool.SortData(DataFilterGroups, SortType);
             }
-            DataFilterGroups = DataContentSortTool.SortData(DataFilterGroups, SortType);              
+            catch (Exception ex)
+            {
+                throw ex;
+            }                      
         }
-        #endregion DataPreparing
-        
+        #endregion DataPreparing        
 
         #region DataPreview
         public void PreviewCopyData()
         {
-            PrepareDataToCopy();
-            string sourcePath = FilesTool.GetSourceFilePath(DestinationFileSource, DestinationPath);
-            List<string> sourceText = FilesTool.GetSourceFileText(sourcePath);
-            CreateResultToShow(sourceText, false);
+            try
+            {
+                PrepareDataToCopy();
+                string sourcePath = FilesTool.GetSourceFilePath(DestinationFileSource, DestinationPath);
+                List<string> sourceText = FilesTool.GetSourceFileText(sourcePath);
+                CreateResultToShow(sourceText, false);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }         
         }
         public void PreviewCutData()
         {
             List<ResultInfo> cutInfo = new List<ResultInfo>();
             List<string> fragmentsToRemove = new List<string>();
 
-            PreviewCopyData();
-            DataFilterGroups.ForEach(x => x.LinesToAddToFile.ForEach(y => fragmentsToRemove.Add(y.LineContent)));                
-                    
-            _usedFiles.ForEach(x=>cutInfo.Add(ResultInfo.CreateResultInfoHeder(Path.GetFileName(x), x)));
-
-            CreateCutDataResultResultToShow(cutInfo);
-
-            foreach(var fragment in fragmentsToRemove)
+            try
             {
-                foreach(var path in _usedFiles)
-                {
-                    FilesTool.DeleteFromFile(path, fragment);
-                }
+                PreviewCopyData();
+
+                DataFilterGroups.ForEach(x => x.LinesToAddToFile.ForEach(y => fragmentsToRemove.Add(y.LineContent)));
+                _usedFiles.ForEach(x => cutInfo.Add(ResultInfo.CreateResultInfoHeder(Path.GetFileName(x), x)));
+
+                CreateCutDataResultResultToShow(cutInfo);
             }
-           
-
-            //List<string> seqencesToCut = GetSequenceToCut();
-            //List<string> filesToChange = new List<string>();
-            //List<string> fileContent = new List<string>();
-
-            //try
-            //{
-            //    if (_filesToPrepare.Count() > 0)
-            //    {
-            //        foreach (string seqcence in seqencesToCut)
-            //        {
-            //            AddCutGoupToShowResult(seqcence, Path.GetFileName(DestinationFileSource), _filesToPrepare);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        _resultInfos.Add(ResultInfo.CreateResultInfo("No files to change"));
-            //    }
-            //}
-            //catch (Exception ex)
-            //{
-            //    throw ex;
-            //}
-        }
-
-        private void AddCutGoupToShowResult(string fragmentToCut, string copiedToFile, List<string> filesToRemoveData)
-        {            
-            List<string> filesToChange = new List<string>();
-            List<string> fileContent = new List<string>();
-           
-            foreach (string path in filesToRemoveData)
+            catch (Exception ex)
             {
-                fileContent = FilesTool.GetSourceFileText(path);
-
-                if (fileContent.Exists(x => x.Contains(fragmentToCut)))
-                {
-                    filesToChange.Add(path);
-                }
-            }
-
-            CreateCutDataResultResultToShow(fragmentToCut, copiedToFile, filesToChange);
-        }
+                throw ex;
+            }          
+        }        
         #endregion DataPreview
 
         #region DataExecute
@@ -355,7 +325,7 @@ namespace RobotFilesEditor
                 if (_resultToWrite?.Count > 0  && _resultInfos.Where(x => string.IsNullOrEmpty(x.Description) == false).ToList().Count == 0)
                 {
                     string destinationPath = FilesTool.CombineFilePath(DestinationFileSource, DestinationPath);
-                    FilesTool.CreateDestinationFile(sourcePath, destinationPath);
+                    FilesTool.CreateDestinationFile(sourcePath, DestinationPath);
                     FilesTool.WriteTextToFile(_resultToWrite, destinationPath);
                 }
             }
@@ -367,15 +337,48 @@ namespace RobotFilesEditor
 
         public void ExecuteCutData()
         {
-            List<string> seqencesToCut = GetSequenceToCut();
-            List<string> changedFiles = new List<string>();
+            List<ResultInfo> cutInfo = new List<ResultInfo>();
+            List<string> fragmentsToRemove = new List<string>();
 
-            foreach(string seqcence in seqencesToCut)
+            try
             {
-                changedFiles = new List<string>();
-                changedFiles.AddRange(FilesTool.CutData(_filesToPrepare, DestinationFileSource, DestinationPath, seqcence, WriteStart, WriteStop));
-                CreateCutDataResultResultToShow(seqcence, Path.GetFileName(DestinationFileSource), changedFiles);
+                PrepareDataToCopy();
+                DataFilterGroups.ForEach(x => x.LinesToAddToFile.ForEach(y => fragmentsToRemove.Add(y.LineContent)));
+
+                string sourcePath = FilesTool.GetSourceFilePath(DestinationFileSource, DestinationPath);
+                List<string> sourceText = FilesTool.GetSourceFileText(sourcePath);
+                CreateResultToShow(sourceText, true);
+
+                string destinationPath = FilesTool.CombineFilePath(DestinationFileSource, DestinationPath);               
+
+                _usedFiles.ForEach(x => cutInfo.Add(ResultInfo.CreateResultInfoHeder(Path.GetFileName(x), x)));
+                _usedFiles?.Remove(destinationPath);
+
+                CreateCutDataResultResultToShow(cutInfo);
+
+                var hasErrors = DataFilterGroups.Exists(x => x.LinesToAddToFile.Exists(y => y.HasExeption));
+
+                if (hasErrors==false)
+                {
+                    if (_resultToWrite?.Count > 0 && _resultInfos.Where(x => string.IsNullOrEmpty(x.Description) == false).ToList().Count == 0)
+                    {                        
+                        FilesTool.CreateDestinationFile(sourcePath, DestinationPath);
+                        FilesTool.WriteTextToFile(_resultToWrite, destinationPath);
+
+                        foreach (var fragment in fragmentsToRemove)
+                        {
+                            foreach (var path in _usedFiles)
+                            {
+                                FilesTool.DeleteFromFile(path, fragment);
+                            }
+                        }
+                    }                    
+                }               
             }
+            catch (Exception ex)
+            {
+                throw ex;
+            }            
         }    
         #endregion DataExecute        
 
@@ -405,7 +408,7 @@ namespace RobotFilesEditor
             try
             {
                 List<string> usedFiles = new List<string>();
-                DataFilterGroups?.ForEach(x => x.SetLinesToAddToFile(filesContent, deleteDuplicates, ref usedFiles));
+                DataFilterGroups?.ForEach(x => x.SetLinesToAddToFile( ref usedFiles, filesContent, deleteDuplicates));
 
                 if (usedFiles!=null)
                 {
@@ -643,11 +646,19 @@ namespace RobotFilesEditor
         private void CreateCutDataResultResultToShow(List<ResultInfo>copyFrom)
         {
             List<ResultInfo> cutDataResult = new List<ResultInfo>();
-            cutDataResult.Add(ResultInfo.CreateResultInfo(string.Empty));
-            cutDataResult.Add(ResultInfo.CreateResultInfo($"Find fragment to cut in files:"));
-            cutDataResult.Last().Bold = true;      
-            cutDataResult.AddRange(copyFrom);
-            cutDataResult.Add(ResultInfo.CreateResultInfo(string.Empty));
+            if(copyFrom?.Count>0)
+            {
+                cutDataResult.Add(ResultInfo.CreateResultInfo(string.Empty));
+                cutDataResult.Add(ResultInfo.CreateResultInfo($"Find fragment to cut in files:"));
+                cutDataResult.Last().Bold = true;
+                cutDataResult.AddRange(copyFrom);
+                cutDataResult.Add(ResultInfo.CreateResultInfo(string.Empty));
+            }else
+            {
+                cutDataResult.Add(ResultInfo.CreateResultInfo($"No files"));
+                cutDataResult.Last().Bold = true;
+            }
+            
 
             _resultInfos.AddRange(cutDataResult);
         }

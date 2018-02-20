@@ -7,6 +7,7 @@ namespace RobotFilesEditor
 {
     public class DataFilterGroup
     {
+        
         public string Header
         {
             get { return _header; }
@@ -26,6 +27,17 @@ namespace RobotFilesEditor
                 if (_footer != value)
                 {
                     _footer = value;
+                }
+            }
+        }
+        public string TextBefore
+        {
+            get { return _textBefore; }
+            set
+            {
+                if (_textBefore != value)
+                {
+                    _textBefore = value;
                 }
             }
         }
@@ -88,6 +100,7 @@ namespace RobotFilesEditor
 
         private string _header;
         private string _footer;
+        private string _textBefore;
         private int _spaceBefor;
         private int _spaceAfter;
         private Filter _filter;
@@ -109,7 +122,7 @@ namespace RobotFilesEditor
             return listToCheck;
         }
 
-        public void SetLinesToAddToFile(List<FileLineProperties> filesContent, bool deleteDuplicates=true, ref List<string> usedFiles)
+        public void SetLinesToAddToFile(ref List<string> usedFiles, List<FileLineProperties> filesContent, bool deleteDuplicates=true)
         {
             //dodać zmienną i do konfiguracji
             LinesToAddToFile=CkeckAllFilters(filesContent, OnlyRegex);
@@ -152,7 +165,16 @@ namespace RobotFilesEditor
 
                 foreach(var line in LinesToAddToFile)
                 {
-                    resultInfos.Add(ResultInfo.CreateResultInfo(line));
+                    if (string.IsNullOrEmpty(TextBefore) == false)
+                    {
+                        var tmp = line;
+                        tmp.LineContent = $"{TextBefore} {line.LineContent}";
+                        resultInfos.Add(ResultInfo.CreateResultInfo(tmp));
+                    }
+                    else
+                    {
+                        resultInfos.Add(ResultInfo.CreateResultInfo(line));
+                    }                   
                 }
                
                 if (string.IsNullOrEmpty(Footer) == false)

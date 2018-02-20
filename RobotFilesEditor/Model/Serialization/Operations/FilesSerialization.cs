@@ -116,6 +116,7 @@ namespace RobotFilesEditor.Serializer
                 dataFilterGroup.SpaceBefor = xmlDataFilterGroup.SpaceBeforGroup;
                 dataFilterGroup.SpaceAfter = xmlDataFilterGroup.SpaceAfterGroup;
                 dataFilterGroup.OnlyRegex = xmlDataFilterGroup.OnlyRegex;
+                dataFilterGroup.TextBefore = xmlDataFilterGroup.TextBefore;
 
                 dataFilterGroup.Filter = ParseXmlFilterToFilter(xmlDataFilterGroup?.Filter);
                 return dataFilterGroup;

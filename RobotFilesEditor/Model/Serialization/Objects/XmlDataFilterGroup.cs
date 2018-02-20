@@ -23,10 +23,13 @@ namespace RobotFilesEditor
         [XmlAttribute("SpaceAfterGroup")]
         public int SpaceAfterGroup { get; set; }
 
+        [XmlAttribute("TextBefore")]
+        public string TextBefore { get; set; }
+
         [XmlElement("Filter")]
         public XmlFilter Filter { get; set; }
 
         [XmlAttribute("OnlyRegex")]
-        public bool OnlyRegex { get; set; }
+        public bool OnlyRegex { get; set; }        
     }
 }

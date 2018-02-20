@@ -133,6 +133,11 @@ namespace RobotFilesEditor.ViewModel
                     if(SelectedControler!=null)
                     {
                         SelectedControler.SourcePath = SourcePath;
+                        foreach(var operation in AllOperations)
+                        {
+                            operation.Operations.ForEach(x => x.SourcePath = SourcePath);
+                        }
+                        ShowAllOperationsResults();
                     }                    
                 }
             }
@@ -149,6 +154,11 @@ namespace RobotFilesEditor.ViewModel
                     if (SelectedControler != null)
                     {
                         SelectedControler.DestinationPath = DestinationPath;
+                        foreach (var operation in AllOperations)
+                        {
+                            operation.Operations.ForEach(x => x.DestinationPath = DestinationPath);
+                        }
+                        ShowAllOperationsResults();
                     }                    
                 }              
             }
@@ -358,8 +368,7 @@ namespace RobotFilesEditor.ViewModel
         {
             try
             {
-                SourcePath = SetPath(SourcePath);
-                ShowAllOperationsResults();
+                SourcePath = SetPath(SourcePath);                
             }
             catch (Exception ex)
             {
@@ -371,8 +380,7 @@ namespace RobotFilesEditor.ViewModel
         {
             try
             {
-                DestinationPath = SetPath(DestinationPath);
-                ShowAllOperationsResults();
+                DestinationPath = SetPath(DestinationPath);                
             }
             catch (Exception ex)
             {

@@ -238,7 +238,7 @@ namespace RobotFilesEditor
         public void PrepareToMoveFiles()
         {
             string destination = Path.Combine(DestinationPath, DestinationFolder);
-            IDictionary<string, string> filteredFilesIterator = new Dictionary<string, string>(FilteredFiles);
+            IDictionary<string, string> filteredFilesIterator; 
 
             try
             {
@@ -248,6 +248,8 @@ namespace RobotFilesEditor
             {
                 throw ex;
             }
+
+            filteredFilesIterator = new Dictionary<string, string>(FilteredFiles);
 
             foreach (var file in filteredFilesIterator)
             {
@@ -284,43 +286,51 @@ namespace RobotFilesEditor
 
         #region ExecuteOperations
         public void CopyFiles()
-        {          
-            FiltrFiles();
-            string destination = FilesTool.CreateDestinationFolderPath(DestinationPath,DestinationFolder);
-
-            FilteredFiles = FilesTool.CopyFiles(FilteredFiles, destination);
-
-            if (FilesTool.CheckFilesCorrectness(destination, FilteredFiles.Keys.ToList()) == false)
-            {
-                throw new Exception("Copy files veryfication not pass!");
-            }
-        }
-        public bool MoveFile()
         {
-            bool result = true;
-            string destination = FilesTool.CreateDestinationFolderPath(DestinationPath, DestinationFolder);            
-
             try
             {
                 FiltrFiles();
-
-                FilteredFiles = FilesTool.MoveFiles(FilteredFiles, destination);
-
-                if (result)
+                if (FilteredFiles?.Count > 0)
                 {
-                    result = FilesTool.CheckFilesCorrectness(destination, FilteredFiles.Keys.ToList());
-                }
+                    string destination = FilesTool.CreateDestinationFolderPath(DestinationPath, DestinationFolder);
 
-                return result;
+                    FilteredFiles = FilesTool.CopyFiles(FilteredFiles, destination);
+
+                    if (FilesTool.CheckFilesCorrectness(destination, FilteredFiles.Keys.ToList()) == false)
+                    {
+                        throw new Exception("Copy files veryfication not pass!");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }             
+        }
+        public void MoveFile()
+        {
+            try
+            {
+                FiltrFiles();
+                if(FilteredFiles?.Count>0)
+                {
+                    string destination = FilesTool.CreateDestinationFolderPath(DestinationPath, DestinationFolder);
+
+                    FilteredFiles = FilesTool.MoveFiles(FilteredFiles, destination);
+
+                    if (FilesTool.CheckFilesCorrectness(destination, FilteredFiles.Keys.ToList()) == false)
+                    {
+                        throw new Exception("Copy files veryfication not pass!");
+                    }
+                }             
             }
             catch (Exception ex)
             {
                 throw ex;
             }           
         }
-        public bool RemoveFile()
-        {
-            bool result = true;
+        public void RemoveFile()
+        {            
             IDictionary<string, string> filteredFilesIterator = new Dictionary<string, string>(FilteredFiles);
 
             try
@@ -329,12 +339,10 @@ namespace RobotFilesEditor
 
                 FilteredFiles = FilesTool.RemoveFile(FilteredFiles);
 
-                if (result)
+                if (FilesTool.CheckFilesCorrectness(SourcePath, FilteredFiles.Keys.ToList()))
                 {
-                    result = FilesTool.CheckFilesCorrectness(SourcePath, FilteredFiles.Keys.ToList()) == false;
+                    throw new Exception("Copy files veryfication not pass!");
                 }
-
-                return result;
             }
             catch (Exception ex)
             {

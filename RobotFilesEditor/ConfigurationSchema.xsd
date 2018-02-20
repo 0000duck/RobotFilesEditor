@@ -49,7 +49,6 @@
                               <xs:attribute name="ActionType" type="xs:string" use="required" />
                               <xs:attribute name="DestinationFolder" type="xs:string" use="required" />
                               <xs:attribute name="Priority" type="xs:unsignedByte" use="required" />
-                              <xs:attribute name="NestedSourcePath" type="xs:string" use="optional" />
                             </xs:complexType>
                           </xs:element>
                         </xs:sequence>
@@ -68,8 +67,8 @@
                                         <xs:complexType>
                                           <xs:sequence>
                                             <xs:element name="Filter">
-                                              <xs:complexType mixed="true">
-                                                <xs:sequence minOccurs="0">
+                                              <xs:complexType>
+                                                <xs:sequence>
                                                   <xs:element name="ContainArray">
                                                     <xs:complexType>
                                                       <xs:sequence>
@@ -88,6 +87,7 @@
                                           <xs:attribute name="SpaceBeforGroup" type="xs:unsignedByte" use="optional" />
                                           <xs:attribute name="SpaceAfterGroup" type="xs:unsignedByte" use="optional" />
                                           <xs:attribute name="OnlyRegex" type="xs:boolean" use="optional" />
+                                          <xs:attribute name="TextBefore" type="xs:string" use="optional" />
                                         </xs:complexType>
                                       </xs:element>
                                     </xs:sequence>
@@ -103,9 +103,9 @@
                               <xs:attribute name="FileFooter" type="xs:string" use="optional" />
                               <xs:attribute name="GroupSpace" type="xs:unsignedByte" use="optional" />
                               <xs:attribute name="WriteStart" type="xs:string" use="optional" />
-                              <xs:attribute name="WriteStop" type="xs:string" use="optional" />
+                              <xs:attribute name="WriteStop" type="xs:string" use="required" />
                               <xs:attribute name="SortType" type="xs:string" use="optional" />
-                              <xs:attribute name="DetectDuplicates" type="xs:boolean" use="optional" />
+                              <xs:attribute name="DetectDuplicates" type="xs:boolean" use="required" />
                             </xs:complexType>
                           </xs:element>
                         </xs:sequence>
