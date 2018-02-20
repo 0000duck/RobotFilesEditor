@@ -12,8 +12,8 @@
         <DockPanel Grid.Row="0">
             <Label Content="{Binding Title}"   DockPanel.Dock="Left" Margin="5"/>
             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" >
-                <Button Content="Execute" Command="{Binding ExecuteOperationCommand}" Margin="5" HorizontalContentAlignment="Right"/>
-                <Button Content="Preview" Command="{Binding PreviewOperationCommand}" Margin="5" HorizontalContentAlignment="Right"/>
+                <Button Content="Execute" IsEnabled="{Binding ExecuteOperationButtonIsEnabled}" Command="{Binding ExecuteOperationCommand}" Margin="5" HorizontalContentAlignment="Right"/>
+                <Button Content="Preview" IsEnabled="{Binding PreviewOperationButtonIsEnabled}" Command="{Binding PreviewOperationCommand}" Margin="5" HorizontalContentAlignment="Right"/>
             </StackPanel>
         </DockPanel>
         <Expander IsExpanded="True" Padding="15,0,0,0" Visibility="{Binding ViewWindowVisibility}" >
@@ -38,6 +38,7 @@
                             <Label  Background="Transparent" 
                                     Content="{Binding Content}" 
                                     Foreground="{Binding Color}" 
+                                    ToolTipService.IsEnabled="{Binding HasErrors}"
                                     ToolTip="{Binding Description}" 
                                     FontWeight="{Binding FontWeight}"                      
                                     >

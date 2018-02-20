@@ -124,7 +124,7 @@ namespace RobotFilesEditor
 
         public static List<string> GetAllFilesFromDirectory(string path)
         {
-            List<string> files = new List<string>();
+            List<string> files = new List<string>();          
 
             try
             {
@@ -149,7 +149,6 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
-                throw ex;
             }
 
             return files;
@@ -227,15 +226,20 @@ namespace RobotFilesEditor
                                     }
                                 }
                             }
-                        }
+                        }                       
                     }
 
-                    WriteTextToFile(newFileText, destination);
+                    if (writed!=true)
+                    {
+                        newFileText.AddRange(fileContent);
+                        newFileText.AddRange(textToWrite);
+                    }
+                   
+                    WriteTextToFile(newFileText, filePath);
                     return true;
-                }
-
-                if (writed != true || string.IsNullOrEmpty(filePath))
+                }else
                 {
+                    filePath = CombineFilePath(source, Path.GetDirectoryName(destination));
                     WriteTextToFile(textToWrite, destination);
                     return true;
                 }
@@ -340,30 +344,32 @@ namespace RobotFilesEditor
         }
 
         public static void CreateDestinationFile(string sourcePath, string destinationPath)
-        {
+        {          
             try
             {
-                if (string.IsNullOrEmpty(destinationPath))
+                string filePath = CombineFilePath(sourcePath, destinationPath);
+
+                if (string.IsNullOrEmpty(destinationPath) || string.IsNullOrEmpty(filePath))
                 {
                     throw new Exception($"Destination file {destinationPath} exeption!");
                 }
 
-                if (Directory.Exists(Path.GetDirectoryName(destinationPath))==false)
+                if (Directory.Exists(Path.GetDirectoryName(filePath))==false)
                 {
-                    Directory.CreateDirectory(Path.GetDirectoryName(destinationPath));
+                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
                 }
 
                 if (string.IsNullOrEmpty(sourcePath))
                 {
-                    File.CreateText(destinationPath).Close();
+                    File.CreateText(filePath).Close();
                     return;
                 }
 
-                if (sourcePath.Equals(destinationPath))
+                if (sourcePath.Equals(filePath))
                 {
                     return;
                 }
-                File.Copy(sourcePath, destinationPath);
+                File.Copy(sourcePath, filePath);
             }
             catch (Exception ex)
             {
@@ -373,23 +379,40 @@ namespace RobotFilesEditor
 
         public static string CombineFilePath(string sourcePath, string destinationPath)
         {
-            return Path.Combine(destinationPath, Path.GetFileName(sourcePath));
+            return Path.Combine(Path.GetDirectoryName(destinationPath), Path.GetFileName(sourcePath));
         }
 
-        public static void DeleteFromFile(string filePath, string fragmentToRemove)
-        {
-            List<string> fileContent = new List<string>();
-            var file = LoadFileContent(filePath);
-            fileContent=file.Select(x =>x.LineContent).ToList();
-            fileContent.RemoveAll(x => x.Contains(fragmentToRemove));
-            WriteTextToFile(fileContent, filePath);            
-        }       
-
-        public static void CutData(List<string>deletedFromPaths, string destinationSourceFilePath, string destinationPastPath, string cutedFragment, string writeBefor, string writeAfter)
+        public static bool DeleteFromFile(string filePath, string fragmentToRemove)
         {
             try
             {
-                if (string.IsNullOrEmpty(cutedFragment))
+                List<string> fileContent = new List<string>();
+                var file = LoadFileContent(filePath);
+                fileContent = file.Select(x => x.LineContent).ToList();
+                if (fileContent.Exists(x => x.Contains(fragmentToRemove)))
+                {
+                    fileContent.RemoveAll(x => x.Contains(fragmentToRemove));
+                    WriteTextToFile(fileContent, filePath);
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }           
+        }       
+
+        public static List<string> CutData(List<string>deletedFromPaths, string destinationSourceFilePath, string destinationPastPath, string cutedFragment, string writeBefor, string writeAfter)
+        {
+            List<string> changedFiles = new List<string>();
+            string filePath = FilesTool.CombineFilePath(destinationSourceFilePath, destinationPastPath);
+            deletedFromPaths.Remove(filePath);
+
+            try
+            {
+                if (string.IsNullOrEmpty(cutedFragment)==false)
                 {
                     bool result = WriteTextToExistingFile(destinationPastPath, destinationSourceFilePath, new List<string>() { cutedFragment }, writeBefor, writeAfter);
 
@@ -397,10 +420,15 @@ namespace RobotFilesEditor
                     {
                         foreach (string path in deletedFromPaths)
                         {
-                            DeleteFromFile(path, cutedFragment);
+                            if(DeleteFromFile(path, cutedFragment))
+                            {
+                                changedFiles.Add(path);
+                            }
                         }
                     }
                 }
+
+                return changedFiles;
             }
             catch (Exception ex)
             {

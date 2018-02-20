@@ -109,11 +109,21 @@ namespace RobotFilesEditor
             return listToCheck;
         }
 
-        public void SetLinesToAddToFile(List<FileLineProperties> filesContent, bool deleteDuplicates=true)
+        public void SetLinesToAddToFile(List<FileLineProperties> filesContent, bool deleteDuplicates=true, ref List<string> usedFiles)
         {
             //dodać zmienną i do konfiguracji
-           LinesToAddToFile=CkeckAllFilters(filesContent, OnlyRegex);
-           LinesToAddToFile = LinesToAddToFile.DistinctBy(x => x.LineContent).ToList();
+            LinesToAddToFile=CkeckAllFilters(filesContent, OnlyRegex);
+
+            if(usedFiles!=null)
+            {
+                foreach(var line in LinesToAddToFile)
+                {
+                    usedFiles.Add(line.FileLinePath);
+                }
+                usedFiles?.Distinct();
+            }          
+
+            LinesToAddToFile = LinesToAddToFile.DistinctBy(x => x.LineContent).ToList();
         }
 
         public void DistinctLinesToAddToFile()

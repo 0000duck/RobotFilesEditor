@@ -41,7 +41,10 @@ namespace RobotFilesEditor
                 }
             }
         }
-
+        public bool HasErrors
+        {
+            get { return !string.IsNullOrEmpty(Description); }
+        }
         public bool Bold { get; set; }
         public ResultInfo()
         {

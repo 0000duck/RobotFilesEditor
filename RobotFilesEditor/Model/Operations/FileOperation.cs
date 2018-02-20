@@ -175,9 +175,18 @@ namespace RobotFilesEditor
             FilteredFiles = new Dictionary<string, string>();
         }
 
-        private void FiltrFiles()
+        private void FiltrFiles(bool insideFolders=false)
         {
-            string[] allFilesAtSourcePath = Directory.GetFiles(SourcePath);
+            List<string>allFilesAtSourcePath=new List<string>();
+
+            if(insideFolders)
+            {
+                allFilesAtSourcePath = FilesTool.GetAllFilesFromDirectory(SourcePath);
+            }else
+            {
+                allFilesAtSourcePath = Directory.GetFiles(SourcePath).ToList();
+            }
+                     
             List<string> filteredFiles = new List<string>();
             FilteredFiles = new Dictionary<string, string>();
 
@@ -365,6 +374,12 @@ namespace RobotFilesEditor
                             RemoveFile();
                         }
                         break;
+                    case GlobalData.Action.CutData:
+                        {
+                            SourcePath = DestinationPath;
+                            FiltrFiles(true);
+                        }
+                        break;
                     default:
                         {
                             FiltrFiles();
@@ -423,6 +438,12 @@ namespace RobotFilesEditor
                     case GlobalData.Action.Remove:
                         {
                             PrepareToRemoveFile();
+                        }
+                        break;
+                    case GlobalData.Action.CutData:
+                        {
+                            SourcePath = DestinationPath;
+                            FiltrFiles(true);
                         }
                         break;
                     default:

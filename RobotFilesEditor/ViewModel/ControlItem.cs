@@ -40,7 +40,8 @@ namespace RobotFilesEditor
             }
         }
         public string ExecuteAviable{ get; set;}
-
+        public bool ExecuteOperationButtonIsEnabled { get; set; }
+        public bool PreviewOperationButtonIsEnabled { get; set; }
         #endregion
 
         #region Constructors
@@ -53,6 +54,8 @@ namespace RobotFilesEditor
             ClickedCommand = new RelayCommand(ClickedCommandExecute);
             ExecuteOperationCommand = new RelayCommand(ExecuteOperationCommandExecute);
             PreviewOperationCommand = new RelayCommand(PreviewOperationCommandExecute);
+            ExecuteOperationButtonIsEnabled = true;
+            PreviewOperationButtonIsEnabled = true;
         }
 
         #endregion
@@ -73,6 +76,8 @@ namespace RobotFilesEditor
         {
             try
             {
+                ExecuteOperationButtonIsEnabled = false;
+                PreviewOperationCommandExecute();
                 if (DetectExceptions() == false)
                 {
                     IOperation activeOperation;
@@ -98,20 +103,19 @@ namespace RobotFilesEditor
                             activeOperation?.ClearMemory();
                         }
                     }
-                }
-                else
-                {
-                    MessageBoxResult result = MessageBox.Show($"Refresh preview?", "Error!", MessageBoxButton.YesNo);
-
-                    if (result == MessageBoxResult.Yes)
+                    if(DetectExceptions()==false)
                     {
-                        PreviewOperationCommandExecute();
-                    }
-                }
+                        MessageBox.Show($"Finish operation \"{Title}\" with success!", "Successed!", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }                 
+                }                
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error!", MessageBoxButton.OK);
+            }
+            finally
+            {
+                ExecuteOperationButtonIsEnabled = true;
             }            
         }
         public void PreviewOperationCommandExecute()
@@ -122,6 +126,7 @@ namespace RobotFilesEditor
 
             try
             {
+                PreviewOperationButtonIsEnabled = false;
                 OperationResult.Clear();
 
                 Operations.OrderBy(y => y.Priority).ToList();
@@ -146,27 +151,28 @@ namespace RobotFilesEditor
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error!", MessageBoxButton.OK);
-            }          
+            }
+            finally
+            {
+                PreviewOperationButtonIsEnabled = true;
+            }      
         }
 
         private bool DetectExceptions()
         {
-            List<ResultInfo> Exceptions = new List<ResultInfo>();
+            List<ResultInfo> exceptions = new List<ResultInfo>();
+            string message = "";
 
-            Exceptions = OperationResult.Where(x => string.IsNullOrEmpty(x.Description)==false).ToList();
+            exceptions = OperationResult.Where(x => string.IsNullOrEmpty(x.Description)==false).ToList();
 
-            foreach(var exeption in Exceptions)
+            foreach(var exeption in exceptions)
             {
-                MessageBoxResult result = MessageBox.Show($"Error: {exeption.Description}.\nOpen file?", $"Error on {Title}", MessageBoxButton.YesNo);
+                message+= $"\nError: {exeption.Description}.\n";
+            }            
 
-                if (result==MessageBoxResult.Yes)
-                {
-                    exeption.OpenInNotepadCommandExecute();
-                }
-            }
-
-            if(Exceptions?.Count>0)
+            if(exceptions?.Count>0)
             {
+                MessageBox.Show(message, $"Errors in operation:\"{Title}\"!", MessageBoxButton.OK);
                 return true;
             }else
             {

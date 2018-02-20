@@ -126,11 +126,7 @@ namespace RobotFilesEditor
             foreach(var operation in activeOperations)
             {
                 try
-                {
-                    if(_activeOperation!=null)
-                    {
-                        _activeOperation.ClearMemory();
-                    }                   
+                {                             
                     _activeOperation = operation;
                     _activeOperation.ExecuteOperation();
                     _resultInfos.AddRange(_activeOperation.GetOperationResult());
