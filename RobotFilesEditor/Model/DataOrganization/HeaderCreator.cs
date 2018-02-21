@@ -8,9 +8,8 @@ namespace RobotFilesEditor
 {
     public class HeaderCreator
     {
-
         #region FileHeaders
-        public List<string>CreateFileHeader(GlobalData.HeaderType headerType, string destinationFilePath, List<string> fileContent, string sourcePath)
+        public static List<ResultInfo>CreateFileHeader(GlobalData.HeaderType headerType, string destinationFilePath, List<ResultInfo> fileContent, List<string> sourcePaths)
         {
             try
             {
@@ -18,9 +17,9 @@ namespace RobotFilesEditor
                 {
                     case GlobalData.HeaderType.GlobalFileHeader:
                         {
-                            if(string.IsNullOrEmpty(sourcePath)==false)
+                            if(sourcePaths?.Count>0)
                             {
-                                fileContent=GlobalFileHeader(sourcePath, destinationFilePath, fileContent);
+                                fileContent=GlobalFileHeader(sourcePaths, destinationFilePath, fileContent);
                             }                           
                         }
                         break;                   
@@ -32,10 +31,9 @@ namespace RobotFilesEditor
                 throw ex;
             }
         }
-        public List<string>GlobalFileHeader(string sourcePath, string destinationFilePath, List<string>fileContent)
+        private static List<ResultInfo> GlobalFileHeader(List<string> sourcePaths, string destinationFilePath, List<ResultInfo>fileContent)
         {
-            List<string> header = new List<string>();
-            List<string>paths= FilesTool.GetAllFilesFromDirectory(sourcePath);
+            List<ResultInfo> header = new List<ResultInfo>();
             List<string> file = new List<string>();
             string containheaderPattern = @"^;\*+.*(Programm|Beschreibung|Roboter|Firma|Ersteller|Datum|Aenderungsverlauf|\*{20})";
             string programNameLinesPattern = @"^;\*\x20(Programm|Beschreibung)\x20+\:\x20";
@@ -45,7 +43,7 @@ namespace RobotFilesEditor
             try
             {
                 #region CreateNewHeader
-                foreach (string path in paths)
+                foreach (string path in sourcePaths)
                 {
                     file = FilesTool.GetSourceFileText(path);
 
@@ -63,37 +61,42 @@ namespace RobotFilesEditor
                                 line = $"{match}{Path.GetFileNameWithoutExtension(destinationFilePath)}";
                             }
 
-                            header.Add(line);
+                            header.Add(ResultInfo.CreateResultInfo(line));
                             i++;
                             line = file[i];
-                        }
+                        }                       
+                    }
+
+                    if (header?.Count > 0)
+                    {
+                        break;
                     }
                 }
                 #endregion CreateNewHeader
 
-                #region RemoveOldHeader
-                i = 0;
-                int oldHeaderStart = file.FindIndex(x => Regex.IsMatch(x, headerBorderBounds));
+                #region RemoveOldHeader                
+                int oldHeaderStart = fileContent.FindIndex(x => Regex.IsMatch(x.Content, headerBorderBounds));
+                int oldHeaderStop = oldHeaderStart+1;
 
-                if (oldHeaderStart >= 0 && oldHeaderStart < fileContent?.Count)
+                if (oldHeaderStart >= 0)
                 {
-                    string line = file[oldHeaderStart + i];
-                    fileContent.Remove(line);
-
-                    while (Regex.IsMatch(line, containheaderPattern) == false)
+                    while (Regex.IsMatch(fileContent[oldHeaderStop].Content, headerBorderBounds) == false && oldHeaderStop+1 < fileContent?.Count)
                     {
-                        fileContent.Remove(line);
-                        i++;
-                        line = file[i];
+                        oldHeaderStop++;
                     }
-                }
+                                     
+                    fileContent.RemoveRange(oldHeaderStart, oldHeaderStop);                   
+                }                
                 #endregion RemoveOldHeader
 
                 #region WriteNewHeaderToFiles
-                if (oldHeaderStart >= 0)
+                if(oldHeaderStart<0)
                 {
-                    fileContent.InsertRange(oldHeaderStart, header);
+                    oldHeaderStart = 0;
                 }
+               
+                fileContent.InsertRange(oldHeaderStart, header);              
+                
                 #endregion WriteNewHeaderToFiles
 
                 return fileContent;
@@ -102,12 +105,31 @@ namespace RobotFilesEditor
             {
                 throw ex;
             }            
-        }     
+        }
         #endregion FileHeaders
 
-
         #region GroupsHeaders
-        public List<DataFilterGroup> GroupsHeadersByVariableOrderNumber(List<DataFilterGroup> filterGroups, GlobalData.SortType sortType)
+        public static List<DataFilterGroup> CreateGroupHeader(GlobalData.HeaderType headerType,  List<DataFilterGroup> filterGroups, GlobalData.SortType sortType)
+        {
+            try
+            {
+                switch (headerType)
+                {
+                    case GlobalData.HeaderType.GroupsHeadersByVariableOrderNumber:
+                        {
+                            filterGroups = GroupsHeadersByVariableOrderNumber(filterGroups, GlobalData.SortType.OrderByOrderNumber);
+                        }
+                        break;
+                }
+
+                return filterGroups;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        private static List<DataFilterGroup> GroupsHeadersByVariableOrderNumber(List<DataFilterGroup> filterGroups, GlobalData.SortType sortType = GlobalData.SortType.OrderByOrderNumber)
         {
             List<DataFilterGroup> result = new List<DataFilterGroup>();
             filterGroups=DataContentSortTool.SortData(filterGroups, sortType);
@@ -137,27 +159,6 @@ namespace RobotFilesEditor
 
             return result;
         }
-        public List<DataFilterGroup> CreateGroupHeader(GlobalData.HeaderType headerType, GlobalData.SortType sortType, List<DataFilterGroup> filterGroups)
-        {
-            try
-            {
-                switch (headerType)
-                {
-                    case GlobalData.HeaderType.GroupsHeadersByVariableOrderNumber:
-                        {
-                            filterGroups = GroupsHeadersByVariableOrderNumber(filterGroups, sortType);
-                        }
-                        break;
-                }
-
-                return filterGroups;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
-        #endregion GroupsHeaders
-       
+        #endregion GroupsHeaders       
     }
 }

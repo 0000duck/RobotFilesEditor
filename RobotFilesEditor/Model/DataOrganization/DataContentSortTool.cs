@@ -6,6 +6,37 @@ namespace RobotFilesEditor
 {
     public static class DataContentSortTool
     {
+        public static List<DataFilterGroup> SortData(List<DataFilterGroup> dataToSort, GlobalData.SortType sortType)
+        {
+            List<DataFilterGroup> result = new List<DataFilterGroup>();
+
+            try
+            {
+                switch (sortType)
+                {
+                    case GlobalData.SortType.None:
+                        {
+                            return dataToSort;
+                        }
+                    case GlobalData.SortType.OrderByVariable:
+                        {
+                            return SortOlpDataFiles(dataToSort);
+                        }
+                    case GlobalData.SortType.OrderByOrderNumber:
+                        {
+                            return SortGlobalFilesData(dataToSort);
+                        }
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+
         private static List<DataFilterGroup> SortOlpDataFiles(List<DataFilterGroup> filterGroups)
         {
             try
@@ -30,34 +61,7 @@ namespace RobotFilesEditor
             }    
 
             return filterGroups;
-        }   
-        
-        public static List<DataFilterGroup>SortData(List<DataFilterGroup> dataToSort, GlobalData.SortType sortType)
-        {
-            List<DataFilterGroup> result=new List<DataFilterGroup>();
-
-            try
-            {
-                switch(sortType)
-                {
-                    case GlobalData.SortType.None: {
-                            return dataToSort;
-                        } 
-                    case GlobalData.SortType.OrderByVariable: {
-                            return SortOlpDataFiles(dataToSort);
-                        } 
-                    case GlobalData.SortType.OrderByOrderNumber:  {
-                            return SortGlobalFilesData(dataToSort);
-                        }
-                }
-
-                return result;              
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+        }         
         
         private static List<DataFilterGroup>SortGlobalFilesData(List<DataFilterGroup> filterGroups)
         {

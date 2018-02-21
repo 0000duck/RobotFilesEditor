@@ -130,41 +130,55 @@ namespace RobotFilesEditor
 
         private string GetVariable(string value)
         {
-            string varPattern = @"[a-zA-Z]+[a-zA-Z0-9_]*[\[0-9\],]*=";            
-            Match match;
-            string variableName = "";
-
-            if (value.Length > 0)
+            try
             {
-                match = Regex.Match(value, varPattern);
-                variableName = match.Value.Replace("=", string.Empty);
-            }
+                string varPattern = @"[a-zA-Z]+[a-zA-Z0-9_]*[\[0-9\],]*=";
+                Match match;
+                string variableName = "";
 
-            return variableName;
+                if (value.Length > 0)
+                {
+                    match = Regex.Match(value, varPattern);
+                    variableName = match.Value.Replace("=", string.Empty);
+                }
+
+                return variableName;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }           
         }
 
         private int GetVaribleIndex(string value)
         {
-            string indexPattern = @"\[[0-9]+,*\]";
-            Regex indexRegex = new Regex(indexPattern);
-            Match indexMatch;
-
-            string valuePattern = "[0-9]+";
-            Regex valueRegex = new Regex(valuePattern);
-            Match valueMatch;
-                        
-            int index = -1;
-
-            indexMatch = indexRegex.Match(Variable);           
-
-            if (string.IsNullOrEmpty(indexMatch.Value) == false)
+            try
             {
-                valueMatch = valueRegex.Match(indexMatch.Value);
+                string indexPattern = @"\[[0-9]+,*\]";
+                Regex indexRegex = new Regex(indexPattern);
+                Match indexMatch;
 
-                int.TryParse(valueMatch.Value, out index);               
+                string valuePattern = "[0-9]+";
+                Regex valueRegex = new Regex(valuePattern);
+                Match valueMatch;
+
+                int index = -1;
+
+                indexMatch = indexRegex.Match(Variable);
+
+                if (string.IsNullOrEmpty(indexMatch.Value) == false)
+                {
+                    valueMatch = valueRegex.Match(indexMatch.Value);
+
+                    int.TryParse(valueMatch.Value, out index);
+                }
+
+                return index;
             }
-
-            return index;
+            catch (Exception ex)
+            {
+                throw ex;
+            }           
         }   
         
         private int GetVariableOrderNumber(string variable)
@@ -174,14 +188,21 @@ namespace RobotFilesEditor
             Regex regex = new Regex(pattern);
             Match match;
 
-            match = regex.Match(Variable);
-
-            if (string.IsNullOrEmpty(match.Value) == false)
+            try
             {
-                int.TryParse(match.Value, out orderNumber);
-            }
+                match = regex.Match(Variable);
 
-            return orderNumber;
+                if (string.IsNullOrEmpty(match.Value) == false)
+                {
+                    int.TryParse(match.Value, out orderNumber);
+                }
+
+                return orderNumber;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }            
         }  
     }
 }

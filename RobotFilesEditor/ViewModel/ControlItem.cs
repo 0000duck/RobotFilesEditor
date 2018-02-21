@@ -77,7 +77,9 @@ namespace RobotFilesEditor
             try
             {
                 ExecuteOperationButtonIsEnabled = false;
-                PreviewOperationCommandExecute();
+
+                PreviewOperation();
+
                 if (DetectExceptions() == false)
                 {
                     IOperation activeOperation;
@@ -120,33 +122,10 @@ namespace RobotFilesEditor
         }
         public void PreviewOperationCommandExecute()
         {
-            IOperation activeOperation;
-            List<string> exeptions = new List<string>();
-            List<ResultInfo> result = new List<ResultInfo>();
-
             try
             {
                 PreviewOperationButtonIsEnabled = false;
-                OperationResult.Clear();
-
-                Operations.OrderBy(y => y.Priority).ToList();
-                foreach (var operation in Operations)
-                {
-                    activeOperation = operation;
-                    activeOperation.PreviewOperation();
-                    result = activeOperation.GetOperationResult();
-                    if (result?.Count > 0)
-                    {
-                        result.ForEach(x => OperationResult.Add(x));
-                    }
-
-                    RaisePropertyChanged(nameof(ViewWindowVisibility));
-
-                    if (activeOperation != null)
-                    {
-                        activeOperation?.ClearMemory();
-                    }
-                }
+                PreviewOperation();
             }
             catch (Exception ex)
             {
@@ -179,6 +158,40 @@ namespace RobotFilesEditor
                 return false;
             }
         }
-        #endregion        
+
+        private void PreviewOperation()
+        {
+            IOperation activeOperation;
+            List<string> exeptions = new List<string>();
+            List<ResultInfo> result = new List<ResultInfo>();
+
+            try
+            {               
+                OperationResult.Clear();
+
+                Operations.OrderBy(y => y.Priority).ToList();
+                foreach (var operation in Operations)
+                {
+                    activeOperation = operation;
+                    activeOperation.PreviewOperation();
+                    result = activeOperation.GetOperationResult();
+                    if (result?.Count > 0)
+                    {
+                        result.ForEach(x => OperationResult.Add(x));
+                    }
+
+                    RaisePropertyChanged(nameof(ViewWindowVisibility));
+
+                    if (activeOperation != null)
+                    {
+                        activeOperation?.ClearMemory();
+                    }
+                }
+            }catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+        #endregion
     }
 }

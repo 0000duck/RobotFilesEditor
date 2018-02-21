@@ -159,7 +159,12 @@ namespace RobotFilesEditor
                 if (_fileHeader != value)
                 {
                     _fileHeader = value;
-                }
+                    _headerType = GlobalData.ChekIfHeaderIsCreatingByMethod(value);
+                    if (_headerType != GlobalData.HeaderType.None)
+                    {
+                        _fileHeader = string.Empty;
+                    }
+                }               
             }
         }
         public string FileFooter
@@ -243,6 +248,7 @@ namespace RobotFilesEditor
         private List<ResultInfo> _resultInfos;
         private List<string> _resultToWrite;
         private List<string> _usedFiles;
+        private GlobalData.HeaderType _headerType;
         #endregion Private 
 
         public DataOperation()
@@ -392,14 +398,25 @@ namespace RobotFilesEditor
 
             _resultInfos = WriteNewTextToOldFileContent(sourceText, resultInfos, true);
 
+            if (_headerType != GlobalData.HeaderType.None && resultInfos?.Count>0)
+            {
+                _resultInfos = HeaderCreator.CreateFileHeader(_headerType, FilesTool.CombineFilePath(DestinationFileSource, DestinationPath), _resultInfos, _filesToPrepare);
+            }
+
             if (writeToFile)
             {
                 var toWriteResult = WriteNewTextToOldFileContent(sourceText, resultInfos, false);
-                if(toWriteResult!=null)
+
+                if (_headerType != GlobalData.HeaderType.None && toWriteResult != null)
+                {
+                    toWriteResult=HeaderCreator.CreateFileHeader(_headerType, FilesTool.CombineFilePath(DestinationFileSource, DestinationPath), toWriteResult, _filesToPrepare);
+                }
+
+                if (toWriteResult!=null)
                 {
                     toWriteResult.ForEach(x => _resultToWrite.Add(x.Content));
-                }
-            }           
+                }                                
+            }                     
         }      
 
         #region PrepareData
@@ -430,6 +447,11 @@ namespace RobotFilesEditor
             
             try
             {
+                if (_headerType != GlobalData.HeaderType.None)
+                {
+                    DataFilterGroups = HeaderCreator.CreateGroupHeader(_headerType, DataFilterGroups, SortType);
+                }               
+
                 foreach (var filter in DataFilterGroups)
                 {
                     if (filter.LinesToAddToFile.Count > 0)
@@ -445,6 +467,7 @@ namespace RobotFilesEditor
 
                 if(tmpResult?.Count()>0)
                 {
+                    
                     if (string.IsNullOrEmpty(FileHeader) == false)
                     {
                         resultInfos.Add(ResultInfo.CreateResultInfo(FileHeader));
@@ -455,7 +478,7 @@ namespace RobotFilesEditor
                     if (string.IsNullOrEmpty(FileFooter) == false)
                     {
                         resultInfos.Add(ResultInfo.CreateResultInfo(FileFooter));
-                    }
+                    }                      
                 }               
 
                 return resultInfos;

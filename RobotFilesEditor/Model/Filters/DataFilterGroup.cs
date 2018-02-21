@@ -16,6 +16,11 @@ namespace RobotFilesEditor
                 if (_header != value)
                 {
                     _header = value;
+                    _headerType = GlobalData.ChekIfHeaderIsCreatingByMethod(value);
+                    if (_headerType != GlobalData.HeaderType.None)
+                    {
+                        _header = string.Empty;
+                    }
                 }
             }
         }
@@ -105,6 +110,7 @@ namespace RobotFilesEditor
         private int _spaceAfter;
         private Filter _filter;
         private bool _onlyRegex;
+        private GlobalData.HeaderType _headerType;
         private List<FileLineProperties> _linesToAddToFile;
 
         public DataFilterGroup()
@@ -152,7 +158,12 @@ namespace RobotFilesEditor
             }
 
             if (LinesToAddToFile.Count > 0)
-            {               
+            {              
+                if(_headerType!=GlobalData.HeaderType.None)
+                {
+
+                }                  
+
                 for (int i = 0; i < SpaceBefor; i++)
                 {
                     resultInfos.Add(ResultInfo.CreateResultInfo(""));
@@ -185,7 +196,7 @@ namespace RobotFilesEditor
                 for (int i = 0; i < SpaceAfter; i++)
                 {
                     resultInfos.Add(ResultInfo.CreateResultInfo(String.Format("")));
-                }
+                }              
             }                 
         }
 
@@ -193,5 +204,7 @@ namespace RobotFilesEditor
         {
             LinesToAddToFile = new List<FileLineProperties>();           
         }
+
+
     }
 }
