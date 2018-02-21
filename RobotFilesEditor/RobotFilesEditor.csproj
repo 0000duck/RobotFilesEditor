@@ -104,12 +104,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Model\DataOrganization\HeaderCreator.cs" />
     <Compile Include="Model\FileDataValidation\FileLineProperties.cs" />
     <Compile Include="Model\FileDataValidation\ResultInfo.cs" />
     <Compile Include="Model\FileDataValidation\ValidateText.cs" />
     <Compile Include="Model\FilesTool.cs" />
     <Compile Include="Model\Filters\DistinctBy.cs" />
-    <Compile Include="Model\Operations\DataContentSortTool.cs" />
+    <Compile Include="Model\DataOrganization\DataContentSortTool.cs" />
     <Compile Include="Model\Operations\IOperation.cs" />
     <Compile Include="Model\Serialization\Operations\FileDeseralization.cs" />
     <Compile Include="Model\Serialization\Operations\Serialization.cs" />

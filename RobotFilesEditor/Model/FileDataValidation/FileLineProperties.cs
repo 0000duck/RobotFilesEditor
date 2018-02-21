@@ -73,10 +73,23 @@ namespace RobotFilesEditor
                 {
                     _variable = value;
                     VariableName = GetVariableName(Variable);
+                    VariableOrderNumber = GetVariableOrderNumber(VariableName);
+
                     if (string.IsNullOrEmpty(VariableName) == false)
                     {
                         VariableIndex = GetVaribleIndex(Variable);
                     }
+                }
+            }
+        }
+        public int VariableOrderNumber
+        {
+            get { return _variableOrderNumber; }
+            set
+            {
+                if (_variableOrderNumber != value)
+                {
+                    _variableOrderNumber = value;
                 }
             }
         }
@@ -94,6 +107,7 @@ namespace RobotFilesEditor
 
         private string _fileLinePath;
         private int _lineNumber;
+        private int _variableOrderNumber;
         private string _lineContent;
         private string _variableName;
         private int _variableIndex;
@@ -151,6 +165,23 @@ namespace RobotFilesEditor
             }
 
             return index;
-        }     
+        }   
+        
+        private int GetVariableOrderNumber(string variable)
+        {
+            string pattern = @"\d+\b";
+            int orderNumber = 0;
+            Regex regex = new Regex(pattern);
+            Match match;
+
+            match = regex.Match(Variable);
+
+            if (string.IsNullOrEmpty(match.Value) == false)
+            {
+                int.TryParse(match.Value, out orderNumber);
+            }
+
+            return orderNumber;
+        }  
     }
 }

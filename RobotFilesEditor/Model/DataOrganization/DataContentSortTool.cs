@@ -42,10 +42,13 @@ namespace RobotFilesEditor
                 {
                     case GlobalData.SortType.None: {
                             return dataToSort;
-                        } break;
+                        } 
                     case GlobalData.SortType.OrderByVariable: {
-                            result=SortOlpDataFiles(dataToSort);
-                        } break;
+                            return SortOlpDataFiles(dataToSort);
+                        } 
+                    case GlobalData.SortType.OrderByOrderNumber:  {
+                            return SortGlobalFilesData(dataToSort);
+                        }
                 }
 
                 return result;              
@@ -54,6 +57,27 @@ namespace RobotFilesEditor
             {
                 throw ex;
             }
-        }   
+        }
+        
+        public static List<DataFilterGroup>SortGlobalFilesData(List<DataFilterGroup> filterGroups)
+        {
+            foreach (DataFilterGroup group in filterGroups)
+            {
+                List<FileLineProperties> linesBuffer = new List<FileLineProperties>();
+                var groups = group.LinesToAddToFile.GroupBy(y => y.VariableOrderNumber);
+
+                groups.OrderBy(x => x.Key);
+
+                foreach (var g in groups)
+                {
+                    linesBuffer.AddRange(g);
+                }
+
+                group.LinesToAddToFile.Clear();
+                group.LinesToAddToFile = linesBuffer;
+            }
+
+            return filterGroups;
+        }
     }
 }
