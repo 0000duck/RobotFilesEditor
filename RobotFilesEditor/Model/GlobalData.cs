@@ -6,7 +6,8 @@ namespace RobotFilesEditor
     {
         public const string ConfigurationFileName = "Application.config";       
         public enum Action {None, Move, Remove, Copy, CopyData, CutData, RemoveData}
-        public enum SortType {None, OrderByVariable, OrderByOrderNumber }
+        public enum SortType {None, OrderByVariable, OrderByOrderNumber}
+        public enum HeaderType { None, GlobalFileHeader, GroupsHeadersByVariableOrderNumber }
 
         public static string ViewProgram { get; private set; } = "notepad.exe";
 
@@ -54,6 +55,24 @@ namespace RobotFilesEditor
             }
                        
             return false;
+        }
+
+        public static HeaderType ChekIfHeaderIsCreatingByMethod(string header)
+        {
+            HeaderType type;
+            if (string.IsNullOrEmpty(header))
+            {
+                return HeaderType.None;
+            }
+
+            if (Enum.TryParse(header, out type))
+            {
+                return type;
+            }
+            else
+            {
+                return HeaderType.None;
+            }
         }
     }
 }

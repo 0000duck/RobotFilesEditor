@@ -59,7 +59,7 @@ namespace RobotFilesEditor
             }
         }
         
-        public static List<DataFilterGroup>SortGlobalFilesData(List<DataFilterGroup> filterGroups)
+        private static List<DataFilterGroup>SortGlobalFilesData(List<DataFilterGroup> filterGroups)
         {
             foreach (DataFilterGroup group in filterGroups)
             {
