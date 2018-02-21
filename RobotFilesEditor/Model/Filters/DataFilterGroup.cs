@@ -150,7 +150,7 @@ namespace RobotFilesEditor
             LinesToAddToFile = LinesToAddToFile.DistinctBy(x => x.LineContent).ToList();
         }
 
-        public void PrepareGroupToWrite(ref List<ResultInfo> resultInfos)
+        public void PrepareGroupToWrite(ref List<ResultInfo> resultInfos, GlobalData.SortType sortType)
         {
             if (resultInfos == null)
             {
@@ -160,8 +160,8 @@ namespace RobotFilesEditor
             if (LinesToAddToFile.Count > 0)
             {              
                 if(_headerType!=GlobalData.HeaderType.None)
-                {
-
+                {                    
+                   LinesToAddToFile = HeaderCreator.CreateGroupHeader(_headerType, LinesToAddToFile, sortType);                   
                 }                  
 
                 for (int i = 0; i < SpaceBefor; i++)

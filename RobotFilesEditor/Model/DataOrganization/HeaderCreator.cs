@@ -80,12 +80,12 @@ namespace RobotFilesEditor
 
                 if (oldHeaderStart >= 0)
                 {
-                    while (Regex.IsMatch(fileContent[oldHeaderStop].Content, headerBorderBounds) == false && oldHeaderStop+1 < fileContent?.Count)
+                    while (Regex.IsMatch(fileContent[oldHeaderStop].Content, headerBorderBounds) == false && oldHeaderStop < fileContent?.Count)
                     {
                         oldHeaderStop++;
                     }
                                      
-                    fileContent.RemoveRange(oldHeaderStart, oldHeaderStop);                   
+                    fileContent.RemoveRange(oldHeaderStart, oldHeaderStop-oldHeaderStart+1);                   
                 }                
                 #endregion RemoveOldHeader
 
@@ -109,7 +109,7 @@ namespace RobotFilesEditor
         #endregion FileHeaders
 
         #region GroupsHeaders
-        public static List<DataFilterGroup> CreateGroupHeader(GlobalData.HeaderType headerType,  List<DataFilterGroup> filterGroups, GlobalData.SortType sortType)
+        public static List<FileLineProperties> CreateGroupHeader(GlobalData.HeaderType headerType,  List<FileLineProperties> linesToAddToFile, GlobalData.SortType sortType)
         {
             try
             {
@@ -117,47 +117,39 @@ namespace RobotFilesEditor
                 {
                     case GlobalData.HeaderType.GroupsHeadersByVariableOrderNumber:
                         {
-                            filterGroups = GroupsHeadersByVariableOrderNumber(filterGroups, GlobalData.SortType.OrderByOrderNumber);
+                            linesToAddToFile = GroupsHeadersByVariableOrderNumber(linesToAddToFile, GlobalData.SortType.OrderByOrderNumber);
                         }
                         break;
                 }
 
-                return filterGroups;
+                return linesToAddToFile;
             }
             catch (Exception ex)
             {
                 throw ex;
             }
         }
-        private static List<DataFilterGroup> GroupsHeadersByVariableOrderNumber(List<DataFilterGroup> filterGroups, GlobalData.SortType sortType = GlobalData.SortType.OrderByOrderNumber)
+        private static List<FileLineProperties> GroupsHeadersByVariableOrderNumber(List<FileLineProperties> linesToAddToFile, GlobalData.SortType sortType = GlobalData.SortType.OrderByOrderNumber)
         {
-            List<DataFilterGroup> result = new List<DataFilterGroup>();
-            filterGroups=DataContentSortTool.SortData(filterGroups, sortType);
+          
+            List<FileLineProperties> linesBuffer = new List<FileLineProperties>();
+            var groups = linesToAddToFile.GroupBy(y => y.VariableOrderNumber);
 
-            foreach (DataFilterGroup group in filterGroups)
+            groups.OrderBy(x => x.Key);
+
+            foreach (var g in groups)
             {
-                List<FileLineProperties> linesBuffer = new List<FileLineProperties>();
-                var groups = group.LinesToAddToFile.GroupBy(y => y.VariableOrderNumber);
+                var groupsToWrite = g.ToList();
+                string groupNumber= string.Format("{0:00}", g.Key);
+                string groupSpace = $";----------------------------------------- ST{groupNumber}_ZN{groupNumber} -----------------------------------------";
 
-                groups.OrderBy(x => x.Key);
+                linesBuffer.Add(new FileLineProperties() { LineContent = groupSpace });
+                linesBuffer.AddRange(g);
+                linesBuffer.Add(new FileLineProperties() { LineContent = groupSpace });
+                linesBuffer.Add(new FileLineProperties() { LineContent = "\n" });
+            }               
 
-                foreach (var g in groups)
-                {
-                    var groupsToWrite = g.ToList();
-                    string groupNumber= string.Format("{0:00}", g.Key);
-                    string groupSpace = $";----------------------------------------- ST{groupNumber}_ZN{groupNumber} -----------------------------------------";
-
-                    linesBuffer.Add(new FileLineProperties() { LineContent = groupSpace });
-                    linesBuffer.AddRange(g);
-                    linesBuffer.Add(new FileLineProperties() { LineContent = groupSpace });
-                    linesBuffer.Add(new FileLineProperties() { LineContent = string.Empty });
-                }
-
-                group.LinesToAddToFile.Clear();
-                group.LinesToAddToFile = linesBuffer;
-            }
-
-            return result;
+            return linesBuffer;
         }
         #endregion GroupsHeaders       
     }

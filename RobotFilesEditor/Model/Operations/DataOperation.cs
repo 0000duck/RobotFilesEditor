@@ -447,16 +447,11 @@ namespace RobotFilesEditor
             
             try
             {
-                if (_headerType != GlobalData.HeaderType.None)
-                {
-                    DataFilterGroups = HeaderCreator.CreateGroupHeader(_headerType, DataFilterGroups, SortType);
-                }               
-
                 foreach (var filter in DataFilterGroups)
                 {
                     if (filter.LinesToAddToFile.Count > 0)
                     {
-                        filter.PrepareGroupToWrite(ref tmpResult);
+                        filter.PrepareGroupToWrite(ref tmpResult, SortType);
 
                         for (int i = 0; i < GroupSpace; i++)
                         {
@@ -466,8 +461,7 @@ namespace RobotFilesEditor
                 }
 
                 if(tmpResult?.Count()>0)
-                {
-                    
+                {                    
                     if (string.IsNullOrEmpty(FileHeader) == false)
                     {
                         resultInfos.Add(ResultInfo.CreateResultInfo(FileHeader));
