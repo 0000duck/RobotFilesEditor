@@ -281,26 +281,32 @@ namespace RobotFilesEditor.ViewModel
                         {
                             case GlobalData.Action.Move:
                                 {
+                                    controlItem.OrderNumber = 1;
                                     MoveFilesOperations.Add(controlItem);
                                 }
                                 break;
                             case GlobalData.Action.Copy:
                                 {
+                                    controlItem.OrderNumber = 0;
                                     CopyFilesOperations.Add(controlItem);
-                                }
-                                break;
-                            case GlobalData.Action.CopyData:
-                                {
-                                    CopyTextFromFilesOperations.Add(controlItem);
                                 }
                                 break;
                             case GlobalData.Action.Remove:
                                 {
+                                    controlItem.OrderNumber = 3;
                                     RemoveFilesOperations.Add(controlItem);
                                 }
                                 break;
+                            case GlobalData.Action.CopyData:
+                                {
+                                    controlItem.OrderNumber = 4;
+                                    CopyTextFromFilesOperations.Add(controlItem);
+                                }
+                                break;
+                           
                             case GlobalData.Action.CutData:
                                 {
+                                    controlItem.OrderNumber = 5;
                                     CutTextFromFilesOperations.Add(controlItem);
                                 }break;
                         }
@@ -315,6 +321,7 @@ namespace RobotFilesEditor.ViewModel
                 RemoveFilesOperations.Distinct();
                 CutTextFromFilesOperations.Distinct();
                 AllOperations.Distinct();
+                AllOperations = new ObservableCollection<ControlItem>(AllOperations.OrderBy(x=>x.OrderNumber));
 
                 RaisePropertyChanged(nameof(MoveFilesOperationsVisibility));
                 RaisePropertyChanged(nameof(CopyFilesOperationsVisibility));

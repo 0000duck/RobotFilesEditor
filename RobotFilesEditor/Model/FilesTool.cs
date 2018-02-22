@@ -95,31 +95,31 @@ namespace RobotFilesEditor
             return files;
         }
 
-        public static Dictionary<string, string>CopyFiles(Dictionary<string, string> files, string destination)
+        public static Dictionary<string, string>CopyFiles(Dictionary<string, string> sourceFiles, string destination)
         {
-            IDictionary<string, string> filesIterator = new Dictionary<string, string>(files);
+            IDictionary<string, string> filesIterator = new Dictionary<string, string>(sourceFiles);
+            var result = new Dictionary<string, string>(sourceFiles);
 
             foreach (var file in filesIterator)
             {
                 try
                 {
-                    string filePath = Path.Combine(destination, Path.GetFileName(file.Key));
+                    string destinationFilePath = Path.Combine(destination, Path.GetFileName(file.Key));
 
-                    if (File.Exists(filePath))
+                    if (File.Exists(destinationFilePath))
                     {
                         throw new IOException($"File \"{Path.GetFileName(file.Key)}\" already exist!");
                     }
 
-                    File.Copy(file.Key, filePath);
+                    File.Copy(file.Key, destinationFilePath);
                 }
                 catch (Exception ex)
-                {
-                    files.Remove(file.Key);
-                    files.Add(file.Key, ex.Message);
+                {                   
+                    sourceFiles[file.Key]=ex.Message;
                 }
             }
 
-            return files;
+            return sourceFiles;
         }
 
         public static List<string> GetAllFilesFromDirectory(string path)
@@ -347,29 +347,36 @@ namespace RobotFilesEditor
         {          
             try
             {
-                string filePath = CombineFilePath(sourcePath, destinationPath);
-
-                if (string.IsNullOrEmpty(destinationPath) || string.IsNullOrEmpty(filePath))
+                if (string.IsNullOrEmpty(destinationPath) || string.IsNullOrEmpty(sourcePath))
                 {
                     throw new Exception($"Destination file {destinationPath} exeption!");
                 }
 
-                if (Directory.Exists(Path.GetDirectoryName(filePath))==false)
+                string sourceFilePath = GetSourceFilePath(sourcePath, destinationPath);
+                string destinationFilePath = CombineFilePath(sourcePath, destinationPath);
+
+                if (Directory.Exists(destinationPath) == false)
                 {
-                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                    Directory.CreateDirectory(destinationPath);
                 }
 
-                if (string.IsNullOrEmpty(sourcePath))
+                if (string.IsNullOrEmpty(sourceFilePath))
                 {
-                    File.CreateText(filePath).Close();
+                    File.CreateText(destinationFilePath).Close();
+                    return;
+                }              
+
+                if (Directory.Exists(Path.GetDirectoryName(destinationFilePath))==false)
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(destinationFilePath));
+                }               
+
+                if (sourceFilePath.Equals(destinationFilePath))
+                {
                     return;
                 }
 
-                if (sourcePath.Equals(filePath))
-                {
-                    return;
-                }
-                File.Copy(sourcePath, filePath);
+                File.Copy(sourcePath, destinationFilePath);
             }
             catch (Exception ex)
             {

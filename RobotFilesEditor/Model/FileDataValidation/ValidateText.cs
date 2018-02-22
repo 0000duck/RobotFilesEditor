@@ -21,57 +21,30 @@ namespace RobotFilesEditor
             }
             return listesToCheck;        
         }
-        //public static void ValidateReapitingTextWhitExistContent(List<string> fileExistContent, ref List<string> newText)
-        //{
-        //    List<string> result = new List<string>();
-
-        //    foreach(string line in fileExistContent)
-        //    {
-        //        if(string.IsNullOrEmpty(line)==false && string.IsNullOrWhiteSpace(line)==false)
-        //        {
-        //            result.AddRange(newText.Where(x => line.Contains(x)).ToList());                                                        
-        //        }
-        //    }
-
-        //    foreach(var contain in result)
-        //    {
-        //        newText.Remove(contain);
-        //    }
-        //}
-
-        public static void ValidateReapitingTextWhitExistContent(List<ResultInfo> fileExistContent, ref List<ResultInfo> newText)
+       
+        public static void ValidateReapitingTextWhitExistContent(List<ResultInfo> fileExistingContent, ref List<ResultInfo> newText)
         {
-            List<ResultInfo> result = new List<ResultInfo>();
+            List<ResultInfo> result = new List<ResultInfo>();            
 
-            foreach (ResultInfo line in fileExistContent)
+            foreach (ResultInfo line in newText)
             {
                 if (string.IsNullOrWhiteSpace(line.Content) == false)
                 {
-                    result.AddRange(newText.Where(x => line.Content.Contains(x.Content)).ToList());
+                    fileExistingContent.RemoveAll(x => x.Content.Contains(line.Content));
                 }
-            }
-
-            foreach (var contain in result)
-            {
-                newText.Remove(contain);
-            }
+            }         
         }
 
-        public static void ValidateReapitingTextWhitExistContent(List<string> fileExistContent, ref List<string> newText)
+        public static void ValidateReapitingTextWhitExistContent(List<string> fileExistingContent, ref List<string> newText)
         {
             List<string> result = new List<string>();
 
-            foreach (string line in fileExistContent)
+            foreach (string line in fileExistingContent)
             {
                 if (string.IsNullOrWhiteSpace(line) == false)
                 {
-                    result.AddRange(newText.Where(x => line.Contains(x)).ToList());
+                    fileExistingContent.RemoveAll(x => x.Contains(line));
                 }
-            }
-
-            foreach (var contain in result)
-            {
-                newText.Remove(contain);
             }
         }
 

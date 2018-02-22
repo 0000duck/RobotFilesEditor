@@ -42,6 +42,7 @@ namespace RobotFilesEditor
         public string ExecuteAviable{ get; set;}
         public bool ExecuteOperationButtonIsEnabled { get; set; }
         public bool PreviewOperationButtonIsEnabled { get; set; }
+        public int OrderNumber { get; set; }
         #endregion
 
         #region Constructors

@@ -41,7 +41,7 @@ namespace RobotFilesEditor
                 }
             }
         }
-        public bool HasErrors
+        public bool HasError
         {
             get { return !string.IsNullOrEmpty(Description); }
         }

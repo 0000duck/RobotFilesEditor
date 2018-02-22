@@ -331,7 +331,7 @@ namespace RobotFilesEditor
                 if (_resultToWrite?.Count > 0  && _resultInfos.Where(x => string.IsNullOrEmpty(x.Description) == false).ToList().Count == 0)
                 {
                     string destinationPath = FilesTool.CombineFilePath(DestinationFileSource, DestinationPath);
-                    FilesTool.CreateDestinationFile(sourcePath, DestinationPath);
+                    FilesTool.CreateDestinationFile(DestinationFileSource, DestinationPath);
                     FilesTool.WriteTextToFile(_resultToWrite, destinationPath);
                 }
             }
@@ -368,7 +368,7 @@ namespace RobotFilesEditor
                 {
                     if (_resultToWrite?.Count > 0 && _resultInfos.Where(x => string.IsNullOrEmpty(x.Description) == false).ToList().Count == 0)
                     {                        
-                        FilesTool.CreateDestinationFile(sourcePath, DestinationPath);
+                        FilesTool.CreateDestinationFile(DestinationFileSource, DestinationPath);
                         FilesTool.WriteTextToFile(_resultToWrite, destinationPath);
 
                         foreach (var fragment in fragmentsToRemove)
@@ -679,7 +679,7 @@ namespace RobotFilesEditor
 
             _resultInfos.AddRange(cutDataResult);
         }
-      
+              
         #endregion CutData
 
 
@@ -688,7 +688,14 @@ namespace RobotFilesEditor
         {
             ClearMemory();
             FileOperation.PreviewOperation();
-            _filesToPrepare = FileOperation.GetOperatedFiles();            
+            _filesToPrepare = FileOperation.GetOperatedFiles();
+
+            string sourceFile = FilesTool.GetSourceFilePath(DestinationFileSource, DestinationPath);
+
+            if (string.IsNullOrEmpty(sourceFile) == false)
+            {
+                _filesToPrepare.Add(sourceFile);
+            }
 
             try
             {
@@ -720,7 +727,14 @@ namespace RobotFilesEditor
         {
             ClearMemory();
             FileOperation.ExecuteOperation();
-            _filesToPrepare = FileOperation.GetOperatedFiles();            
+            _filesToPrepare = FileOperation.GetOperatedFiles();
+
+            string sourceFile = FilesTool.GetSourceFilePath(DestinationFileSource, DestinationPath);
+
+            if(string.IsNullOrEmpty(sourceFile)==false)
+            {
+                _filesToPrepare.Add(sourceFile);
+            }
 
             try
             {
