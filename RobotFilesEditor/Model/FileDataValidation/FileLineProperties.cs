@@ -73,11 +73,13 @@ namespace RobotFilesEditor
                 {
                     _variable = value;
                     VariableName = GetVariableName(Variable);
-                    VariableOrderNumber = GetVariableOrderNumber(VariableName);
+                   
 
                     if (string.IsNullOrEmpty(VariableName) == false)
                     {
                         VariableIndex = GetVaribleIndex(Variable);
+                        VariableOrderNumber = GetVariableOrderNumber(VariableName);
+                        RobotNumber = GetRobotNumber(VariableName);
                     }
                 }
             }
@@ -103,6 +105,10 @@ namespace RobotFilesEditor
                     _hasExeption = value;
                 }
             }
+        }
+        public string RobotNumber
+        {
+            get; set;
         }
 
         private string _fileLinePath;
@@ -204,5 +210,29 @@ namespace RobotFilesEditor
                 throw ex;
             }            
         }  
+
+        private string GetRobotNumber(string variable)
+        {
+            string robotNumber = string.Empty;
+            string pattern = @"\d{3}IR\d{3}";          
+            Match match;
+
+            try
+            {
+                match = Regex.Match(Variable, pattern);
+
+                if (string.IsNullOrEmpty(match.Value) == false)
+                {
+                    robotNumber = match.Value;
+                    return robotNumber;
+                }
+
+                return robotNumber;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }
