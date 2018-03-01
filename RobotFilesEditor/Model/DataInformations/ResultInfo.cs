@@ -26,7 +26,7 @@ namespace RobotFilesEditor
                 }
             }        
         }
-        public ICommand OpenInNotepadCommand { get; set; }
+        public ICommand OpenInOtherProgramCommand { get; set; }
         public string FontWeight
         {
             get
@@ -48,7 +48,7 @@ namespace RobotFilesEditor
         public bool Bold { get; set; }
         public ResultInfo()
         {
-            OpenInNotepadCommand = new RelayCommand(OpenInNotepadCommandExecute);
+            OpenInOtherProgramCommand = new RelayCommand(OpenInOtherProgramCommandExecute);
         }         
 
         public static ResultInfo CreateResultInfo(FileLineProperties fileLineProperies)
@@ -82,7 +82,7 @@ namespace RobotFilesEditor
             return resultInfo;
         }
 
-        public void OpenInNotepadCommandExecute()
+        public void OpenInOtherProgramCommandExecute()
         {
             if(String.IsNullOrEmpty(Path)==false)
             {

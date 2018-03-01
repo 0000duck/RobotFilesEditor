@@ -150,7 +150,7 @@ namespace RobotFilesEditor
                 message+= $"\nError: {exeption.Description}.\n";
             }            
 
-            if(exceptions?.Count>0)
+            if(exceptions.Any())
             {
                 MessageBox.Show(message, $"Errors in operation:\"{Title}\"!", MessageBoxButton.OK);
                 return true;

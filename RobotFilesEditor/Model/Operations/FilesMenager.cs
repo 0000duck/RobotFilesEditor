@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace RobotFilesEditor
 {
-    public static class FilesTool
+    public static class FilesMenager
     {
         public static string CreateDestinationFolderPath(string path, string folder)
         {
@@ -122,7 +122,7 @@ namespace RobotFilesEditor
             return sourceFiles;
         }
 
-        public static List<string> GetAllFilesFromDirectory(string path)
+        public static List<string> GetAllFilesFromDirectoryAndIncludedNested(string path)
         {
             List<string> files = new List<string>();          
 
@@ -134,7 +134,7 @@ namespace RobotFilesEditor
                 {
                     if (string.IsNullOrEmpty(Path.GetExtension(p)))
                     {
-                        var temp = GetAllFilesFromDirectory(p);
+                        var temp = GetAllFilesFromDirectoryAndIncludedNested(p);
 
                         if (temp.Count > 0)
                         {
@@ -186,7 +186,7 @@ namespace RobotFilesEditor
                 {
                     List<string> newFileText = new List<string>();
                     List<string> fileContent = new List<string>();
-                    fileContent = LoadFileContent(filePath).Select(x => x.LineContent).ToList();
+                    fileContent = GetFileLinePropertiesFromFile(filePath).Select(x => x.LineContent).ToList();
 
                     ValidateText.ValidateReapitingTextWhitExistContent(fileContent, ref textToWrite);
 
@@ -251,14 +251,14 @@ namespace RobotFilesEditor
             return false;
         }
 
-        public static List<FileLineProperties> LoadTextFromFiles(List<string> filesPaths)
+        public static List<FileLineProperties> GetFileLinePropertiesFromFiles(List<string> filesPaths)
         {
             List<FileLineProperties> filesContent = new List<FileLineProperties>();        
             try
             {
                 foreach (string path in filesPaths)
                 {
-                    filesContent.AddRange(LoadFileContent(path));
+                    filesContent.AddRange(GetFileLinePropertiesFromFile(path));
                 }
 
                 return filesContent;
@@ -269,7 +269,7 @@ namespace RobotFilesEditor
             }           
         }
 
-        public static List<FileLineProperties>LoadFileContent(string path)
+        public static List<FileLineProperties>GetFileLinePropertiesFromFile(string path)
         {
             List<FileLineProperties> fileContent = new List<FileLineProperties>();
             FileLineProperties fileLineProperties;
@@ -300,7 +300,7 @@ namespace RobotFilesEditor
 
         }
 
-        public static List<string> GetSourceFileText(string path)
+        public static List<string> GetTextFromFile(string path)
         {
             List<string> text = new List<string>();
 
@@ -394,7 +394,7 @@ namespace RobotFilesEditor
             try
             {
                 List<string> fileContent = new List<string>();
-                var file = LoadFileContent(filePath);
+                var file = GetFileLinePropertiesFromFile(filePath);
                 fileContent = file.Select(x => x.LineContent).ToList();
                 if (fileContent.Exists(x => x.Contains(fragmentToRemove)))
                 {
@@ -414,7 +414,7 @@ namespace RobotFilesEditor
         public static List<string> CutData(List<string>deletedFromPaths, string destinationSourceFilePath, string destinationPastPath, string cutedFragment, string writeBefor, string writeAfter)
         {
             List<string> changedFiles = new List<string>();
-            string filePath = FilesTool.CombineFilePath(destinationSourceFilePath, destinationPastPath);
+            string filePath = FilesMenager.CombineFilePath(destinationSourceFilePath, destinationPastPath);
             deletedFromPaths.Remove(filePath);
 
             try

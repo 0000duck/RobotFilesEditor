@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace RobotFilesEditor
 {
-    public static class DataContentSortTool
+    public static class DataContentSortManager
     {
         public static List<DataFilterGroup> SortData(List<DataFilterGroup> dataToSort, GlobalData.SortType sortType)
         {
@@ -35,8 +35,6 @@ namespace RobotFilesEditor
                 throw ex;
             }
         }
-
-
         private static List<DataFilterGroup> SortOlpDataFiles(List<DataFilterGroup> filterGroups)
         {
             try
@@ -62,7 +60,6 @@ namespace RobotFilesEditor
 
             return filterGroups;
         }         
-        
         private static List<DataFilterGroup>SortGlobalFilesData(List<DataFilterGroup> filterGroups)
         {
             foreach (DataFilterGroup group in filterGroups)

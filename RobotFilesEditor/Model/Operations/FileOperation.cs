@@ -175,13 +175,13 @@ namespace RobotFilesEditor
             FilteredFiles = new Dictionary<string, string>();
         }
 
-        private void FiltrFiles(bool insideFolders=false)
+        private void GetFilesToExecuteOperation(bool insideFolders=false)
         {
             List<string>allFilesAtSourcePath=new List<string>();
 
             if(insideFolders)
             {
-                allFilesAtSourcePath = FilesTool.GetAllFilesFromDirectory(SourcePath);
+                allFilesAtSourcePath = FilesMenager.GetAllFilesFromDirectoryAndIncludedNested(SourcePath);
             }else
             {
                 allFilesAtSourcePath = Directory.GetFiles(SourcePath).ToList();
@@ -213,7 +213,7 @@ namespace RobotFilesEditor
         #region Prepare
         public void PrepareToCopyFiles()
         {            
-            FiltrFiles();
+            GetFilesToExecuteOperation();
             string destination = Path.Combine(DestinationPath, DestinationFolder);
             IDictionary<string, string> filteredFilesIterator = new Dictionary<string, string>(FilteredFiles);
 
@@ -242,7 +242,7 @@ namespace RobotFilesEditor
 
             try
             {
-                FiltrFiles();
+                GetFilesToExecuteOperation();
             }
             catch (Exception ex)
             {
@@ -275,7 +275,7 @@ namespace RobotFilesEditor
 
             try
             {
-                FiltrFiles();
+                GetFilesToExecuteOperation();
             }
             catch (Exception ex)
             {
@@ -289,14 +289,14 @@ namespace RobotFilesEditor
         {
             try
             {
-                FiltrFiles();
+                GetFilesToExecuteOperation();
                 if (FilteredFiles?.Count > 0)
                 {
-                    string destination = FilesTool.CreateDestinationFolderPath(DestinationPath, DestinationFolder);
+                    string destination = FilesMenager.CreateDestinationFolderPath(DestinationPath, DestinationFolder);
 
-                    FilteredFiles = FilesTool.CopyFiles(FilteredFiles, destination);
+                    FilteredFiles = FilesMenager.CopyFiles(FilteredFiles, destination);
 
-                    if (FilesTool.CheckFilesCorrectness(destination, FilteredFiles.Keys.ToList()) == false)
+                    if (FilesMenager.CheckFilesCorrectness(destination, FilteredFiles.Keys.ToList()) == false)
                     {
                         throw new Exception("Copy files veryfication not pass!");
                     }
@@ -311,14 +311,14 @@ namespace RobotFilesEditor
         {
             try
             {
-                FiltrFiles();
-                if(FilteredFiles?.Count>0)
+                GetFilesToExecuteOperation();
+                if(FilteredFiles.Any())
                 {
-                    string destination = FilesTool.CreateDestinationFolderPath(DestinationPath, DestinationFolder);
+                    string destination = FilesMenager.CreateDestinationFolderPath(DestinationPath, DestinationFolder);
 
-                    FilteredFiles = FilesTool.MoveFiles(FilteredFiles, destination);
+                    FilteredFiles = FilesMenager.MoveFiles(FilteredFiles, destination);
 
-                    if (FilesTool.CheckFilesCorrectness(destination, FilteredFiles.Keys.ToList()) == false)
+                    if (FilesMenager.CheckFilesCorrectness(destination, FilteredFiles.Keys.ToList()) == false)
                     {
                         throw new Exception("Copy files veryfication not pass!");
                     }
@@ -335,11 +335,11 @@ namespace RobotFilesEditor
 
             try
             {
-                FiltrFiles();
+                GetFilesToExecuteOperation();
 
-                FilteredFiles = FilesTool.RemoveFile(FilteredFiles);
+                FilteredFiles = FilesMenager.RemoveFile(FilteredFiles);
 
-                if (FilesTool.CheckFilesCorrectness(SourcePath, FilteredFiles.Keys.ToList()))
+                if (FilesMenager.CheckFilesCorrectness(SourcePath, FilteredFiles.Keys.ToList()))
                 {
                     throw new Exception("Copy files veryfication not pass!");
                 }
@@ -385,12 +385,12 @@ namespace RobotFilesEditor
                     case GlobalData.Action.CutData:
                         {
                             SourcePath = DestinationPath;
-                            FiltrFiles(true);
+                            GetFilesToExecuteOperation(true);
                         }
                         break;
                     default:
                         {
-                            FiltrFiles();
+                            GetFilesToExecuteOperation();
                         }
                         break;
                 }
@@ -451,12 +451,12 @@ namespace RobotFilesEditor
                     case GlobalData.Action.CutData:
                         {
                             SourcePath = DestinationPath;
-                            FiltrFiles(true);
+                            GetFilesToExecuteOperation(true);
                         }
                         break;
                     default:
                         {
-                            FiltrFiles();
+                            GetFilesToExecuteOperation();
                         }
                         break;
                 }

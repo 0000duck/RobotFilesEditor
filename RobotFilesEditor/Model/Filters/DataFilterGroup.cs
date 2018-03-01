@@ -121,7 +121,7 @@ namespace RobotFilesEditor
 
         public List<FileLineProperties> CkeckAllFilters(List<FileLineProperties> listToCheck, bool onlyRegex)
         {
-            if(listToCheck?.Count>0)
+            if(listToCheck.Any())
             {
                 listToCheck = Filter.CheckAllFilters(listToCheck, onlyRegex);
             }
@@ -204,7 +204,5 @@ namespace RobotFilesEditor
         {
             LinesToAddToFile = new List<FileLineProperties>();           
         }
-
-
     }
 }

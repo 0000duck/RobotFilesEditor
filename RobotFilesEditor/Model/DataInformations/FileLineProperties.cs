@@ -42,6 +42,26 @@ namespace RobotFilesEditor
                 }
             }
         }
+        public string Variable
+        {
+            get { return _variable; }
+            set
+            {
+                if (_variable != value)
+                {
+                    _variable = value;
+                    VariableName = GetVariableName(Variable);
+
+
+                    if (string.IsNullOrEmpty(VariableName) == false)
+                    {
+                        VariableIndex = GetVaribleIndex(Variable);
+                        VariableOrderNumber = GetVariableOrderNumber(VariableName);
+                        RobotNumber = GetRobotNumber(VariableName);
+                    }
+                }
+            }
+        }
         public string VariableName
         {
             get { return _variableName; }
@@ -63,27 +83,7 @@ namespace RobotFilesEditor
                     _variableIndex = value;
                 }
             }      
-        }
-        public string Variable
-        {
-            get { return _variable; }
-            set
-            {
-                if(_variable!=value)
-                {
-                    _variable = value;
-                    VariableName = GetVariableName(Variable);
-                   
-
-                    if (string.IsNullOrEmpty(VariableName) == false)
-                    {
-                        VariableIndex = GetVaribleIndex(Variable);
-                        VariableOrderNumber = GetVariableOrderNumber(VariableName);
-                        RobotNumber = GetRobotNumber(VariableName);
-                    }
-                }
-            }
-        }
+        }       
         public int VariableOrderNumber
         {
             get { return _variableOrderNumber; }

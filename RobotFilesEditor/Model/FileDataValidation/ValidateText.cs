@@ -7,7 +7,7 @@ namespace RobotFilesEditor
     {
         public static List<FileLineProperties>FindVaribleDuplicates(List<FileLineProperties>listesToCheck)
         {
-            if(listesToCheck?.Count>0)
+            if(listesToCheck.Any())
             {
                 var duplicatesGroups = listesToCheck.GroupBy(x => x.Variable).Where(group => group.Count() > 1);
 

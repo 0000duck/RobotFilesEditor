@@ -105,12 +105,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Model\DataOrganization\HeaderCreator.cs" />
-    <Compile Include="Model\FileDataValidation\FileLineProperties.cs" />
-    <Compile Include="Model\FileDataValidation\ResultInfo.cs" />
+    <Compile Include="Model\DataInformations\FileLineProperties.cs" />
+    <Compile Include="Model\DataInformations\ResultInfo.cs" />
     <Compile Include="Model\FileDataValidation\ValidateText.cs" />
-    <Compile Include="Model\FilesTool.cs" />
-    <Compile Include="Model\Filters\DistinctBy.cs" />
-    <Compile Include="Model\DataOrganization\DataContentSortTool.cs" />
+    <Compile Include="Model\Operations\FilesMenager.cs" />
+    <Compile Include="Model\DataOrganization\DistinctBy.cs" />
+    <Compile Include="Model\DataOrganization\DataContentSortManager.cs" />
     <Compile Include="Model\Operations\IOperation.cs" />
     <Compile Include="Model\Serialization\Operations\FileDeseralization.cs" />
     <Compile Include="Model\Serialization\Operations\Serialization.cs" />
@@ -177,7 +177,6 @@
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="ClassDiagram1.cd" />
     <None Include="ConfigurationSchema.xsd">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

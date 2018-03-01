@@ -89,7 +89,7 @@ namespace RobotFilesEditor
         #region FileFilter
         public List<string>FilesFilterContains(List<string>source)
         {
-            if(Contain?.Count>0)
+            if(Contain.Any())
             {
                 source = source.Where(x => Contain.Exists(y => Path.GetFileName(x).Contains(y))).ToList();
             }

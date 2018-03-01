@@ -266,14 +266,14 @@ namespace RobotFilesEditor
         {
             try
             {
-                List<FileLineProperties> filesContent = FilesTool.LoadTextFromFiles(_filesToPrepare);
+                List<FileLineProperties> filesContent = FilesMenager.GetFileLinePropertiesFromFiles(_filesToPrepare);
                 FiltrContentOnGroups(filesContent);
 
                 if (DetectDuplicates)
                 {
                     DataFilterGroups.ForEach(x => x.LinesToAddToFile = ValidateText.FindVaribleDuplicates(x.LinesToAddToFile));
                 }
-                DataFilterGroups = DataContentSortTool.SortData(DataFilterGroups, SortType);
+                DataFilterGroups = DataContentSortManager.SortData(DataFilterGroups, SortType);
             }
             catch (Exception ex)
             {
@@ -288,8 +288,8 @@ namespace RobotFilesEditor
             try
             {
                 PrepareDataToCopy();
-                string sourcePath = FilesTool.GetSourceFilePath(DestinationFileSource, DestinationPath);
-                List<string> sourceText = FilesTool.GetSourceFileText(sourcePath);
+                string sourcePath = FilesMenager.GetSourceFilePath(DestinationFileSource, DestinationPath);
+                List<string> sourceText = FilesMenager.GetTextFromFile(sourcePath);
                 CreateResultToShow(sourceText, false);
             }
             catch (Exception ex)
@@ -324,15 +324,15 @@ namespace RobotFilesEditor
             try
             {
                 PrepareDataToCopy();
-                string sourcePath = FilesTool.GetSourceFilePath(DestinationFileSource, DestinationPath);
-                List<string> sourceText = FilesTool.GetSourceFileText(sourcePath);
+                string sourcePath = FilesMenager.GetSourceFilePath(DestinationFileSource, DestinationPath);
+                List<string> sourceText = FilesMenager.GetTextFromFile(sourcePath);
                 CreateResultToShow(sourceText, true);              
 
                 if (_resultToWrite?.Count > 0  && _resultInfos.Where(x => string.IsNullOrEmpty(x.Description) == false).ToList().Count == 0)
                 {
-                    string destinationPath = FilesTool.CombineFilePath(DestinationFileSource, DestinationPath);
-                    FilesTool.CreateDestinationFile(DestinationFileSource, DestinationPath);
-                    FilesTool.WriteTextToFile(_resultToWrite, destinationPath);
+                    string destinationPath = FilesMenager.CombineFilePath(DestinationFileSource, DestinationPath);
+                    FilesMenager.CreateDestinationFile(DestinationFileSource, DestinationPath);
+                    FilesMenager.WriteTextToFile(_resultToWrite, destinationPath);
                 }
             }
             catch (Exception ex)
@@ -351,11 +351,11 @@ namespace RobotFilesEditor
                 PrepareDataToCopy();
                 DataFilterGroups.ForEach(x => x.LinesToAddToFile.ForEach(y => fragmentsToRemove.Add(y.LineContent)));
 
-                string sourcePath = FilesTool.GetSourceFilePath(DestinationFileSource, DestinationPath);
-                List<string> sourceText = FilesTool.GetSourceFileText(sourcePath);
+                string sourcePath = FilesMenager.GetSourceFilePath(DestinationFileSource, DestinationPath);
+                List<string> sourceText = FilesMenager.GetTextFromFile(sourcePath);
                 CreateResultToShow(sourceText, true);
 
-                string destinationPath = FilesTool.CombineFilePath(DestinationFileSource, DestinationPath);               
+                string destinationPath = FilesMenager.CombineFilePath(DestinationFileSource, DestinationPath);               
 
                 _usedFiles.ForEach(x => cutInfo.Add(ResultInfo.CreateResultInfoHeder(Path.GetFileName(x), x)));
                 _usedFiles?.Remove(destinationPath);
@@ -368,14 +368,14 @@ namespace RobotFilesEditor
                 {
                     if (_resultToWrite?.Count > 0 && _resultInfos.Where(x => string.IsNullOrEmpty(x.Description) == false).ToList().Count == 0)
                     {                        
-                        FilesTool.CreateDestinationFile(DestinationFileSource, DestinationPath);
-                        FilesTool.WriteTextToFile(_resultToWrite, destinationPath);
+                        FilesMenager.CreateDestinationFile(DestinationFileSource, DestinationPath);
+                        FilesMenager.WriteTextToFile(_resultToWrite, destinationPath);
 
                         foreach (var fragment in fragmentsToRemove)
                         {
                             foreach (var path in _usedFiles)
                             {
-                                FilesTool.DeleteFromFile(path, fragment);
+                                FilesMenager.DeleteFromFile(path, fragment);
                             }
                         }
                     }                    
@@ -398,9 +398,9 @@ namespace RobotFilesEditor
 
             _resultInfos = WriteNewTextToOldFileContent(sourceText, resultInfos, true);
 
-            if (_headerType != GlobalData.HeaderType.None && resultInfos?.Count>0)
+            if (_headerType != GlobalData.HeaderType.None && resultInfos.Any())
             {
-                _resultInfos = HeaderCreator.CreateFileHeader(_headerType, FilesTool.CombineFilePath(DestinationFileSource, DestinationPath), _resultInfos, _filesToPrepare);
+                _resultInfos = HeaderCreator.CreateFileHeader(_headerType, FilesMenager.CombineFilePath(DestinationFileSource, DestinationPath), _resultInfos, _filesToPrepare);
             }
 
             if (writeToFile)
@@ -409,7 +409,7 @@ namespace RobotFilesEditor
 
                 if (_headerType != GlobalData.HeaderType.None && toWriteResult != null)
                 {
-                    toWriteResult=HeaderCreator.CreateFileHeader(_headerType, FilesTool.CombineFilePath(DestinationFileSource, DestinationPath), toWriteResult, _filesToPrepare);
+                    toWriteResult=HeaderCreator.CreateFileHeader(_headerType, FilesMenager.CombineFilePath(DestinationFileSource, DestinationPath), toWriteResult, _filesToPrepare);
                 }
 
                 if (toWriteResult!=null)
@@ -497,7 +497,7 @@ namespace RobotFilesEditor
                     return null;
                 }
 
-                if (sourceText?.Count > 0 && newText?.Count>0)
+                if (sourceText.Any() && newText.Any())
                 {
                     newText = WriteNewTextExistingToFile(sourceText, newText);                    
                 }
@@ -558,7 +558,7 @@ namespace RobotFilesEditor
             sourceText.ForEach(x => sourceFile.Add(ResultInfo.CreateResultInfo(x)));
             ValidateText.ValidateReapitingTextWhitExistContent(sourceFile, ref newText);
 
-            if(newText?.Count > 0 && sourceText?.Count>0)
+            if(newText.Any() && sourceText.Any())
             {
                 if (string.IsNullOrEmpty(WriteStart) == false)
                 {
@@ -628,13 +628,12 @@ namespace RobotFilesEditor
         }
         #endregion PrepareData     
 
-
         #region CutData
         public List<string> GetSequenceToCut()
         {
             try
             {
-                List<FileLineProperties> filesContent = FilesTool.LoadTextFromFiles(_filesToPrepare);
+                List<FileLineProperties> filesContent = FilesMenager.GetFileLinePropertiesFromFiles(_filesToPrepare);
                 FiltrContentOnGroups(filesContent);
 
                 if (DetectDuplicates)
@@ -663,7 +662,7 @@ namespace RobotFilesEditor
         private void CreateCutDataResultResultToShow(List<ResultInfo>copyFrom)
         {
             List<ResultInfo> cutDataResult = new List<ResultInfo>();
-            if(copyFrom?.Count>0)
+            if(copyFrom.Any())
             {
                 cutDataResult.Add(ResultInfo.CreateResultInfo(string.Empty));
                 cutDataResult.Add(ResultInfo.CreateResultInfo($"Find fragment to cut in files:"));
@@ -682,7 +681,6 @@ namespace RobotFilesEditor
               
         #endregion CutData
 
-
         #region InterfaceImplementation
         public void PreviewOperation()
         {
@@ -690,7 +688,7 @@ namespace RobotFilesEditor
             FileOperation.PreviewOperation();
             _filesToPrepare = FileOperation.GetOperatedFiles();
 
-            string sourceFile = FilesTool.GetSourceFilePath(DestinationFileSource, DestinationPath);
+            string sourceFile = FilesMenager.GetSourceFilePath(DestinationFileSource, DestinationPath);
 
             if (string.IsNullOrEmpty(sourceFile) == false)
             {
@@ -729,7 +727,7 @@ namespace RobotFilesEditor
             FileOperation.ExecuteOperation();
             _filesToPrepare = FileOperation.GetOperatedFiles();
 
-            string sourceFile = FilesTool.GetSourceFilePath(DestinationFileSource, DestinationPath);
+            string sourceFile = FilesMenager.GetSourceFilePath(DestinationFileSource, DestinationPath);
 
             if(string.IsNullOrEmpty(sourceFile)==false)
             {

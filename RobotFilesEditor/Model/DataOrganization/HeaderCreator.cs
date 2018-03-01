@@ -17,7 +17,7 @@ namespace RobotFilesEditor
                 {
                     case GlobalData.HeaderType.GlobalFileHeader:
                         {
-                            if(sourcePaths?.Count>0)
+                            if(sourcePaths.Any())
                             {
                                 fileContent=GlobalFileHeader(sourcePaths, destinationFilePath, fileContent);
                             }                           
@@ -45,7 +45,7 @@ namespace RobotFilesEditor
                 #region CreateNewHeader
                 foreach (string path in sourcePaths)
                 {
-                    file = FilesTool.GetSourceFileText(path);
+                    file = FilesMenager.GetTextFromFile(path);
 
                     i = file.FindIndex(x => Regex.IsMatch(x, containheaderPattern));
 
@@ -130,8 +130,7 @@ namespace RobotFilesEditor
             }
         }
         private static List<FileLineProperties> GroupsHeadersByVariableOrderNumber(List<FileLineProperties> linesToAddToFile, GlobalData.SortType sortType = GlobalData.SortType.OrderByOrderNumber)
-        {
-          
+        {          
             List<FileLineProperties> linesBuffer = new List<FileLineProperties>();
             var groups = linesToAddToFile.GroupBy(y => y.VariableOrderNumber);
 
