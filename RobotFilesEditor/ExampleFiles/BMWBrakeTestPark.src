@@ -1,0 +1,64 @@
+&COMMENT 
+DEF  BMWBrakeTestPark	( )
+;FOLD Moduleparameters;%{h}
+;Params 
+;ENDFOLD Moduleparameters
+;FOLD INI 
+  ;FOLD USER INI
+    ;Make your modifications here
+			IF PLC_CHK_INIT() THEN
+				GLOBAL INTERRUPT DECL 3 WHEN $STOPMESS==TRUE DO IR_STOPM ( )
+				INTERRUPT ON 3 
+				BAS (#INITMOV,0 )
+				;FOLD APPLICATION_INI
+				APPLICATION_INI ( )
+				;ENDFOLD (APPLICATION_INI)
+			ENDIF	
+  ;ENDFOLD (USER INI)
+;ENDFOLD (INI)
+;***********************************************************
+;* Programm            : BMWBrakeTestPark
+;* Beschreibung        : BMWBrakeTestPark
+;* Roboter             : 280IR003_KR240R2700PRIME_4
+;* Firma               : Staudinger GmbH
+;* Ersteller           : Wisniewski Michal
+;* Datum               : 20/02/2018
+;* Aenderungsverlauf   : V1.0 i.O.
+;***********************************************************
+
+
+
+;# --------- START PATH : BMWBrakeTestPark ---------
+;FOLD Tch Check_Tool_Code ChgToolNo:0
+;FOLD ;%{h}
+;Params IlfProvider=tch; Tch_CmdTech=ToolChg_Cmd; Tch_SubCmdTech=Check_Tool_Code; Tch_ChgToolNoCheck=0
+;ENDFOLD
+Tch_Checktool (0)
+;ENDFOLD
+WAIT FOR $IN_HOME1
+;FOLD PTP HOME1 Vel=100 % PHOME1;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:HOME1, 3:, 5:100, 7:PHOME1
+$BWDSTART = FALSE
+PDAT_ACT= PPHOME1
+FDAT_ACT= FHOME1
+BAS(#PTP_PARAMS,100)
+PTP XHOME1 
+;ENDFOLD
+; Coll 95 - 280FX01 - 280IR02(spot), 280IR03 (rvt)
+;FOLD CollZone Request ZoneNum:95 Desc:280FX01 - 280IR02(spot), 280IR03 (rvt)
+;FOLD ;%{h}
+;Params IlfProvider=collision; Plc_CollCmd=Request; Plc_CollMove=NoMove; Plc_CollPlc=_; Plc_CollZoneNum=95; Plc_CollDesc=280FX01 - 280IR02(spot), 280IR03 (rvt)
+;ENDFOLD
+Plc_CollSafetyReq1 (95)
+;ENDFOLD
+;FOLD PTP ParkPos Vel=100 % PParkPos Tool[20]:Tool_Changer_Head Base[0];%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:ParkPos, 3:, 5:100, 7:PParkPos
+$BWDSTART = FALSE
+PDAT_ACT= PPParkPos
+FDAT_ACT= FParkPos
+BAS(#PTP_PARAMS,100)
+PTP XParkPos 
+;ENDFOLD
+
+
+
+END
+

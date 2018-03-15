@@ -1,0 +1,43 @@
+DEFDAT A13_rvt_GunChange1
+;***********************************************************
+;* Programm            : A13_rvt_GunChange1
+;* Beschreibung        : A13_rvt_GunChange1
+;* Roboter             : 280IR003_KR240R2700PRIME_4
+;* Firma               : Staudinger GmbH
+;* Ersteller           : Wisniewski Michal
+;* Datum               : 20/02/2018
+;* Aenderungsverlauf   : V1.0 i.O.
+;***********************************************************
+
+;FOLD EXTERNAL DECLARATIONS;%{PE}%MKUKATPBASIS,%CEXT,%VCOMMON,%P
+;FOLD BASISTECH EXT;%{PE}%MKUKATPBASIS,%CEXT,%VEXT,%P
+EXT  BAS (BAS_COMMAND  :IN,REAL  :IN )
+DECL INT SUCCESS
+;ENDFOLD (BASISTECH EXT)
+;FOLD USER EXT;%{E}%MKUKATPUSER,%CEXT,%VEXT,%P
+;Make your modifications here
+
+;ENDFOLD (USER EXT)
+;ENDFOLD (EXTERNAL DECLARATIONS)
+;================================================
+; Positions (if any)
+;================================================
+
+
+;# --------- START PATH : A13_rvt_GunChange1 ---------
+DECL FDAT FHOME1={TOOL_NO 27,BASE_NO 0,IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}
+DECL PDAT PPHOME1={VEL 100,ACC 100,APO_DIST 0,GEAR_JERK 50}
+DECL E6POS XP10={X -279.98,Y 305.25,Z 2393.77,A -11.984,B 24.557,C 78.33,S 6,T 27,E1 -2200,E2 0,E3 0,E4 0,E5 0,E6 0}
+DECL FDAT FP10={TOOL_NO 27,BASE_NO 0,IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}
+DECL PDAT PPP10={VEL 100,ACC 100,APO_DIST 50,APO_MODE #CDIS,GEAR_JERK 50}
+DECL E6POS XGunchangePos_Gun1={X -509.15,Y 299.54,Z 868.33,A -11.235,B -12.3,C 88.346,S 6,T 27,E1 -2200,E2 0,E3 0,E4 0,E5 0,E6 0}
+DECL FDAT FGunchangePos_Gun1={TOOL_NO 27,BASE_NO 0,IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}
+DECL PDAT PPGunchangePos_Gun1={VEL 100,ACC 100,APO_DIST 0,GEAR_JERK 50}
+DECL E6POS XP20={X -279.98,Y 305.26,Z 2393.77,A -11.984,B 24.557,C 78.33,S 6,T 27,E1 -2200,E2 0,E3 0,E4 0,E5 0,E6 0}
+DECL FDAT FP20={TOOL_NO 27,BASE_NO 0,IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}
+DECL PDAT PPP20={VEL 100,ACC 100,APO_DIST 50,APO_MODE #CDIS,GEAR_JERK 50}
+
+
+
+ENDDAT
+

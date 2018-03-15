@@ -1,0 +1,37 @@
+DEFDAT BMWBrakeTestPark
+;***********************************************************
+;* Programm            : BMWBrakeTestPark
+;* Beschreibung        : BMWBrakeTestPark
+;* Roboter             : 280IR003_KR240R2700PRIME_4
+;* Firma               : Staudinger GmbH
+;* Ersteller           : Wisniewski Michal
+;* Datum               : 20/02/2018
+;* Aenderungsverlauf   : V1.0 i.O.
+;***********************************************************
+
+;FOLD EXTERNAL DECLARATIONS;%{PE}%MKUKATPBASIS,%CEXT,%VCOMMON,%P
+;FOLD BASISTECH EXT;%{PE}%MKUKATPBASIS,%CEXT,%VEXT,%P
+EXT  BAS (BAS_COMMAND  :IN,REAL  :IN )
+DECL INT SUCCESS
+;ENDFOLD (BASISTECH EXT)
+;FOLD USER EXT;%{E}%MKUKATPUSER,%CEXT,%VEXT,%P
+;Make your modifications here
+
+;ENDFOLD (USER EXT)
+;ENDFOLD (EXTERNAL DECLARATIONS)
+;================================================
+; Positions (if any)
+;================================================
+
+
+;# --------- START PATH : BMWBrakeTestPark ---------
+DECL FDAT FHOME1={TOOL_NO 20,BASE_NO 0,IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}
+DECL PDAT PPHOME1={VEL 100,ACC 100,APO_DIST 0,GEAR_JERK 50}
+DECL E6POS XParkPos={X -475.11,Y 0,Z 1641.34,A 0,B 75,C 180,S 2,T 10,E1 -500,E2 0,E3 0,E4 0,E5 0,E6 0}
+DECL FDAT FParkPos={TOOL_NO 20,BASE_NO 0,IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}
+DECL PDAT PPParkPos={VEL 100,ACC 100,APO_DIST 0,GEAR_JERK 50}
+
+
+
+ENDDAT
+

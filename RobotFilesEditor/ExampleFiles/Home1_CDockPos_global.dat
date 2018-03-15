@@ -1,0 +1,36 @@
+&COMMENT Globale Punkteliste
+&REL 33
+DEFDAT Home1_CDockPos_global PUBLIC
+;***********************************************************
+;* Programm            : Home1_CDockPos_global
+;* Beschreibung        : Home1_CDockPos_global
+;* Roboter             : 280IR003_KR240R2700PRIME_4
+;* Firma               : Staudinger GmbH
+;* Ersteller           : Wisniewski Michal
+;* Datum               : 20/02/2018
+;* Aenderungsverlauf   : V1.0 i.O.
+;***********************************************************
+;================================================
+; Positions (if any)
+;================================================
+
+DECL GLOBAL E6POS XBefore_Dock1={X 0,Y 0,Z -60,A 0,B 0,C 0,S 6,T 19,E1 -400,E2 0,E3 0,E4 0,E5 0,E6 0}
+DECL GLOBAL FDAT FBefore_Dock1={TOOL_NO 20,BASE_NO 21,IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}
+DECL GLOBAL E6POS XTchDockTNo1StNo1={X 0,Y 0,Z 0,A 0,B 0,C 0,S 6,T 19,E1 -400,E2 0,E3 0,E4 0,E5 0,E6 0}
+DECL GLOBAL FDAT FTchDockTNo1StNo1={TOOL_NO 20,BASE_NO 21,IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}
+DECL GLOBAL E6POS XTchUnDockTNo1StNo1={X 192.13,Y -2.93,Z 697.78,A 92.364,B 89.681,C -87.651,S 6,T 19,E1 -400,E2 0,E3 0,E4 0,E5 0,E6 0}
+DECL GLOBAL FDAT FTchUnDockTNo1StNo1={TOOL_NO 27,BASE_NO 21,IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}
+DECL GLOBAL E6POS XBefore_Undock1={X 192.1,Y -2.76,Z 654.56,A 91.937,B 89.68,C -88.078,S 6,T 19,E1 -400,E2 0,E3 0,E4 0,E5 0,E6 0}
+DECL GLOBAL FDAT FBefore_Undock1={TOOL_NO 27,BASE_NO 21,IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}
+DECL GLOBAL E6POS XBefore_Dock2={X 0,Y 0,Z -60,A 0,B 0,C 0,S 6,T 19,E1 -1900,E2 0,E3 0,E4 0,E5 0,E6 0}
+DECL GLOBAL FDAT FBefore_Dock2={TOOL_NO 20,BASE_NO 22,IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}
+DECL GLOBAL E6POS XTchDockTNo2StNo2={X 0,Y 0,Z 0,A 0,B 0,C 0,S 6,T 19,E1 -1900,E2 0,E3 0,E4 0,E5 0,E6 0}
+DECL GLOBAL FDAT FTchDockTNo2StNo2={TOOL_NO 20,BASE_NO 22,IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}
+DECL GLOBAL E6POS XTchUnDockTNo2StNo2={X 191.77,Y -2.9,Z 698.81,A 91.8,B 89.741,C -88.126,S 6,T 19,E1 -1900,E2 0,E3 0,E4 0,E5 0,E6 0}
+DECL GLOBAL FDAT FTchUnDockTNo2StNo2={TOOL_NO 28,BASE_NO 22,IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}
+DECL GLOBAL E6POS XBefore_Undock2={X 191.75,Y -2.77,Z 655.37,A 91.256,B 89.739,C -88.669,S 6,T 19,E1 -1900,E2 0,E3 0,E4 0,E5 0,E6 0}
+DECL GLOBAL FDAT FBefore_Undock2={TOOL_NO 28,BASE_NO 22,IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}
+
+
+ENDDAT
+

@@ -1,0 +1,217 @@
+&COMMENT 
+DEF  A13_rvt_DieCheck1	( )
+;FOLD Moduleparameters;%{h}
+;Params 
+;ENDFOLD Moduleparameters
+;FOLD INI 
+  ;FOLD USER INI
+    ;Make your modifications here
+			IF PLC_CHK_INIT() THEN
+				GLOBAL INTERRUPT DECL 3 WHEN $STOPMESS==TRUE DO IR_STOPM ( )
+				INTERRUPT ON 3 
+				BAS (#INITMOV,0 )
+				;FOLD APPLICATION_INI
+				APPLICATION_INI ( )
+				;ENDFOLD (APPLICATION_INI)
+			ENDIF	
+  ;ENDFOLD (USER INI)
+;ENDFOLD (INI)
+;***********************************************************
+;* Programm            : A13_rvt_DieCheck1
+;* Beschreibung        : A13_rvt_DieCheck1
+;* Roboter             : 280IR003_KR240R2700PRIME_4
+;* Firma               : Staudinger GmbH
+;* Ersteller           : Wisniewski Michal
+;* Datum               : 20/02/2018
+;* Aenderungsverlauf   : V1.0 i.O.
+;***********************************************************
+
+
+
+;# --------- START PATH : A13_rvt_DieCheck1 ---------
+tch_auto(1)
+;FOLD Tch Check_Tool_Code ChgToolNo:1
+;FOLD ;%{h}
+;Params IlfProvider=tch; Tch_CmdTech=ToolChg_Cmd; Tch_SubCmdTech=Check_Tool_Code; Tch_ChgToolNoCheck=1
+;ENDFOLD
+Tch_Checktool (1)
+;ENDFOLD
+WAIT FOR $IN_HOME1
+;FOLD PTP HOME1 Vel=100 % PHOME1;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:HOME1, 3:, 5:100, 7:PHOME1
+$BWDSTART = FALSE
+PDAT_ACT= PPHOME1
+FDAT_ACT= FHOME1
+BAS(#PTP_PARAMS,100)
+PTP XHOME1 
+;ENDFOLD
+; Coll 95 - 280FX01 - 280IR02(spot), 280IR03 (rvt)
+;FOLD CollZone Request ZoneNum:95 Desc:280FX01 - 280IR02(spot), 280IR03 (rvt)
+;FOLD ;%{h}
+;Params IlfProvider=collision; Plc_CollCmd=Request; Plc_CollMove=NoMove; Plc_CollPlc=_; Plc_CollZoneNum=95; Plc_CollDesc=280FX01 - 280IR02(spot), 280IR03 (rvt)
+;ENDFOLD
+Plc_CollSafetyReq1 (95)
+;ENDFOLD
+; Coll 108 - 280IR03 dieCheck, 280IR02
+;FOLD CollZone Request ZoneNum:108 Desc:280IR03 dieCheck, 280IR02
+;FOLD ;%{h}
+;Params IlfProvider=collision; Plc_CollCmd=Request; Plc_CollMove=NoMove; Plc_CollPlc=_; Plc_CollZoneNum=108; Plc_CollDesc=280IR03 dieCheck, 280IR02
+;ENDFOLD
+Plc_CollSafetyReq1 (108)
+;ENDFOLD
+;FOLD Job Started JobNum:50 Desc:Matrizenbruchkontrolle
+;FOLD ;%{h}
+;Params IlfProvider=job; Plc_JobCmd=Started; Plc_JobMove=NoMove; Plc_JobNum=50; Plc_JobCont=_; Plc_JobDesc=Matrizenbruchkontrolle
+;ENDFOLD
+Plc_Job (1,50,False)
+;ENDFOLD
+;FOLD Rvt Init GunNo:1 GunOpen:128mm
+;FOLD ;%{h}
+;Params IlfProvider=rivet; Rvt_CmdTech=Init; Rvt_GunNo=1; Rvt_GunOpen=128; Rvt_Desc=
+;ENDFOLD
+Rvt_Init (1,128)
+;ENDFOLD
+;FOLD PTP HOME1 Vel=100 % PHOME1;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:HOME1, 3:, 5:100, 7:PHOME1
+$BWDSTART = FALSE
+PDAT_ACT= PPHOME1
+FDAT_ACT= FHOME1
+BAS(#PTP_PARAMS,100)
+PTP XHOME1 
+;ENDFOLD
+;FOLD PTP P10 CONT Vel=100 % PP10 Tool[27]:Rivet_Gun_1 Base[0];%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P10, 3:C_DIS, 5:100, 7:PP10
+$BWDSTART = FALSE
+PDAT_ACT= PPP10
+FDAT_ACT= FP10
+BAS(#PTP_PARAMS,100)
+PTP XP10 C_DIS
+;ENDFOLD
+;FOLD PTP P20 CONT Vel=100 % PP20 Tool[27]:Rivet_Gun_1 Base[0];%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P20, 3:C_DIS, 5:100, 7:PP20
+$BWDSTART = FALSE
+PDAT_ACT= PPP20
+FDAT_ACT= FP20
+BAS(#PTP_PARAMS,100)
+PTP XP20 C_DIS
+;ENDFOLD
+;FOLD PTP P30 CONT Vel=100 % PP30 Tool[27]:Rivet_Gun_1 Base[0];%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P30, 3:C_DIS, 5:100, 7:PP30
+$BWDSTART = FALSE
+PDAT_ACT= PPP30
+FDAT_ACT= FP30
+BAS(#PTP_PARAMS,100)
+PTP XP30 C_DIS
+;ENDFOLD
+;FOLD PTP P40 CONT Vel=100 % PP40 Tool[27]:Rivet_Gun_1 Base[0];%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P40, 3:C_DIS, 5:100, 7:PP40
+$BWDSTART = FALSE
+PDAT_ACT= PPP40
+FDAT_ACT= FP40
+BAS(#PTP_PARAMS,100)
+PTP XP40 C_DIS
+;ENDFOLD
+;FOLD PTP P50 CONT Vel=100 % PP50 Tool[27]:Rivet_Gun_1 Base[0];%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P50, 3:C_DIS, 5:100, 7:PP50
+$BWDSTART = FALSE
+PDAT_ACT= PPP50
+FDAT_ACT= FP50
+BAS(#PTP_PARAMS,100)
+PTP XP50 C_DIS
+;ENDFOLD
+;FOLD PTP P60 CONT Vel=100 % PP60 Tool[27]:Rivet_Gun_1 Base[0];%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P60, 3:C_DIS, 5:100, 7:PP60
+$BWDSTART = FALSE
+PDAT_ACT= PPP60
+FDAT_ACT= FP60
+BAS(#PTP_PARAMS,100)
+PTP XP60 C_DIS
+;ENDFOLD
+;FOLD LIN DieCheck1 Vel=0.2 m/s LDieCheck1 Tool[27]:Rivet_Gun_1 Base[0];%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:DieCheck1, 3:, 5:0.2, 7:LDieCheck1
+$BWDSTART = FALSE
+LDAT_ACT= LLDieCheck1
+FDAT_ACT= FDieCheck1
+BAS(#CP_PARAMS,0.2)
+LIN XDieCheck1 
+;ENDFOLD
+;FOLD Rvt DieCheckCam GunNo:1
+;FOLD ;%{h}
+;Params IlfProvider=rivet; Rvt_CmdTech=DieCheckCam; Rvt_GunNo=1; Rvt_Desc=
+;ENDFOLD
+Rvt_DieCheckCam (1)
+;ENDFOLD
+;FOLD Job Done JobNum:50 Desc:Matrizenbruchkontrolle
+;FOLD ;%{h}
+;Params IlfProvider=job; Plc_JobCmd=Done; Plc_JobMove=NoMove; Plc_JobNum=50; Plc_JobDesc=Matrizenbruchkontrolle
+;ENDFOLD
+Plc_Job (2,50,False)
+;ENDFOLD
+;FOLD PTP P70 CONT Vel=100 % PP70 Tool[27]:Rivet_Gun_1 Base[0];%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P70, 3:C_DIS, 5:100, 7:PP70
+$BWDSTART = FALSE
+PDAT_ACT= PPP70
+FDAT_ACT= FP70
+BAS(#PTP_PARAMS,100)
+PTP XP70 C_DIS
+;ENDFOLD
+;FOLD PTP P80 CONT Vel=100 % PP80 Tool[27]:Rivet_Gun_1 Base[0];%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P80, 3:C_DIS, 5:100, 7:PP80
+$BWDSTART = FALSE
+PDAT_ACT= PPP80
+FDAT_ACT= FP80
+BAS(#PTP_PARAMS,100)
+PTP XP80 C_DIS
+;ENDFOLD
+;FOLD PTP P90 CONT Vel=100 % PP90 Tool[27]:Rivet_Gun_1 Base[0];%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P90, 3:C_DIS, 5:100, 7:PP90
+$BWDSTART = FALSE
+PDAT_ACT= PPP90
+FDAT_ACT= FP90
+BAS(#PTP_PARAMS,100)
+PTP XP90 C_DIS
+;ENDFOLD
+;FOLD PTP P100 CONT Vel=100 % PP100 Tool[27]:Rivet_Gun_1 Base[0];%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P100, 3:C_DIS, 5:100, 7:PP100
+$BWDSTART = FALSE
+PDAT_ACT= PPP100
+FDAT_ACT= FP100
+BAS(#PTP_PARAMS,100)
+PTP XP100 C_DIS
+;ENDFOLD
+;FOLD PTP P110 CONT Vel=100 % PP110 Tool[27]:Rivet_Gun_1 Base[0];%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P110, 3:C_DIS, 5:100, 7:PP110
+$BWDSTART = FALSE
+PDAT_ACT= PPP110
+FDAT_ACT= FP110
+BAS(#PTP_PARAMS,100)
+PTP XP110 C_DIS
+;ENDFOLD
+;FOLD PTP P120 CONT Vel=100 % PP120 Tool[27]:Rivet_Gun_1 Base[0];%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P120, 3:C_DIS, 5:100, 7:PP120
+$BWDSTART = FALSE
+PDAT_ACT= PPP120
+FDAT_ACT= FP120
+BAS(#PTP_PARAMS,100)
+PTP XP120 C_DIS
+;ENDFOLD
+;FOLD PTP HOME1 Vel=100 % PHOME1;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:HOME1, 3:, 5:100, 7:PHOME1
+$BWDSTART = FALSE
+PDAT_ACT= PPHOME1
+FDAT_ACT= FHOME1
+BAS(#PTP_PARAMS,100)
+PTP XHOME1 
+;ENDFOLD
+; Coll 95 - 280FX01 - 280IR02(spot), 280IR03 (rvt)
+;FOLD CollZone Release ZoneNum:95 Desc:280FX01 - 280IR02(spot), 280IR03 (rvt)
+;FOLD ;%{h}
+;Params IlfProvider=collision; Plc_CollCmd=Release; Plc_CollMove=NoMove; Plc_CollPlc=_; Plc_CollZoneNum=95; Plc_CollDesc=280FX01 - 280IR02(spot), 280IR03 (rvt)
+;ENDFOLD
+Plc_CollPrepareRelease (95,1)
+Plc_CollSafetyClear1 (95)
+;ENDFOLD
+; Coll 108 - 280IR03 dieCheck, 280IR02
+;FOLD CollZone Release ZoneNum:108 Desc:280IR03 dieCheck, 280IR02
+;FOLD ;%{h}
+;Params IlfProvider=collision; Plc_CollCmd=Release; Plc_CollMove=NoMove; Plc_CollPlc=_; Plc_CollZoneNum=108; Plc_CollDesc=280IR03 dieCheck, 280IR02
+;ENDFOLD
+Plc_CollPrepareRelease (108,1)
+Plc_CollSafetyClear1 (108)
+;ENDFOLD
+;FOLD PTP HOME1 Vel=100 % PHOME1;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:HOME1, 3:, 5:100, 7:PHOME1
+$BWDSTART = FALSE
+PDAT_ACT= PPHOME1
+FDAT_ACT= FHOME1
+BAS(#PTP_PARAMS,100)
+PTP XHOME1 
+;ENDFOLD
+
+
+
+END
+

@@ -1,0 +1,81 @@
+&COMMENT 
+DEF  A13_rvt_GunChange2	( )
+;FOLD Moduleparameters;%{h}
+;Params 
+;ENDFOLD Moduleparameters
+;FOLD INI 
+  ;FOLD USER INI
+    ;Make your modifications here
+			IF PLC_CHK_INIT() THEN
+				GLOBAL INTERRUPT DECL 3 WHEN $STOPMESS==TRUE DO IR_STOPM ( )
+				INTERRUPT ON 3 
+				BAS (#INITMOV,0 )
+				;FOLD APPLICATION_INI
+				APPLICATION_INI ( )
+				;ENDFOLD (APPLICATION_INI)
+			ENDIF	
+  ;ENDFOLD (USER INI)
+;ENDFOLD (INI)
+;***********************************************************
+;* Programm            : A13_rvt_GunChange2
+;* Beschreibung        : A13_rvt_GunChange2
+;* Roboter             : 280IR003_KR240R2700PRIME_4
+;* Firma               : Staudinger GmbH
+;* Ersteller           : Wisniewski Michal
+;* Datum               : 20/02/2018
+;* Aenderungsverlauf   : V1.0 i.O.
+;***********************************************************
+
+
+
+;# --------- START PATH : A13_rvt_GunChange2 ---------
+tch_auto(2)
+;FOLD Tch Check_Tool_Code ChgToolNo:2
+;FOLD ;%{h}
+;Params IlfProvider=tch; Tch_CmdTech=ToolChg_Cmd; Tch_SubCmdTech=Check_Tool_Code; Tch_ChgToolNoCheck=2
+;ENDFOLD
+Tch_Checktool (2)
+;ENDFOLD
+WAIT FOR $T1
+WAIT FOR $IN_HOME1
+;FOLD PTP HOME1 Vel=100 % PHOME1;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:HOME1, 3:, 5:100, 7:PHOME1
+$BWDSTART = FALSE
+PDAT_ACT= PPHOME1
+FDAT_ACT= FHOME1
+BAS(#PTP_PARAMS,100)
+PTP XHOME1 
+;ENDFOLD
+;FOLD PTP P10 CONT Vel=100 % PP10 Tool[28]:Rivet_Gun_2 Base[0];%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P10, 3:C_DIS, 5:100, 7:PP10
+$BWDSTART = FALSE
+PDAT_ACT= PPP10
+FDAT_ACT= FP10
+BAS(#PTP_PARAMS,100)
+PTP XP10 C_DIS
+;ENDFOLD
+;FOLD PTP GunchangePos_Gun2 Vel=100 % PGunchangePos_Gun2 Tool[28]:Rivet_Gun_2 Base[0];%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:GunchangePos_Gun2, 3:, 5:100, 7:PGunchangePos_Gun2
+$BWDSTART = FALSE
+PDAT_ACT= PPGunchangePos_Gun2
+FDAT_ACT= FGunchangePos_Gun2
+BAS(#PTP_PARAMS,100)
+PTP XGunchangePos_Gun2 
+;ENDFOLD
+HALT
+;FOLD PTP P20 CONT Vel=100 % PP20 Tool[28]:Rivet_Gun_2 Base[0];%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P20, 3:C_DIS, 5:100, 7:PP20
+$BWDSTART = FALSE
+PDAT_ACT= PPP20
+FDAT_ACT= FP20
+BAS(#PTP_PARAMS,100)
+PTP XP20 C_DIS
+;ENDFOLD
+;FOLD PTP HOME1 Vel=100 % PHOME1;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:HOME1, 3:, 5:100, 7:PHOME1
+$BWDSTART = FALSE
+PDAT_ACT= PPHOME1
+FDAT_ACT= FHOME1
+BAS(#PTP_PARAMS,100)
+PTP XHOME1 
+;ENDFOLD
+
+
+
+END
+

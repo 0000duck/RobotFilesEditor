@@ -1,0 +1,41 @@
+;***********************************************************
+;*                                                         
+;*        Default olp Template for Kuka-Krc-Bmw
+;*         Created 27/10/2011 by Siemens PLM
+;*                                                         
+;* Study               : ST250_260_270_280_290_300_Geliefert_OLP                           
+;* Program             : Dock_ZN2                        
+;* Generation Date     : 20/02/2018 at 10:55:09         
+;* Robot               : 280IR003_KR240R2700PRIME_4                       
+;* User                : Administrator                        
+;* Tecnomatix Software : Process Simulate Disconnected 13.1
+;* Olp                 : Kuka-Krc-Bmw 2.39
+;*
+;***********************************************************
+
+;********  E6Pos      ********
+
+;********  E6Axis     ********
+E6AXIS XHOME1={A1 -5,A2 -110,A3 40,A4 -5,A5 30,A6 5,E1 0,E2 0,E3 0,E4 0,E5 0,E6 0}
+
+;********  Base Data  ********
+BASE_DATA[22]={X 2985.85,Y -1191.88,Z 1117.3,A -0.406,B -0.135,C 179.733}
+BASE_NAME[22,]="Tch_Station02"
+BASE_TYPE[22]=#BASE
+
+;********  Moving Base Data  ********
+
+;********  Tool Data  ********
+TOOL_DATA[20]={X 0,Y 0,Z 60,A 0,B 0,C 0}
+TOOL_TYPE[20]=#BASE
+TOOL_NAME[20,]="Tool_Changer_Head"
+TOOL_DATA[28]={X 191.69,Y 0,Z 759.99,A 0,B 90,C 180}
+TOOL_TYPE[28]=#BASE
+TOOL_NAME[28,]="Rivet_Gun_2"
+
+;********  Load Data  ********
+LOAD_DATA[20]={M 7.67,CM {X -101.23,Y -164.98,Z 0,A -6.531,B -2.114,C 6.8},J {X 6,Y 6,Z 6}}
+LOAD_DATA[28]={M 165.55,CM {X -103.34,Y -1.72,Z 379.24,A -0.003,B -3.962,C -90.025},J {X 9.58,Y 15.87,Z 32.59}}
+
+;********  Asg Stud Data  ********
+

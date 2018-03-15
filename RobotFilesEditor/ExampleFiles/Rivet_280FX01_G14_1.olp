@@ -1,0 +1,37 @@
+;***********************************************************
+;*                                                         
+;*        Default olp Template for Kuka-Krc-Bmw
+;*         Created 27/10/2011 by Siemens PLM
+;*                                                         
+;* Study               : ST250_260_270_280_290_300_Geliefert_OLP                           
+;* Program             : Rivet_280FX01_G14_1                        
+;* Generation Date     : 20/02/2018 at 10:55:26         
+;* Robot               : 280IR003_KR240R2700PRIME_4                       
+;* User                : Administrator                        
+;* Tecnomatix Software : Process Simulate Disconnected 13.1
+;* Olp                 : Kuka-Krc-Bmw 2.39
+;*
+;***********************************************************
+
+;********  E6Pos      ********
+
+;********  E6Axis     ********
+E6AXIS XHOME1={A1 -5,A2 -110,A3 40,A4 -5,A5 30,A6 5,E1 0,E2 0,E3 0,E4 0,E5 0,E6 0}
+
+;********  Base Data  ********
+BASE_DATA[1]={X 1984.93,Y 4877.55,Z 707.45,A -89.917,B 0.016,C -0.026}
+BASE_NAME[1,]="280FX01"
+BASE_TYPE[1]=#BASE
+
+;********  Moving Base Data  ********
+
+;********  Tool Data  ********
+TOOL_DATA[27]={X 191.69,Y 0,Z 759.99,A 0,B 90,C 180}
+TOOL_TYPE[27]=#BASE
+TOOL_NAME[27,]="Rivet_Gun_1"
+
+;********  Load Data  ********
+LOAD_DATA[27]={M 164.47,CM {X -105.17,Y -1.18,Z 380.88,A -0.002,B -3.231,C -90.019},J {X 8.04,Y 15.91,Z 30.7}}
+
+;********  Asg Stud Data  ********
+
