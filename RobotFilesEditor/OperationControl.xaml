@@ -23,11 +23,11 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <ListView 
+                <ListView SelectedValue="{Binding SelectedItemFromList}"
                 MaxHeight="500"
                 MinHeight="20"
                 Grid.Row="0"
-                Margin="3"       
+                Margin="5,4,1,2"       
                 ItemsSource="{Binding OperationResult}" 
                 ScrollViewer.CanContentScroll="True" 
                 ScrollViewer.VerticalScrollBarVisibility="Auto" 
@@ -35,17 +35,17 @@
                 BorderThickness="0">
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Label  Background="Transparent" 
-                                    Content="{Binding Content}" 
+                            <TextBlock  Background="Transparent" 
+                                    Text="{Binding Content}" 
                                     Foreground="{Binding Color}" 
                                     ToolTipService.IsEnabled="{Binding HasErrors}"
                                     ToolTip="{Binding Description}" 
                                     FontWeight="{Binding FontWeight}"                      
                                     >
-                                <Label.InputBindings>
-                                    <MouseBinding Command="{Binding OpenInNotepadCommand}" MouseAction="LeftClick"/>
-                                </Label.InputBindings>
-                            </Label>
+                                <!--<Label.InputBindings>
+                                    <MouseBinding Command="{Binding MainVM.OpenInNotepadCommand, Source={StaticResource Locator}}" MouseAction="LeftDoubleClick"/>
+                                </Label.InputBindings>-->
+                            </TextBlock>
                         </DataTemplate>
                     </ListView.ItemTemplate>
                 </ListView>

@@ -1,0 +1,54 @@
+&ACCESS RVP1
+&REL 3
+&COMMENT V_1_4_0
+DEF InitProduction( )
+;***********************************************************
+;* Program: {Enter program description}                    *
+;* Location:{Enter robot/Station/Zone number}              *
+;***********************************************************
+;*                   Update Section                        *
+;*                  ================                       *
+;FOLD ; 27.2.05 14:31  NAME: {Enter Engineer Name} CHANGES: {Enter Changes Made};%{PE}
+;FOLD Parameters ;%{h}
+;Params IlfProvider=kukaroboter.basistech.inlineforms.comments.datetimecomment; Kuka.DateTime=27.2.05 14:31; Kuka.Name={Enter Engineer Name}; Kuka.Content={Enter Changes Made}
+;ENDFOLD
+;ENDFOLD
+;*                                                         *
+;***********************************************************
+
+;FOLD Declarations
+;******************************
+;Make your declarations here
+  
+;ENDFOLD (Declarations)
+;******************************
+;FOLD Actions
+;******************************
+;Make your Actions here       
+A01_plc_init( )
+
+;ENDFOLD (Actions)
+
+;FOLD CollZone Release ZoneNum:ClearAll
+;FOLD ;%{h}
+;Params IlfProvider=collision; Plc_CollCmd=Release; Plc_CollMove=NoMove; Plc_CollPlc=_; Plc_CollZoneNum=255; Plc_CollDesc=
+;ENDFOLD
+Plc_CollPrepareRelease (255,1)
+Plc_CollSafetyClear1 (255)
+;ENDFOLD
+;FOLD Area Release AreaNum:ClearAll
+;FOLD ;%{h}
+;Params IlfProvider=area; Plc_AreaCmd=Release; Plc_AreaMove=NoMove; Plc_AreaNum=255; Plc_AreaDesc=
+;ENDFOLD
+Plc_AreaPrepareRelease (255)
+Plc_AreaRelease (255)
+;ENDFOLD
+;FOLD Job ClearAll
+;FOLD ;%{h}
+;Params IlfProvider=job; Plc_JobCmd=ClearAll; Plc_JobDesc=
+;ENDFOLD
+Plc_Job (3,255,False)
+;ENDFOLD
+
+END
+

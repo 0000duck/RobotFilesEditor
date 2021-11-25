@@ -1,0 +1,12 @@
+&ACCESS RV
+&COMMENT V_1_0_0
+DEFDAT A21_swr_global PUBLIC
+;********************************
+;Date: 20.12.2013
+;Programmer: AIUT
+;Description: Stud welding global positions
+;********************************
+
+
+
+ENDDAT

@@ -1,0 +1,32 @@
+﻿<Window x:Class="RobotFilesEditor.Dialogs.TypeCollisionComment"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"      
+        xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"  
+        mc:Ignorable="d"
+        Title="TypeCollisionComment" SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <cmd:EventToCommand Command="{Binding Path=SetDescription}" PassEventArgsToCommand="True" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <Grid>
+        <StackPanel FocusManager.FocusedElement="{Binding ElementName=TB_description}">
+            <StackPanel.Resources>
+                <Style TargetType="{x:Type TextBlock}">
+                    <Setter Property="Margin" Value="0,0,0,0"/>
+                </Style>
+            </StackPanel.Resources>
+            <TextBlock Text="{Binding WholeText}" VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" Margin="10,10,10,10"/>
+            <TextBlock Text="Type description below" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,10,10,0"/>
+            <TextBox x:Name="TB_description" Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"  Margin="10,10,10,0" >
+        </TextBox>
+            <Button x:Name="Button" Content="Ok" Click="Button_Click" Margin="10,10,10,10" IsDefault="True">
+        </Button>
+         </StackPanel>
+
+    </Grid>
+</Window>

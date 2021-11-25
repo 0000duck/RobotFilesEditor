@@ -1,0 +1,12 @@
+﻿&ACCESS RV
+&COMMENT V_1_0_0
+DEFDAT grp_global PUBLIC
+;********************************
+;Date: 16.10.2018
+;Programmer: AIUT
+;Description: Gripper global positions
+;********************************
+
+
+
+ENDDAT

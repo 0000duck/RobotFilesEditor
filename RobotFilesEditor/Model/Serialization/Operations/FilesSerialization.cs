@@ -1,24 +1,36 @@
-﻿using System;
+﻿using RobotFilesEditor.Model.Operations;
+using RobotFilesEditor.Model.Serialization.Objects;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace RobotFilesEditor.Serializer
 {
     public class FilesSerialization: Serialization
     {
+        private static string _username;
+
         public FilesSerialization()
         {}        
 
         public List<RobotFilesEditor.Controler> GetControlersConfigurations()
-        {            
+        {
+            ApplictionConfigCreator();
+            LoadFilePaths();
             XmlControlersConfiguration controlersConfiguration;
             List<Controler> controlers = new List<Controler>();          
             Controler controler;
 
             try
             {                
-                controlersConfiguration = ReadAplicationConfiguration();               
+                controlersConfiguration = ReadAplicationConfiguration();
+                Model.XML.DestAndSource destandsource = GetPath();
+                controlersConfiguration.DestinationPath = destandsource.DestPath;
+                controlersConfiguration.SourcePath = destandsource.SourcePath; 
 
                 if (string.IsNullOrEmpty(controlersConfiguration.SourcePath))
                 {
@@ -40,16 +52,19 @@ namespace RobotFilesEditor.Serializer
                         throw new ArgumentException($"Controler type \'{controlerType}\' already exists!" );
                     }
 
-                    controler.ContolerType = controlerType;           
+                    controler.ContolerType = controlerType;
 
                     foreach (var dataOperation in xmlControler?.DataOperations)
                     {
                         XmlFileOperation fileOperation = xmlControler.FileOperations.FirstOrDefault(x => x.OperationName == dataOperation.FileOperationName && x.Priority == dataOperation.Priority);
-                        DataOperation operation = ParseXmlDataOperationToDataOperation(dataOperation, fileOperation);
+                        if (fileOperation != null)
+                        {
+                            DataOperation operation = ParseXmlDataOperationToDataOperation(dataOperation, fileOperation);
 
-                        xmlControler.FileOperations.Remove(fileOperation);
-                        
-                        controler.Operations.Add(operation);
+                            xmlControler.FileOperations.Remove(fileOperation);
+
+                            controler.Operations.Add(operation);
+                        }
                     }
 
                     foreach (var filesOperations in xmlControler?.FileOperations)
@@ -83,8 +98,49 @@ namespace RobotFilesEditor.Serializer
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }           
+        }
+
+        private Model.XML.DestAndSource GetPath()
+        {
+            string destPath = "", sourcePath = "";
+            XmlDocument document = new XmlDocument();
+            document.Load(GlobalData.PathFile);
+            XmlNodeList nodeList = document.SelectNodes("/Paths");
+            foreach (XmlNode node in nodeList)
+            {
+                destPath = node.SelectSingleNode("DestinationPath").InnerText;
+                sourcePath = node.SelectSingleNode("SourcePath").InnerText;
+            }
+            return new Model.XML.DestAndSource(destPath,sourcePath);
+            
+        }
+
+        private void LoadFilePaths()
+        {            
+            string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+            Regex regex = new Regex(@"(?<=.*\\).*", RegexOptions.IgnoreCase);
+            Match match = regex.Match(userName);
+            GlobalData.PathFile = "C:\\Users\\" + match.ToString() + "\\AppData\\Local\\RobotFilesHarvester\\FilePaths.xml";
+            if (!File.Exists(GlobalData.PathFile))
+            {
+                Model.XML.WriteFilePaths.WriteFile(GlobalData.PathFile);
+            }
+        }
+
+        public static void ApplictionConfigCreator(bool isDefault = false)
+        {
+            string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+            Regex regex = new Regex(@"(?<=.*\\).*", RegexOptions.IgnoreCase);
+            Match match = regex.Match(userName);
+            _username = match.ToString();
+
+            string[] readLines = File.ReadAllLines("Application.config");
+            if (!Directory.Exists("C:\\Users\\" + _username + "\\AppData\\Local\\RobotFilesHarvester"))
+                Directory.CreateDirectory("C:\\Users\\" + _username + "\\AppData\\Local\\RobotFilesHarvester");
+            File.WriteAllLines("C:\\Users\\" + _username + "\\AppData\\Local\\RobotFilesHarvester\\Application.config", readLines);
         }
 
         private Filter ParseXmlFilterToFilter(XmlFilter xmlFilter)
@@ -101,6 +157,7 @@ namespace RobotFilesEditor.Serializer
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
         }
@@ -123,6 +180,7 @@ namespace RobotFilesEditor.Serializer
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
         }
@@ -181,6 +239,7 @@ namespace RobotFilesEditor.Serializer
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }         
         }
@@ -209,6 +268,7 @@ namespace RobotFilesEditor.Serializer
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
 

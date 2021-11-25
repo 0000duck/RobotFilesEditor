@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RobotFilesEditor.Model.Operations;
+using System;
 using System.IO;
 
 namespace RobotFilesEditor
@@ -32,6 +33,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
            

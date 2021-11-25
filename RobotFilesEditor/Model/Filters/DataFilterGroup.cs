@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows;
 
 namespace RobotFilesEditor
 {
@@ -124,6 +125,13 @@ namespace RobotFilesEditor
             if(listToCheck.Any())
             {
                 listToCheck = Filter.CheckAllFilters(listToCheck, onlyRegex);
+                if (Filter.Contain.Contains("XHOME"))
+                {
+                    listToCheck = Model.Operations.SrcValidator.FixMissingExternalAxis(listToCheck);
+                    listToCheck = Model.Operations.SrcValidator.CorrectHomeRound(listToCheck);
+                }
+                if (Filter.Contain.Contains("POZYCJE CENTRALNE"))
+                    listToCheck = Model.Operations.SrcValidator.FixMissingExternalAxis(listToCheck);
             }
             return listToCheck;
         }
@@ -131,18 +139,81 @@ namespace RobotFilesEditor
         public void SetLinesToAddToFile(ref List<string> usedFiles, List<FileLineProperties> filesContent, bool deleteDuplicates=true)
         {
             //dodać zmienną i do konfiguracji
-            LinesToAddToFile=CkeckAllFilters(filesContent, OnlyRegex);
+            OnlyRegex = false;
+            //TT poprawic
+            foreach(string item in Filter.Contain.Where(x => (x == "CouplePos"| x== "TipDressG" | x == "TipCheckG") & (GlobalData.ControllerType == "KRC2 V8" | GlobalData.ControllerType == "KRC2 L6")))
+            { 
+                OnlyRegex = true;
+                break;
+            }
+            
+             LinesToAddToFile=CkeckAllFilters(filesContent, OnlyRegex);
+            
 
             if(usedFiles!=null)
             {
-                foreach(var line in LinesToAddToFile)
+                int counter = 0;
+                foreach (var line in LinesToAddToFile)
                 {
+                    if (OnlyRegex)
+                    {
+                        string tempstring = line.LineContent.Replace("GLOBAL ", "");
+                        LinesToAddToFile[counter].LineContent = tempstring;
+                        counter++;
+                    }
                     usedFiles.Add(line.FileLinePath);
                 }
                 usedFiles?.Distinct();
             }          
-
+            
+            
             LinesToAddToFile = LinesToAddToFile.DistinctBy(x => x.LineContent).ToList();
+
+            if (Filter.Contain.Contains("POZYCJE CENTRALNE"))
+                LinesToAddToFile = Model.Operations.SrcValidator.FilterGlobalFDATs(LinesToAddToFile);
+            if (Filter.Contain.Contains("g_tipdressg") && GlobalData.isWeldingRobot)
+            {
+                bool tipdressfound = false;
+                foreach (var item in LinesToAddToFile.Where(x => x.VariableName.ToLower().Contains("g_tipdressg")))
+                {
+                    tipdressfound = true;
+                    break;
+                }
+                if (!tipdressfound)
+                    MessageBox.Show("No g_TipDressG definition found! Correct name.","Warning",MessageBoxButton.OK,MessageBoxImage.Warning);
+            }
+
+            bool[] fileExist = new bool[] { false, false, false,false };
+            if (Filter.Contain.Contains("g_beforeTipDressG") && GlobalData.isWeldingRobot)
+            {
+                List<FileLineProperties> currentList = new List<FileLineProperties>();
+                foreach (var line in LinesToAddToFile)
+                {
+                    if (line.VariableName.ToLower().Contains("xg_beforetipdressg"))
+                        fileExist[0] = true;
+                    if (line.VariableName.ToLower().Contains("fg_beforetipdressg"))
+                        fileExist[1] = true;
+                    if (line.VariableName.ToLower().Contains("xg_centrtipdressg"))
+                        fileExist[2] = true;
+                    if (line.VariableName.ToLower().Contains("fg_centrtipdressg"))
+                        fileExist[3] = true;
+                }
+                string message = "";
+                if (fileExist[0] == false)
+                    message += "xg_BeforeTipDressG, ";
+                if (fileExist[1] == false)
+                    message += "fg_BeforeTipDressG, ";
+                if (fileExist[2] == false)
+                    message += "xg_CentrTipDressG, ";
+                if (fileExist[3] == false)
+                    message += "fg_CentrTipDressG, ";
+                if (message.Length > 0)
+                {
+                    message = message.Remove(message.Length - 2, 2);
+
+                    MessageBox.Show("Not definitions for " + message + " found. Correct names", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }   
+            }
         }
 
         public void DistinctLinesToAddToFile()

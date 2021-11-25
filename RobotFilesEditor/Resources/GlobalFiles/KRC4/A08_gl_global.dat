@@ -3,14 +3,10 @@
 &PARAM DISKPATH = BMW_App
 DEFDAT a08_gl_global PUBLIC
 ;********************************
-;Date: 07.07.2015
-;Programmer: Thomas Roessler (KUKA Roboter GmbH)
+;Date: 07.11.2018
+;Programmer: AIUT
 ;Description: Global positions
 ;********************************
-
-
-GLOBAL E6POS gl_e6pos_openpos={X 0.0,Y 0.0,Z 0.0,A 0.0,B 0.0,C 0.0,S 'B00010110',T 'B00111010',E1 0.0,E2 0.0,E3 0.0,E4 0.0,E5 0.0,E6 0.0}
-GLOBAL E6POS gl_e6pos_closepos={X 0.0,Y 0.0,Z 0.0,A 0.0,B 0.0,C 0.0,S 'B00010110',T 'B00111010',E1 0.0,E2 0.0,E3 0.0,E4 0.0,E5 0.0,E6 0.0}
 
 
 ENDDAT

@@ -1,0 +1,45 @@
+&ACCESS RV1
+&REL 8
+&COMMENT Initialisierung
+DEF INIT_OUT( )
+;***********************************************************
+;* Program: Initialization of IO                           *
+;* Location: G2x, G8x                                      *
+;***********************************************************
+;*                   Update Section                        *
+;*                  ================                       *
+;FOLD ; 27.2.05 14:31  NAME: AIUT CHANGES: AIUT;%{PE}%R 5.2.19,%MKUKATPBASIS,%CCOMMENT,%VSTAMP,%P 1:;, 2:27.2.05 14:31, 3: NAME:, 4:AIUT, 5:CHANGES:, 6:AIUT
+;ENDFOLD
+;*                                                         *
+;***********************************************************
+
+INT a
+
+;Reset PLC Signals
+;FOLD Area.Release AreaNr=ClearAll, DESC=_;%{PE}%MKUKATPUSER
+PLC_AreaPrepareRelease( 65535)
+PLC_AreaRelease( 65535)
+;ENDFOLD
+
+;Make your modifications here
+;FOLD COLLISION_ZONE.CLEAR_ALL ;%{PE}%MKUKATPUSER
+COLL_SAFETY_CLEAR ( 63 )
+;ENDFOLD
+;FOLD USERBIT.CLEAR_ALL
+FOR a = 1 to 32
+$OUT[a] = FALSE
+ENDFOR
+;ENDFOLD USERBITB.CLEAR_ALL
+
+;FOLD PLC_PlcComInit
+Plc_PlcComInit ( )
+;ENDFOLD (PLC_PlcComInit)
+
+;FOLD WATER.ON
+;Switch Water on
+FOR a = 313 to 317
+$OUT[a] = FALSE
+ENDFOR
+;ENDFOLD WATER.ON
+
+END

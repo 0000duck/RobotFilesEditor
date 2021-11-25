@@ -1,24 +1,13 @@
 &ACCESS RV
 &COMMENT V_1_4_0
-&PARAM DISKPATH = KRC:\R1\BMW_STD
+&PARAM DISKPATH = KRC:\R1\BMW_App
 &REL 4
 DEFDAT A28_screw_global PUBLIC
 ;********************************
-;Date: 24.02.2014
-;Programmer: Thomas Roessler (KUKA Roboter GmbH)
+;Date: 07.11.2018
+;Programmer: AIUT
 ;Description: Global positions
 ;********************************
 
 
-;FOLD GLOBALPOSITION
-;*******************************************************************************
-
-;*******************************************************************************
-
-DECL GLOBAL E6POS XA28_ScrewPos={X 0.0,Y 0.0,Z 0.0,A 0.0,B 0.0,C 0.0,S 18,T 11,E1 0.0,E2 0.0,E3 0.0,E4 0.0,E5 0.0,E6 0.0}
-DECL GLOBAL FDAT FA28_ScrewPos={TOOL_NO 0,BASE_NO 0,IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}
-DECL GLOBAL LDAT LA28_ScrewPos={VEL 0.25, ACC 100.000,APO_DIST 100.000,APO_FAC 50.0000,AXIS_VEL 100.000,AXIS_ACC 100.000,ORI_TYP #VAR,CIRC_TYP #BASE,JERK_FAC 50.0000,GEAR_JERK 50.0000,EXAX_IGN 0}
-
-
-;ENDFOLD
 ENDDAT

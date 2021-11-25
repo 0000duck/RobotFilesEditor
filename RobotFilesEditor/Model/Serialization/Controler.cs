@@ -45,6 +45,7 @@ namespace RobotFilesEditor
                         _destinationPath = value;
                         OnPropertyChanged(nameof(DestinationPath));
                         Operations.ForEach(x => x.DestinationPath = DestinationPath);
+                        GlobalData.DestPath = DestinationPath;
                     }
                     else
                     {

@@ -1,0 +1,43 @@
+DEFDAT A02_tch_Maintenan_PTM
+;***********************************************************
+;* Programm            : A02_tch_Maintenan_PTM
+;* Beschreibung        : A02_tch_Maintenan_PTM
+;* Roboter             : 280IR003_KR240R2700PRIME_4
+;* Firma               : Staudinger GmbH
+;* Ersteller           : Wisniewski Michal
+;* Datum               : 20/02/2018
+;* Aenderungsverlauf   : V1.0 i.O.
+;***********************************************************
+
+;FOLD EXTERNAL DECLARATIONS;%{PE}%MKUKATPBASIS,%CEXT,%VCOMMON,%P
+;FOLD BASISTECH EXT;%{PE}%MKUKATPBASIS,%CEXT,%VEXT,%P
+EXT  BAS (BAS_COMMAND  :IN,REAL  :IN )
+DECL INT SUCCESS
+;ENDFOLD (BASISTECH EXT)
+;FOLD USER EXT;%{E}%MKUKATPUSER,%CEXT,%VEXT,%P
+;Make your modifications here
+
+;ENDFOLD (USER EXT)
+;ENDFOLD (EXTERNAL DECLARATIONS)
+;================================================
+; Positions (if any)
+;================================================
+
+
+;# --------- START PATH : A02_tch_Maintenan_PTM ---------
+DECL FDAT FHOME1={TOOL_NO 20,BASE_NO 0,IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}
+DECL PDAT PPHOME1={VEL 100,ACC 100,APO_DIST 0,GEAR_JERK 50}
+DECL E6POS XP10={X -235.41,Y 144.89,Z 2163.51,A -169.065,B 68.837,C 39.38,S 6,T 27,E1 -1050,E2 0,E3 0,E4 0,E5 0,E6 0}
+DECL FDAT FP10={TOOL_NO 20,BASE_NO 0,IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}
+DECL PDAT PPP10={VEL 100,ACC 100,APO_DIST 100,APO_MODE #CDIS,GEAR_JERK 50}
+DECL E6POS XMaintPos_PTM={X -601.26,Y 918.78,Z 1203.4,A 113.905,B 88.612,C -3.973,S 6,T 26,E1 -1300,E2 0,E3 0,E4 0,E5 0,E6 0}
+DECL FDAT FMaintPos_PTM={TOOL_NO 20,BASE_NO 0,IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}
+DECL PDAT PPMaintPos_PTM={VEL 100,ACC 100,APO_DIST 0,GEAR_JERK 50}
+DECL E6POS XP20={X -235.41,Y 144.89,Z 2163.51,A -169.065,B 68.837,C 39.38,S 6,T 27,E1 -1050,E2 0,E3 0,E4 0,E5 0,E6 0}
+DECL FDAT FP20={TOOL_NO 20,BASE_NO 0,IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}
+DECL PDAT PPP20={VEL 100,ACC 100,APO_DIST 100,APO_MODE #CDIS,GEAR_JERK 50}
+
+
+
+ENDDAT
+

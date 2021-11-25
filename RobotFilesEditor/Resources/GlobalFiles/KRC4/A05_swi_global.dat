@@ -1,0 +1,12 @@
+&ACCESS RV
+&COMMENT V_1_0_0
+DEFDAT A05_swi_global PUBLIC
+;********************************
+;Date: 07.11.2018
+;Programmer: AIUT
+;Description: Global positions
+;********************************
+
+
+
+ENDDAT

@@ -1,0 +1,59 @@
+&ACCESS RO1
+&REL 1
+&COMMENT Initialisierung
+DEF init_out( )
+;***********************************************************
+;* Programm            : init_out
+;* Beschreibung        : Standard Signalwerte einstellen
+;* Firma               : AIUT
+;* Ersteller           : AIUT
+;* Datum               : 15/10/2018
+;* Aenderungsverlauf   : V1.0
+;***********************************************************
+
+INT a
+
+;FOLD Declarations
+;Make your Declarations here 
+
+;ENDFOLD (INI)
+
+; UserBits ruecksetzen
+FOR a = 1 to 20
+$OUT[a] = FALSE
+ENDFOR
+
+; Ausser Gefahrenbereich setzen
+FOR a = 21 to 32
+$OUT[a] = TRUE
+ENDFOR
+
+; TypBits ruecksetzen
+FOR a = 33 to 64
+$OUT[a] = FALSE
+ENDFOR
+
+; O_At_work_Job ruecksetzen
+FOR a = 65 to 96
+$OUT[a] = FALSE
+ENDFOR
+
+; O_Job_Finished ruecksetzen
+FOR a = 97 to 128
+$OUT[a] = FALSE
+ENDFOR
+
+; Wasser aus an SPS ruecksetzen
+FOR a = 313 to 317
+$OUT[a] = FALSE
+ENDFOR
+
+; ServicePos erreicht ruecksetzen
+$OUT[266] = FALSE
+
+; Alle Collisionszonen freigeben
+;FOLD COLLISION_ZONE.CLEAR_ALL ;%{PE}%MKUKATPUSER
+COLL_SAFETY_CLEAR ( 63 )
+;ENDFOLD
+
+END

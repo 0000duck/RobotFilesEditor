@@ -1,0 +1,125 @@
+﻿<UserControl x:Class="RobKalDat.Views.MeasurementUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RobKalDat.Views"
+             xmlns:vm="clr-namespace:RobKalDat.ViewModel"
+             mc:Ignorable="d" 
+             d:DesignHeight="510" d:DesignWidth="740" IsEnabled="{Binding IsUCEnabled}"
+            >
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <vm:ViewModelLocator x:Key="Locator"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <UserControl.DataContext>
+        <Binding Path="MeasurementUserControl" Source="{StaticResource Locator}"/>
+    </UserControl.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="450"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <DataGrid Grid.Row="0" Grid.Column="0" Margin="5,5,0,5" Width="730"
+                ItemsSource="{Binding Measurements}" AutoGenerateColumns="False" SelectedIndex="{Binding SelectedMeasurement}"
+                CanUserAddRows="True" CanUserDeleteRows="True"                 
+                SelectionMode="Single" SelectionUnit="FullRow">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="KUKA" Command="{Binding KukaRobot}"/>
+                    <MenuItem Header="ABB" Command="{Binding ABBRobot}"/>
+                    <MenuItem Header="Fanuc" Command="{Binding FanucRobot}"/>
+                    <MenuItem Header="None" Command="{Binding NoneRobot}"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Name"
+                    MinWidth="20"
+                    Binding="{Binding Path=Name}"  
+                    IsReadOnly="True"                    
+               />
+                <DataGridTextColumn Header="RobotType"
+                    MinWidth="20"
+                    Binding="{Binding Path=RobotType}"  
+                    IsReadOnly="True"                    
+               />
+                <DataGridTextColumn Header="X Soll"
+                    MinWidth="20"
+                    Binding="{Binding Path=XSoll}"  
+                    IsReadOnly="True"                    
+               />
+                <DataGridTextColumn Header="Y Soll"
+                    MinWidth="20"
+                    Binding="{Binding Path=YSoll}"  
+                    IsReadOnly="True"                    
+               />
+                <DataGridTextColumn Header="Z Soll"
+                    MinWidth="20"
+                    Binding="{Binding Path=ZSoll}"  
+                    IsReadOnly="True"                    
+               />
+                <DataGridTextColumn Header="RX Soll"
+                    MinWidth="20"
+                    Binding="{Binding Path=RXSoll}"  
+                    IsReadOnly="True"                    
+               />
+                <DataGridTextColumn Header="RY Soll"
+                    MinWidth="20"
+                    Binding="{Binding Path=RYSoll}"  
+                    IsReadOnly="True"                    
+               />
+                <DataGridTextColumn Header="RZ Soll"
+                    MinWidth="20"
+                    Binding="{Binding Path=RZSoll}"  
+                    IsReadOnly="True"                    
+               />
+                <DataGridTextColumn Header="X Ist"
+                    MinWidth="20"
+                    Binding="{Binding Path=XIst}"  
+                    IsReadOnly="True"                    
+               />
+                <DataGridTextColumn Header="Y Ist"
+                    MinWidth="20"
+                    Binding="{Binding Path=YIst}"  
+                    IsReadOnly="True"                    
+               />
+                <DataGridTextColumn Header="Z Ist"
+                    MinWidth="20"
+                    Binding="{Binding Path=ZIst}"  
+                    IsReadOnly="True"                    
+               />
+                <DataGridTextColumn Header="RX Ist"
+                    MinWidth="20"
+                    Binding="{Binding Path=RXIst}"  
+                    IsReadOnly="True"                    
+               />
+                <DataGridTextColumn Header="RY Ist"
+                    MinWidth="20"
+                    Binding="{Binding Path=RYIst}"  
+                    IsReadOnly="True"                    
+               />
+                <DataGridTextColumn Header="RZ Ist"
+                    MinWidth="20"
+                    Binding="{Binding Path=RZIst}"  
+                    IsReadOnly="True"                    
+               />
+            </DataGrid.Columns>
+        </DataGrid>
+        <StackPanel Margin="5,5,5,5" Grid.Column="0" Grid.Row="1" Orientation="Horizontal" >
+            <Button Content="Load Real" Command="{Binding LoadReal}" Margin="5,0,5,0"/>
+            <Button Content="Edit Object" Command="{Binding EditObject}" Margin="5,0,5,0"/>
+            <Button Content="Delete" Command="{Binding Delete}" Margin="5,0,5,0"/>
+            <Button Content="New object" Command="{Binding NewMeas}" Margin="5,0,5,0"/>
+            <Button Content="Clear real" Command="{Binding ClearReal}" Margin="5,0,5,0"/>
+            <Button Content="Import from Excel" Command="{Binding ImportExcel}" Margin="5,0,5,0"/>
+            <Button Content="Export to Excel" Command="{Binding ExportExcel}" Margin="5,0,5,0"/>
+            
+        </StackPanel>
+            
+    </Grid>
+</UserControl>

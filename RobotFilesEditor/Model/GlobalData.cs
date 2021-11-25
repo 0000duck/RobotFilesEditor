@@ -1,18 +1,62 @@
 ﻿using Microsoft.Win32;
+using RobotFilesEditor.Dialogs;
+using RobotFilesEditor.Model.DataInformations;
+using RobotFilesEditor.Model.Operations;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
+
 namespace RobotFilesEditor
 {
     public static class GlobalData
     {
-        public const string ConfigurationFileName = "Application.config";       
+        public static string PathFile {get; set;}
+        public static int? CurrentOpNum { get; set; }
+        public static int AllOperations { get; set; }
+        public static bool HasToolchager { get; set; }
+        public static bool CheckOrder { get; set; }
+        public static bool RoboterFound { get; set; }
+        public static bool isWeldingRobot { get; set; }
+        public static bool isHandlingRobot { get; set; }
+        public static string Roboter = "";
+        public static List<string> Operations = new List<string>();        
+        //public const string ConfigurationFileName = "Application.config";       
         public enum Action {None, Move, Remove, Copy, CopyData, CutData, RemoveData}
         public enum SortType {None, OrderByVariable, OrderByOrderNumber}
         public enum HeaderType { None, GlobalFileHeader, GroupsHeadersByVariableOrderNumber }
-
+        public static string ControllerType { get; set; }
         public static string ViewProgram { get; private set; } = "notepad.exe";
-
+        public static string DestPath { get; set; }
+        public static string DestFolder { get; set; }
+        public static IDictionary<string, int> SrcPathsAndJobs { get; set; }
+        public static IDictionary<int,string> Jobs { get; set; }
+        public static IDictionary<int, string> Tools { get; set; }
+        public static IDictionary<int, string> Bases { get; set; }
+        public static string IBUSSegments { get; set; }
+        public static string InputData { get; set; }
+        public static List<string> InputDataList { get; set; }
+        public static List<string> GlobalDatsList { get; set; }
+        public static string DestinationPath { get; set; }
+        public static CreateGripperViewModel GripperVM { get; internal set; }
+        public static IDictionary<string, int> Paths { get; internal set; }
+        //public static List<KeyValuePair<string,int>> SelectedJobsForAnyJob { get; internal set; }
+        public static ObservableCollection<KeyValuePair<string, int>> SelectedJobsForAnyJob { get; internal set; }
+        public static List<string> GlobalFDATs { get; internal set; }
+        public static List<string> AllFiles { get; internal set; }
+        public static ObservableCollection<KeyValuePair<string, int>> SelectedUserNums { get; internal set; }
+        public static List<string> E6axisGlobalsfound { get; set; }
+        public static string RobotType { get; set; }
+        public static string ToolchangerType { get; set; }
+        public static string WeldingType { get; set; }
+        public static bool LocalHomesFound { get; set; }
+        public static IDictionary<int, string> loadVars { get; set; }
         private static string[] _viewerPrograms = { "notepad++.exe"};
-      
+        internal static FileValidationData.Userbits SignalNames { get; set; }
+        public static IDictionary<int, string> ToolsAndNamesFromStandar { get; internal set; }
+
+        
+
         public static void SetViewProgram()
         {
             try
@@ -28,6 +72,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }          
         } 
@@ -51,6 +96,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
                        
@@ -74,5 +120,6 @@ namespace RobotFilesEditor
                 return HeaderType.None;
             }
         }
+
     }
 }

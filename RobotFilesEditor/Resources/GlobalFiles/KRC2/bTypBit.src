@@ -1,0 +1,31 @@
+&ACCESS RO
+&REL 1
+&COMMENT TypBits pruefen
+DEFFCT BOOL bTypBit()
+;***********************************************************
+;* Programm            : bTypBit
+;* Beschreibung        : TypBits pruefen
+;* Firma               : AIUT
+;* Ersteller           : AIUT
+;* Datum               : 15/10/2018
+;* Aenderungsverlauf   : V1.0
+;***********************************************************
+
+INT nrOfTypbits 
+INT counter
+
+nrOfTypbits = 0
+
+FOR counter = 33 to 60
+ IF $IN[counter] == TRUE THEN
+  nrOfTypbits=nrOfTypbits+1
+ ENDIF
+ENDFOR
+
+IF (nrOfTypbits == 1) THEN
+ RETURN TRUE
+ELSE
+ RETURN FALSE
+ENDIF
+
+ENDFCT

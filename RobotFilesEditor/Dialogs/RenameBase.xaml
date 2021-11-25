@@ -1,0 +1,38 @@
+﻿<Window x:Class="RobotFilesEditor.Dialogs.RenameBase"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"       
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"  
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RobotFilesEditor.Dialogs"
+        xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"    
+        mc:Ignorable="d"
+       Title="Rename Base" SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <cmd:EventToCommand Command="{Binding Path=ClosingCommand}" PassEventArgsToCommand="True" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <Window.Resources>
+        <!--DataTemplate DataType="{x:Type models:FileValidationData}"></-->
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="109*"/>
+            <ColumnDefinition Width="37*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.ColumnSpan="2" FocusManager.FocusedElement="{Binding ElementName=ToolDescr}">
+            <TextBlock HorizontalAlignment="Center" Margin="20,20,20,0" Text="Multiple base names or not standard name found."></TextBlock>
+            <TextBlock HorizontalAlignment="Center" Margin="20,0,0,0" Text="Please correct base name for base number:"></TextBlock>
+            <TextBlock x:Name="ToolNum" Margin="10" Text="{Binding Pair.Key}" HorizontalAlignment="Center" FontWeight="Bold"></TextBlock>
+            <TextBlock Margin="10" Text="{Binding ShouldNameString}" Foreground="Crimson" HorizontalAlignment="Center"></TextBlock>
+            <ListBox x:Name="ToolDescr" SelectedIndex="1" Margin="10" ItemsSource="{Binding Pair.Value}" HorizontalAlignment="Center"
+                     SelectedItem="{Binding CorrectedName}"></ListBox>
+            <TextBox HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding CorrectedName}" Margin="10" MinWidth="150"/>
+            <Button x:Name="ToolDescrOk" Margin="10" HorizontalAlignment="Center" Content="OK" FontWeight="Bold" Click="ToolDescrOk_Click" IsDefault="True"></Button>
+        </StackPanel>
+    </Grid>
+</Window>

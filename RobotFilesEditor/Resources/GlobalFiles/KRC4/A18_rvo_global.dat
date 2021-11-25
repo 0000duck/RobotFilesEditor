@@ -1,10 +1,9 @@
 &ACCESS R
 &COMMENT V_1_4_2
 DEFDAT A18_RVO_GLOBAL PUBLIC
-
 ;********************************
-;Date: 27.07.2016 / 01.08.2016
-;Programmer: Dominik Prudlo (KUKA Roboter GmbH) / R.T. KUKA Roboter GmbH) 
+;Date: 07.11.2018
+;Programmer: AIUT
 ;Description: Global positions
 ;********************************
 

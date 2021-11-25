@@ -15,19 +15,24 @@
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>publish\</PublishUrl>
+    <PublishUrl>\\alfa\Dzialy\automatyka\Robotyka\BMW\02_Tools\RobotFilesHarvester\</PublishUrl>
     <Install>true</Install>
-    <InstallFrom>Disk</InstallFrom>
-    <UpdateEnabled>false</UpdateEnabled>
+    <InstallFrom>Unc</InstallFrom>
+    <UpdateEnabled>true</UpdateEnabled>
     <UpdateMode>Foreground</UpdateMode>
     <UpdateInterval>7</UpdateInterval>
     <UpdateIntervalUnits>Days</UpdateIntervalUnits>
     <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
+    <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
+    <InstallUrl>\\alfa\Dzialy\automatyka\Robotyka\BMW\02_Tools\RobotFilesHarvester\</InstallUrl>
+    <MinimumRequiredVersion>1.0.0.54</MinimumRequiredVersion>
+    <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
+    <WebPage>publish.htm</WebPage>
+    <ApplicationRevision>373</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -61,7 +66,30 @@
   <PropertyGroup>
     <NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>true</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>35A1B248F21CCA308655421ED6F05C8309DCCAD0</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>RobotFilesEditor_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CommonLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\CommonLibrary\bin\Debug\CommonLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="GalaSoft.MvvmLight, Version=5.3.0.19026, Culture=neutral, PublicKeyToken=e7570ab207bcb616, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmLightLibs.5.3.0.0\lib\net45\GalaSoft.MvvmLight.dll</HintPath>
       <Private>True</Private>
@@ -74,13 +102,41 @@
       <HintPath>..\packages\MvvmLightLibs.5.3.0.0\lib\net45\GalaSoft.MvvmLight.Platform.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>C:\Windows\assembly\GAC_MSIL\Microsoft.Office.Interop.Excel\15.0.0.0__71e9bce111e9429c\Microsoft.Office.Interop.Excel.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Microsoft.VisualStudio.Shell.15.0, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.WindowsAPICodePack">
+      <HintPath>..\..\..\..\..\..\VS_Projects\z alfy\original\OLP_Summarizer\KUKA_OLP_Summarizer\packages\Microsoft.WindowsAPICodePack-Core.1.1.0.2\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell">
+      <HintPath>..\..\..\..\..\..\VS_Projects\z alfy\original\OLP_Summarizer\KUKA_OLP_Summarizer\packages\Microsoft.WindowsAPICodePack-Shell.1.1.0.0\lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.ShellExtensions">
+      <HintPath>..\..\..\..\..\..\VS_Projects\z alfy\original\OLP_Summarizer\KUKA_OLP_Summarizer\packages\Microsoft.WindowsAPICodePack-Shell.1.1.0.0\lib\Microsoft.WindowsAPICodePack.ShellExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Json120r3\Bin\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Threading.Tasks.Dataflow, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Dataflow.5.0.0\lib\portable-net45+win8+wpa81\System.Threading.Tasks.Dataflow.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\MvvmLightLibs.5.3.0.0\lib\net45\System.Windows.Interactivity.dll</HintPath>
@@ -104,14 +160,189 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Dialogs\ABBRenameViewModel.cs" />
+    <Compile Include="Dialogs\ABBRenameWindow.xaml.cs">
+      <DependentUpon>ABBRenameWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\BaseShifterViewModel.cs" />
+    <Compile Include="Dialogs\BaseShifterWindow.xaml.cs">
+      <DependentUpon>BaseShifterWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\ChangeName.xaml.cs">
+      <DependentUpon>ChangeName.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\ChangeNameViewModel.cs" />
+    <Compile Include="Dialogs\ChangeTypIdList.xaml.cs">
+      <DependentUpon>ChangeTypIdList.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\ChangeTypIdViewModel.cs" />
+    <Compile Include="Dialogs\CreateUserNum2.xaml.cs">
+      <DependentUpon>CreateUserNum2.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\CreateUserNumsViewModel2.cs" />
+    <Compile Include="Dialogs\CreateUserNumsViewModel.cs" />
+    <Compile Include="Dialogs\CreateUserNum.xaml.cs">
+      <DependentUpon>CreateUserNum.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\CreateAnyJob.xaml.cs">
+      <DependentUpon>CreateAnyJob.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\CreateAnyJobViewModel.cs" />
+    <Compile Include="Dialogs\CreateGripper.xaml.cs">
+      <DependentUpon>CreateGripper.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\CreateGripperViewModel.cs" />
+    <Compile Include="Dialogs\CreateOrgs.xaml.cs">
+      <DependentUpon>CreateOrgs.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\CreateOrgsViewModel.cs" />
+    <Compile Include="Dialogs\GripperElementSensorsVM.cs" />
+    <Compile Include="Dialogs\GripperElementsVM.cs" />
+    <Compile Include="Dialogs\IBUSSegmentName.xaml.cs">
+      <DependentUpon>IBUSSegmentName.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\IBUSSegmentNameViewModel.cs" />
+    <Compile Include="Dialogs\LoadingMessage.xaml.cs">
+      <DependentUpon>LoadingMessage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\LoadingMessageVM.cs" />
+    <Compile Include="Dialogs\MPLListParams.xaml.cs">
+      <DependentUpon>MPLListParams.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\MPLListParamsVM.cs" />
+    <Compile Include="Dialogs\NameRobot.xaml.cs">
+      <DependentUpon>NameRobot.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\NameRoboterViewModel.cs" />
+    <Compile Include="Dialogs\OrgsElementVM.cs" />
+    <Compile Include="Dialogs\PleaseWaitDialog.xaml.cs">
+      <DependentUpon>PleaseWaitDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\RenameBase.xaml.cs">
+      <DependentUpon>RenameBase.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\RenameBaseViewModel.cs" />
+    <Compile Include="Dialogs\SasFillerAssignRobots.xaml.cs">
+      <DependentUpon>SasFillerAssignRobots.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\SasFillerAssignRobotsViewModel.cs" />
+    <Compile Include="Dialogs\SelectLoadVar.xaml.cs">
+      <DependentUpon>SelectLoadVar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\SelectLoadVarViewModel.cs" />
+    <Compile Include="Dialogs\SelectPathsToShiftBase.xaml.cs">
+      <DependentUpon>SelectPathsToShiftBase.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\SelectPathsToShiftBaseViewModel.cs" />
+    <Compile Include="Dialogs\SelectRobotType.xaml.cs">
+      <DependentUpon>SelectRobotType.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\SelectRobotTypeVM.cs" />
+    <Compile Include="Dialogs\SetRobotStartAddress.xaml.cs">
+      <DependentUpon>SetRobotStartAddress.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\SetRobotStartAddressVM.cs" />
+    <Compile Include="Dialogs\SignalName.xaml.cs">
+      <DependentUpon>SignalName.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\RenameTool.xaml.cs">
+      <DependentUpon>RenameTool.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\SignalNameViewModel.cs" />
+    <Compile Include="Dialogs\RenameToolViewModel.cs" />
+    <Compile Include="Dialogs\SelectColisionViewModel.cs" />
+    <Compile Include="Dialogs\SelectJob.xaml.cs">
+      <DependentUpon>SelectJob.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\SelectJobViewModel.cs" />
+    <Compile Include="Dialogs\AppTypeSelect.xaml.cs">
+      <DependentUpon>AppTypeSelect.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\AppTypeSelectViewModel.cs" />
+    <Compile Include="Dialogs\TypeCollisionComment.xaml.cs">
+      <DependentUpon>TypeCollisionComment.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\TypeCollisionCommentViewModel.cs" />
+    <Compile Include="Model\DataOrganization\TypId.cs" />
+    <Compile Include="Dialogs\TypIDBySameIDWindow.xaml.cs">
+      <DependentUpon>TypIDBySameIDWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\TypIDBySameIDWindowVM.cs" />
+    <Compile Include="Dialogs\TypIdChanger.xaml.cs">
+      <DependentUpon>TypIdChanger.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\TypIdChangerTypeWindow.xaml.cs">
+      <DependentUpon>TypIdChangerTypeWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\TypIdChangerTypeWindowVM.cs" />
+    <Compile Include="Dialogs\TypIdChangerViewModel.cs" />
+    <Compile Include="Model\Converters\SasFillerBackupPathConverter.cs" />
+    <Compile Include="Model\DataInformations\E6AxisPoint.cs" />
+    <Compile Include="Model\DataInformations\FileValidationData.cs" />
+    <Compile Include="Model\DataInformations\OrgsCreatorData.cs" />
+    <Compile Include="Model\DataInformations\OrgsCreatorResult.cs" />
+    <Compile Include="Model\DataInformations\SpotsInFile.cs" />
+    <Compile Include="Model\DataInformations\Weldpoint.cs" />
+    <Compile Include="Model\DataOrganization\GripperElement.cs" />
+    <Compile Include="Model\DataOrganization\GripperElementSensors.cs" />
     <Compile Include="Model\DataOrganization\HeaderCreator.cs" />
     <Compile Include="Model\DataInformations\FileLineProperties.cs" />
     <Compile Include="Model\DataInformations\ResultInfo.cs" />
+    <Compile Include="Model\DataOrganization\IntItem.cs" />
+    <Compile Include="Model\DataOrganization\IOrgsElement.cs" />
+    <Compile Include="Model\DataOrganization\OrgsElement.cs" />
+    <Compile Include="Model\DataOrganization\PointInDat.cs" />
+    <Compile Include="Model\DataOrganization\TextItem.cs" />
     <Compile Include="Model\FileDataValidation\ValidateText.cs" />
+    <Compile Include="Model\Operations\ABB\ABBProcedure.cs" />
+    <Compile Include="Model\Operations\ABB\ABB_Static_Methods.cs" />
+    <Compile Include="Model\Operations\BackupSyntaxValidation\KUKASynataxValidator.cs" />
+    <Compile Include="Model\Operations\BackupSyntaxValidation\SyntaxValidationData.cs" />
+    <Compile Include="Model\Operations\CheckBasesMethods.cs" />
+    <Compile Include="Model\Operations\CollisionsForPSMethods.cs" />
+    <Compile Include="Model\Operations\CompareBoschMethods.cs" />
+    <Compile Include="Model\Operations\CompareSpotsExecute.cs" />
+    <Compile Include="Model\Operations\CreateGripperMethods.cs" />
+    <Compile Include="Model\Operations\CreateOrgsMethods.cs" />
+    <Compile Include="Model\Operations\DataClass\DataForSOV.cs" />
+    <Compile Include="Model\Operations\DataClass\Datas.cs" />
+    <Compile Include="Model\Operations\DataClass\FanucChecksums.cs" />
+    <Compile Include="Model\Operations\DataClass\FanucProgramClass.cs" />
+    <Compile Include="Model\Operations\DataClass\FillTypIDData.cs" />
+    <Compile Include="Model\Operations\DataClass\RenumberPointClasses.cs" />
+    <Compile Include="Model\Operations\DataClass\RobotData.cs" />
+    <Compile Include="Model\Operations\DataClass\SasFillerClass.cs" />
+    <Compile Include="Model\Operations\DataClass\SpotComparerClass.cs" />
+    <Compile Include="Model\Operations\DataClass\TrelloReportDatas.cs" />
+    <Compile Include="Model\Operations\FANUC\FanucMethods.cs" />
+    <Compile Include="Model\Operations\FANUC\FanucRobot.cs" />
     <Compile Include="Model\Operations\FilesMenager.cs" />
     <Compile Include="Model\DataOrganization\DistinctBy.cs" />
     <Compile Include="Model\DataOrganization\DataContentSortManager.cs" />
+    <Compile Include="Model\Operations\FillExcelMethods.cs" />
+    <Compile Include="Model\Operations\FillTypIDMethods.cs" />
+    <Compile Include="Model\Operations\FixOfflineMethods.cs" />
+    <Compile Include="Model\Operations\FixPtpAndLinMethods.cs" />
+    <Compile Include="Model\Operations\GetGripperFromConfigDatMethods.cs" />
+    <Compile Include="Model\Operations\GetMengeMethods.cs" />
     <Compile Include="Model\Operations\IOperation.cs" />
+    <Compile Include="Model\Operations\OLPTools\DividePathByCollsMethods.cs" />
+    <Compile Include="Model\Operations\OrgCreatorOperations.cs" />
+    <Compile Include="Model\Operations\PrepareSOVBackupMethods.cs" />
+    <Compile Include="Model\Operations\ReadBackupsForWBMethods.cs" />
+    <Compile Include="Model\Operations\ReadSpotsMethods.cs" />
+    <Compile Include="Model\Operations\RenumberLinesFanucMethods.cs" />
+    <Compile Include="Model\Operations\RenumberPointsMethods.cs" />
+    <Compile Include="Model\Operations\RetrieveBackupMethods.cs" />
+    <Compile Include="Model\Operations\SasFillerFromBackupMethods.cs" />
+    <Compile Include="Model\Operations\ShiftBaseMethods.cs" />
+    <Compile Include="Model\Operations\SpotToPTPMethods.cs" />
+    <Compile Include="Model\Operations\SrcValidator.cs" />
+    <Compile Include="Model\Operations\StoppingDistanceMethods.cs" />
+    <Compile Include="Model\Operations\TempScripts\ModifyE1Value.cs" />
+    <Compile Include="Model\Operations\TrelloConvertMethods.cs" />
+    <Compile Include="Model\Operations\TypIdChangeMethods.cs" />
+    <Compile Include="Model\Serialization\Objects\XmlFilePaths.cs" />
     <Compile Include="Model\Serialization\Operations\FileDeseralization.cs" />
     <Compile Include="Model\Serialization\Operations\Serialization.cs" />
     <Compile Include="Model\Serialization\Objects\XmlControler.cs" />
@@ -120,8 +351,14 @@
     <Compile Include="Model\Serialization\Objects\XmlDataOperation.cs" />
     <Compile Include="Model\Serialization\Objects\XmlFileOperation.cs" />
     <Compile Include="Model\Serialization\Objects\XmlFilter.cs" />
+    <Compile Include="Model\TempFunctions\TempClass.cs" />
+    <Compile Include="Model\XML\DestAndSource.cs" />
+    <Compile Include="Model\XML\WriteFilePaths.cs" />
     <Compile Include="OperationControl.xaml.cs">
       <DependentUpon>OperationControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\SelectCollisionFromDuplicate.xaml.cs">
+      <DependentUpon>SelectCollisionFromDuplicate.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\ControlItem.cs" />
     <Compile Include="Model\Operations\DataOperation.cs" />
@@ -130,8 +367,121 @@
     <Compile Include="Model\Filters\Filter.cs" />
     <Compile Include="Model\Operations\IFileDataOperations.cs" />
     <Compile Include="Model\Operations\IFileOperations.cs" />
+    <Compile Include="ViewModel\Helper\NotifyTaskCompletion.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
+    <Page Include="Dialogs\ABBRenameWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\BaseShifterWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\ChangeName.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\ChangeTypIdList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\CreateUserNum.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dialogs\CreateAnyJob.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\CreateGripper.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\CreateOrgs.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dialogs\CreateUserNum2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\IBUSSegmentName.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\LoadingMessage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\MPLListParams.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\NameRobot.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\PleaseWaitDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\RenameBase.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\SasFillerAssignRobots.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\SelectLoadVar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\SelectPathsToShiftBase.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\SelectRobotType.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\SetRobotStartAddress.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\SignalName.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dialogs\RenameTool.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\SelectJob.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\AppTypeSelect.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\TypeCollisionComment.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\TypIDBySameIDWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\TypIdChanger.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\TypIdChangerTypeWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -140,7 +490,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Model\Controler.cs" />
+    <Compile Include="Model\Serialization\Controler.cs" />
     <Compile Include="Model\Serialization\Operations\FilesSerialization.cs" />
     <Compile Include="Model\GlobalData.cs" />
     <Compile Include="MainWindow.xaml.cs">
@@ -148,6 +498,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="OperationControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\SelectCollisionFromDuplicate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -172,11 +526,14 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <None Include="app.config" />
-    <None Include="Application.config">
+    <None Include="app.config">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Content Include="Application.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="ConfigurationSchema.xsd">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -187,11 +544,144 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <Content Include="Resources\GlobalFiles\KRC4\B02_tch_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC4\A43_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC4\InitProduction.src">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC4\A48_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC4\A46_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC4\A47_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="RobotFilesEditor_TemporaryKey.pfx" />
+    <Resource Include="FilePaths.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Content Include="Resources\GlobalFiles\KRC2\A02_tch_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC2\A03_grp_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC2\A04_swp_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC2\A08_gl_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC2\A13_rvt_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC2\A20_swh_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC2\A22_fls_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC2\Copy_to_%24config.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC2\InputData.src">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC2\spot_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC4\A02_tch_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC4\A03_grp_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC4\A04_swp_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC4\A08_gl_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC4\A13_rvt_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC4\A15_ljt_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC4\A18_rvo_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC4\A19_cli_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC4\A20_swh_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC4\A21_swr_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC4\A22_fls_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC4\A27_brt_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC4\A28_screw_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC2\B20_snh_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC2\A21_swr_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC2\bTypBit.src">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC2\grp_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC2\KRC2 L6\init_out_gun_gripper.src">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC2\KRC2 V8\init_out_gripper.src">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC2\KRC2 V8\init_out_gun.src">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC2\KRC2 V8\init_out_gun_gripper.src">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC2\KRC2 L6\init_out_gun.src">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC2\KRC2 L6\init_out_gripper.src">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC4\A05_swi_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC4\A42_rotjoin_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC4\A14_arc_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\GlobalFiles\KRC2\global_dress.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
       <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.5.2 %28x86 and x64%29</ProductName>
+      <ProductName>Microsoft .NET Framework 4.5.2 %28x86 i x64%29</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
@@ -201,13 +691,54 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Resources\GlobalFiles\KRC2\" />
-    <Folder Include="Resources\GlobalFiles\KRC4\" />
+    <COMReference Include="Microsoft.Office.Core">
+      <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>8</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="VBIDE">
+      <Guid>{0002E157-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>5</VersionMajor>
+      <VersionMinor>3</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Harvester.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Resource Include="Resources\GlobalFiles\KRC4\Copy_to_%24config.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Content Include="Resources\Harvester.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ABB add spaces\ABB add spaces.csproj">
+      <Project>{271ae5d0-8ce5-479c-974a-0789f7f09718}</Project>
+      <Name>ABB add spaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Fanuc mirror\Fanuc mirro.csproj">
+      <Project>{aab7b8f1-4bc0-4dd8-855b-eae129016af9}</Project>
+      <Name>Fanuc mirro</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RobKalDat\RobKalDat.csproj">
+      <Project>{ae8be09a-048a-4e9c-95f4-30d6c1f29f9a}</Project>
+      <Name>RobKalDat</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RobotPointsRenumber\RobotPointsRenumber\RobotPointsRenumber.csproj">
+      <Project>{145fbd6d-922b-41dc-a442-c1d9f0da8338}</Project>
+      <Name>RobotPointsRenumber</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RobotSafetyGenerator\RobotSafetyGenerator.csproj">
+      <Project>{beba1f70-de59-453a-ab3e-063de5b8ba92}</Project>
+      <Name>RobotSafetyGenerator</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

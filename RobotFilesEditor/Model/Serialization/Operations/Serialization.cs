@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RobotFilesEditor.Model.Operations;
+using System;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -12,7 +13,7 @@ namespace RobotFilesEditor
         {
             XmlControlersConfiguration controlerConfiguration;
 
-            if (String.IsNullOrEmpty(GlobalData.ConfigurationFileName))
+            if (String.IsNullOrEmpty(CommonLibrary.CommonGlobalData.ConfigurationFileName))
             {
                 throw new ArgumentNullException();
             }
@@ -20,7 +21,7 @@ namespace RobotFilesEditor
             try
             {
                 XmlSerializer deserializer = new XmlSerializer(typeof(XmlControlersConfiguration));
-                FileStream fileStream = new FileStream(GlobalData.ConfigurationFileName, FileMode.Open);
+                FileStream fileStream = new FileStream(CommonLibrary.CommonGlobalData.ConfigurationFileName, FileMode.Open);
                 XmlReader reader = XmlReader.Create(fileStream);
                 controlerConfiguration = (XmlControlersConfiguration)deserializer.Deserialize(reader);
                 fileStream.Close();
@@ -28,6 +29,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
             return controlerConfiguration;
@@ -35,7 +37,7 @@ namespace RobotFilesEditor
 
         public void SaveAplicationConfiguration(XmlControlersConfiguration xmlControlersConfiguration)
         {
-            if (String.IsNullOrEmpty(GlobalData.ConfigurationFileName))
+            if (String.IsNullOrEmpty(CommonLibrary.CommonGlobalData.ConfigurationFileName))
             {
                 throw new ArgumentNullException();
             }
@@ -43,7 +45,7 @@ namespace RobotFilesEditor
             try
             {
                 XmlSerializer serializer= new XmlSerializer(typeof(XmlControlersConfiguration));
-                FileStream fileStream = new FileStream(GlobalData.ConfigurationFileName, FileMode.Create);
+                FileStream fileStream = new FileStream(CommonLibrary.CommonGlobalData.ConfigurationFileName, FileMode.Create);
 
                 XmlWriter writer = new XmlTextWriter(fileStream, Encoding.Default);
                 serializer.Serialize(fileStream, xmlControlersConfiguration);
@@ -52,6 +54,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
         }

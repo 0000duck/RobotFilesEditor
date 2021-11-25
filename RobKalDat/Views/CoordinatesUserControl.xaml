@@ -1,0 +1,54 @@
+﻿<UserControl x:Class="RobKalDat.Views.CoordinatesUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:RobKalDat.Views"
+             mc:Ignorable="d" 
+             d:DesignHeight="30" d:DesignWidth="500" Margin="5,5,5,5"
+             x:Name="self">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="14"/>
+            <RowDefinition Height="14"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Grid.Row="0">
+            <StackPanel.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="FontSize" Value="8" />
+                </Style>
+            </StackPanel.Resources>
+            <TextBlock Text="X Soll:" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding CurrentMeas.XSoll, ElementName=self}" Height="12" FontSize="8" VerticalAlignment="Center" IsEnabled="False"/>
+            <TextBlock Text="Y Soll:" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding CurrentMeas.YSoll, ElementName=self}" Height="12" FontSize="8" VerticalAlignment="Center" IsEnabled="False"/>
+            <TextBlock Text="Z Soll:" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding CurrentMeas.ZSoll, ElementName=self}" Height="12" FontSize="8" VerticalAlignment="Center" IsEnabled="False"/>
+            <TextBlock Text="RX Soll:" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding CurrentMeas.RXSoll, ElementName=self}" Height="12" FontSize="8" VerticalAlignment="Center" IsEnabled="False"/>
+            <TextBlock Text="RY Soll:" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding CurrentMeas.RYSoll, ElementName=self}" Height="12" FontSize="8" VerticalAlignment="Center" IsEnabled="False"/>
+            <TextBlock Text="RZ Soll:" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding CurrentMeas.RZSoll, ElementName=self}" Height="12" FontSize="8" VerticalAlignment="Center" IsEnabled="False"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="1">
+            <StackPanel.Resources>
+                <Style TargetType="TextBlock">
+                    <Setter Property="FontSize" Value="8" />
+                </Style>
+            </StackPanel.Resources>
+            <TextBlock Text="X Ist:" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding CurrentMeas.XIst, ElementName=self}" Height="12" FontSize="8" VerticalAlignment="Center" IsEnabled="False"/>
+            <TextBlock Text="Y Ist:" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding CurrentMeas.YIst, ElementName=self}" Height="12" FontSize="8" VerticalAlignment="Center" IsEnabled="False"/>
+            <TextBlock Text="Z Ist:" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding CurrentMeas.ZIst, ElementName=self}" Height="12" FontSize="8" VerticalAlignment="Center" IsEnabled="False"/>
+            <TextBlock Text="RX Ist:" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding CurrentMeas.RXIst, ElementName=self}" Height="12" FontSize="8" VerticalAlignment="Center" IsEnabled="False"/>
+            <TextBlock Text="RY Ist:" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding CurrentMeas.RYIst, ElementName=self}" Height="12" FontSize="8" VerticalAlignment="Center" IsEnabled="False"/>
+            <TextBlock Text="RZ Ist:" VerticalAlignment="Center"/>
+            <TextBox Text="{Binding CurrentMeas.RZIst, ElementName=self}" Height="12" FontSize="8" VerticalAlignment="Center" IsEnabled="False"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -1,12 +1,24 @@
-﻿using System;
+﻿using RobotFilesEditor.Model.DataInformations;
+using RobotFilesEditor.Model.Operations;
+using RobotFilesEditor.Serializer;
+using RobotFilesEditor.ViewModel;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Configuration;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text.RegularExpressions;
+using System.Windows;
 
 namespace RobotFilesEditor
 {
+    
+
     public class FileOperation: IOperation, IFileOperations
     {
+
         #region Public
         public string OperationName
         {
@@ -154,6 +166,30 @@ namespace RobotFilesEditor
                 }
             }
         }
+
+        public List<string> AllFiles
+        {
+            get { return _allFiles; }
+            set
+            {
+                if (_allFiles != value)
+                {
+                    _allFiles = value;
+                }
+            }
+        }
+
+        public List<string> DatFiles
+        {
+            get { return _datFiles; }
+            set
+            {
+                if (_datFiles != value)
+                {
+                    _datFiles = value;
+                }
+            }
+        }
         #endregion Public
 
         #region Private
@@ -167,8 +203,12 @@ namespace RobotFilesEditor
         private Filter _filter;
         private string _nestedSourcePath;
         private Dictionary<string,string> _filteredFiles;
+        private List<string> _allFiles;
+        private List<string> _datFiles;
+        private int? _currentOpNumber;
+        //private IDictionary<string, string> sortedFiles;
         #endregion Private
-    
+
         public  FileOperation()
         {
             FileExtensions = new List<string>();
@@ -179,14 +219,24 @@ namespace RobotFilesEditor
         {
             List<string>allFilesAtSourcePath=new List<string>();
 
-            if(insideFolders)
+            if (insideFolders)
             {
                 allFilesAtSourcePath = FilesMenager.GetAllFilesFromDirectoryAndIncludedNested(SourcePath);
-            }else
+            } else
             {
-                allFilesAtSourcePath = Directory.GetFiles(SourcePath).ToList();
+                try
+                {
+                    allFilesAtSourcePath = Directory.GetFiles(SourcePath, "*.*", SearchOption.AllDirectories).ToList();
+                }
+                catch
+                {                }
             }
-                     
+            List<string> tempList = new List<string>(allFilesAtSourcePath);
+            foreach (string path in tempList.Where(x => x.Contains(SourcePath + "\\Mirrored")))
+            {
+                allFilesAtSourcePath.Remove(path);
+            }
+
             List<string> filteredFiles = new List<string>();
             FilteredFiles = new Dictionary<string, string>();
 
@@ -194,28 +244,70 @@ namespace RobotFilesEditor
             {
                 if (FileExtensions.Count > 0)
                 {
-                    filteredFiles = allFilesAtSourcePath.Where(x => FileExtensions.Contains(Path.GetExtension(x))).ToList();
+                    filteredFiles = allFilesAtSourcePath.Where(x => FileExtensions.Contains(Path.GetExtension(x).ToLower())).ToList();
                 }
                 else
                 {
                     filteredFiles = allFilesAtSourcePath.ToList();
                 }
-
-                filteredFiles = Filter.CheckAllFilesFilters(filteredFiles);
-                filteredFiles.ForEach(x => FilteredFiles.Add(x, ""));
+                if (filteredFiles.Count > 0)
+                {
+                    _allFiles = filteredFiles;
+                    filteredFiles = Filter.CheckAllFilesFilters(filteredFiles);
+                    filteredFiles.ForEach(x => FilteredFiles.Add(x, ""));
+                }
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
-            }                
+            }
+            FilteredFiles = SrcValidator.RemoveNotUsedFilesFromFilteredFiles(FilteredFiles);
         }
 
         #region Prepare
         public void PrepareToCopyFiles()
-        {            
+        {
+            if (ConfigurationManager.AppSettings["Ersteller"] == "Default")
+            {
+                //FilesSerialization.ApplictionConfigCreator(true);
+                SrcValidator.ChangeNameIfDefault();
+            }
+            if (this.OperationName == "Move program files")
+                SrcValidator.CheckDestinationEmpty(GlobalData.DestinationPath);
             GetFilesToExecuteOperation();
+            
+            // TEMP
+            DatFiles = new List<string>();
+            IDictionary<string, string> srcFiles = ReadFilesToSpacesToFiles();
+            if (SrcValidator.DataToProcess == null | OperationName == "Move program files")
+                SrcValidator.DataToProcess = new FileValidationData.ValidationData(new Dictionary<string,string>(),"",new List<string>());
+
+            if (srcFiles.Count > 0)
+            {
+                SrcValidator.FilterDataFromBackup(true,srcFiles);
+                SrcValidator.FilterDataFromBackup(false, null, DatFiles);
+            }
+            //sortedFiles = SrcValidator.ValidateFile(srcFiles, OperationName, DatFiles);
+            // TEMP
+
             string destination = Path.Combine(DestinationPath, DestinationFolder);
             IDictionary<string, string> filteredFilesIterator = new Dictionary<string, string>(FilteredFiles);
+            GlobalData.AllFiles = this.AllFiles;
+            if (GlobalData.CurrentOpNum == null)
+                GlobalData.CurrentOpNum = 0;
+            GlobalData.CurrentOpNum++;
+            //if (GlobalData.ControllerType == "KRC4 Not BMW")
+            //    SrcValidator.ValidateFile();
+            if (GlobalData.CurrentOpNum == GlobalData.AllOperations)
+            {
+                GlobalData.CurrentOpNum = 0;
+
+                if (!SrcValidator.ValidateFile(filteredFilesIterator))
+                    return;
+                SrcValidator.UnclassifiedPaths = new List<string>();
+                SrcValidator.AlreadyContain = new List<string>();
+            }
 
             foreach (var file in filteredFilesIterator)
             {
@@ -230,6 +322,7 @@ namespace RobotFilesEditor
                 }
                 catch (Exception ex)
                 {
+                    SrcValidator.GetExceptionLine(ex);
                     FilteredFiles.Remove(file.Key);
                     FilteredFiles.Add(file.Key, ex.Message);                   
                 }
@@ -246,6 +339,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
 
@@ -264,6 +358,7 @@ namespace RobotFilesEditor
                 }
                 catch (Exception ex)
                 {
+                    SrcValidator.GetExceptionLine(ex);
                     FilteredFiles.Remove(file.Key);
                     FilteredFiles.Add(file.Key, ex.Message);                    
                 }
@@ -279,6 +374,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
         }
@@ -290,13 +386,79 @@ namespace RobotFilesEditor
             try
             {
                 GetFilesToExecuteOperation();
-                if (FilteredFiles?.Count > 0)
+                IDictionary<string, string> filesToCopy = new Dictionary<string, string>();
+                if (GlobalData.ControllerType != "FANUC")
+                {
+                    IDictionary<string, List<string>> datFilesToCopy = SrcValidator.PrepareDatFiles(FilteredFiles);
+                    //FilteredFiles = SrcValidator.RemoveNotUsedFilesFromFilteredFiles(FilteredFiles);
+                    filesToCopy = SrcValidator.ReplaceDataContent(FilteredFiles, datFilesToCopy);
+                }//FilteredFiles = ReplaceDataContent(FilteredFiles, datFilesToCopy);
+                else
+                {
+                    filesToCopy = SrcValidator.Result;
+                }
+                //foreach (var datFile in datFilesToCopy)
+                //{
+                //    filesToCopy.Remove(datFile.Key);
+                //    string currentString = "";
+                //    foreach (string line in datFile.Value)
+                //        currentString += line + "\r\n";                     
+                //    filesToCopy.Add(datFile.Key,currentString);
+                //}
+                if (this.OperationName == "Copy init_out")
+                {
+                    string destination = FilesMenager.CreateDestinationFolderPath(DestinationPath, DestinationFolder);
+                    if (GlobalData.isHandlingRobot = true && GlobalData.isWeldingRobot == true)
+                        File.Copy("Resources\\GlobalFiles\\KRC2\\" + GlobalData.ControllerType + "\\init_out_gun_gripper.src", destination + "\\init_out.src");
+                    else if (GlobalData.isHandlingRobot = true && GlobalData.isWeldingRobot == false)
+                        File.Copy("Resources\\GlobalFiles\\KRC2\\" + GlobalData.ControllerType + "\\init_out_gripper.src", destination + "\\init_out.src");
+                    else if (GlobalData.isHandlingRobot = false && GlobalData.isWeldingRobot == true)
+                        File.Copy("Resources\\GlobalFiles\\KRC2\\" + GlobalData.ControllerType + "\\init_out_gun.src", destination + "\\init_out.src");
+                    else
+                        MessageBox.Show("");
+
+                }
+                if (this.OperationName == "Copy bTypBit")
+                {
+                    string destination = FilesMenager.CreateDestinationFolderPath(DestinationPath, DestinationFolder);
+                    File.Copy("Resources\\GlobalFiles\\KRC2\\bTypBit.src", destination + "\\bTypBit.src");
+
+                }
+                if (this.OperationName == "Copy InitProduction")
+                {
+                    string destination = FilesMenager.CreateDestinationFolderPath(DestinationPath, DestinationFolder);
+                    File.Copy("Resources\\GlobalFiles\\KRC4\\InitProduction.src", destination + "\\InitProduction.src");
+
+                }
+                if (this.OperationName == "Create SymName.txt")
+                {
+                    CreateGripperMethods.CreateSymName(FilesMenager.CreateDestinationFolderPath(DestinationPath, DestinationFolder));
+                }
+                if (filesToCopy?.Count > 0)
                 {
                     string destination = FilesMenager.CreateDestinationFolderPath(DestinationPath, DestinationFolder);
 
-                    FilteredFiles = FilesMenager.CopyFiles(FilteredFiles, destination);
+                    filesToCopy = FilesMenager.CopyFiles(filesToCopy, destination);
 
-                    if (FilesMenager.CheckFilesCorrectness(destination, FilteredFiles.Keys.ToList()) == false)
+                    foreach (var file in filesToCopy)
+                    {
+                        try
+                        {
+                            string filePath = Path.Combine(destination, Path.GetFileName(file.Key));
+
+                            if (File.Exists(filePath))
+                            {
+                                throw new IOException($"File \"{Path.GetFileName(file.Key)}\" already exist!");
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            FilteredFiles.Remove(file.Key);
+                            FilteredFiles.Add(file.Key, ex.Message);
+                        }
+                    }
+
+                    if (FilesMenager.CheckFilesCorrectness(destination, filesToCopy.Keys.ToList()) == false)
                     {
                         throw new Exception("Copy files veryfication not pass!");
                     }
@@ -304,9 +466,11 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }             
         }
+
         public void MoveFile()
         {
             try
@@ -315,10 +479,10 @@ namespace RobotFilesEditor
                 if(FilteredFiles.Any())
                 {
                     string destination = FilesMenager.CreateDestinationFolderPath(DestinationPath, DestinationFolder);
+                    IDictionary<string,string> filesToCopy = FilesMenager.MoveFiles(FilteredFiles, destination);
+                    //FilteredFiles = FilesMenager.MoveFiles(FilteredFiles, destination);
 
-                    FilteredFiles = FilesMenager.MoveFiles(FilteredFiles, destination);
-
-                    if (FilesMenager.CheckFilesCorrectness(destination, FilteredFiles.Keys.ToList()) == false)
+                    if (FilesMenager.CheckFilesCorrectness(destination, filesToCopy.Keys.ToList()) == false)
                     {
                         throw new Exception("Copy files veryfication not pass!");
                     }
@@ -326,6 +490,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }           
         }
@@ -346,6 +511,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }           
         }
@@ -370,6 +536,7 @@ namespace RobotFilesEditor
                     case GlobalData.Action.Copy:
                         {
                             CopyFiles();
+                            
                         }
                         break;
                     case GlobalData.Action.Move:
@@ -379,13 +546,13 @@ namespace RobotFilesEditor
                         break;
                     case GlobalData.Action.Remove:
                         {
-                            RemoveFile();
+                            //RemoveFile();
                         }
                         break;
                     case GlobalData.Action.CutData:
                         {
-                            SourcePath = DestinationPath;
-                            GetFilesToExecuteOperation(true);
+                            //SourcePath = DestinationPath;
+                            //GetFilesToExecuteOperation(true);
                         }
                         break;
                     default:
@@ -397,6 +564,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }            
         }
@@ -418,6 +586,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
 
@@ -462,9 +631,39 @@ namespace RobotFilesEditor
                 }
             }
             catch (Exception ex)
-            {
+            {                
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
+        }
+
+        private IDictionary<string, string> ReadFilesToSpacesToFiles()
+        {
+            DatFiles = new List<string>();
+            string line = "";
+            string controllerTypeFileExtension = ".src";
+            if (GlobalData.ControllerType == "FANUC")
+                controllerTypeFileExtension = ".ls";
+            IDictionary<string, string> filesAndContents = new Dictionary<string, string>();
+            foreach (var file in FilteredFiles.Where(x => Path.GetExtension(x.Key).ToLower().Contains(controllerTypeFileExtension.ToLower())))
+            {
+                string currentString = "";
+                var reader = new StreamReader(file.Key);
+                while (!reader.EndOfStream)
+                {
+                    line = reader.ReadLine();
+                    currentString = string.Join(Environment.NewLine, currentString, line);
+                }
+                filesAndContents.Add(file.Key, currentString);
+                if (reader.EndOfStream)
+                    reader.Close();
+            }
+            foreach (var file in FilteredFiles.Where(x => x.Key.Contains(".dat")))
+            {
+                DatFiles.Add(file.Key);
+            }
+
+            return filesAndContents;
         }
         #endregion InterfaceImplementation
     }

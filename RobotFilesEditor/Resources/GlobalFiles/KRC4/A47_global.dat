@@ -1,0 +1,13 @@
+&ACCESS RV
+&COMMENT V_1_4_0
+&PARAM DISKPATH = KRC:\R1\BMW_App
+&REL 4
+DEFDAT A47_global PUBLIC
+;********************************
+;Date: 17.09.2021
+;Programmer: AIUT
+;Description: Global positions
+;********************************
+
+
+ENDDAT

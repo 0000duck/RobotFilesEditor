@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RobotFilesEditor.Model.Operations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -152,6 +153,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }           
         }
@@ -183,6 +185,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }           
         }   
@@ -196,6 +199,8 @@ namespace RobotFilesEditor
 
             try
             {
+                if (variable.ToLower().Contains("deltax"))
+                { return 1; }
                 match = regex.Match(Variable);
 
                 if (string.IsNullOrEmpty(match.Value) == false)
@@ -207,6 +212,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }            
         }  
@@ -231,6 +237,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
         }

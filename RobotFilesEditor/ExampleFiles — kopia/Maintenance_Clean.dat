@@ -1,0 +1,37 @@
+DEFDAT Maintenance_Clean
+;***********************************************************
+;* Programm            : Maintenance_Clean
+;* Beschreibung        : Maintenance_Clean
+;* Roboter             : 280IR003_KR240R2700PRIME_4
+;* Firma               : Staudinger GmbH
+;* Ersteller           : Wisniewski Michal
+;* Datum               : 20/02/2018
+;* Aenderungsverlauf   : V1.0 i.O.
+;***********************************************************
+
+;FOLD EXTERNAL DECLARATIONS;%{PE}%MKUKATPBASIS,%CEXT,%VCOMMON,%P
+;FOLD BASISTECH EXT;%{PE}%MKUKATPBASIS,%CEXT,%VEXT,%P
+EXT  BAS (BAS_COMMAND  :IN,REAL  :IN )
+DECL INT SUCCESS
+;ENDFOLD (BASISTECH EXT)
+;FOLD USER EXT;%{E}%MKUKATPUSER,%CEXT,%VEXT,%P
+;Make your modifications here
+
+;ENDFOLD (USER EXT)
+;ENDFOLD (EXTERNAL DECLARATIONS)
+;================================================
+; Positions (if any)
+;================================================
+
+
+;# --------- START PATH : Maintenance_Clean ---------
+DECL FDAT FHOME1={TOOL_NO 20,BASE_NO 0,IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}
+DECL PDAT PPHOME1={VEL 100,ACC 100,APO_DIST 0,GEAR_JERK 50}
+DECL E6POS XCleanPos={X -224.89,Y -33.2,Z 3782.53,A -175.867,B 33.034,C -2.933,S 2,T 11,E1 0,E2 0,E3 0,E4 0,E5 0,E6 0}
+DECL FDAT FCleanPos={TOOL_NO 20,BASE_NO 0,IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}
+DECL PDAT PPCleanPos={VEL 100,ACC 100,APO_DIST 0,GEAR_JERK 50}
+
+
+
+ENDDAT
+

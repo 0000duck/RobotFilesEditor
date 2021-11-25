@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using RobotFilesEditor.Model.Operations;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace RobotFilesEditor
@@ -10,12 +11,25 @@ namespace RobotFilesEditor
             if(listesToCheck.Any())
             {
                 var duplicatesGroups = listesToCheck.GroupBy(x => x.Variable).Where(group => group.Count() > 1);
-
+                //if (duplicatesGroups.ToList().Count > 0)
+                //    duplicatesGroups = SrcValidator.FilterDuplicates(duplicatesGroups);
                 if (duplicatesGroups.FirstOrDefault() != null)
-                {
+                {                    
                     foreach (var group in duplicatesGroups)
                     {
-                        listesToCheck.Where(x => x.Variable == group.Key).ToList().ForEach(y => y.HasExeption = true);
+                        bool clearList = true;
+                        foreach (var item in listesToCheck )
+                        {
+                            if (!item.LineContent.ToLower().Contains("deltamfg"))
+                            {
+                                clearList = false;
+                                break;
+                            }
+                        }
+                        if (clearList)
+                            listesToCheck.Clear();
+                        if (group.Key.ToLower() != "deltax")
+                            listesToCheck.Where(x => x.Variable == group.Key).ToList().ForEach(y => y.HasExeption = true);
                     }
                 }
             }

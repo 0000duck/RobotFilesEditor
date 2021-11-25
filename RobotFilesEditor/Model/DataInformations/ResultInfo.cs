@@ -1,6 +1,8 @@
 ﻿using GalaSoft.MvvmLight.Command;
 using Microsoft.Win32;
+using RobotFilesEditor.Model.Operations;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -89,12 +91,25 @@ namespace RobotFilesEditor
                 if(File.Exists(Path))
                 {
                     try
-                    {                
-                        System.Diagnostics.Process.Start(GlobalData.ViewProgram, Path);
+                    {
+                       
+                        //string args = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "shell32.dll");
+                        //args += ",OpenAs_RunDLL " + Path;                        
+                        //var temp = Process.Start("rundll32.exe", args);
+
+                        Process.Start(Path);
+                        if (HasError)
+                        {
+                            string test = System.IO.Path.Combine(GlobalData.DestPath, System.IO.Path.GetFileName(Path));
+                            if (File.Exists(System.IO.Path.Combine(GlobalData.DestPath, System.IO.Path.GetFileName(Path))))
+                            Process.Start(System.IO.Path.Combine(GlobalData.DestPath,System.IO.Path.GetFileName(Path)));
+                        }
+                        
                     }                    
                     catch (Exception ex)
                     {
-                        throw ex;                                                                                
+                        SrcValidator.GetExceptionLine(ex);
+                        throw ex;
                     }                                                     
                 }                
             }            

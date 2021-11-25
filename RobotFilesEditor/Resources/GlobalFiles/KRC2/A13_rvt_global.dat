@@ -17,11 +17,5 @@ DEFDAT  A13_RVT_GLOBAL PUBLIC
 ;Description: Global positions
 ;********************************
 
-DECL GLOBAL CHAR RV_TXT_POS_CONT[24]
-RV_TXT_POS_CONT[]="                        "
 
-DECL GLOBAL CHAR RV_TXT_TRUEFALSE[24]
-RV_TXT_TRUEFALSE[]="TRUE "
-
-DECL GLOBAL INT RV_HELPINT=4
 ENDDAT

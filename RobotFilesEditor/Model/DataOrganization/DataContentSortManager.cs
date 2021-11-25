@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RobotFilesEditor.Model.Operations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -32,6 +33,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
         }
@@ -41,7 +43,7 @@ namespace RobotFilesEditor
             {
                 foreach (DataFilterGroup group in filterGroups)
                 {
-                    List<FileLineProperties> linesBuffer = new List<FileLineProperties>();
+                        List<FileLineProperties> linesBuffer = new List<FileLineProperties>();
                     var groups = group.LinesToAddToFile.OrderBy(x => x.VariableName).GroupBy(y => y.VariableName);
 
                     foreach (var g in groups)
@@ -55,6 +57,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }    
 
@@ -62,9 +65,34 @@ namespace RobotFilesEditor
         }         
         private static List<DataFilterGroup>SortGlobalFilesData(List<DataFilterGroup> filterGroups)
         {
+            //List<DataFilterGroup> filterGroupsCopy = new List<DataFilterGroup>();
+            //foreach (var item in filterGroups)
+            //{
+            //    List<FileLineProperties> currentList = new List<FileLineProperties>();
+            //    foreach (var line in item.LinesToAddToFile)
+            //    {
+            //        if (line.LineContent.ToLower().Contains("deltamfg"))
+            //        {
+            //            FileLineProperties correctedLine = new FileLineProperties();
+            //            correctedLine = line;
+            //            correctedLine.VariableOrderNumber = 1;
+            //            currentList.Add(correctedLine);
+            //        }
+            //        else
+            //            currentList.Add(line);
+
+            //    }
+            //    filterGroupsCopy.Add(currentList);
+            //}
+
+
+            //TEMPORARY
+            return filterGroups;
+
             foreach (DataFilterGroup group in filterGroups)
             {
                 List<FileLineProperties> linesBuffer = new List<FileLineProperties>();
+ 
                 var groups = group.LinesToAddToFile.GroupBy(y => y.VariableOrderNumber);
 
                 groups.OrderBy(x => x.Key);

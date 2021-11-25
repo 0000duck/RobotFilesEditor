@@ -15,6 +15,7 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using Microsoft.Practices.ServiceLocation;
+using RobotFilesEditor.Model.Operations;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -22,42 +23,57 @@ using System.Windows;
 namespace RobotFilesEditor.ViewModel
 {   
     public class ViewModelLocator
-    {      
-        public ViewModelLocator()
+    {
+        static ViewModelLocator()
         {
-            ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
-                      
-            Serializer.FilesSerialization filesSerialization;
-            List<Controler> controlers=new List<Controler>();
-
-            try
+            if (!ViewModelBase.IsInDesignModeStatic)
             {
-                filesSerialization = new Serializer.FilesSerialization();
-                controlers = filesSerialization.GetControlersConfigurations();
 
-                if (controlers.Count == 0)
+                ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
+
+                Serializer.FilesSerialization filesSerialization;
+                List<Controler> controlers = new List<Controler>();
+
+                try
                 {
-                    throw new NullReferenceException("Configuration not contain any controler");
-                }               
-            }
-            catch (Exception ex)
-            {
-                MessageBoxResult ExeptionMessage = MessageBox.Show(ex.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+                    filesSerialization = new Serializer.FilesSerialization();
+                    controlers = filesSerialization.GetControlersConfigurations();
 
-            try
-            {
-                GlobalData.SetViewProgram();
+                    if (controlers.Count == 0)
+                    {
+                        throw new NullReferenceException("Configuration not contain any controler");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    SrcValidator.GetExceptionLine(ex);
+                    MessageBoxResult ExeptionMessage = MessageBox.Show(ex.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
 
-                SimpleIoc.Default.Register<List<Controler>>(() => { return controlers; });
-                SimpleIoc.Default.Register<MainViewModel>();
+                try
+                {
+                    GlobalData.SetViewProgram();
+
+                    SimpleIoc.Default.Register<List<Controler>>(() => { return controlers; });
+                    SimpleIoc.Default.Register<MainViewModel>();
+                }
+                catch (Exception ex)
+                {
+                    SrcValidator.GetExceptionLine(ex);
+                    MessageBoxResult ExeptionMessage = MessageBox.Show(ex.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                try
+                {
+                    SimpleIoc.Default.Register<RobKalDat.ViewModel.MainViewModel>();
+                    SimpleIoc.Default.Register<RobKalDat.ViewModel.MeasurementsViewModel>();
+                }
+                catch (Exception ex)
+                {
+                    SrcValidator.GetExceptionLine(ex);
+                    MessageBoxResult ExeptionMessage = MessageBox.Show(ex.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
-            catch (Exception ex)
-            {
-                MessageBoxResult ExeptionMessage = MessageBox.Show(ex.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
-            }            
         }
-
         public MainViewModel MainVM
         {
             get

@@ -2,15 +2,12 @@
 &COMMENT V_1_4_0
 DEFDAT a15_ljt_global PUBLIC
 ;********************************
-;Date: 07.02.2014
-;Programmer: GG (KUKA Roboter GmbH)
+;Date: 07.11.2018
+;Programmer: AIUT
 ;Description: Global positions
 ;********************************
 
 
-;FOLD Globale Positionen
-
-;ENDFOLD Globale Positionen
 
 
 ENDDAT

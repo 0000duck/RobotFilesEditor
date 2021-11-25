@@ -1,11 +1,14 @@
-﻿using System;
+﻿using RobotFilesEditor.Model.Operations;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows;
 
 namespace RobotFilesEditor
 {
-    public class DataOperation: IOperation
+    public class DataOperation : IOperation
     {
         #region Public
         public FileOperation FileOperation
@@ -13,7 +16,7 @@ namespace RobotFilesEditor
             get { return _fileOperation; }
             set
             {
-                if(_fileOperation!=value)
+                if (_fileOperation != value)
                 {
                     _fileOperation = value;
                 }
@@ -74,9 +77,9 @@ namespace RobotFilesEditor
                 }
 
                 if (FileOperation.SourcePath != value)
-                {                         
+                {
                     FileOperation.SourcePath = value;
-                    _sourcePath = FileOperation.SourcePath;                 
+                    _sourcePath = FileOperation.SourcePath;
                 }
             }
         }
@@ -91,7 +94,7 @@ namespace RobotFilesEditor
                 }
 
                 if (FileOperation.DestinationPath != value)
-                {                   
+                {
                     FileOperation.DestinationPath = value;
                 }
             }
@@ -164,7 +167,7 @@ namespace RobotFilesEditor
                     {
                         _fileHeader = string.Empty;
                     }
-                }               
+                }
             }
         }
         public string FileFooter
@@ -226,13 +229,13 @@ namespace RobotFilesEditor
 
         #region Private
         private FileOperation _fileOperation;
-       
+
         protected string _operationName;
         protected GlobalData.Action _action;
         protected string _destinationFolder;
         protected string _sourcePath;
         protected string _destinationPath;
-        protected int _priority;            
+        protected int _priority;
         private Filter _filter;
         private string _destinationFileSource;
         private string _fileHeader;
@@ -242,7 +245,7 @@ namespace RobotFilesEditor
         private string _writeStop;
         private bool _detectDuplicates;
         public GlobalData.SortType _sortType;
-        private List<string> _textToWrite;     
+        private List<string> _textToWrite;
         private List<DataFilterGroup> _dataFilterGroups;
         private List<string> _filesToPrepare;
         private List<ResultInfo> _resultInfos;
@@ -254,9 +257,9 @@ namespace RobotFilesEditor
         public DataOperation()
         {
             DataFilterGroups = new List<DataFilterGroup>();
-            _textToWrite=new List<string>();
-            _filesToPrepare=new List<string>();
-            _resultInfos=new List<ResultInfo>();
+            _textToWrite = new List<string>();
+            _filesToPrepare = new List<string>();
+            _resultInfos = new List<ResultInfo>();
             _resultToWrite = new List<string>();
             _usedFiles = new List<string>();
         }
@@ -266,20 +269,116 @@ namespace RobotFilesEditor
         {
             try
             {
+                if (GlobalData.E6axisGlobalsfound == null)
+                    GlobalData.E6axisGlobalsfound = new List<string>();
                 List<FileLineProperties> filesContent = FilesMenager.GetFileLinePropertiesFromFiles(_filesToPrepare);
                 FiltrContentOnGroups(filesContent);
 
                 if (DetectDuplicates)
                 {
+                    foreach (var item in DataFilterGroups)
+                        foreach (var line in item.LinesToAddToFile.Where(x => x.LineContent.Contains("E6AXIS")))
+                            GlobalData.E6axisGlobalsfound.Add(line.LineContent);
                     DataFilterGroups.ForEach(x => x.LinesToAddToFile = ValidateText.FindVaribleDuplicates(x.LinesToAddToFile));
                 }
                 DataFilterGroups = DataContentSortManager.SortData(DataFilterGroups, SortType);
+                ClearUnnecessaryFDATS();
+                CleadLocalCentralPos();
+                FindExceptions();
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
-            }                      
+            }
         }
+
+        private void CleadLocalCentralPos()
+        {
+            
+        }
+
+        private void FindExceptions()
+        {
+            List<FileLineProperties> errorList = new List<FileLineProperties>();
+            foreach (var item in DataFilterGroups.Where(x => x.LinesToAddToFile.Count > 0))
+            {
+                foreach (var line in item.LinesToAddToFile.Where(x=>x.HasExeption == true))
+                {
+                    errorList.Add(line);
+                }
+            }
+            if (errorList.Count > 0)
+            {
+                string message = "";
+                foreach (var error in errorList)
+                {
+                    message += error.LineContent + "\r\n";
+                }
+                SrcValidator.logFileContent += ("Errors found in files for InputData. Please verify records:\r\n" + message + "\r\n");
+                MessageBox.Show("Errors found in files for InputData. Please verify records:\r\n" + message, "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                //FileLineProperties selectedItem = new FileLineProperties();
+                List<FileLineProperties> selectedItems = GetRecordToRemain(errorList);
+                //selectedItem = errorList[0];
+                foreach (var error in errorList)
+                {
+                    foreach (var item in DataFilterGroups.Where(x => x.LinesToAddToFile.Count > 0))
+                    {
+                        //if (error != selectedItem)
+                        if (!selectedItems.Any(x=>x == error))
+                            item.LinesToAddToFile.Remove(error);
+                    }
+                }
+                foreach (var item in DataFilterGroups)
+                {
+                    foreach (var line in item.LinesToAddToFile)
+                    {
+                        //if (line == selectedItem)
+                        if (selectedItems.Any(x => x == line))
+                            line.HasExeption = false;
+                    }
+                        
+                }
+            }
+        }
+
+        private List<FileLineProperties> GetRecordToRemain(List<FileLineProperties> errorList)
+        {
+            List<FileLineProperties> result = new List<FileLineProperties>();
+            foreach (var item in errorList.Where(x => !result.Any(y => y.Variable == x.Variable)))
+                result.Add(item);
+            return result;
+        }
+
+        private void ClearUnnecessaryFDATS()
+        {            
+            if (GlobalData.E6axisGlobalsfound.Count > 0)
+            {
+                List<FileLineProperties> itemsToRemove = new List<FileLineProperties>();
+                List<DataFilterGroup> copyOfDataFilterGroups = new List<DataFilterGroup>(DataFilterGroups);
+                foreach (var group in copyOfDataFilterGroups)
+                {
+                    foreach (var item in group.LinesToAddToFile.Where(x => x.LineContent.Contains("FDAT")))
+                    {
+                        foreach (var e6axisFound in GlobalData.E6axisGlobalsfound)
+                        {
+                            Regex getPointName = new Regex(@"(?<=E6AXIS\s+X)[a-zA-Z0-9_]*(?=\=)", RegexOptions.IgnoreCase);
+                            string pointName = getPointName.Match(e6axisFound).ToString();
+                            if (!string.IsNullOrEmpty(pointName) && item.LineContent.Contains(pointName))
+                            {
+                                itemsToRemove.Add(item);
+                            }
+                        }
+                    }
+                }
+                foreach (var item in itemsToRemove)
+                {
+                   DataFilterGroups[0].LinesToAddToFile.Remove(item);
+                }
+
+            }
+        }
+
         #endregion DataPreparing        
 
         #region DataPreview
@@ -294,8 +393,9 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
-            }         
+            }
         }
         public void PreviewCutData()
         {
@@ -313,9 +413,10 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
-            }          
-        }        
+            }
+        }
         #endregion DataPreview
 
         #region DataExecute
@@ -326,9 +427,17 @@ namespace RobotFilesEditor
                 PrepareDataToCopy();
                 string sourcePath = FilesMenager.GetSourceFilePath(DestinationFileSource, DestinationPath);
                 List<string> sourceText = FilesMenager.GetTextFromFile(sourcePath);
-                CreateResultToShow(sourceText, true);              
+                CreateResultToShow(sourceText, true);
+                bool deltaMFGfound = false;
+                foreach (string line in _resultToWrite.Where(x => x.ToLower().Contains("deltamfg")))
+                {
+                    deltaMFGfound = true;
+                    break;
+                }
+                if (deltaMFGfound)
+                    _resultToWrite = SrcValidator.SortGlobalFile(_resultToWrite);
 
-                if (_resultToWrite?.Count > 0  && _resultInfos.Where(x => string.IsNullOrEmpty(x.Description) == false).ToList().Count == 0)
+                if (_resultToWrite?.Count > 0 && _resultInfos.Where(x => string.IsNullOrEmpty(x.Description) == false).ToList().Count == 0)
                 {
                     string destinationPath = FilesMenager.CombineFilePath(DestinationFileSource, DestinationPath);
                     FilesMenager.CreateDestinationFile(DestinationFileSource, DestinationPath);
@@ -337,8 +446,9 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
-            }           
+            }
         }
 
         public void ExecuteCutData()
@@ -355,7 +465,7 @@ namespace RobotFilesEditor
                 List<string> sourceText = FilesMenager.GetTextFromFile(sourcePath);
                 CreateResultToShow(sourceText, true);
 
-                string destinationPath = FilesMenager.CombineFilePath(DestinationFileSource, DestinationPath);               
+                string destinationPath = FilesMenager.CombineFilePath(DestinationFileSource, DestinationPath);
 
                 _usedFiles.ForEach(x => cutInfo.Add(ResultInfo.CreateResultInfoHeder(Path.GetFileName(x), x)));
                 _usedFiles?.Remove(destinationPath);
@@ -364,10 +474,10 @@ namespace RobotFilesEditor
 
                 var hasErrors = DataFilterGroups.Exists(x => x.LinesToAddToFile.Exists(y => y.HasExeption));
 
-                if (hasErrors==false)
+                if (hasErrors == false)
                 {
                     if (_resultToWrite?.Count > 0 && _resultInfos.Where(x => string.IsNullOrEmpty(x.Description) == false).ToList().Count == 0)
-                    {                        
+                    {
                         FilesMenager.CreateDestinationFile(DestinationFileSource, DestinationPath);
                         FilesMenager.WriteTextToFile(_resultToWrite, destinationPath);
 
@@ -378,23 +488,28 @@ namespace RobotFilesEditor
                                 FilesMenager.DeleteFromFile(path, fragment);
                             }
                         }
-                    }                    
-                }               
+                    }
+                }
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
-            }            
-        }    
+            }
+        }
         #endregion DataExecute        
 
-        private void CreateResultToShow(List<string> sourceText, bool writeToFile= false)
+        private void CreateResultToShow(List<string> sourceText, bool writeToFile = false)
         {
+            if (sourceText.Any(x => x.Contains("a02_tch_global") && GlobalData.ToolchangerType == "B02") || sourceText.Any(x => x.Contains("b02_tch_global") && GlobalData.ToolchangerType == "A02"))
+                return;
+            if (sourceText.Any(x => x.Contains("A04_swp_global") && GlobalData.WeldingType == "A05") || sourceText.Any(x => x.Contains("A05_swi_global") && GlobalData.WeldingType == "A04"))
+                return;
             List<ResultInfo> resultInfos = new List<ResultInfo>();
             _resultInfos = new List<ResultInfo>();
             _resultToWrite = new List<string>();
 
-            resultInfos=PrepareFilterGroups(resultInfos);
+            resultInfos = PrepareFilterGroups(resultInfos);
 
             _resultInfos = WriteNewTextToOldFileContent(sourceText, resultInfos, true);
 
@@ -409,15 +524,15 @@ namespace RobotFilesEditor
 
                 if (_headerType != GlobalData.HeaderType.None && toWriteResult != null)
                 {
-                    toWriteResult=HeaderCreator.CreateFileHeader(_headerType, FilesMenager.CombineFilePath(DestinationFileSource, DestinationPath), toWriteResult, _filesToPrepare);
+                    toWriteResult = HeaderCreator.CreateFileHeader(_headerType, FilesMenager.CombineFilePath(DestinationFileSource, DestinationPath), toWriteResult, _filesToPrepare);
                 }
 
-                if (toWriteResult!=null)
+                if (toWriteResult != null)
                 {
                     toWriteResult.ForEach(x => _resultToWrite.Add(x.Content));
-                }                                
-            }                     
-        }      
+                }
+            }
+        }
 
         #region PrepareData
         private void FiltrContentOnGroups(List<FileLineProperties> filesContent, bool deleteDuplicates = true)
@@ -425,30 +540,114 @@ namespace RobotFilesEditor
             try
             {
                 List<string> usedFiles = new List<string>();
-                DataFilterGroups?.ForEach(x => x.SetLinesToAddToFile( ref usedFiles, filesContent, deleteDuplicates));
+                DataFilterGroups?.ForEach(x => x.SetLinesToAddToFile(ref usedFiles, filesContent, deleteDuplicates));
 
-                if (usedFiles!=null)
+                if (usedFiles != null)
                 {
                     _usedFiles = usedFiles;
-                }               
+                }
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
         }
         private List<ResultInfo> PrepareFilterGroups(List<ResultInfo> resultInfos)
         {
             List<ResultInfo> tmpResult = new List<ResultInfo>();
-            if (resultInfos==null)
+            if (resultInfos == null)
             {
                 resultInfos = new List<ResultInfo>();
             }
-            
+
             try
             {
                 foreach (var filter in DataFilterGroups)
                 {
+                    if (filter.Header != null)
+                    {
+                        if (filter.Header.ToLower().Contains("tools"))
+                        {
+                            List<FileLineProperties> templist = new List<FileLineProperties>(filter.LinesToAddToFile);
+                            //filter.LinesToAddToFile = new List<FileLineProperties>();
+                            int counter = 0;
+                            foreach (var item in templist)
+                            {
+                                if (item.VariableName.Contains("TOOL_NAME"))
+                                {
+                                    string correctedItem = "";
+                                    if (GlobalData.Tools.Keys.Contains(item.VariableIndex))
+                                        correctedItem = "TOOL_NAME[" + item.VariableIndex + ",]=\"" + GlobalData.Tools[item.VariableIndex] + "\"";
+                                    else
+                                        correctedItem = "TOOL_NAME[" + item.VariableIndex + ",]=\"" + GlobalData.ToolsAndNamesFromStandar[item.VariableIndex] + "\"";
+                                    //filter.LinesToAddToFile[counter].LineContent = correctedItem;
+                                    foreach (var line in filter.LinesToAddToFile.Where(x => x.LineContent.Contains("TOOL_NAME[" + item.VariableIndex + ",]")))
+                                    {
+                                        line.LineContent = correctedItem;
+                                    }
+                                }
+                                counter++;
+                            }
+                        }
+
+                        if (filter.Header.ToLower().Contains("bases"))
+                        {
+                            List<FileLineProperties> templist = new List<FileLineProperties>(filter.LinesToAddToFile);
+                            int itemCounter = 0;
+                            foreach (var item in templist)
+                            {
+                                Regex basenumRegex = new Regex(@"(?<=BASE_DATA\s*\[\s*)\d+", RegexOptions.IgnoreCase);
+                                if (basenumRegex.IsMatch(item.LineContent))
+                                {
+                                    int baseNum = int.Parse(basenumRegex.Match(item.LineContent).ToString());
+                                    if (baseNum < 21 || baseNum > 35)
+                                        filter.LinesToAddToFile[itemCounter].LineContent = ";" + filter.LinesToAddToFile[itemCounter].LineContent;
+                                }
+                                itemCounter++;
+                            }
+                            //filter.LinesToAddToFile = new List<FileLineProperties>();
+                            int counter = 0;
+                            foreach (var item in templist)
+                            {
+                                if (item.VariableName.Contains("BASE_NAME"))
+                                {
+                                    if (GlobalData.Bases.Keys.Contains(item.VariableIndex))
+                                    {
+                                        string correctedItem = "BASE_NAME[" + item.VariableIndex + ",]=\"" + GlobalData.Bases[item.VariableIndex] + "\"";
+                                        //filter.LinesToAddToFile[counter].LineContent = correctedItem;
+                                        foreach (var line in filter.LinesToAddToFile.Where(x => x.LineContent.Contains("BASE_NAME[" + item.VariableIndex + ",]")))
+                                        {
+                                            line.LineContent = correctedItem;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        filter.LinesToAddToFile.Remove(item);
+                                    }
+                                }
+                            }
+                            counter = 0;
+                            foreach (var item in templist)
+                            {
+                                if ((item.VariableName.Contains("BASE_TYPE") || item.VariableName.Contains("BASE_DATA")) && !GlobalData.Bases.Keys.Contains(item.VariableIndex))
+                                    if (filter.LinesToAddToFile.Contains(item))
+                                        filter.LinesToAddToFile.Remove(item);
+                                counter++;
+                            }
+                        }
+                        if (filter.Header.ToLower().Contains(";loadvars"))
+                        {
+                            if (GlobalData.loadVars.Count > 0)
+                            {
+                                foreach (var loadvar in GlobalData.loadVars)
+                                {
+                                    filter.LinesToAddToFile.Add(new FileLineProperties() { LineContent = "LOAD_VAR_NAME"+loadvar.Key+"[]=\""+ loadvar.Value + "\"" });
+                                }
+                            }
+                        }
+                    }
+
                     if (filter.LinesToAddToFile.Count > 0)
                     {
                         filter.PrepareGroupToWrite(ref tmpResult, SortType);
@@ -460,8 +659,21 @@ namespace RobotFilesEditor
                     }
                 }
 
-                if(tmpResult?.Count()>0)
-                {                    
+                if (tmpResult?.Count() > 0)
+                {
+                    if (OperationName == "Copy OLP files data")
+                    {
+                        //TODO
+                        if (GlobalData.ControllerType != "KRC4 Not BMW")                        
+                            tmpResult.Add(ResultInfo.CreateResultInfo(SrcValidator.GetPayload(GlobalData.Operations)));
+                        else
+                           MessageBox.Show("Additional load on axis 3 has to be added manually", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                        if (!string.IsNullOrEmpty(GlobalData.IBUSSegments))
+                        {
+                            tmpResult.Add(ResultInfo.CreateResultInfo(""));
+                            tmpResult.Add(ResultInfo.CreateResultInfo(GlobalData.IBUSSegments));
+                        }
+                    }
                     if (string.IsNullOrEmpty(FileHeader) == false)
                     {
                         resultInfos.Add(ResultInfo.CreateResultInfo(FileHeader));
@@ -472,18 +684,22 @@ namespace RobotFilesEditor
                     if (string.IsNullOrEmpty(FileFooter) == false)
                     {
                         resultInfos.Add(ResultInfo.CreateResultInfo(FileFooter));
-                    }                      
-                }               
+                    }
+                }
 
                 return resultInfos;
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
         }
+
+
         private List<ResultInfo> WriteNewTextToOldFileContent(List<string> sourceText, List<ResultInfo> newText, bool previewOnly)
         {
+
             List<ResultInfo> resultInfos = new List<ResultInfo>();
             string resultHeader = Path.Combine(DestinationFolder, Path.GetFileName(DestinationFileSource));
             string fileDestination = Path.Combine(DestinationPath, Path.GetFileName(DestinationFileSource));
@@ -496,10 +712,23 @@ namespace RobotFilesEditor
                 {
                     return null;
                 }
-
-                if (sourceText.Any() && newText.Any())
+ 
+                if ((sourceText.Any() && newText.Any()))
                 {
-                    newText = WriteNewTextExistingToFile(sourceText, newText);                    
+                    //TT                        
+                    if ((this.OperationName == ("Copy global data to GlobalBase") && (this.Priority == 2) && GlobalData.ControllerType.Contains("KRC2")))
+                    {
+                        int counter = 0;
+                        foreach (ResultInfo item in newText)
+                        {
+                            newText[counter].Content = item.Content.Replace("GLOBAL ", "");
+                            counter++;
+                        }
+                    }
+                    newText = WriteNewTextExistingToFile(sourceText, newText);
+                    if (SrcValidator.GlobalFiles == null)
+                        SrcValidator.GlobalFiles = new List<ResultInfo>();
+                    SrcValidator.GlobalFiles.AddRange(newText);
                 }
                 #endregion WriteToFile
 
@@ -546,6 +775,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
         }
@@ -553,9 +783,16 @@ namespace RobotFilesEditor
         {
             bool writed = false;
             List<ResultInfo> sourceFile = new List<ResultInfo>();
+            List<ResultInfo> tempSourceFile = new List<ResultInfo>();
             List<ResultInfo> newFileText = new List<ResultInfo>();
 
             sourceText.ForEach(x => sourceFile.Add(ResultInfo.CreateResultInfo(x)));
+            foreach (ResultInfo line in sourceFile.Where(x=>x.Content!=""))
+            {
+                tempSourceFile.Add(line);
+            }
+            sourceFile = tempSourceFile;
+
             ValidateText.ValidateReapitingTextWhitExistContent(sourceFile, ref newText);
 
             if(newText.Any() && sourceText.Any())
@@ -604,7 +841,7 @@ namespace RobotFilesEditor
 
                     if (writed != true)
                     {
-                        sourceText.ForEach(x => newFileText.Add(ResultInfo.CreateResultInfo(x)));
+                        //sourceText.ForEach(x => newFileText.Add(ResultInfo.CreateResultInfo(x)));
                         newFileText.AddRange(newText);
                     }
                     return newFileText;
@@ -655,6 +892,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
         }
@@ -718,6 +956,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
         }
@@ -757,6 +996,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }           
         }

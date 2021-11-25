@@ -1,0 +1,11 @@
+&ACCESS  RV
+&COMMENT Kappenfraessen globals
+&PARAM DISKPATH = BMW_Std
+&REL 1
+DEFDAT  global_dress PUBLIC
+;********************************
+;Description: Global positions
+;********************************
+
+
+ENDDAT

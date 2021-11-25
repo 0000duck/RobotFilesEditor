@@ -28,7 +28,7 @@
                                       <xs:element minOccurs="0" name="NotContainArray">
                                         <xs:complexType>
                                           <xs:sequence>
-                                            <xs:element name="NotContain" type="xs:string" />
+                                            <xs:element maxOccurs="unbounded" name="NotContain" type="xs:string" />
                                           </xs:sequence>
                                         </xs:complexType>
                                       </xs:element>
@@ -46,7 +46,8 @@
                                 </xs:element>
                               </xs:sequence>
                               <xs:attribute name="OperationName" type="xs:string" use="required" />
-                              <xs:attribute name="ActionType" type="xs:string" use="required" />
+                             <!-- <xs:attribute name="ActionType" type="xs:string" use="required" />-->
+                              <xs:attribute name="ActionType" type="xs:string" />
                               <xs:attribute name="DestinationFolder" type="xs:string" use="required" />
                               <xs:attribute name="Priority" type="xs:unsignedByte" use="required" />
                             </xs:complexType>
@@ -76,6 +77,13 @@
                                                       </xs:sequence>
                                                     </xs:complexType>
                                                   </xs:element>
+                                                  <xs:element minOccurs="0" name="NotContainArray">
+                                                    <xs:complexType>
+                                                      <xs:sequence>
+                                                        <xs:element maxOccurs="unbounded" name="NotContain" type="xs:string" />
+                                                      </xs:sequence>
+                                                    </xs:complexType>
+                                                  </xs:element>
                                                 </xs:sequence>
                                                 <xs:attribute name="RegexContain" type="xs:string" use="required" />
                                                 <xs:attribute name="RegexNotContain" type="xs:string" use="required" />
@@ -96,6 +104,7 @@
                               </xs:sequence>
                               <xs:attribute name="FileOperationName" type="xs:string" use="required" />
                               <xs:attribute name="Priority" type="xs:unsignedByte" use="required" />
+                              <!--<xs:attribute name="ActionType" type="xs:string" use="required" />-->
                               <xs:attribute name="ActionType" type="xs:string" use="required" />
                               <xs:attribute name="DestinationFilePath" type="xs:string" use="optional" />
                               <xs:attribute name="DestinationFileSource" type="xs:string" use="required" />
@@ -119,8 +128,8 @@
           </xs:complexType>
         </xs:element>
       </xs:sequence>
-      <xs:attribute name="DestinationPath" type="xs:string" use="required" />
-      <xs:attribute name="SourcePath" type="xs:string" use="required" />
+      <!--<xs:attribute name="DestinationPath" type="xs:string" use="required" />
+      <xs:attribute name="SourcePath" type="xs:string" use="required" />-->
     </xs:complexType>
   </xs:element>
 </xs:schema>

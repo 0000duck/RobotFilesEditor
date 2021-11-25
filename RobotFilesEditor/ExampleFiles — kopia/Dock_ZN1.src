@@ -1,0 +1,197 @@
+&COMMENT 
+DEF  Dock_ZN1	( )
+;FOLD Moduleparameters;%{h}
+;Params 
+;ENDFOLD Moduleparameters
+;FOLD INI 
+  ;FOLD USER INI
+    ;Make your modifications here
+			IF PLC_CHK_INIT() THEN
+				GLOBAL INTERRUPT DECL 3 WHEN $STOPMESS==TRUE DO IR_STOPM ( )
+				INTERRUPT ON 3 
+				BAS (#INITMOV,0 )
+				;FOLD APPLICATION_INI
+				APPLICATION_INI ( )
+				;ENDFOLD (APPLICATION_INI)
+			ENDIF	
+  ;ENDFOLD (USER INI)
+;ENDFOLD (INI)
+;***********************************************************
+;* Programm            : Dock_ZN1
+;* Beschreibung        : Dock_ZN1
+;* Roboter             : 280IR003_KR240R2700PRIME_4
+;* Firma               : Staudinger GmbH
+;* Ersteller           : Wisniewski Michal
+;* Datum               : 20/02/2018
+;* Aenderungsverlauf   : V1.0 i.O.
+;***********************************************************
+
+
+
+;# --------- START PATH : Dock_ZN1 ---------
+;FOLD Tch Check_Tool_Code ChgToolNo:0
+;FOLD ;%{h}
+;Params IlfProvider=tch; Tch_CmdTech=ToolChg_Cmd; Tch_SubCmdTech=Check_Tool_Code; Tch_ChgToolNoCheck=0
+;ENDFOLD
+Tch_Checktool (0)
+;ENDFOLD
+;FOLD WAIT FOR $AXIS.ACT == Central_DockPos
+WAIT FOR $AXIS_ACT.A1 == XCentralDockPos.A1
+WAIT FOR $AXIS_ACT.A2 == XCentralDockPos.A2
+WAIT FOR $AXIS_ACT.A3 == XCentralDockPos.A3
+WAIT FOR $AXIS_ACT.A4 == XCentralDockPos.A4
+WAIT FOR $AXIS_ACT.A5 == XCentralDockPos.A5
+WAIT FOR $AXIS_ACT.A6 == XCentralDockPos.A6
+WAIT FOR $AXIS_ACT.E1 == XCentralDockPos.E1
+;ENDFOLD
+;FOLD PTP CentralDockPos Vel=100 % PCentralDockPos;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:CentralDockPos, 3:, 5:100, 7:PCentralDockPos
+$BWDSTART = FALSE
+PDAT_ACT= PPCentralDockPos
+FDAT_ACT= FCentralDockPos
+BAS(#PTP_PARAMS,100)
+PTP XCentralDockPos 
+;ENDFOLD
+;FOLD Tch Check_Tool_Code ChgToolNo:0
+;FOLD ;%{h}
+;Params IlfProvider=tch; Tch_CmdTech=ToolChg_Cmd; Tch_SubCmdTech=Check_Tool_Code; Tch_ChgToolNoCheck=0
+;ENDFOLD
+Tch_Checktool (0)
+;ENDFOLD
+;FOLD Tch OccupiedCheck StationNo:1 Occupied_State:TRUE
+;FOLD ;%{h}
+;Params IlfProvider=tch; Tch_CmdTech=ToolChg_Cmd; Tch_SubCmdTech=OccupiedCheck; Tch_StationNoTech=1; Tch_Occupied_State=TRUE
+;ENDFOLD
+Tch_Occupiedcheck (1,TRUE)
+;ENDFOLD
+;FOLD Tch OpenCover StationNo:1 Control:On Occupied_Check:Off
+;FOLD ;%{h}
+;Params IlfProvider=tch; Tch_CmdTech=ToolChg_Cmd; Tch_SubCmdTech=OpenCover; Tch_StationNoTech=1; Tch_Control=On; Tch_Occupied_Check=Off
+;ENDFOLD
+Tch_Opencover (1,TRUE,FALSE)
+;ENDFOLD
+;FOLD PTP CentralDockPos Vel=100 % PCentralDockPos;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:CentralDockPos, 3:, 5:100, 7:PCentralDockPos
+$BWDSTART = FALSE
+PDAT_ACT= PPCentralDockPos
+FDAT_ACT= FCentralDockPos
+BAS(#PTP_PARAMS,100)
+PTP XCentralDockPos 
+;ENDFOLD
+;FOLD PTP P10 CONT Vel=100 % PP10 Tool[20]:Tool_Changer_Head Base[21]:Tch_Station01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P10, 3:C_DIS, 5:100, 7:PP10
+$BWDSTART = FALSE
+PDAT_ACT= PPP10
+FDAT_ACT= FP10
+BAS(#PTP_PARAMS,100)
+PTP XP10 C_DIS
+;ENDFOLD
+;FOLD PTP Before_Dock1 Vel=100 % PBefore_Dock1 Tool[20]:Tool_Changer_Head Base[21]:Tch_Station01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:Before_Dock1, 3:, 5:100, 7:PBefore_Dock1
+$BWDSTART = FALSE
+PDAT_ACT= PPBefore_Dock1
+FDAT_ACT= FBefore_Dock1
+BAS(#PTP_PARAMS,100)
+PTP XBefore_Dock1 
+;ENDFOLD
+;FOLD Tch Changer_Open
+;FOLD ;%{h}
+;Params IlfProvider=tch; Tch_CmdTech=ToolChg_Cmd; Tch_SubCmdTech=Changer_Open
+;ENDFOLD
+Tch_Open ()
+;ENDFOLD
+;FOLD LIN TchDockTNo1StNo1 Vel=0.1 m/s LTchDockTNo1StNo1 Tool[20]:Tool_Changer_Head Base[21]:Tch_Station01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:TchDockTNo1StNo1, 3:, 5:0.1, 7:LTchDockTNo1StNo1
+$BWDSTART = FALSE
+LDAT_ACT= LLTchDockTNo1StNo1
+FDAT_ACT= FTchDockTNo1StNo1
+BAS(#CP_PARAMS,0.1)
+LIN XTchDockTNo1StNo1 
+;ENDFOLD
+;FOLD Tch Dock ChgToolNo:1 StationNo:1
+;FOLD ;%{h}
+;Params IlfProvider=tch; Tch_CmdTech=ToolChg_Cmd; Tch_SubCmdTech=Dock; Tch_ChgToolNo=1; Tch_StationNoTech=1
+;ENDFOLD
+Tch_Dock_Tech (1,1)
+;ENDFOLD
+;FOLD Rvt GunState GunNo:1 Couple
+;FOLD ;%{h}
+;Params IlfProvider=rivet; Rvt_CmdTech=GunState; Rvt_GunNo=1; Rvt_GunState=Couple; Rvt_Desc=
+;ENDFOLD
+Rvt_GunState (1,#Couple)
+;ENDFOLD
+;FOLD LIN TchUnDockTNo1StNo1 Vel=0.1 m/s LTchUnDockTNo1StNo1 Tool[27]:Rivet_Gun_1 Base[21]:Tch_Station01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:TchUnDockTNo1StNo1, 3:, 5:0.1, 7:LTchUnDockTNo1StNo1
+$BWDSTART = FALSE
+LDAT_ACT= LLTchUnDockTNo1StNo1
+FDAT_ACT= FTchUnDockTNo1StNo1
+BAS(#CP_PARAMS,0.1)
+LIN XTchUnDockTNo1StNo1 
+;ENDFOLD
+;FOLD LIN Before_Undock1 Vel=0.1 m/s LBefore_Undock1 Tool[27]:Rivet_Gun_1 Base[21]:Tch_Station01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:Before_Undock1, 3:, 5:0.1, 7:LBefore_Undock1
+$BWDSTART = FALSE
+LDAT_ACT= LLBefore_Undock1
+FDAT_ACT= FBefore_Undock1
+BAS(#CP_PARAMS,0.1)
+LIN XBefore_Undock1 
+;ENDFOLD
+;FOLD Tch OccupiedCheck StationNo:1 Occupied_State:FALSE
+;FOLD ;%{h}
+;Params IlfProvider=tch; Tch_CmdTech=ToolChg_Cmd; Tch_SubCmdTech=OccupiedCheck; Tch_StationNoTech=1; Tch_Occupied_State=FALSE
+;ENDFOLD
+Tch_Occupiedcheck (1,FALSE)
+;ENDFOLD
+;FOLD Tch Check_Tool_Code ChgToolNo:1
+;FOLD ;%{h}
+;Params IlfProvider=tch; Tch_CmdTech=ToolChg_Cmd; Tch_SubCmdTech=Check_Tool_Code; Tch_ChgToolNoCheck=1
+;ENDFOLD
+Tch_Checktool (1)
+;ENDFOLD
+;FOLD Rvt Init GunNo:1 GunOpen:128mm
+;FOLD ;%{h}
+;Params IlfProvider=rivet; Rvt_CmdTech=Init; Rvt_GunNo=1; Rvt_GunOpen=128; Rvt_Desc=
+;ENDFOLD
+Rvt_Init (1,128)
+;ENDFOLD
+;FOLD PTP P20 CONT Vel=100 % PP20 Tool[27]:Rivet_Gun_1 Base[21]:Tch_Station01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P20, 3:C_DIS, 5:100, 7:PP20
+$BWDSTART = FALSE
+PDAT_ACT= PPP20
+FDAT_ACT= FP20
+BAS(#PTP_PARAMS,100)
+PTP XP20 C_DIS
+;ENDFOLD
+;FOLD PTP P30 CONT Vel=100 % PP30 Tool[27]:Rivet_Gun_1 Base[21]:Tch_Station01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P30, 3:C_DIS, 5:100, 7:PP30
+$BWDSTART = FALSE
+PDAT_ACT= PPP30
+FDAT_ACT= FP30
+BAS(#PTP_PARAMS,100)
+PTP XP30 C_DIS
+;ENDFOLD
+;FOLD PTP P40 CONT Vel=100 % PP40 Tool[27]:Rivet_Gun_1 Base[21]:Tch_Station01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P40, 3:C_DIS, 5:100, 7:PP40
+$BWDSTART = FALSE
+PDAT_ACT= PPP40
+FDAT_ACT= FP40
+BAS(#PTP_PARAMS,100)
+PTP XP40 C_DIS
+;ENDFOLD
+;FOLD PTP HOME1 Vel=100 % PHOME1;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:HOME1, 3:, 5:100, 7:PHOME1
+$BWDSTART = FALSE
+PDAT_ACT= PPHOME1
+FDAT_ACT= FHOME1
+BAS(#PTP_PARAMS,100)
+PTP XHOME1 
+;ENDFOLD
+; Coll 95 - 280FX01- 280IR02 Spot, 280IR03 Rivet (1)
+;FOLD CollZone Release ZoneNum:95 Desc:280FX01-280IR02 Rivet, 280IR03 Rivet (1)
+;FOLD ;%{h}
+;Params IlfProvider=collision; Plc_CollCmd=Release; Plc_CollMove=NoMove; Plc_CollPlc=_; Plc_CollZoneNum=95; Plc_CollDesc=280FX01-280IR02 Rivet, 280IR03 Rivet (1)
+;ENDFOLD
+Plc_CollPrepareRelease (95,1)
+Plc_CollSafetyClear1 (95)
+;ENDFOLD
+;FOLD PTP HOME1 Vel=100 % PHOME1;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:HOME1, 3:, 5:100, 7:PHOME1
+$BWDSTART = FALSE
+PDAT_ACT= PPHOME1
+FDAT_ACT= FHOME1
+BAS(#PTP_PARAMS,100)
+PTP XHOME1 
+;ENDFOLD
+
+
+
+END
+

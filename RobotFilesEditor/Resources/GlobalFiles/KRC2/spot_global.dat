@@ -1,0 +1,12 @@
+&ACCESS RV
+&COMMENT V_1_0_0
+DEFDAT spot_global PUBLIC
+;********************************
+;Date: 20.12.2013
+;Programmer: AIUT
+;Description: Spot global positions
+;********************************
+
+
+
+ENDDAT

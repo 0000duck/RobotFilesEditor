@@ -9,7 +9,8 @@
         DataContext="{Binding MainVM, Source={StaticResource Locator}}"
         mc:Ignorable="d"
         Title="Robot File Harvester" Name="window" WindowState="Maximized"
-        >
+        IsEnabled="{Binding EnableWindow}"
+        Loaded="window_Loaded">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Closing">
             <cmd:EventToCommand Command="{Binding Path=ClosingCommand}" PassEventArgsToCommand="True" />
@@ -48,13 +49,98 @@
                         <StackPanel Margin="5">
                             <Expander IsExpanded="True" Header="Controlers" UseLayoutRounding="False">
                                 <GroupItem x:Name="ControlersChooserGroupBox">
-                                    <ItemsControl Name="ControlersChooser" VerticalAlignment="Top" ItemsSource="{Binding ControlerChooser}">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <RadioButton Content="{Binding Title}" GroupName="Controlers" Margin="5" Command="{Binding ClickedCommand}"/>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
+                                    <StackPanel>
+                                        <ItemsControl Name="ControlersChooser" VerticalAlignment="Top" ItemsSource="{Binding ControlerChooser}" >
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <!--<RadioButton Name="ControllerSelected" Content="{Binding Title}" GroupName="Controlers" Margin="5" Command="{Binding ClickedCommand}" IsChecked="{Binding Checked, Mode=TwoWay}"/>-->
+                                                    <RadioButton Name="ControllerSelected" Content="{Binding Title}" GroupName="Controlers" Margin="5" IsChecked="{Binding Checked, Mode=TwoWay}"/>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+
+                                        </ItemsControl>
+                                        <Button Content="Start scan" Command="{Binding ScanContent}" IsEnabled="{Binding CanScanContent}" Margin="5,5,5,5"/>
+                                        <GroupBox Header="Language" Margin="5,5,5,5">
+                                            <StackPanel>
+                                                <RadioButton Content="Deutsch" GroupName="Language" IsChecked="{Binding DeutschSelected}" Margin="5"/>
+                                                <RadioButton Content="English" GroupName="Language" IsChecked="{Binding EnglishSelected}" Margin="5"/>
+                                            </StackPanel>
+                                        </GroupBox>
+
+                                    </StackPanel>
+                                </GroupItem>
+                            </Expander>
+                            <Expander IsExpanded="False" Header="General" UseLayoutRounding="False">
+                                <GroupItem x:Name="GeneralGroupBox">
+                                    <StackPanel>
+                                        <Button Content="Change user name" Command="{Binding ChangeName}" Margin="3"/>
+                                        <Button Content="Open Log" Command="{Binding OpenLog}" Margin="3"/>
+                                        <Button Content="Open destination folder" Command="{Binding OpenDest}" Margin="3"/>
+                                        <Button Content="Convert Trello Report" Command="{Binding ConvertTrello}" Margin="3"/>
+                                        <Button Content="Fill IBN checklist" Command="{Binding FillExcel}" Margin="3"/>
+                                        <Button Content="Temp" Command="{Binding TempExec}" Margin="3" Visibility="Hidden"/>
+                                    </StackPanel>
+                                </GroupItem>
+                            </Expander>
+                            <Expander IsExpanded="False" Header="KUKA" UseLayoutRounding="False">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" IsEnabled="True">
+                                    <GroupItem x:Name="KUKAGroupBox">
+                                        <StackPanel>
+                                            <Button Content="Generate orgs" Command="{Binding CreateOrgsCommand}" Margin="3"/>
+                                            <Button Content="Generate grippers" Command="{Binding CreateGripperCommand}" Margin="3"/>
+                                            <Button Content="Create Gripper.xml" Command="{Binding CreateGripperXML}" Margin="3"/>
+                                            <Button Content="Create Grp SymName from config.dat" Command="{Binding ReadConfigDat}" Margin="3"/>
+                                            <Button Content="Mirror Path" Command="{Binding Mirror}" Margin="3"/>
+                                            <Button Content="Stopping distances summary" Command="{Binding StoppingDistances}" Margin="3"/>
+                                            <Button Content="Read process points and compare with MPL" Command="{Binding ReadSpotPoints}" Margin="3"/>
+                                            <Button Content="Read backup for WorkBook" Command="{Binding ReadBackupForWB}" Margin="3"/>
+                                            <Button Content="Renumber Points in paths" Command="{Binding RenumberPoints}" Margin="3"/>
+                                            <Button Content="Change TypIDs in backup" Command="{Binding TypIdChange}" Margin="3"/>
+                                            <Button Content="Check bases with RobKalDat project" Command="{Binding CheckBases}" Margin="3"/>
+                                            <!--<Button Content="Fill TypID with MPL" Command="{Binding FillTypID}" Margin="3"/>-->
+                                            <Button Content="Compare bosch with TypID list" Command="{Binding CompareBosch}" Margin="3"/>
+                                            <Button Content="Copy backups to one folder" Command="{Binding RetrieveBackups}" Margin="3"/>
+                                            <Button Content="Prepare SOV backup" Command="{Binding PrepareSOVBackup}" Margin="3"/>
+                                            <Button Content="Fix PTP\LIN Fold KRC4 8.6" Command="{Binding FixPTPandLIN}" Margin="3"/>
+                                            <Button Content="Validate backup" Command="{Binding ValidateBackup}" Margin="3"/>
+                                            <Button Content="Safety tools" Command="{Binding SafetyTools}" Margin="3"/>
+                                            <Button Content="RobKalDat" Command="{Binding RobKalDatProp}" Margin="3" Visibility="Visible"/>
+                                            <Button Content="Lazy PLC SAS Uploader" Command="{Binding SasFillerFromBackup}" Margin="3" Visibility="Visible"/>
+                                            <Button Content="Get data for Mengelist" Command="{Binding GetMenge}" Margin="3" Visibility="Visible"/>
+                                            <Button Content="Compare spot points between backups" Command="{Binding CompareSpots}" Margin="3" Visibility="Visible"/>
+                                            <Button Content="Collisions for PS" Command="{Binding CollisionsForPS}" Margin="3" Visibility="Collapsed"/>
+                                            <Button Content="Modify E1" Command="{Binding ModifyE1}" Margin="3" Visibility="Collapsed"/>
+                                            <Button Content="Shift base" Command="{Binding ShiftBase}" Margin="3" Visibility="Collapsed"/>
+                                            <CheckBox Content="Check command order?" IsChecked="{Binding CheckOrder}" Margin="3"/>
+                                        </StackPanel>
+                                    </GroupItem>
+                                </ScrollViewer>
+                            </Expander>
+                            <Expander IsExpanded="False" Header="ABB" UseLayoutRounding="False">
+                                <GroupItem x:Name="ABBGroupBox">
+                                    <StackPanel>
+                                        <Button Content="ABB Helper" Command="{Binding ABBHelper}" Margin="3"/>
+                                        <Button Content="Rename points" Command="{Binding RenamePointsABB}" Margin="3"/>
+                                        <Button Content="Read process points and compare with MPL" Command="{Binding ReadSpotPointsABB}" Margin="3"/>
+                                        <Button Content="Safety tools" Command="{Binding SafetyTools}" Margin="3"/>
+                                        <Button Content="Read backup for WorkBook" Command="{Binding ReadBackupForWBABB}" Margin="3"/>
+                                    </StackPanel>
+                                </GroupItem>
+                            </Expander>
+                            <Expander IsExpanded="False" Header="FANUC" UseLayoutRounding="False">
+                                <GroupItem x:Name="FanucGroupBox">
+                                    <StackPanel>
+                                        <Button Content="Mirror" Command="{Binding FanucMirror}" Margin="3"/>
+                                        <Button Content="Safety tools" Command="{Binding SafetyTools}" Margin="3"/>
+                                        <Button Content="Renumber Lines" Command="{Binding RenumberLinesFanuc}" Margin="3"/>
+                                    </StackPanel>
+                                </GroupItem>
+                            </Expander>
+                            <Expander IsExpanded="False" Header="OLP Tools" UseLayoutRounding="False">
+                                <GroupItem x:Name="OLPGroupBox">
+                                    <StackPanel>
+                                        <Button Content="Divide path by collisions" Command="{Binding DividePathByColls}" Margin="3"/>
+                                    </StackPanel>
                                 </GroupItem>
                             </Expander>
                         </StackPanel>
@@ -96,7 +182,7 @@
                                     </StackPanel>
                                 </Border>
                                 <Border BorderBrush="Black" BorderThickness="1" Visibility="{Binding RemoveFilesOperationsVisibility}" Margin="5" Background="White">
-                                    <StackPanel Margin="3">
+                                    <!--<StackPanel Margin="3">
                                         <Expander IsExpanded="True" Header="Remove files">
                                             <GroupItem x:Name="RemoveFilesOperationsGroupBox">
                                                 <ItemsControl x:Name="RemoveFilesOperations" VerticalAlignment="Top" ItemsSource="{Binding RemoveFilesOperations}">
@@ -108,7 +194,7 @@
                                                 </ItemsControl>
                                             </GroupItem>
                                         </Expander>
-                                    </StackPanel>
+                                    </StackPanel>-->
                                 </Border>
                             </StackPanel>
                             <StackPanel Margin="3" Background="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}">
@@ -128,7 +214,7 @@
                                     </StackPanel >
                                 </Border>
                                 <Border BorderBrush="Black" BorderThickness="1" Visibility="{Binding CutTextFromFilesOperationsVisibility}" Background="White" Margin="5">
-                                    <StackPanel Margin="3">
+                                    <!--<StackPanel Margin="3">
                                         <Expander IsExpanded="True" Header="Cut text from files" >
                                             <GroupItem x:Name="CutTextFromFilesOperationsGroupBox">
                                                 <ItemsControl Name="CutTextFromFilesOperations" VerticalAlignment="Top" ItemsSource="{Binding CutTextFromFilesOperations}">
@@ -140,7 +226,7 @@
                                                 </ItemsControl>
                                             </GroupItem>
                                         </Expander>
-                                    </StackPanel >
+                                    </StackPanel >-->
                                 </Border>
                             </StackPanel>
                         </StackPanel>

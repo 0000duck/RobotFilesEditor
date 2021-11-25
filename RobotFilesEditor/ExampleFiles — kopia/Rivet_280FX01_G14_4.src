@@ -1,0 +1,374 @@
+&COMMENT 
+DEF  Rivet_280FX01_G14_4	( )
+;FOLD Moduleparameters;%{h}
+;Params 
+;ENDFOLD Moduleparameters
+;FOLD INI 
+  ;FOLD USER INI
+    ;Make your modifications here
+			IF PLC_CHK_INIT() THEN
+				GLOBAL INTERRUPT DECL 3 WHEN $STOPMESS==TRUE DO IR_STOPM ( )
+				INTERRUPT ON 3 
+				BAS (#INITMOV,0 )
+				;FOLD APPLICATION_INI
+				APPLICATION_INI ( )
+				;ENDFOLD (APPLICATION_INI)
+			ENDIF	
+  ;ENDFOLD (USER INI)
+;ENDFOLD (INI)
+;***********************************************************
+;* Programm            : Rivet_280FX01_G14_4
+;* Beschreibung        : Rivet_280FX01_G14_4
+;* Roboter             : 280IR003_KR240R2700PRIME_4
+;* Firma               : Staudinger GmbH
+;* Ersteller           : Wisniewski Michal
+;* Datum               : 20/02/2018
+;* Aenderungsverlauf   : V1.0 i.O.
+;***********************************************************
+
+
+
+;# --------- START PATH : Rivet_280FX01_G14_4 ---------
+tch_auto(2)
+;FOLD Tch Check_Tool_Code ChgToolNo:2
+;FOLD ;%{h}
+;Params IlfProvider=tch; Tch_CmdTech=ToolChg_Cmd; Tch_SubCmdTech=Check_Tool_Code; Tch_ChgToolNoCheck=2
+;ENDFOLD
+Tch_Checktool (2)
+;ENDFOLD
+WAIT FOR $IN_HOME1
+;FOLD PTP HOME1 Vel=100 % PHOME1;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:HOME1, 3:, 5:100, 7:PHOME1
+$BWDSTART = FALSE
+PDAT_ACT= PPHOME1
+FDAT_ACT= FHOME1
+BAS(#PTP_PARAMS,100)
+PTP XHOME1 
+;ENDFOLD
+;FOLD PlcCom 1.Com: 2.Com:Send_UserNum 1 3.Com: Desc:G14
+;FOLD ;%{h}
+;Params IlfProvider=plccom; Plc_ComMove=NoMove; Plc_ComCmd1=_; Plc_ComCmd2=SUN; Plc_CmdNum2=1; Plc_ComCmd3=_; Plc_ComCont=_; Plc_ComDesc=G14
+;ENDFOLD
+Plc_PlcCom (0,4,0,0,1,0,False)
+;ENDFOLD
+;FOLD Area Request AreaNum:4 Abort:Home1 Desc:++ST280+FX001
+;FOLD ;%{h}
+;Params IlfProvider=area; Plc_AreaCmd=Request; Plc_AreaMove=NoMove; Plc_AreaNum=4; Plc_AreaAbort=1; Plc_AreaCont=_; Plc_AreaDesc=++ST280+FX001
+;ENDFOLD
+Plc_AreaPreReq (4)
+Plc_AreaReq (4,1,1,0,False)
+;ENDFOLD
+; Coll 89 - 280FX01 - 280IR03 Rivet, 280IR05 Pick
+;FOLD CollZone Request ZoneNum:89 Desc:280FX01 - 280IR03 Rivet, 280IR05 Pick
+;FOLD ;%{h}
+;Params IlfProvider=collision; Plc_CollCmd=Request; Plc_CollMove=NoMove; Plc_CollPlc=_; Plc_CollZoneNum=89; Plc_CollDesc=280FX01 - 280IR03 Rivet, 280IR05 Pick
+;ENDFOLD
+Plc_CollSafetyReq1 (89)
+;ENDFOLD
+; ------------- Kollisionszonen nicht in der Reihenfolge -------------
+; Coll 78 - 280FX01 - 280IR02 Spot, 280IR03 Rivet
+;FOLD CollZone Request ZoneNum:78 Desc:280FX01 - 280IR02 Spot, 280IR03 Rivet
+;FOLD ;%{h}
+;Params IlfProvider=collision; Plc_CollCmd=Request; Plc_CollMove=NoMove; Plc_CollPlc=_; Plc_CollZoneNum=78; Plc_CollDesc=280FX01 - 280IR02 Spot, 280IR03 Rivet
+;ENDFOLD
+Plc_CollSafetyReq1 (78)
+;ENDFOLD
+; Coll 81 - 280FX01 - 280IR03 Rivet, 280IR04 Screw
+;FOLD CollZone Request ZoneNum:81 Desc:280FX01 - 280IR03 Rivet, 280IR04 Screw
+;FOLD ;%{h}
+;Params IlfProvider=collision; Plc_CollCmd=Request; Plc_CollMove=NoMove; Plc_CollPlc=_; Plc_CollZoneNum=81; Plc_CollDesc=280FX01 - 280IR03 Rivet, 280IR04 Screw
+;ENDFOLD
+Plc_CollSafetyReq1 (81)
+;ENDFOLD
+; Coll 83 - 280FX01 - 280IR01 Drop, 280IR03 Rivet
+;FOLD CollZone Request ZoneNum:83 Desc:280FX01 - 280IR01 Drop, 280IR03 Rivet
+;FOLD ;%{h}
+;Params IlfProvider=collision; Plc_CollCmd=Request; Plc_CollMove=NoMove; Plc_CollPlc=_; Plc_CollZoneNum=83; Plc_CollDesc=280FX01 - 280IR01 Drop, 280IR03 Rivet
+;ENDFOLD
+Plc_CollSafetyReq1 (83)
+;ENDFOLD
+; Coll 92 - 280FX01 - 280IR01 Spot, 280IR03 Spot (2)
+;FOLD CollZone Request ZoneNum:92 Desc:280FX01 - 280IR01 Spot, 280IR03 Spot (2)
+;FOLD ;%{h}
+;Params IlfProvider=collision; Plc_CollCmd=Request; Plc_CollMove=NoMove; Plc_CollPlc=_; Plc_CollZoneNum=92; Plc_CollDesc=280FX01 - 280IR01 Spot, 280IR03 Spot (2)
+;ENDFOLD
+Plc_CollSafetyReq1 (92)
+;ENDFOLD
+; Coll 98 - 280FX01 - 280IR03 Rivet, 280IR05 Rivet
+;FOLD CollZone Request ZoneNum:98 Desc:280FX01 - 280IR03 Rivet, 280IR05 Rivet
+;FOLD ;%{h}
+;Params IlfProvider=collision; Plc_CollCmd=Request; Plc_CollMove=NoMove; Plc_CollPlc=_; Plc_CollZoneNum=98; Plc_CollDesc=280FX01 - 280IR03 Rivet, 280IR05 Rivet
+;ENDFOLD
+Plc_CollSafetyReq1 (98)
+;ENDFOLD
+; Coll 129 - 280FX01 - 280IR03 Rivet, 280IR05 DH (3)
+;FOLD CollZone Request ZoneNum:129 Desc:280FX01 - 280IR03 Rivet, 280IR05 DH (3)
+;FOLD ;%{h}
+;Params IlfProvider=collision; Plc_CollCmd=Request; Plc_CollMove=NoMove; Plc_CollPlc=_; Plc_CollZoneNum=129; Plc_CollDesc=280FX01 - 280IR03 Rivet, 280IR05 DH (3)
+;ENDFOLD
+Plc_CollSafetyReq1 (129)
+;ENDFOLD
+; ------------- Kollisionszonen nicht in der Reihenfolge -------------
+;FOLD Job Started JobNum:4 Desc:Nieten_2 ZN002 auf 280FX001
+;FOLD ;%{h}
+;Params IlfProvider=job; Plc_JobCmd=Started; Plc_JobMove=NoMove; Plc_JobNum=4; Plc_JobCont=_; Plc_JobDesc=Nieten_2 ZN002 auf 280FX001
+;ENDFOLD
+Plc_Job (1,4,False)
+;ENDFOLD
+;FOLD Rvt Init GunNo:2 GunOpen:128mm
+;FOLD ;%{h}
+;Params IlfProvider=rivet; Rvt_CmdTech=Init; Rvt_GunNo=2; Rvt_GunOpen=128; Rvt_Desc=
+;ENDFOLD
+Rvt_Init (2,128)
+;ENDFOLD
+;FOLD PTP HOME1 Vel=100 % PHOME1;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:HOME1, 3:, 5:100, 7:PHOME1
+$BWDSTART = FALSE
+PDAT_ACT= PPHOME1
+FDAT_ACT= FHOME1
+BAS(#PTP_PARAMS,100)
+PTP XHOME1 
+;ENDFOLD
+;FOLD PTP P10 CONT Vel=100 % PP10 Tool[28]:Rivet_Gun_2 Base[1]:280FX01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P10, 3:C_DIS, 5:100, 7:PP10
+$BWDSTART = FALSE
+PDAT_ACT= PPP10
+FDAT_ACT= FP10
+BAS(#PTP_PARAMS,100)
+PTP XP10 C_DIS
+;ENDFOLD
+;FOLD PTP P20 CONT Vel=100 % PP20 Tool[28]:Rivet_Gun_2 Base[1]:280FX01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P20, 3:C_DIS, 5:100, 7:PP20
+$BWDSTART = FALSE
+PDAT_ACT= PPP20
+FDAT_ACT= FP20
+BAS(#PTP_PARAMS,100)
+PTP XP20 C_DIS
+;ENDFOLD
+;FOLD PTP P30 CONT Vel=100 % PP30 Tool[28]:Rivet_Gun_2 Base[1]:280FX01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P30, 3:C_DIS, 5:100, 7:PP30
+$BWDSTART = FALSE
+PDAT_ACT= PPP30
+FDAT_ACT= FP30
+BAS(#PTP_PARAMS,100)
+PTP XP30 C_DIS
+;ENDFOLD
+;FOLD PTP P40 CONT Vel=100 % PP40 Tool[28]:Rivet_Gun_2 Base[1]:280FX01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P40, 3:C_DIS, 5:100, 7:PP40
+$BWDSTART = FALSE
+PDAT_ACT= PPP40
+FDAT_ACT= FP40
+BAS(#PTP_PARAMS,100)
+PTP XP40 C_DIS
+;ENDFOLD
+;FOLD PTP P50 CONT Vel=100 % PP50 Tool[28]:Rivet_Gun_2 Base[1]:280FX01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P50, 3:C_DIS, 5:100, 7:PP50
+$BWDSTART = FALSE
+PDAT_ACT= PPP50
+FDAT_ACT= FP50
+BAS(#PTP_PARAMS,100)
+PTP XP50 C_DIS
+;ENDFOLD
+;FOLD PTP P60 CONT Vel=100 % PP60 Tool[28]:Rivet_Gun_2 Base[1]:280FX01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P60, 3:C_DIS, 5:100, 7:PP60
+$BWDSTART = FALSE
+PDAT_ACT= PPP60
+FDAT_ACT= FP60
+BAS(#PTP_PARAMS,100)
+PTP XP60 C_DIS
+;ENDFOLD
+;FOLD PTP P70 CONT Vel=100 % PP70 Tool[28]:Rivet_Gun_2 Base[1]:280FX01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P70, 3:C_DIS, 5:100, 7:PP70
+$BWDSTART = FALSE
+PDAT_ACT= PPP70
+FDAT_ACT= FP70
+BAS(#PTP_PARAMS,100)
+PTP XP70 C_DIS
+;ENDFOLD
+;DeltaMFG rvt18285_1: DeltaX=0,DeltaY=0,DeltaZ=3.856;
+;FOLD Rvt Rivet PTP TypId:1 RivetNo:18285 GunNo:2 GunOpen:128mm Feed:On FeedFw:Off Vel:100% Tool[28]:Rivet_Gun_2 Base[1]:280FX01
+;FOLD ;%{h}
+;Params IlfProvider=rivet_ptp; ApplFDAT=FDAT; Kuka.BlendingEnabled=False; ApplPDAT=PDAT; Kuka.VelocityPtp=100; Kuka.MovementParameterFieldEnabled=True; Rvt_Cmd=Rivet; Rvt_Move=PTP; Rvt_RivetNo=18285; Rvt_TypId=1; Rvt_GunNo=2; Rvt_GunOpen=128; Rvt_Feed=1; Rvt_FeedFw=0; Rvt_Desc=
+;ENDFOLD
+$BWDSTART = FALSE
+PDAT_ACT = Prvt18285_1
+FDAT_ACT = Frvt18285_1
+BAS(#PTP_PARAMS,100)
+Rvt_Pre (2,1,18285,1,0,0)
+PTP Xrvt18285_1
+Rvt_Exe (2,1,18285,128,1,0)
+;ENDFOLD
+;FOLD LIN P80 CONT Vel=0.1 m/s LP80 Tool[28]:Rivet_Gun_2 Base[1]:280FX01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:P80, 3:C_DIS C_DIS, 5:0.1, 7:LP80
+$BWDSTART = FALSE
+LDAT_ACT= LLP80
+FDAT_ACT= FP80
+BAS(#CP_PARAMS,0.1)
+LIN XP80 C_DIS C_DIS
+;ENDFOLD
+;FOLD PTP P90 CONT Vel=100 % PP90 Tool[28]:Rivet_Gun_2 Base[1]:280FX01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P90, 3:C_DIS, 5:100, 7:PP90
+$BWDSTART = FALSE
+PDAT_ACT= PPP90
+FDAT_ACT= FP90
+BAS(#PTP_PARAMS,100)
+PTP XP90 C_DIS
+;ENDFOLD
+;FOLD PTP P100 CONT Vel=100 % PP100 Tool[28]:Rivet_Gun_2 Base[1]:280FX01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P100, 3:C_DIS, 5:100, 7:PP100
+$BWDSTART = FALSE
+PDAT_ACT= PPP100
+FDAT_ACT= FP100
+BAS(#PTP_PARAMS,100)
+PTP XP100 C_DIS
+;ENDFOLD
+;FOLD PTP P110 CONT Vel=100 % PP110 Tool[28]:Rivet_Gun_2 Base[1]:280FX01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P110, 3:C_DIS, 5:100, 7:PP110
+$BWDSTART = FALSE
+PDAT_ACT= PPP110
+FDAT_ACT= FP110
+BAS(#PTP_PARAMS,100)
+PTP XP110 C_DIS
+;ENDFOLD
+;DeltaMFG rvt18288_1: DeltaX=0,DeltaY=0,DeltaZ=3.857;
+;FOLD Rvt Rivet PTP TypId:1 RivetNo:18288 GunNo:2 GunOpen:128mm Feed:On FeedFw:Off Vel:100% Tool[28]:Rivet_Gun_2 Base[1]:280FX01
+;FOLD ;%{h}
+;Params IlfProvider=rivet_ptp; ApplFDAT=FDAT; Kuka.BlendingEnabled=False; ApplPDAT=PDAT; Kuka.VelocityPtp=100; Kuka.MovementParameterFieldEnabled=True; Rvt_Cmd=Rivet; Rvt_Move=PTP; Rvt_RivetNo=18288; Rvt_TypId=1; Rvt_GunNo=2; Rvt_GunOpen=128; Rvt_Feed=1; Rvt_FeedFw=0; Rvt_Desc=
+;ENDFOLD
+$BWDSTART = FALSE
+PDAT_ACT = Prvt18288_1
+FDAT_ACT = Frvt18288_1
+BAS(#PTP_PARAMS,100)
+Rvt_Pre (2,1,18288,1,0,0)
+PTP Xrvt18288_1
+Rvt_Exe (2,1,18288,128,1,0)
+;ENDFOLD
+;FOLD Job Done JobNum:4 Desc:Nieten_2 ZN002 auf 280FX001
+;FOLD ;%{h}
+;Params IlfProvider=job; Plc_JobCmd=Done; Plc_JobMove=NoMove; Plc_JobNum=4; Plc_JobDesc=Nieten_2 ZN002 auf 280FX001
+;ENDFOLD
+Plc_Job (2,4,False)
+;ENDFOLD
+;FOLD LIN P120 CONT Vel=0.1 m/s LP120 Tool[28]:Rivet_Gun_2 Base[1]:280FX01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VLIN,%P 1:LIN, 2:P120, 3:C_DIS C_DIS, 5:0.1, 7:LP120
+$BWDSTART = FALSE
+LDAT_ACT= LLP120
+FDAT_ACT= FP120
+BAS(#CP_PARAMS,0.1)
+LIN XP120 C_DIS C_DIS
+;ENDFOLD
+;FOLD PTP P130 CONT Vel=100 % PP130 Tool[28]:Rivet_Gun_2 Base[1]:280FX01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P130, 3:C_DIS, 5:100, 7:PP130
+$BWDSTART = FALSE
+PDAT_ACT= PPP130
+FDAT_ACT= FP130
+BAS(#PTP_PARAMS,100)
+PTP XP130 C_DIS
+;ENDFOLD
+;FOLD PTP P140 CONT Vel=100 % PP140 Tool[28]:Rivet_Gun_2 Base[1]:280FX01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P140, 3:C_DIS, 5:100, 7:PP140
+$BWDSTART = FALSE
+PDAT_ACT= PPP140
+FDAT_ACT= FP140
+BAS(#PTP_PARAMS,100)
+PTP XP140 C_DIS
+;ENDFOLD
+;FOLD PTP P150 CONT Vel=100 % PP150 Tool[28]:Rivet_Gun_2 Base[1]:280FX01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P150, 3:C_DIS, 5:100, 7:PP150
+$BWDSTART = FALSE
+PDAT_ACT= PPP150
+FDAT_ACT= FP150
+BAS(#PTP_PARAMS,100)
+PTP XP150 C_DIS
+;ENDFOLD
+;FOLD PTP P160 CONT Vel=100 % PP160 Tool[28]:Rivet_Gun_2 Base[1]:280FX01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P160, 3:C_DIS, 5:100, 7:PP160
+$BWDSTART = FALSE
+PDAT_ACT= PPP160
+FDAT_ACT= FP160
+BAS(#PTP_PARAMS,100)
+PTP XP160 C_DIS
+;ENDFOLD
+;FOLD PTP P170 CONT Vel=100 % PP170 Tool[28]:Rivet_Gun_2 Base[1]:280FX01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P170, 3:C_DIS, 5:100, 7:PP170
+$BWDSTART = FALSE
+PDAT_ACT= PPP170
+FDAT_ACT= FP170
+BAS(#PTP_PARAMS,100)
+PTP XP170 C_DIS
+;ENDFOLD
+;FOLD PTP P180 CONT Vel=100 % PP180 Tool[28]:Rivet_Gun_2 Base[1]:280FX01;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:P180, 3:C_DIS, 5:100, 7:PP180
+$BWDSTART = FALSE
+PDAT_ACT= PPP180
+FDAT_ACT= FP180
+BAS(#PTP_PARAMS,100)
+PTP XP180 C_DIS
+;ENDFOLD
+;FOLD PTP HOME1 Vel=100 % PHOME1;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:HOME1, 3:, 5:100, 7:PHOME1
+$BWDSTART = FALSE
+PDAT_ACT= PPHOME1
+FDAT_ACT= FHOME1
+BAS(#PTP_PARAMS,100)
+PTP XHOME1 
+;ENDFOLD
+;FOLD Area Release AreaNum:4 Desc:++ST280+FX001
+;FOLD ;%{h}
+;Params IlfProvider=area; Plc_AreaCmd=Release; Plc_AreaMove=NoMove; Plc_AreaNum=4; Plc_AreaDesc=++ST280+FX001
+;ENDFOLD
+Plc_AreaPrepareRelease (4)
+Plc_AreaRelease (4)
+;ENDFOLD
+; Coll 89 - 280FX01 - 280IR03 Rivet, 280IR05 Pick
+;FOLD CollZone Release ZoneNum:89 Desc:280FX01 - 280IR03 Rivet, 280IR05 Pick
+;FOLD ;%{h}
+;Params IlfProvider=collision; Plc_CollCmd=Release; Plc_CollMove=NoMove; Plc_CollPlc=_; Plc_CollZoneNum=89; Plc_CollDesc=280FX01 - 280IR03 Rivet, 280IR05 Pick
+;ENDFOLD
+Plc_CollPrepareRelease (89,1)
+Plc_CollSafetyClear1 (89)
+;ENDFOLD
+; ------------- Kollisionszonen nicht in der Reihenfolge -------------
+; Coll 78 - 280FX01 - 280IR02 Spot, 280IR03 Rivet
+;FOLD CollZone Release ZoneNum:78 Desc:280FX01 - 280IR02 Spot, 280IR03 Rivet
+;FOLD ;%{h}
+;Params IlfProvider=collision; Plc_CollCmd=Release; Plc_CollMove=NoMove; Plc_CollPlc=_; Plc_CollZoneNum=78; Plc_CollDesc=280FX01 - 280IR02 Spot, 280IR03 Rivet
+;ENDFOLD
+Plc_CollPrepareRelease (78,1)
+Plc_CollSafetyClear1 (78)
+;ENDFOLD
+; Coll 81 - 280FX01 - 280IR03 Rivet, 280IR04 Screw
+;FOLD CollZone Release ZoneNum:81 Desc:280FX01 - 280IR03 Rivet, 280IR04 Screw
+;FOLD ;%{h}
+;Params IlfProvider=collision; Plc_CollCmd=Release; Plc_CollMove=NoMove; Plc_CollPlc=_; Plc_CollZoneNum=81; Plc_CollDesc=280FX01 - 280IR03 Rivet, 280IR04 Screw
+;ENDFOLD
+Plc_CollPrepareRelease (81,1)
+Plc_CollSafetyClear1 (81)
+;ENDFOLD
+; Coll 83 - 280FX01 - 280IR01 Drop, 280IR03 Rivet
+;FOLD CollZone Release ZoneNum:83 Desc:280FX01 - 280IR01 Drop, 280IR03 Rivet
+;FOLD ;%{h}
+;Params IlfProvider=collision; Plc_CollCmd=Release; Plc_CollMove=NoMove; Plc_CollPlc=_; Plc_CollZoneNum=83; Plc_CollDesc=280FX01 - 280IR01 Drop, 280IR03 Rivet
+;ENDFOLD
+Plc_CollPrepareRelease (83,1)
+Plc_CollSafetyClear1 (83)
+;ENDFOLD
+; Coll 92 - 280FX01 - 280IR01 Spot, 280IR03 Spot (2)
+;FOLD CollZone Release ZoneNum:92 Desc:280FX01 - 280IR01 Spot, 280IR03 Spot (2)
+;FOLD ;%{h}
+;Params IlfProvider=collision; Plc_CollCmd=Release; Plc_CollMove=NoMove; Plc_CollPlc=_; Plc_CollZoneNum=92; Plc_CollDesc=280FX01 - 280IR01 Spot, 280IR03 Spot (2)
+;ENDFOLD
+Plc_CollPrepareRelease (92,1)
+Plc_CollSafetyClear1 (92)
+;ENDFOLD
+; Coll 98 - 280FX01 - 280IR03 Rivet, 280IR05 Rivet
+;FOLD CollZone Release ZoneNum:98 Desc:280FX01 - 280IR03 Rivet, 280IR05 Rivet
+;FOLD ;%{h}
+;Params IlfProvider=collision; Plc_CollCmd=Release; Plc_CollMove=NoMove; Plc_CollPlc=_; Plc_CollZoneNum=98; Plc_CollDesc=280FX01 - 280IR03 Rivet, 280IR05 Rivet
+;ENDFOLD
+Plc_CollPrepareRelease (98,1)
+Plc_CollSafetyClear1 (98)
+;ENDFOLD
+; Coll 129 - 280FX01 - 280IR03 Rivet, 280IR05 DH (3)
+;FOLD CollZone Release ZoneNum:129 Desc:280FX01 - 280IR03 Rivet, 280IR05 DH (3)
+;FOLD ;%{h}
+;Params IlfProvider=collision; Plc_CollCmd=Release; Plc_CollMove=NoMove; Plc_CollPlc=_; Plc_CollZoneNum=129; Plc_CollDesc=280FX01 - 280IR03 Rivet, 280IR05 DH (3)
+;ENDFOLD
+Plc_CollPrepareRelease (129,1)
+Plc_CollSafetyClear1 (129)
+;ENDFOLD
+; ------------- Kollisionszonen nicht in der Reihenfolge -------------
+;FOLD PTP HOME1 Vel=100 % PHOME1;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:HOME1, 3:, 5:100, 7:PHOME1
+$BWDSTART = FALSE
+PDAT_ACT= PPHOME1
+FDAT_ACT= FHOME1
+BAS(#PTP_PARAMS,100)
+PTP XHOME1 
+;ENDFOLD
+IF NOT $IN[32] THEN
+tch_auto(1)
+ENDIF
+
+
+
+END
+

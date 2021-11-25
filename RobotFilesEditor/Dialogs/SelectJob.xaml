@@ -1,0 +1,36 @@
+﻿<Window x:Class="RobotFilesEditor.Dialogs.SelectJob"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"        
+        xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"        
+        mc:Ignorable="d"
+        Title="Select Job From Duplicate" SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <cmd:EventToCommand Command="{Binding Path=ClosingCommand}" PassEventArgsToCommand="True" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <Window.Resources>
+        <!--DataTemplate DataType="{x:Type models:FileValidationData}"></-->
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="109*"/>
+            <ColumnDefinition Width="37*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.ColumnSpan="2" FocusManager.FocusedElement="{Binding ElementName=CollDescriptions}">
+            <TextBlock HorizontalAlignment="Center" Margin="20" Text="{Binding TextBlockValue}"></TextBlock>
+            <TextBlock x:Name="CollNum" Margin="20" Text="{Binding Pair.Key}" HorizontalAlignment="Center" FontWeight="Bold"></TextBlock>
+            <ListBox x:Name="CollDescriptions" Margin="20" ItemsSource="{Binding Pair.Value}" HorizontalAlignment="Center"
+                     SelectedItem="{Binding SelectedItem}"></ListBox>
+            <TextBox MinWidth="80" MinHeight="10" HorizontalAlignment="Center" Text="{Binding ResultText}"/>
+            <Button x:Name="CollDescrOk" Margin="20" HorizontalAlignment="Center" Content="OK" FontWeight="Bold" Click="JobDescrOk_Click" IsDefault="True"></Button>
+        </StackPanel>
+    </Grid>
+
+</Window>

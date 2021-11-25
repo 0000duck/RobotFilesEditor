@@ -1,5 +1,7 @@
-﻿using System;
+﻿using RobotFilesEditor.Model.Operations;
+using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -28,11 +30,14 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
         }
         private static List<ResultInfo> GlobalFileHeader(List<string> sourcePaths, string destinationFilePath, List<ResultInfo>fileContent)
         {
+            //TEMPORARY
+            return fileContent;
             List<ResultInfo> header = new List<ResultInfo>();
             List<string> file = new List<string>();
             string containheaderPattern = @"^;\*+.*(Programm|Beschreibung|Roboter|Firma|Ersteller|Datum|Aenderungsverlauf|\*{20})";
@@ -61,6 +66,10 @@ namespace RobotFilesEditor
                                 line = $"{match}{Path.GetFileNameWithoutExtension(destinationFilePath)}";
                             }
 
+                            if (line.ToLower().Contains("firma"))
+                                line = ";* Firma               : AIUT";
+                            if (line.ToLower().Contains("ersteller"))
+                                line = ";* Ersteller           : " + ConfigurationManager.AppSettings["Ersteller"];
                             header.Add(ResultInfo.CreateResultInfo(line));
                             i++;
                             line = file[i];
@@ -103,6 +112,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }            
         }
@@ -126,13 +136,17 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
         }
         private static List<FileLineProperties> GroupsHeadersByVariableOrderNumber(List<FileLineProperties> linesToAddToFile, GlobalData.SortType sortType = GlobalData.SortType.OrderByOrderNumber)
-        {          
+        {
+            //TEMPORARY
+            //return linesToAddToFile;
             List<FileLineProperties> linesBuffer = new List<FileLineProperties>();
-            var groups = linesToAddToFile.GroupBy(y => y.VariableOrderNumber);
+            //var groups = linesToAddToFile.GroupBy(y => y.VariableOrderNumber);
+            var groups = linesToAddToFile.GroupBy(y => y.LineNumber);
 
             groups.OrderBy(x => x.Key);
 
@@ -142,10 +156,10 @@ namespace RobotFilesEditor
                 string groupNumber= string.Format("{0:00}", g.Key);
                 string groupSpace = $";----------------------------------------- ST{groupNumber}_ZN{groupNumber} -----------------------------------------";
 
-                linesBuffer.Add(new FileLineProperties() { LineContent = groupSpace });
+                //linesBuffer.Add(new FileLineProperties() { LineContent = groupSpace });
                 linesBuffer.AddRange(g);
-                linesBuffer.Add(new FileLineProperties() { LineContent = groupSpace });
-                linesBuffer.Add(new FileLineProperties() { LineContent = "\n" });
+                //linesBuffer.Add(new FileLineProperties() { LineContent = groupSpace });
+                //linesBuffer.Add(new FileLineProperties() { LineContent = "\n" });
             }               
 
             return linesBuffer;

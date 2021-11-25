@@ -1,0 +1,28 @@
+&COMMENT Globale Punkteliste
+&REL 33
+DEFDAT Dock_ZN1_global PUBLIC
+;***********************************************************
+;* Programm            : Dock_ZN1_global
+;* Beschreibung        : Dock_ZN1_global
+;* Roboter             : 280IR003_KR240R2700PRIME_4
+;* Firma               : Staudinger GmbH
+;* Ersteller           : Wisniewski Michal
+;* Datum               : 20/02/2018
+;* Aenderungsverlauf   : V1.0 i.O.
+;***********************************************************
+;================================================
+; Positions (if any)
+;================================================
+
+DECL GLOBAL E6POS XBefore_Dock1={X 0,Y 0,Z -60,A 0,B 0,C 0,S 6,T 19,E1 -400,E2 0,E3 0,E4 0,E5 0,E6 0}
+DECL GLOBAL FDAT FBefore_Dock1={TOOL_NO 20,BASE_NO 21,IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}
+DECL GLOBAL E6POS XTchDockTNo1StNo1={X 0,Y 0,Z 0,A 0,B 0,C 0,S 6,T 19,E1 -400,E2 0,E3 0,E4 0,E5 0,E6 0}
+DECL GLOBAL FDAT FTchDockTNo1StNo1={TOOL_NO 20,BASE_NO 21,IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}
+DECL GLOBAL E6POS XTchUnDockTNo1StNo1={X 192.13,Y -2.93,Z 697.78,A 92.364,B 89.681,C -87.651,S 6,T 19,E1 -400,E2 0,E3 0,E4 0,E5 0,E6 0}
+DECL GLOBAL FDAT FTchUnDockTNo1StNo1={TOOL_NO 27,BASE_NO 21,IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}
+DECL GLOBAL E6POS XBefore_Undock1={X 192.1,Y -2.76,Z 654.56,A 91.937,B 89.68,C -88.078,S 6,T 19,E1 -400,E2 0,E3 0,E4 0,E5 0,E6 0}
+DECL GLOBAL FDAT FBefore_Undock1={TOOL_NO 27,BASE_NO 21,IPO_FRAME #BASE,POINT2[] " ",TQ_STATE FALSE}
+
+
+ENDDAT
+

@@ -7,6 +7,9 @@ using System.IO;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
 using System.Windows;
+using RobotFilesEditor.Dialogs;
+using RobotFilesEditor.Model.Operations;
+using System.Xml;
 
 namespace RobotFilesEditor.ViewModel
 {
@@ -49,6 +52,11 @@ namespace RobotFilesEditor.ViewModel
         {
             get;
             set;
+        }
+
+        public bool EnableWindow
+        {
+            get; set;
         }
 
         public string MoveFilesOperationsVisibility
@@ -129,7 +137,8 @@ namespace RobotFilesEditor.ViewModel
                 if (Directory.Exists(value) && _sourcePath != value)
                 {
                     _sourcePath = value;
-                    RaisePropertyChanged(nameof(SourcePath));  
+                    RaisePropertyChanged(nameof(SourcePath));
+                    WriteToApplicationConfig(false);
                     if(SelectedControler!=null)
                     {
                         SelectedControler.SourcePath = SourcePath;
@@ -137,11 +146,42 @@ namespace RobotFilesEditor.ViewModel
                         {
                             operation.Operations.ForEach(x => x.SourcePath = SourcePath);
                         }
-                        ShowAllOperationsResults();
-                    }                    
+                        //ShowAllOperationsResults();
+                        foreach (var controller in ControlerChooser)
+                            controller.Checked = false;
+                    }
+                    //SelectedControler = null;
                 }
             }
         }
+
+        private bool _englishSelected;
+        public bool EnglishSelected
+        {
+            get { return _englishSelected; }
+            set
+            {
+                Set( ref _englishSelected, value);
+                if (value == true)
+                    SrcValidator.language = "EN";
+                CanScanContent = true;
+            }
+        }
+
+        private bool _deutschSelected;
+        public bool DeutschSelected
+        {
+            get { return _deutschSelected; }
+            set
+            {
+                Set(ref _deutschSelected, value);
+                if (value == true)
+                    SrcValidator.language = "DE";
+                CanScanContent = true;
+            }
+        }
+
+
         public string DestinationPath
         {
             get { return _destinationPath; }
@@ -151,6 +191,8 @@ namespace RobotFilesEditor.ViewModel
                 {
                     _destinationPath = value;
                     RaisePropertyChanged(nameof(DestinationPath));
+                    GlobalData.DestinationPath = DestinationPath;
+                    WriteToApplicationConfig(true);
                     if (SelectedControler != null)
                     {
                         SelectedControler.DestinationPath = DestinationPath;
@@ -158,7 +200,9 @@ namespace RobotFilesEditor.ViewModel
                         {
                             operation.Operations.ForEach(x => x.DestinationPath = DestinationPath);
                         }
-                        ShowAllOperationsResults();
+                        foreach (var controller in ControlerChooser)
+                            controller.Checked = false;
+                        //ShowAllOperationsResults();
                     }                    
                 }              
             }
@@ -177,6 +221,21 @@ namespace RobotFilesEditor.ViewModel
                 }
             }
         }
+
+        private bool canScanContent;
+        public bool CanScanContent
+        {
+            get { return canScanContent; }
+            set
+            {
+                if (canScanContent != value)
+                {
+                    canScanContent = value;
+                    RaisePropertyChanged(()=>CanScanContent);
+                }
+            }
+        }
+
         public bool ConfirmButtonEnabled
         {
             get { return _continueWithoutConfirm == false; }            
@@ -218,7 +277,37 @@ namespace RobotFilesEditor.ViewModel
                 }
             }
         }
-                       
+
+        string _selectedItemFromList;
+        public string SelectedItemFromList
+        {
+            get { return _selectedItemFromList; }
+            set
+            {
+                if (_selectedItemFromList != value)
+                {
+                    _selectedItemFromList = value;
+                    RaisePropertyChanged(() => _selectedItemFromList);
+                }
+            }
+        }
+
+        private bool _checkOrder;
+        public bool CheckOrder
+        {
+            get { return _checkOrder; }
+            set
+            {
+                if (_checkOrder != value)
+                {
+                    _checkOrder = value;
+                    RaisePropertyChanged(() => CheckOrder);
+                    GlobalData.CheckOrder = value;
+                }
+            }
+        }
+
+
         private List<Controler> _controlers;
         private Controler _selectedControler;
         private string _sourcePath;
@@ -227,20 +316,26 @@ namespace RobotFilesEditor.ViewModel
 
         public MainViewModel(List<Controler> controlers)
         {
-            ControlerChooser = new ObservableCollection<ControlItem>();
-            MoveFilesOperations = new ObservableCollection<ControlItem>();
-            CopyFilesOperations = new ObservableCollection<ControlItem>();
-            CopyTextFromFilesOperations = new ObservableCollection<ControlItem>();
-            RemoveFilesOperations = new ObservableCollection<ControlItem>();
-            CutTextFromFilesOperations = new ObservableCollection<ControlItem>();
-          
-            AllOperations = new ObservableCollection<ControlItem>();
-          
-            Controlers = controlers;
-            SourcePath = Controlers.FirstOrDefault().SourcePath;
-            DestinationPath = Controlers.FirstOrDefault().DestinationPath;
-            SetCommands();
-            CreateControlerChooser();
+            if (!ViewModelBase.IsInDesignModeStatic)
+            {
+                CheckOrder = false;
+                ControlerChooser = new ObservableCollection<ControlItem>();
+                MoveFilesOperations = new ObservableCollection<ControlItem>();
+                CopyFilesOperations = new ObservableCollection<ControlItem>();
+                CopyTextFromFilesOperations = new ObservableCollection<ControlItem>();
+                RemoveFilesOperations = new ObservableCollection<ControlItem>();
+                CutTextFromFilesOperations = new ObservableCollection<ControlItem>();
+
+                AllOperations = new ObservableCollection<ControlItem>();
+
+                Controlers = controlers;
+                SourcePath = Controlers.FirstOrDefault().SourcePath;
+                DestinationPath = Controlers.FirstOrDefault().DestinationPath;
+                SetCommands();
+                CreateControlerChooser();
+                //DeutschSelected = true;
+                CanScanContent = false;
+            }
         }
 
         #region ControlersCreator
@@ -333,6 +428,7 @@ namespace RobotFilesEditor.ViewModel
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }          
         }
@@ -346,14 +442,374 @@ namespace RobotFilesEditor.ViewModel
         #region Command
         public ICommand SetSourcePathCommand { get; set; }
         public ICommand SetDestinationPathCommand { get; set; }
+        public ICommand ChangeName { get; set; }
+        public ICommand OpenLog { get; set; }
+        public ICommand Mirror { get; set; }
+        public ICommand Reset { get; set; }
+        public ICommand OpenDest { get; set; }
+        public ICommand FillExcel { get; set; }
         public ICommand ExecuteAllOperationsCommand { get; set; }
+        public ICommand CreateOrgsCommand { get; set; }
+        public ICommand ReadConfigDat { get; set; }
+        public ICommand CreateGripperCommand { get; set; }
         public ICommand ClosingCommand { get; set; }
+        public ICommand OpenInNotepadCommand { get; set; }
+        public ICommand SetCorrectCollisionDescription { get; set; }
+        public ICommand FixOffline { get; set; }
+        public ICommand SpotToPTP { get; set; }
+        public ICommand StoppingDistances { get; set; }
+        public ICommand ReadSpotPoints { get; set; }
+        public ICommand ReadBackupForWB { get; set; }
+        public ICommand RenumberPoints { get; set; }
+        public ICommand TypIdChange { get; set; }
+        public ICommand CheckBases { get; set; }
+        public ICommand FillTypID { get; set; }
+        public ICommand CompareBosch { get; set; }
+        public ICommand RetrieveBackups { get; set; }
+        public ICommand PrepareSOVBackup { get; set; }        
+        public ICommand ABBandFanucChecksum { get; set; }
+        public ICommand SafetyTools { get; set; }
+        public ICommand ValidateBackup { get; set; }
+        public ICommand ABBHelper { get; set; }
+        public ICommand FanucMirror { get; set; }
+        public ICommand CreateGripperXML { get; set; }
+        public ICommand FixPTPandLIN { get; set; }
+        public ICommand RenumberLinesFanuc { get; set; }
+        public ICommand ConvertTrello { get; set; }
+        public ICommand RenamePointsABB { get; set; }
+        public ICommand RobKalDatProp { get; set; }
+        public ICommand ReadSpotPointsABB { get; set; }
+        public ICommand CollisionsForPS { get; set; }
+        public ICommand ModifyE1 { get; set; }
+        public ICommand SasFillerFromBackup { get; set; }
+        public ICommand GetMenge { get; set; }
+        public ICommand ReadBackupForWBABB { get; set; }
+        public ICommand CompareSpots { get; set; }
+        public ICommand TempExec { get; set; }
+        public ICommand DividePathByColls { get; set; }
+        public ICommand ScanContent { get; set; }
+        public ICommand ShiftBase { get; set; }        
+
+
         private void SetCommands()
         {
+            ChangeName = new RelayCommand(ChangeNameExecute);
+            OpenLog = new RelayCommand(OpenLogExecute);
+            Mirror = new RelayCommand(MirrorExecute);
+            Reset = new RelayCommand(ResetExecute);
+            ReadConfigDat = new RelayCommand(ReadConfigDatExecute);
+            OpenDest = new RelayCommand(OpenDestExecute);
+            FillExcel = new RelayCommand(FillExcelExecute);
+            FixOffline = new RelayCommand(FixOfflineExecute);
+            SpotToPTP = new RelayCommand(SpotToPTPExecute);
+            StoppingDistances = new RelayCommand(StoppingDistancesExecute);
+            RenumberPoints = new RelayCommand(RenumberPointsExecute);
+            ReadSpotPoints = new RelayCommand(ReadSpotPointsExecute);
+            SetCorrectCollisionDescription = new RelayCommand(SetCorrectCollisionDescriptionExecute);
+            CreateOrgsCommand = new RelayCommand(CreateOrgsCommandExecute);
+            CreateGripperCommand = new RelayCommand(CreateGripperCommandExecute);
             SetSourcePathCommand = new RelayCommand(SetSourcePathCommandExecute);
             SetDestinationPathCommand = new RelayCommand(SetDestinationPathCommandExecute);
             ExecuteAllOperationsCommand = new RelayCommand(ExecuteAllOperationsCommandExecute);
+            OpenInNotepadCommand = new RelayCommand(OpenInNotepadCommandExecute);
             ClosingCommand = new RelayCommand(ClosingCommandExecute);
+            ReadBackupForWB = new RelayCommand(ReadBackupForWBExecute);
+            TypIdChange = new RelayCommand(TypIdChangeExecute);
+            CheckBases = new RelayCommand(CheckBasesExecute);
+            FillTypID = new RelayCommand(FillTypIDExecute);
+            CompareBosch = new RelayCommand(CompareBoschExecute);
+            RetrieveBackups = new RelayCommand(RetrieveBackupsExecute);
+            PrepareSOVBackup = new RelayCommand(PrepareSOVBackupExecute);
+            ABBandFanucChecksum = new RelayCommand(ABBandFanucChecksumExecute);
+            SafetyTools = new RelayCommand(SafetyToolsExecute);
+            ValidateBackup = new RelayCommand(ValidateBackupExecute);
+            ABBHelper = new RelayCommand(ABBHelperExecute);
+            FanucMirror = new RelayCommand(FanucMirrorExecute);
+            CreateGripperXML = new RelayCommand(CreateGripperXMLExecute);
+            FixPTPandLIN = new RelayCommand(FixPTPandLINExecute);
+            RenumberLinesFanuc = new RelayCommand(RenumberLinesFanucExecute);
+            ConvertTrello = new RelayCommand(ConvertTrelloExecute);
+            RenamePointsABB = new RelayCommand(RenamePointsABBExecute);
+            RobKalDatProp = new RelayCommand(RobKalDatExecute);
+            ReadSpotPointsABB = new RelayCommand(ReadSpotPointsABBExecute);
+            CollisionsForPS = new RelayCommand(CollisionsForPSExecute);
+            ModifyE1 = new RelayCommand(ModifyE1Execute);
+            SasFillerFromBackup = new RelayCommand(SasFillerFromBackupExecute);
+            GetMenge = new RelayCommand(GetMengeExecute);
+            ReadBackupForWBABB = new RelayCommand(ReadBackupForWBABBExecute);
+            CompareSpots = new RelayCommand(CompareSpotsExecute);
+            TempExec = new RelayCommand(TempExecExecute);
+            DividePathByColls = new RelayCommand(DividePathByCollsExecute);
+            ScanContent = new RelayCommand(ScanContentExecute);
+            ShiftBase = new RelayCommand(ShiftBaseExecute);
+        }
+
+        private void ShiftBaseExecute()
+        {
+            ShiftBaseMethods.Execute();
+        }
+
+        private void ScanContentExecute()
+        {
+            var controller = ControlerChooser.FirstOrDefault(x => x.Checked == true);
+            if (controller!=null)
+                controller.ClickedCommandExecuteTest(true);
+        }
+
+
+        private void DividePathByCollsExecute()
+        {
+            Model.Operations.OLPTools.DividePathByCollsMethods divColls = new Model.Operations.OLPTools.DividePathByCollsMethods();
+            divColls.Execute();
+        }
+
+        private void TempExecExecute()
+        {
+            Model.TempFunctions.TempClass.Execute();
+        }
+
+        private void CompareSpotsExecute()
+        {
+            Model.Operations.CompareSpotsExecute.Execute();
+        }
+
+        private void ReadBackupForWBABBExecute()
+        {
+            ReadBackupsForWBMethods.Execute("ABB");
+        }
+
+        private void GetMengeExecute()
+        {
+            GetMengeMethods.Execute();
+        }
+
+        private void SasFillerFromBackupExecute()
+        {
+            Model.Operations.SasFillerFromBackupMethods.Execute();
+        }
+
+        private void ModifyE1Execute()
+        {
+            Model.Operations.TempScripts.ModifyE1Value.Execute();
+        }
+
+        private void CollisionsForPSExecute()
+        {
+            CollisionsForPSMethods.Execute();
+        }
+
+        private void ReadSpotPointsABBExecute()
+        {
+            ReadSpotsMethods.Execute("ABB");
+        }
+
+        private void RobKalDatExecute()
+        {
+            RobKalDat.MainWindow window = new RobKalDat.MainWindow();
+            window.Owner = Application.Current.Windows
+            .Cast<Window>()
+            .Single(w => w.DataContext == this);
+            window.ShowDialog();
+        }
+
+        private void RenamePointsABBExecute()
+        {
+            RobotPointsRenumber.MainWindow window = new RobotPointsRenumber.MainWindow();
+            //window.Owner = Application.Current.Windows
+            //.Cast<Window>()
+            //.Single(w => w.DataContext == this);
+            //window.ShowDialog();
+        }
+
+        private void ConvertTrelloExecute()
+        {
+            TrelloConvertMethods.Execute();
+        }
+
+        private void RenumberLinesFanucExecute()
+        {
+            RenumberLinesFanucMethods.Execute();
+        }
+
+        private void FixPTPandLINExecute()
+        {
+            FixPtpAndLinMethods.Execute();
+        }
+
+        private void CreateGripperXMLExecute()
+        {
+            CreateGripperMethods.CreateGripperXMLExecute();
+        }
+
+        private void FanucMirrorExecute()
+        {
+            Fanuc_mirro.MainWindow window = new Fanuc_mirro.MainWindow();
+            window.Show();
+        }
+
+        private void ABBHelperExecute()
+        {
+            ABB_add_spaces.MainWindow window = new ABB_add_spaces.MainWindow();
+            window.Show();
+        }
+
+        private void ValidateBackupExecute()
+        {
+            Model.Operations.BackupSyntaxValidation.KUKASynataxValidator.Execute();
+        }
+
+        private void SafetyToolsExecute()
+        {
+            
+            RobotSafetyGenerator.MainWindow window = new RobotSafetyGenerator.MainWindow();
+            window.Show();
+        }
+
+        private void ABBandFanucChecksumExecute()
+        {
+            //ABBAndFanucChecksumMethods.Execute();
+        }
+
+        private void PrepareSOVBackupExecute()
+        {
+            PrepareSOVBackupMethods.Execute();
+        }
+
+        private void RetrieveBackupsExecute()
+        {
+            RetrieveBackupMethods.Execute();
+        }
+
+        private void CompareBoschExecute()
+        {
+            CompareBoschMethods.Execute();
+        }
+
+        private void FillTypIDExecute()
+        {
+            FillTypIDMethods.Execute();
+        }
+
+        private void CheckBasesExecute()
+        {
+            CheckBasesMethods.Execute();
+        }
+
+        private async void TypIdChangeExecute()
+        {
+            TypIdChangeMethods typIdMethods = new TypIdChangeMethods();
+            await typIdMethods.Execute();
+        }
+
+        private void RenumberPointsExecute()
+        {
+            RenumberPointsMethods.Execute(); ;
+        }
+
+        private void ReadBackupForWBExecute()
+        {
+            ReadBackupsForWBMethods.Execute("KUKA");
+        }
+
+        private void ReadSpotPointsExecute()
+        {
+            ReadSpotsMethods.Execute("KUKA");
+        }
+
+        private void StoppingDistancesExecute()
+        {
+            StoppingDistanceMethods.Execute();
+        }
+
+        private void SpotToPTPExecute()
+        {
+            SpotToPTPMethods.ChangeToPTP();
+        }
+
+        private void FixOfflineExecute()
+        {
+            FixOfflineMethods.FixOffline();
+        }
+
+        private void ReadConfigDatExecute()
+        {
+            GetGripperFromConfigDatMethods.ReadConfigDat();
+        }
+
+        private void FillExcelExecute()
+        {
+            FillExcelMethods.FillExcel();
+        }
+
+        private void CreateGripperCommandExecute()
+        {
+            OnCreateGripperCommandExecute();
+        }
+
+        private void ResetExecute()
+        {
+            Model.Operations.SrcValidator.DeleteOldConfigFile();
+        }
+
+        private void MirrorExecute()
+        {
+            Model.Operations.SrcValidator.MirrorPaths();
+        }
+
+        private void OpenLogExecute()
+        {
+            OnOpenLogExecute();
+        }
+
+        private void ChangeNameExecute()
+        {
+            string name = null;
+            while (name == null || name.ToLower() == "default" || name == "")
+            {
+                var vm = new ChangeNameViewModel();
+                ChangeName sW = new ChangeName(vm);
+                var dialogResult = sW.ShowDialog();
+                name = vm.Name;
+            }
+        }
+
+        private void CreateOrgsCommandExecute()
+        {
+            OnCreateOrgsCommandExecute();
+        }
+
+        private void OnCreateOrgsCommandExecute()
+        {
+            if (GlobalData.SrcPathsAndJobs == null || GlobalData.SrcPathsAndJobs.Count == 0)
+            {
+                MessageBox.Show("No paths found", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            else
+            {
+                if (GlobalData.ControllerType == "KRC2 L6" || GlobalData.ControllerType == "KRC2 V8" || GlobalData.ControllerType == "KRC4")
+                {
+                    var vm = new CreateOrgsViewModel(GlobalData.SrcPathsAndJobs, GlobalData.Jobs);
+                    CreateOrgs sW = new CreateOrgs(vm);
+                    var dialogResult = sW.ShowDialog();
+                    if ((bool)dialogResult)
+                    {
+                        CreateOrgsMethods createOrgsMethods = new CreateOrgsMethods();
+                        createOrgsMethods.CreateOrgs(vm.DictOrgsElements, vm.SelectedToolsNumber, vm.SafeRobot, vm.SelectedLine, vm.SelectedGunsNumber, vm.SelectedPLC, vm.RobotName, vm.SelectedStartOrgNum, vm.WaitForInHome);
+                    }
+                }
+                else
+                    MessageBox.Show("Use SAS to generate orgs", "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+
+        private void SetCorrectCollisionDescriptionExecute()
+        {
+            
+        }
+
+        private void OpenInNotepadCommandExecute()
+        {
+            OnOpenInNotepadCommandExecute();
         }
         #endregion Command
 
@@ -367,9 +823,10 @@ namespace RobotFilesEditor.ViewModel
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }           
-        }     
+        }
 
         private void SetSourcePathCommandExecute()
         {
@@ -379,6 +836,7 @@ namespace RobotFilesEditor.ViewModel
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 MessageBoxResult ExeptionMessage = MessageBox.Show(ex.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
             }          
         }
@@ -391,6 +849,7 @@ namespace RobotFilesEditor.ViewModel
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 MessageBoxResult ExeptionMessage = MessageBox.Show(ex.Message, "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
             }          
         }
@@ -411,6 +870,7 @@ namespace RobotFilesEditor.ViewModel
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }          
 
@@ -426,6 +886,7 @@ namespace RobotFilesEditor.ViewModel
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }          
         }     
@@ -453,10 +914,102 @@ namespace RobotFilesEditor.ViewModel
 
         private void ShowAllOperationsResults()
         {
+            SrcValidator.GetCopyOperationsCount(AllOperations);
             foreach (var operation in AllOperations)
             {
                 operation.PreviewOperationCommandExecute();
             }
+            CommonLibrary.CommonMethods.CreateLogFile(SrcValidator.logFileContent, "\\log.txt");
+        }
+
+        private void OnOpenInNotepadCommandExecute()
+        {
+            
+        }
+
+        private void OnCreateGripperCommandExecute()
+        {
+            if (GlobalData.ControllerType == "KRC2 L6" || GlobalData.ControllerType == "KRC2 V8" || GlobalData.ControllerType == "KRC4")
+            {
+                var vm = new CreateGripperViewModel();
+                bool? dialogResult = false;
+                while (!CreateGripperMethods.ValidateData(vm, dialogResult))
+                {
+                    CreateGripper sW = new CreateGripper(vm);
+                    dialogResult = sW.ShowDialog();
+                    sW.Close();
+                    if (dialogResult == false)
+                        break;
+                }
+
+                if (vm.Success)
+                {
+                    CreateGripperMethods.CreateGripper(vm.GripperElements, vm.GripperElementSensors, vm.NrOfInputs, vm.NrOfOutputs, vm.SelectedGripperNumber, vm.HasSoftStart);
+                    if (GlobalData.ControllerType == "KRC4")
+                        CreateGripperMethods.CreateGripperXML(vm.GripperElements, vm.GripperElementSensors, vm.NrOfInputs, vm.NrOfOutputs, vm.SelectedGripperNumber, vm.HasSoftStart, vm.StartAddresses.First().Value,vm.OutsForClose.First().Value);
+                }
+            }
+            else
+                MessageBox.Show("Use SAS to generate grippers", "Warning", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        private void WriteToApplicationConfig(bool isDestination)
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.Load(GlobalData.PathFile);
+            XmlNode root = doc.DocumentElement;
+            if (isDestination)
+            {
+                XmlNode myNode = root.SelectSingleNode("DestinationPath");
+                myNode.InnerText = DestinationPath;
+            }
+            else
+            {
+                XmlNode myNode = root.SelectSingleNode("SourcePath");
+                myNode.InnerText = SourcePath;
+            }
+            doc.Save(GlobalData.PathFile);
+
+
+            //string[] readLines = File.ReadAllLines(GlobalData.ConfigurationFileName);
+
+            //var listOfStrings = new List<string>();
+            //if (File.Exists(GlobalData.ConfigurationFileName))
+            //{
+            //    foreach (string line in readLines)
+            //    {
+            //        if (line.Contains("DestinationPath") & isDestination)
+            //        {
+            //            listOfStrings.Add("DestinationPath=\"" + DestinationPath + "\"");
+            //        }
+            //        else if (line.Contains("SourcePath") & !isDestination)
+            //        {
+            //            listOfStrings.Add("SourcePath=\"" + SourcePath + "\"");
+            //        }
+
+            //        else
+            //            listOfStrings.Add(line);
+            //    }
+            //    string[] linesToWrite = listOfStrings.ToArray();
+            //    File.WriteAllLines(GlobalData.ConfigurationFileName, linesToWrite);
+            //}
+        }
+
+        private void OnOpenLogExecute()
+        {
+            string localPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "RobotFilesHarvester\\log.txt");
+            if (File.Exists(localPath))
+            {
+                System.Diagnostics.Process.Start(localPath);
+            }
+        }
+
+        private void OpenDestExecute()
+        {
+            if (Directory.Exists(GlobalData.DestinationPath))
+                System.Diagnostics.Process.Start(GlobalData.DestinationPath.Trim());
+            else
+                MessageBox.Show("Destination folder does not exist", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
 }

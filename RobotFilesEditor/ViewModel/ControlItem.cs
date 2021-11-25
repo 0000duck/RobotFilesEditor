@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
+using RobotFilesEditor.Model.Operations;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -21,10 +22,27 @@ namespace RobotFilesEditor
 
         public string Title { get; set; }
         public ObservableCollection<ResultInfo> OperationResult { get; set; }
-        public ICommand ClickedCommand { get; set; }
+        //public ICommand ClickedCommand { get; set; }
         public ICommand ExecuteOperationCommand { get; set; }
         public ICommand PreviewOperationCommand { get; set; }
         public List<IOperation> Operations { get; set; }
+        
+        private bool _checked;
+
+        public bool Checked
+        {
+            get { return _checked; }
+            set {
+                if (value != _checked)
+                {
+                    GlobalData.RobotType = "";
+                    _checked = value;
+                    //ClickedCommandExecuteTest(_checked);
+                    RaisePropertyChanged(nameof(Checked));
+                }
+            }
+        }
+
         public string ViewWindowVisibility
         {
             get
@@ -43,6 +61,23 @@ namespace RobotFilesEditor
         public bool ExecuteOperationButtonIsEnabled { get; set; }
         public bool PreviewOperationButtonIsEnabled { get; set; }
         public int OrderNumber { get; set; }
+        ResultInfo _selectedItemFromList;
+        public ResultInfo SelectedItemFromList
+        {
+            get { return _selectedItemFromList; }
+            set
+            {
+                if (_selectedItemFromList != value)
+                {
+                    _selectedItemFromList = value;
+                    RaisePropertyChanged<ResultInfo>(() => SelectedItemFromList);
+                    if (!string.IsNullOrEmpty(_selectedItemFromList.Path))
+                    {
+                        _selectedItemFromList.OpenInOtherProgramCommandExecute();
+                    }
+                }
+            }
+        }
         #endregion
 
         #region Constructors
@@ -52,26 +87,43 @@ namespace RobotFilesEditor
             Title = title;
             Operations = new List<IOperation>();
             OperationResult = new ObservableCollection<ResultInfo>();
-            ClickedCommand = new RelayCommand(ClickedCommandExecute);
+            //ClickedCommand = new RelayCommand(ClickedCommandExecute);
             ExecuteOperationCommand = new RelayCommand(ExecuteOperationCommandExecute);
             PreviewOperationCommand = new RelayCommand(PreviewOperationCommandExecute);
             ExecuteOperationButtonIsEnabled = true;
             PreviewOperationButtonIsEnabled = true;
         }
 
+
         #endregion
 
         #region Medthods
 
-        private void ClickedCommandExecute()
+        //private void ClickedCommandExecute()
+        //{
+        //    OnControlItemSelected();
+        //}
+
+        public void ClickedCommandExecuteTest(bool _checked)
         {
-            OnControlItemSelected();
+            if (_checked)
+            {
+                OperationResult.Clear();
+                GlobalData.ControllerType = this.Title;
+                SrcValidator.GlobalFiles = null;
+                ControlItemSelected?.Invoke(this, this);                
+            }
+            //Checked = false;
         }
 
-        protected void OnControlItemSelected()
-        {
-            ControlItemSelected?.Invoke(this, this);
-        }
+        //protected void OnControlItemSelected()
+        //{
+        //    OperationResult.Clear();
+        //    GlobalData.ControllerType = this.Title;
+        //    SrcValidator.GlobalFiles = null;
+        //    ControlItemSelected?.Invoke(this, this);
+        //    Checked = false;
+        //}
 
         public void ExecuteOperationCommandExecute()
         {
@@ -79,10 +131,10 @@ namespace RobotFilesEditor
             {
                 ExecuteOperationButtonIsEnabled = false;
 
-                PreviewOperation();
+                //PreviewOperation();
 
-                if (DetectExceptions() == false)
-                {
+                //if (DetectExceptions() == false)
+                //{
                     IOperation activeOperation;
                     List<string> exeptions = new List<string>();
                     List<ResultInfo> result = new List<ResultInfo>();
@@ -106,14 +158,17 @@ namespace RobotFilesEditor
                             activeOperation?.ClearMemory();
                         }
                     }
+
+                    
                     if(DetectExceptions()==false)
                     {
                         MessageBox.Show($"Finish operation \"{Title}\" with success!", "Successed!", MessageBoxButton.OK, MessageBoxImage.Information);
-                    }                 
-                }                
+                    }
+                                 
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 MessageBox.Show(ex.Message, "Error!", MessageBoxButton.OK);
             }
             finally
@@ -130,6 +185,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 MessageBox.Show(ex.Message, "Error!", MessageBoxButton.OK);
             }
             finally
@@ -150,7 +206,7 @@ namespace RobotFilesEditor
                 message+= $"\nError: {exeption.Description}.\n";
             }            
 
-            if(exceptions.Any())
+            if(exceptions.Any() & !SrcValidator.CopiedFiles)
             {
                 MessageBox.Show(message, $"Errors in operation:\"{Title}\"!", MessageBoxButton.OK);
                 return true;
@@ -158,6 +214,7 @@ namespace RobotFilesEditor
             {
                 return false;
             }
+            
         }
 
         private void PreviewOperation()
@@ -169,13 +226,21 @@ namespace RobotFilesEditor
             try
             {               
                 OperationResult.Clear();
-
+                //if (this.Title == "Move program files")
+                //    OperationResult.Clear;
                 Operations.OrderBy(y => y.Priority).ToList();
                 foreach (var operation in Operations)
                 {
+                    if (operation.OperationName == "Copy global data to GlobalBase")
+                    { }
+
                     activeOperation = operation;
                     activeOperation.PreviewOperation();
                     result = activeOperation.GetOperationResult();
+                    if (activeOperation.OperationName == "Copy OLP files data")
+                        SrcValidator.GetInputDataString(result);
+                    if (activeOperation.OperationName == "Copy global data to GlobalBase")
+                        SrcValidator.GetInputGlobalDataString(result);
                     if (result?.Count > 0)
                     {
                         result.ForEach(x => OperationResult.Add(x));
@@ -190,6 +255,7 @@ namespace RobotFilesEditor
                 }
             }catch(Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
         }

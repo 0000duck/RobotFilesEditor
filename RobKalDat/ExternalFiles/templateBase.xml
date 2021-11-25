@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <Basic Company="" Creater="" Zone="" Station="" ReportPath="" ReportName="" LastModified="" />
+  <Settings XLim="10" YLim="10" ZLim="10" RXLim="1" RYLim="1" RZLim="1" ToleranceX="25" ToleranceY="25" ToleranceZ="25" ToleranceRX="1.000000" ToleranceRY="1.000000" ToleranceRZ="1.000000" CheckBaseToleranceX="1" CheckBaseToleranceY="1" CheckBaseToleranceZ="1" CheckBaseToleranceRX="0.100000" CheckBaseToleranceRY="0.100000" CheckBaseToleranceRZ="0.100000" CheckWeldPointsSearchString="" />
+  <Objects>
+  </Objects>
+  <Bases>
+  </Bases>
+  <SafetySets>
+  </SafetySets>
+  <RobotBackups />
+  <VIPPoints />
+</Project>

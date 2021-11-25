@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RobotFilesEditor.Model.Operations;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -20,6 +21,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
 
@@ -45,6 +47,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
         }
@@ -61,6 +64,7 @@ namespace RobotFilesEditor
                 }
                 catch (Exception ex)
                 {
+                    SrcValidator.GetExceptionLine(ex);
                     files.Remove(file.Key);
                     files.Add(file.Key, ex.Message);                   
                 }
@@ -87,6 +91,7 @@ namespace RobotFilesEditor
                 }
                 catch (Exception ex)
                 {
+                    SrcValidator.GetExceptionLine(ex);
                     files.Remove(file.Key);
                     files.Add(file.Key, ex.Message);
                 }
@@ -95,8 +100,9 @@ namespace RobotFilesEditor
             return files;
         }
 
-        public static Dictionary<string, string>CopyFiles(Dictionary<string, string> sourceFiles, string destination)
+        public static IDictionary<string, string>CopyFiles(IDictionary<string, string> sourceFiles, string destination)
         {
+            SrcValidator.CopiedFiles = false;
             IDictionary<string, string> filesIterator = new Dictionary<string, string>(sourceFiles);
             var result = new Dictionary<string, string>(sourceFiles);
 
@@ -110,11 +116,29 @@ namespace RobotFilesEditor
                     {
                         throw new IOException($"File \"{Path.GetFileName(file.Key)}\" already exist!");
                     }
+                    else
+                        SrcValidator.CopiedFiles = true;
 
-                    File.Copy(file.Key, destinationFilePath);
+                    if (file.Value == "")
+
+                    {
+                        File.Copy(file.Key, destinationFilePath);
+                        System.Threading.Thread.Sleep(50);
+                    }
+                    else
+                    {
+                        if (Path.GetExtension(file.Key).ToLower() == ".dat" && GlobalData.LocalHomesFound)
+                        {
+                            File.WriteAllText(destinationFilePath, SrcValidator.RemoveLocalHomes(file.Value));
+                        }
+                        else
+                            File.WriteAllText(destinationFilePath, file.Value);
+                        System.Threading.Thread.Sleep(50);
+                    }
                 }
                 catch (Exception ex)
-                {                   
+                {
+                    SrcValidator.GetExceptionLine(ex);
                     sourceFiles[file.Key]=ex.Message;
                 }
             }
@@ -149,6 +173,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
             }
 
             return files;
@@ -168,6 +193,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
         }
@@ -246,6 +272,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
             return false;
@@ -265,6 +292,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }           
         }
@@ -294,6 +322,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
            
@@ -315,6 +344,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }         
         }
@@ -339,6 +369,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex; 
             }          
         }
@@ -380,6 +411,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }          
         }
@@ -407,6 +439,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }           
         }       
@@ -439,6 +472,7 @@ namespace RobotFilesEditor
             }
             catch (Exception ex)
             {
+                SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
         }

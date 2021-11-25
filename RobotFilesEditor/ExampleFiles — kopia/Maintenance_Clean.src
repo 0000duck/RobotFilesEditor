@@ -1,0 +1,90 @@
+&COMMENT 
+DEF  Maintenance_Clean	( )
+;FOLD Moduleparameters;%{h}
+;Params 
+;ENDFOLD Moduleparameters
+;FOLD INI 
+  ;FOLD USER INI
+    ;Make your modifications here
+			IF PLC_CHK_INIT() THEN
+				GLOBAL INTERRUPT DECL 3 WHEN $STOPMESS==TRUE DO IR_STOPM ( )
+				INTERRUPT ON 3 
+				BAS (#INITMOV,0 )
+				;FOLD APPLICATION_INI
+				APPLICATION_INI ( )
+				;ENDFOLD (APPLICATION_INI)
+			ENDIF	
+  ;ENDFOLD (USER INI)
+;ENDFOLD (INI)
+;***********************************************************
+;* Programm            : Maintenance_Clean
+;* Beschreibung        : Maintenance_Clean
+;* Roboter             : 280IR003_KR240R2700PRIME_4
+;* Firma               : Staudinger GmbH
+;* Ersteller           : Wisniewski Michal
+;* Datum               : 20/02/2018
+;* Aenderungsverlauf   : V1.0 i.O.
+;***********************************************************
+
+
+
+;# --------- START PATH : Maintenance_Clean ---------
+tch_auto(0)
+;FOLD Tch Check_Tool_Code ChgToolNo:0
+;FOLD ;%{h}
+;Params IlfProvider=tch; Tch_CmdTech=ToolChg_Cmd; Tch_SubCmdTech=Check_Tool_Code; Tch_ChgToolNoCheck=0
+;ENDFOLD
+Tch_Checktool (0)
+;ENDFOLD
+WAIT FOR $IN_HOME1
+;FOLD PTP HOME1 Vel=100 % PHOME1;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:HOME1, 3:, 5:100, 7:PHOME1
+$BWDSTART = FALSE
+PDAT_ACT= PPHOME1
+FDAT_ACT= FHOME1
+BAS(#PTP_PARAMS,100)
+PTP XHOME1 
+;ENDFOLD
+;FOLD Job Started JobNum:64 Desc:Maintenance
+;FOLD ;%{h}
+;Params IlfProvider=job; Plc_JobCmd=Started; Plc_JobMove=NoMove; Plc_JobNum=64; Plc_JobCont=_; Plc_JobDesc=Maintenance
+;ENDFOLD
+Plc_Job (1,64,False)
+;ENDFOLD
+;FOLD PTP HOME1 Vel=100 % PHOME1;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:HOME1, 3:, 5:100, 7:PHOME1
+$BWDSTART = FALSE
+PDAT_ACT= PPHOME1
+FDAT_ACT= FHOME1
+BAS(#PTP_PARAMS,100)
+PTP XHOME1 
+;ENDFOLD
+;FOLD PTP CleanPos Vel=100 % PCleanPos Tool[20]:Tool_Changer_Head Base[0];%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:CleanPos, 3:, 5:100, 7:PCleanPos
+$BWDSTART = FALSE
+PDAT_ACT= PPCleanPos
+FDAT_ACT= FCleanPos
+BAS(#PTP_PARAMS,100)
+PTP XCleanPos 
+;ENDFOLD
+;FOLD PlcCom 1.Com:Set 422 'PLC_do_ServicePos' 2.Com:Wait_In=1 422 'PLC_di_ServicePosAck' 3.Com:Reset 422 'PLC_do_ServicePos'
+;FOLD ;%{h}
+;Params IlfProvider=plccom; Plc_ComMove=NoMove; Plc_ComCmd1=SO; Plc_ComUserOut1=422; Plc_ComCmd2=WI1; Plc_ComUserIn2=422; Plc_ComCmd3=RO; Plc_ComUserOut3=422; Plc_ComCont=_; Plc_ComDesc=
+;ENDFOLD
+Plc_PlcCom (1,1,1,422,422,422,False)
+;ENDFOLD
+;FOLD Job Done JobNum:64 Desc:Maintenance
+;FOLD ;%{h}
+;Params IlfProvider=job; Plc_JobCmd=Done; Plc_JobMove=NoMove; Plc_JobNum=64; Plc_JobDesc=Maintenance
+;ENDFOLD
+Plc_Job (2,64,False)
+;ENDFOLD
+;FOLD PTP HOME1 Vel=100 % PHOME1;%{PE}%R 8.3.21,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:HOME1, 3:, 5:100, 7:PHOME1
+$BWDSTART = FALSE
+PDAT_ACT= PPHOME1
+FDAT_ACT= FHOME1
+BAS(#PTP_PARAMS,100)
+PTP XHOME1 
+;ENDFOLD
+
+
+
+END
+
