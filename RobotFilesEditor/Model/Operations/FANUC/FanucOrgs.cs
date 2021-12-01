@@ -31,11 +31,6 @@ namespace RobotFilesEditor.Model.Operations.FANUC
 
         private void InitStrings()
         {
-            //companyName = SrcValidator.language == "DE" ? "Firma" : "Company";
-            //dateOfCretion = SrcValidator.language == "DE" ? "Erstellungsdatum" : "Date";
-            //robot = SrcValidator.language == "DE" ? "Roboter" : "Robot";
-            //createdBy = SrcValidator.language == "DE" ? "Ersteller" : "Programmer";
-            //changes = SrcValidator.language == "DE" ? "Aenderungen" : "Changes";
             typeSelection = SrcValidator.language == "DE" ? "TYP Auswahl" : "Type selection";
             typeString = SrcValidator.language == "DE" ? "TYP" : "Type";
         }
@@ -43,7 +38,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
         public void CreateOrgs()
         {
             IDictionary<string, string> productionOrgs = CreateProductionOrgs();
-            IDictionary<string, string> serviceOrgs = CreateServiceOrgs();
+            IDictionary<string, string> serviceOrgs = CreateServiceOrgs(orgsVM.SelectedStartOrgNum);
             serviceOrgs.ToList().ForEach(x => productionOrgs.Add(x));
             WriteOrgs(productionOrgs);
         }
@@ -68,28 +63,31 @@ namespace RobotFilesEditor.Model.Operations.FANUC
         }
 
 
-        private IDictionary<string, string> CreateServiceOrgs()
+        private IDictionary<string, string> CreateServiceOrgs(int startOrg)
         {
             alreadyFoundMaintenances = new List<int>();
             IDictionary<string, string> result = new Dictionary<string, string>();
-            FanucRobotApps apps = FindApplications();
-            Dictionary<string, int> maintenancePaths = new Dictionary<string, int>();
-            GlobalData.SrcPathsAndJobs.ToList().Where(x => x.Value == 64).ToList().ForEach(y => maintenancePaths.Add(y.Key, AssignNumber(y.Key)));
-            result.Add("PROG64", CreateMaintenance(maintenancePaths, 64));
-            if (apps.isSpotWelding)
+            if (startOrg == 1)
             {
-                result.Add("PROG62", CreateMaintenance(new Dictionary<string, int>(), 62));
-                result.Add("PROG63", CreateMaintenance(new Dictionary<string, int>(), 63));
-            }
-            if (apps.isGluing)
-                result.Add("PROG50", CreateMaintenance(new Dictionary<string, int>(), 50,"glue"));
-            if (apps.isLaser)
-            {
-                result.Add("PROG50", CreateMaintenance(new Dictionary<string, int>(), 50));
-                result.Add("PROG51", CreateMaintenance(new Dictionary<string, int>(), 51));
-                result.Add("PROG52", CreateMaintenance(new Dictionary<string, int>(), 52));
-                result.Add("PROG53", CreateMaintenance(new Dictionary<string, int>(), 53));
-                result.Add("PROG54", CreateMaintenance(new Dictionary<string, int>(), 54));
+                FanucRobotApps apps = FindApplications();
+                Dictionary<string, int> maintenancePaths = new Dictionary<string, int>();
+                GlobalData.SrcPathsAndJobs.ToList().Where(x => x.Value == 64).ToList().ForEach(y => maintenancePaths.Add(y.Key, AssignNumber(y.Key)));
+                result.Add("PROG64", CreateMaintenance(maintenancePaths, 64));
+                if (apps.isSpotWelding)
+                {
+                    result.Add("PROG62", CreateMaintenance(new Dictionary<string, int>(), 62));
+                    result.Add("PROG63", CreateMaintenance(new Dictionary<string, int>(), 63));
+                }
+                if (apps.isGluing)
+                    result.Add("PROG50", CreateMaintenance(new Dictionary<string, int>(), 50, "glue"));
+                if (apps.isLaser)
+                {
+                    result.Add("PROG50", CreateMaintenance(new Dictionary<string, int>(), 50));
+                    result.Add("PROG51", CreateMaintenance(new Dictionary<string, int>(), 51));
+                    result.Add("PROG52", CreateMaintenance(new Dictionary<string, int>(), 52));
+                    result.Add("PROG53", CreateMaintenance(new Dictionary<string, int>(), 53));
+                    result.Add("PROG54", CreateMaintenance(new Dictionary<string, int>(), 54));
+                }
             }
             return result;
         }

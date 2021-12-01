@@ -337,16 +337,22 @@ namespace RobotFilesEditor.Model.Operations
         private static int GetCorrectHomeIndex(int i, Dictionary<int, ICollection<IOrgsElement>> data)
         {
             if (i == 1)
+            {
+                if (data.FirstOrDefault().Value == null || data.FirstOrDefault().Value.FirstOrDefault() == null)
+                    return 1;
+                if (data.First().Value.First().OrgsElement.WithPart == "true")
+                    return 2;
                 return 1;
+            }
             else
             {
                 int homenum = 0;
-                foreach (var type in data.Where(x=> x.Value.Count >= 2))
+                foreach (var type in data.Where(x => x.Value.Count >= 2))
                 {
                     int counter = 0;
                     foreach (var job in type.Value)
                     {
-                        if (counter == i-1)
+                        if (counter == i - 1)
                         {
                             if (job.OrgsElement.WithPart == "true")
                                 homenum = 2;
