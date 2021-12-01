@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
 using Microsoft.Practices.ServiceLocation;
@@ -12,13 +13,22 @@ namespace RobotFilesEditor.Dialogs
     public class SelectColisionViewModel : ViewModelBase
     {
         #region Ctor
-        public SelectColisionViewModel(KeyValuePair<int, List<string>> pair)
+        public SelectColisionViewModel(KeyValuePair<int, List<string>> pair, bool releaseVisible = true)
         {
             Pair = pair;
+            if (releaseVisible)
+            {
+                ReleaseVisible = Visibility.Visible;
+                RequestHeader = "Request";
+            }
+            else
+            {
+                ReleaseVisible = Visibility.Collapsed;
+                RequestHeader = "Request/Release";
+            }
             if (pair.Value.Count > 0)
             {
                 SelectedIndexInReq = 0;
-                //SelectedIndexInClr = 0;
             }
         }
         #endregion
@@ -58,37 +68,6 @@ namespace RobotFilesEditor.Dialogs
             }
         }
 
-        //string _selectedItemReq;
-        //public string SelectedItemReq
-        //{
-        //    get { return _selectedItemReq; }
-        //    set
-        //    {
-        //        if (_selectedItemReq != value)
-        //        {
-        //            _selectedItemReq = value;
-        //            RequestText = value;
-        //            ReleaseText = value;
-        //            RaisePropertyChanged(() => SelectedItemReq);
-        //        }
-        //    }
-        //}
-
-        //string _selectedItemClr;
-        //public string SelectedItemClr
-        //{
-        //    get { return _selectedItemClr; }
-        //    set
-        //    {
-        //        if (_selectedItemClr != value)
-        //        {
-        //            _selectedItemClr = value;
-        //            ReleaseText = value;
-        //            RaisePropertyChanged(() => SelectedItemClr);
-        //        }
-        //    }
-        //}
-
         string _requestText;
         public string RequestText
         {
@@ -104,6 +83,20 @@ namespace RobotFilesEditor.Dialogs
                 }
             }
         }
+        string _requestHeader;
+        public string RequestHeader
+        {
+            get { return _requestHeader; }
+            set
+            {
+                if (_requestHeader != value)
+                {
+                    _requestHeader = value;
+                    RaisePropertyChanged(() => RequestHeader);
+                }
+            }
+        }
+
         string _releaseText;
         public string ReleaseText
         {
@@ -113,8 +106,22 @@ namespace RobotFilesEditor.Dialogs
                 if (_releaseText != value)
                 {
                     _releaseText = value;
-                   //SelectedIndexInClr = -1;
                     RaisePropertyChanged(() => ReleaseText);
+                }
+            }
+        }
+
+        Visibility _releaseVisible;
+        public Visibility ReleaseVisible
+        {
+            get { return _releaseVisible; }
+            set
+            {
+                if (_releaseVisible != value)
+                {
+                    _releaseVisible = value;
+                    //SelectedIndexInClr = -1;
+                    RaisePropertyChanged(() => ReleaseVisible);
                 }
             }
         }

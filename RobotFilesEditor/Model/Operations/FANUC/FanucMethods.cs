@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace RobotFilesEditor.Model.Operations.FANUC
 {
@@ -16,15 +17,101 @@ namespace RobotFilesEditor.Model.Operations.FANUC
         public List<string> FilesList { get; set; }
         public IDictionary<string, FanucRobot> FilesAndContent { get; set; }
         public string RobotName { get; set; }
+        Regex collzoneNumberRegex = new Regex(@"(?<=^\s*\d+\s*\:(.*PR_CALL.*CollZone.*ZoneNo\s*.\s*\=\s*|\s*!\s*Coll\s*))\d+", RegexOptions.IgnoreCase);
+        Regex collDescrRegex = new Regex(@"(?<=^\s*\d+\s*\:(.*PR_CALL.*CollZone.*ZoneNo\s*.\s*\=.*,\s*'|\s*!\s*Coll.*\d+\s*-))[\w\d\s,-_]*", RegexOptions.IgnoreCase);
+        Regex isJobRegex = new Regex(@"(?<=^\s*\d+\s*\:.*PR_CALL.*Job.*JobNo\s*.\s*\=\s*)\d+", RegexOptions.IgnoreCase);
+        Regex jobDescrRegex = new Regex(@"(?<=^\s*\d+\s*\:.*PR_CALL.*Job.*JobNo\s*.\s*\=.*,\s*')[\w\d\s-_,]*", RegexOptions.IgnoreCase);
+        string logContent;
 
-        public FanucFilesValidator(List<string> filesList)
+        public FanucFilesValidator(List<string> filesList, out string logContentOut)
         {
+            logContent = string.Empty;
             FilesList = filesList;
             GetRobotName();
             FilesAndContent = ReadFiles();
+            FillGlobalData();
             FilesAndContent = AddHeader();
+            CheckOpenAndCloseCommands();
+            FilesAndContent = CheckJobsAndCollisions();
             FilesAndContent = AddSpaces();
             FilesAndContent = RenumberLines();
+            logContentOut = logContent;
+        }
+
+        private IDictionary<string, FanucRobot> CheckJobsAndCollisions()
+        {
+            bool fillDescrs = false;
+            IDictionary<string, FanucRobot> result = new Dictionary<string, FanucRobot>();
+            IDictionary<int, string> collAndDescription = GetCollDescriptions();
+            DialogResult dialogResult = MessageBox.Show("Would you like to fill the description in Collzone statement?\r\nYes - Fill Colldescr\r\nNo - leave it blank", "Fill descriptions", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (dialogResult == DialogResult.Yes)
+                fillDescrs = true;
+            foreach (var file in FilesAndContent)
+            {
+                List<string> lines = RemoveCollComments(file.Value.ProgramSection);
+                List<string> linesToAdd = new List<string>();
+                foreach (var line in lines)
+                {
+                    if (collzoneNumberRegex.IsMatch(line))
+                    {
+                        int collZoneNumber = int.Parse(collzoneNumberRegex.Match(line).ToString());
+                        linesToAdd.Add(" 666:  ! Coll " + collZoneNumber.ToString() + " - " + collAndDescription[collZoneNumber] + " ;");
+                        string tempLine = string.Empty;
+                        if (fillDescrs)
+                            tempLine = collDescrRegex.Replace(line, collAndDescription[collZoneNumber]);
+                        else
+                            tempLine = collDescrRegex.Replace(line, "...");
+                        linesToAdd.Add(tempLine);
+                    }
+                    else if (isJobRegex.IsMatch(line))
+                    {
+                        string templine = string.Empty;
+                        int jobNum = int.Parse(isJobRegex.Match(line).ToString());
+                        templine = jobDescrRegex.Replace(line, GlobalData.Jobs[jobNum]);
+                        linesToAdd.Add(templine);
+                    }
+                    else   
+                        linesToAdd.Add(line);
+                }
+                result.Add(file.Key, new FanucRobot(file.Value.InitialSection, linesToAdd, file.Value.DeclarationSection));
+            }
+            return result;
+        }
+
+        private List<string> RemoveCollComments(List<string> programSection)
+        {
+            List<string> result = new List<string>();
+            Regex collzoneDescrLine = new Regex(@"(?<=^\s*\d+\s*\:\s*!\s*Coll\s*)\d+", RegexOptions.IgnoreCase);
+            foreach (var line in programSection.Where(x => !collzoneDescrLine.IsMatch(x)))
+                result.Add(line);
+            return result;
+        }
+
+        private IDictionary<int, string> GetCollDescriptions()
+        {
+            IDictionary<int, string> result = new Dictionary<int, string>();
+            IDictionary<int, List<string>> tempCollList = new SortedDictionary<int, List<string>>();
+            foreach (var file in FilesAndContent)
+            {
+                foreach (var line in file.Value.ProgramSection.Where(x=>collzoneNumberRegex.IsMatch(x)))
+                {
+                    int collNum = int.Parse(collzoneNumberRegex.Match(line).ToString());
+                    if (!tempCollList.Keys.Contains(collNum))
+                        tempCollList.Add(collNum, new List<string>());
+                    string descr = collDescrRegex.Match(line).ToString().Replace(";", "").Trim();
+                    if (!tempCollList[collNum].Contains(descr))
+                        tempCollList[collNum].Add(descr);
+                }
+            }
+            foreach (var collision in tempCollList)
+            {
+                SelectColisionViewModel vm = new SelectColisionViewModel(collision, false);
+                SelectCollisionFromDuplicate sW = new SelectCollisionFromDuplicate(vm);
+                var dialogResult = sW.ShowDialog();
+                result.Add(collision.Key, vm.RequestText);
+            }
+
+            return result;
         }
 
         private IDictionary<string, FanucRobot> AddSpaces()
@@ -183,6 +270,114 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             var dialog = new NameRobot(vm);
             dialog.ShowDialog();
             RobotName = vm.RobotName == null ? string.Empty : vm.RobotName;
+            GlobalData.RobotNameFanuc = RobotName;
+        }
+
+
+        private void CheckOpenAndCloseCommands()
+        {
+            string log = string.Empty;
+            Regex collZoneRegex = new Regex(@"(?<=^\s*\d+\s*\:.*PR_CALL.*CollZone.*ZoneNo\s*.\s*\=\s*)\d+", RegexOptions.IgnoreCase);
+            Regex areaRegex = new Regex(@"(?<=^\s*\d+\s*\:.*PR_CALL.*Area.*AreaNo\s*.\s*\=\s*)\d+", RegexOptions.IgnoreCase);
+            Regex jobRegex = new Regex(@"(?<=^\s*\d+\s*\:.*PR_CALL.*Job.*JobNo\s*.\s*\=\s*)\d+", RegexOptions.IgnoreCase);
+            foreach (var file in FilesAndContent)
+            {
+                IDictionary<int, int> collCounter = new SortedDictionary<int, int>();
+                IDictionary<int, int> areaCounter = new SortedDictionary<int, int>();
+                IDictionary<int, int> jobCounter = new SortedDictionary<int, int>();
+                foreach (var line in file.Value.ProgramSection)
+                {
+                    if (collZoneRegex.IsMatch(line))
+                    {
+                        int collNumber = int.Parse(collZoneRegex.Match(line).ToString());
+                        if (!collCounter.Keys.Contains(collNumber))
+                            collCounter.Add(collNumber, 0);
+                        if (line.ToLower().Contains("request"))
+                            collCounter[collNumber]++;
+                        if (line.ToLower().Contains("release"))
+                            collCounter[collNumber]--;
+                    }
+                    if (areaRegex.IsMatch(line))
+                    {
+                        int areaNumber = int.Parse(areaRegex.Match(line).ToString());
+                        if (!areaCounter.Keys.Contains(areaNumber))
+                            areaCounter.Add(areaNumber, 0);
+                        if (line.ToLower().Contains("request"))
+                            areaCounter[areaNumber]++;
+                        if (line.ToLower().Contains("release"))
+                            areaCounter[areaNumber]--;
+                    }
+                    if (jobRegex.IsMatch(line))
+                    {
+                        int jobNumber = int.Parse(jobRegex.Match(line).ToString());
+                        if (!jobCounter.Keys.Contains(jobNumber))
+                            jobCounter.Add(jobNumber, 0);
+                        if (line.ToLower().Contains("started"))
+                            jobCounter[jobNumber]++;
+                        if (line.ToLower().Contains("done"))
+                            jobCounter[jobNumber]--;
+                    }
+                }
+                foreach (var coll in collCounter.Where(x => x.Value > 0))
+                    log += "Collision " + coll.Key + " in file " + Path.GetFileNameWithoutExtension(file.Key) + " is requested but not released.\r\n";
+                foreach (var coll in collCounter.Where(x => x.Value < 0))
+                    log += "Collision " + coll.Key + " in file " + Path.GetFileNameWithoutExtension(file.Key) + " is released but not requested.\r\n";
+                foreach (var area in areaCounter.Where(x => x.Value > 0))
+                    log += "Area " + area.Key + " in file " + Path.GetFileNameWithoutExtension(file.Key) + " is requested but not released.\r\n";
+                foreach (var area in areaCounter.Where(x => x.Value < 0))
+                    log += "Area " + area.Key + " in file " + Path.GetFileNameWithoutExtension(file.Key) + " is released but not requested.\r\n";
+                foreach (var job in jobCounter.Where(x => x.Value > 0))
+                    log += "Job " + job.Key + " in file " + Path.GetFileNameWithoutExtension(file.Key) + " is started but not done.\r\n";
+                foreach (var job in jobCounter.Where(x => x.Value < 0))
+                    log += "Job " + job.Key + " in file " + Path.GetFileNameWithoutExtension(file.Key) + " is done but not started.\r\n";
+            }
+            if (!string.IsNullOrEmpty(log))
+            {
+                MessageBox.Show("Area and collision count for some files are not equal. See log for details.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                logContent += log;
+            }
+        }
+
+        private void FillGlobalData()
+        {
+            IDictionary<string, int> pathsAndJobs = new Dictionary<string, int>();
+            IDictionary<int, List<string>> unfilteresJobs = new SortedDictionary<int, List<string>>();
+            IDictionary<int, string> jobs = new Dictionary<int, string>();
+
+            foreach (var file in FilesAndContent)
+            {
+                string fileName = Path.GetFileNameWithoutExtension(file.Key);
+                int jobNum = 0;
+                foreach (var line in file.Value.ProgramSection)
+                {
+                    if (isJobRegex.IsMatch(line))
+                    {
+                        jobNum = int.Parse(isJobRegex.Match(line).ToString());
+                        string description = jobDescrRegex.Match(line).ToString();
+                        if (!pathsAndJobs.Keys.Contains(fileName))
+                            pathsAndJobs.Add(fileName, jobNum);
+                        if (!unfilteresJobs.Keys.Contains(jobNum))
+                            unfilteresJobs.Add(jobNum, new List<string>());
+                        if (!unfilteresJobs[jobNum].Contains(description))
+                            unfilteresJobs[jobNum].Add(description);
+                    }
+                }
+            }
+            foreach (var job in unfilteresJobs)
+            {
+                if (job.Value.Count != 1)
+                {
+                    SelectJobViewModel vm = new SelectJobViewModel(unfilteresJobs.First(x=>x.Key == job.Key), "");
+                    SelectJob sW = new SelectJob(vm);
+                    var dialogResult = sW.ShowDialog();
+                    jobs.Add(job.Key, vm.ResultText);
+                }
+                else
+                    jobs.Add(job.Key, job.Value[0]);
+            }
+           
+            GlobalData.SrcPathsAndJobs = pathsAndJobs;
+            GlobalData.Jobs = jobs;
         }
     }
 }

@@ -15,7 +15,11 @@ namespace RobotFilesEditor.ViewModel
 {
     public class MainViewModel : ViewModelBase, IDisposable
     {
-        #region Controls         
+        #region fields
+        private enum OrgController { KUKA, FANUC};
+        #endregion
+
+            #region Controls         
         public ObservableCollection<ControlItem> ControlerChooser
         {
             get;
@@ -489,6 +493,7 @@ namespace RobotFilesEditor.ViewModel
         public ICommand DividePathByColls { get; set; }
         public ICommand ScanContent { get; set; }
         public ICommand ShiftBase { get; set; }        
+        public ICommand GenerateOrgsFanuc { get; set; }
 
 
         private void SetCommands()
@@ -542,6 +547,7 @@ namespace RobotFilesEditor.ViewModel
             DividePathByColls = new RelayCommand(DividePathByCollsExecute);
             ScanContent = new RelayCommand(ScanContentExecute);
             ShiftBase = new RelayCommand(ShiftBaseExecute);
+            GenerateOrgsFanuc = new RelayCommand(GenerateOrgsFanucExecute);
         }
 
         private void ShiftBaseExecute()
@@ -775,10 +781,15 @@ namespace RobotFilesEditor.ViewModel
 
         private void CreateOrgsCommandExecute()
         {
-            OnCreateOrgsCommandExecute();
+            OnCreateOrgsCommandExecute(OrgController.KUKA);
         }
 
-        private void OnCreateOrgsCommandExecute()
+        private void GenerateOrgsFanucExecute()
+        {
+            OnCreateOrgsCommandExecute(OrgController.FANUC);
+        }
+
+        private void OnCreateOrgsCommandExecute(OrgController controller)
         {
             if (GlobalData.SrcPathsAndJobs == null || GlobalData.SrcPathsAndJobs.Count == 0)
             {
@@ -786,15 +797,29 @@ namespace RobotFilesEditor.ViewModel
             }
             else
             {
-                if (GlobalData.ControllerType == "KRC2 L6" || GlobalData.ControllerType == "KRC2 V8" || GlobalData.ControllerType == "KRC4")
+                if (GlobalData.ControllerType == "KRC2 L6" || GlobalData.ControllerType == "KRC2 V8" || GlobalData.ControllerType == "KRC4" || GlobalData.ControllerType == "FANUC")
                 {
                     var vm = new CreateOrgsViewModel(GlobalData.SrcPathsAndJobs, GlobalData.Jobs);
                     CreateOrgs sW = new CreateOrgs(vm);
                     var dialogResult = sW.ShowDialog();
                     if ((bool)dialogResult)
                     {
-                        CreateOrgsMethods createOrgsMethods = new CreateOrgsMethods();
-                        createOrgsMethods.CreateOrgs(vm.DictOrgsElements, vm.SelectedToolsNumber, vm.SafeRobot, vm.SelectedLine, vm.SelectedGunsNumber, vm.SelectedPLC, vm.RobotName, vm.SelectedStartOrgNum, vm.WaitForInHome);
+                        switch (controller)
+                        {
+                            case OrgController.KUKA:
+                                {
+                                    CreateOrgsMethods createOrgsMethods = new CreateOrgsMethods();
+                                    createOrgsMethods.CreateOrgs(vm.DictOrgsElements, vm.SelectedToolsNumber, vm.SafeRobot, vm.SelectedLine, vm.SelectedGunsNumber, vm.SelectedPLC, vm.RobotName, vm.SelectedStartOrgNum, vm.WaitForInHome);
+                                    break;
+                                }
+                            case OrgController.FANUC:
+                                {
+                                    Model.Operations.FANUC.FanucOrgs org = new Model.Operations.FANUC.FanucOrgs(vm);
+                                    org.CreateOrgs();
+                                    break;
+                                }
+                        }
+                        
                     }
                 }
                 else

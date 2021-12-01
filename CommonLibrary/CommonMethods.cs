@@ -236,8 +236,6 @@ namespace CommonLibrary
             return foundVars;
         }
 
-
-
         private static KeyValuePair<string, Variable> GetVariable(string line, string fileName, bool isGlobal)
         {
             Regex typComparisonRegex = new Regex(@"^[a-zA-Z0-9\[\]_\$]*", RegexOptions.IgnoreCase);

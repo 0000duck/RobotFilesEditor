@@ -54,6 +54,7 @@ namespace RobotFilesEditor
         private static string[] _viewerPrograms = { "notepad++.exe"};
         internal static FileValidationData.Userbits SignalNames { get; set; }
         public static IDictionary<int, string> ToolsAndNamesFromStandar { get; internal set; }
+        public static string RobotNameFanuc { get; set; }
 
         
 

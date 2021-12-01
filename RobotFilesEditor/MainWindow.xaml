@@ -78,7 +78,7 @@
                                         <Button Content="Open destination folder" Command="{Binding OpenDest}" Margin="3"/>
                                         <Button Content="Convert Trello Report" Command="{Binding ConvertTrello}" Margin="3"/>
                                         <Button Content="Fill IBN checklist" Command="{Binding FillExcel}" Margin="3"/>
-                                        <Button Content="Temp" Command="{Binding TempExec}" Margin="3" Visibility="Hidden"/>
+                                        <Button Content="Temp" Command="{Binding TempExec}" Margin="3" Visibility="Collapsed"/>
                                     </StackPanel>
                                 </GroupItem>
                             </Expander>
@@ -130,6 +130,7 @@
                             <Expander IsExpanded="False" Header="FANUC" UseLayoutRounding="False">
                                 <GroupItem x:Name="FanucGroupBox">
                                     <StackPanel>
+                                        <Button Content="Generate orgs" Command="{Binding GenerateOrgsFanuc}" Margin="3"/>
                                         <Button Content="Mirror" Command="{Binding FanucMirror}" Margin="3"/>
                                         <Button Content="Safety tools" Command="{Binding SafetyTools}" Margin="3"/>
                                         <Button Content="Renumber Lines" Command="{Binding RenumberLinesFanuc}" Margin="3"/>

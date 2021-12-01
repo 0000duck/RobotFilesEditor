@@ -26,14 +26,14 @@
         <StackPanel Grid.ColumnSpan="2">
             <TextBlock HorizontalAlignment="Center" Margin="20,5,20,5" Text="Select description for collision number:"></TextBlock>
             <TextBlock x:Name="CollNum" Margin="20,5,20,5" Text="{Binding Pair.Key}" HorizontalAlignment="Center" FontWeight="Bold"></TextBlock>
-            <GroupBox Header="Request:" Margin="10,0,10,0">
+            <GroupBox Header="{Binding RequestHeader}" Margin="10,0,10,0">
                 <StackPanel>
                     <ListBox x:Name="CollDescriptionsReq" SelectedIndex="{Binding SelectedIndexInReq}" Margin="10,5,10,5" ItemsSource="{Binding Pair.Value}" HorizontalAlignment="Center"
                          FocusManager.IsFocusScope="False"></ListBox>
                     <TextBox Text="{Binding RequestText, UpdateSourceTrigger=PropertyChanged}" MinWidth="50" Margin="10,0,10,0" TextAlignment="Center"/>
                 </StackPanel>
             </GroupBox>
-            <GroupBox Header="Release:" Margin="10,10,10,0">
+            <GroupBox Header="Release:" Margin="10,10,10,0" Visibility="{Binding ReleaseVisible}">
                 <StackPanel>
                     <ListBox x:Name="CollDescriptionsClr" SelectedIndex="{Binding SelectedIndexInClr}"  Margin="10,5,10,5" ItemsSource="{Binding Pair.Value}" HorizontalAlignment="Center"
                          FocusManager.IsFocusScope="False"></ListBox>

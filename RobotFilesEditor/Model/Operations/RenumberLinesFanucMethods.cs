@@ -17,6 +17,8 @@ namespace RobotFilesEditor.Model.Operations
         {
             MessageBox.Show("Select .ls file for renumber.", "Select file", MessageBoxButton.OK, MessageBoxImage.Information);
             string filePath = CommonLibrary.CommonMethods.SelectDirOrFile(false, filter1Descr: "LS file", filter1: "*.ls");
+            if (string.IsNullOrEmpty(filePath))
+                return;
             FanucProgramClass originalFile = GetOriginalHeaderFanuc(filePath);
             FanucProgramClass resultFile = new FanucProgramClass(originalFile.Header,GetRenumberedBody(originalFile.Body),originalFile.Footer);
             WriteFile(resultFile,filePath);

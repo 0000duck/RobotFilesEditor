@@ -40,13 +40,14 @@ namespace RobotFilesEditor.Dialogs
             Orgnumbers = FillOrgNums();
             SelectedStartOrgNum = 1;
 
+            RobotName = GlobalData.RobotNameFanuc;
             Paths = paths;
             GlobalData.Paths = new Dictionary<string, int>(Paths);
             if (!Paths.Keys.Contains("ANYJOB"))
                 Paths.Add("ANYJOB", 98);
             if (!Paths.Keys.Contains("USERNUM"))
                 Paths.Add("USERNUM", 99);
-            if (!Paths.Keys.Contains("ANYJOB/USERNUM") && GlobalData.ControllerType == "KRC4")
+            if (!Paths.Keys.Contains("ANYJOB/USERNUM") && !GlobalData.ControllerType.Contains("KRC2"))
                 Paths.Add("ANYJOB/USERNUM", 97);
             Jobs = jobs;
 
@@ -215,7 +216,7 @@ namespace RobotFilesEditor.Dialogs
             {
                 _robotName = value;
                 RaisePropertyChanged(() => RobotName);
-                OnSelectedLineChanged(value);
+                //OnSelectedLineChanged(value);
             }
         }
 

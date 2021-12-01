@@ -116,10 +116,12 @@ namespace RobotFilesEditor.Model.Operations
             else
             {
                 Result = new Dictionary<string, string>();
-                FANUC.FanucFilesValidator fanucFiles = new FANUC.FanucFilesValidator(files.Keys.ToList());
+                string log;
+                FANUC.FanucFilesValidator fanucFiles = new FANUC.FanucFilesValidator(files.Keys.ToList(), out log);
                 foreach (var file in fanucFiles.FilesAndContent)
                 {
                     Result.Add(file.Key, FANUC.FanucFilesValidator.GetFileContenetFANUC(file.Value));
+                    logFileContent = log;
                 }
                 //files = FANUC.FanucMethods.CheckCollsOpe
             }

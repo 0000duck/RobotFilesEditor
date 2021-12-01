@@ -29,7 +29,7 @@
     <MinimumRequiredVersion>1.0.0.54</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>373</ApplicationRevision>
+    <ApplicationRevision>375</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -315,6 +315,7 @@
     <Compile Include="Model\Operations\DataClass\SpotComparerClass.cs" />
     <Compile Include="Model\Operations\DataClass\TrelloReportDatas.cs" />
     <Compile Include="Model\Operations\FANUC\FanucMethods.cs" />
+    <Compile Include="Model\Operations\FANUC\FanucOrgs.cs" />
     <Compile Include="Model\Operations\FANUC\FanucRobot.cs" />
     <Compile Include="Model\Operations\FilesMenager.cs" />
     <Compile Include="Model\DataOrganization\DistinctBy.cs" />
@@ -521,6 +522,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="Resources\ProgHeaderFanuc.txt" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
