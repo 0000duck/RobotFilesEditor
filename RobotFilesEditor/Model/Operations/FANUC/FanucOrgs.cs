@@ -21,10 +21,23 @@ namespace RobotFilesEditor.Model.Operations.FANUC
         Regex jobNumRegex = new Regex(@"(?<=Job\s+)\d+", RegexOptions.IgnoreCase);
         Regex jobDescrRegex = new Regex(@"(?<=Job\s+\d+\s*\:\s+)[\w\d\s_-]+", RegexOptions.IgnoreCase);
         List<int> alreadyFoundMaintenances;
+        string typeSelection, typeString;
 
         public FanucOrgs(CreateOrgsViewModel _orgsVM)
         {
             orgsVM = _orgsVM;
+            InitStrings();
+        }
+
+        private void InitStrings()
+        {
+            //companyName = SrcValidator.language == "DE" ? "Firma" : "Company";
+            //dateOfCretion = SrcValidator.language == "DE" ? "Erstellungsdatum" : "Date";
+            //robot = SrcValidator.language == "DE" ? "Roboter" : "Robot";
+            //createdBy = SrcValidator.language == "DE" ? "Ersteller" : "Programmer";
+            //changes = SrcValidator.language == "DE" ? "Aenderungen" : "Changes";
+            typeSelection = SrcValidator.language == "DE" ? "TYP Auswahl" : "Type selection";
+            typeString = SrcValidator.language == "DE" ? "TYP" : "Type";
         }
 
         public void CreateOrgs()
@@ -189,7 +202,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
         private List<string> CreateHeader(int orgNum)
         {
             List<string> result = new List<string>();
-            StringReader reader = new StringReader(Properties.Resources.ProgHeaderFanuc);
+            StringReader reader = new StringReader(SrcValidator.language == "DE" ? Properties.Resources.ProgHeaderFanucDE : Properties.Resources.ProgHeaderFanucEN);
             while (true)
             {
                 string line = reader.ReadLine();
@@ -214,7 +227,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             result.Add(initialJob.OrgsElement.WithPart == "false" ? "  11:  WAIT (DO[417:PLC_do_InHome_1]=ON)    ;" : "  11:  WAIT (DO[418:PLC_do_InHome_2]=ON)    ;");
             result.Add("  12:   ;");
             result.Add("  13:  !********************* ;");
-            result.Add("  14:  !* TYP Auswahl ;");
+            result.Add("  14:  !* "+typeSelection+" ;");
             result.Add("  15:  !* WAIT FOR " + jobDesrc + " ;");
             result.Add("  16:  !********************* ;");
             result.Add("  17:  " + CreateJobReqest(initialJob.OrgsElement,true));
@@ -237,7 +250,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                 string typname = GetTypeName(typ.Key, orgsVM.SelectedLine);
                 result.Add("  23:  !********************* ;");
                 result.Add("  24:  !******  Start  ****** ;");
-                result.Add("  25:  ! TYP "+ typname + " ;");
+                result.Add("  25:  ! "+typeString+" "+ typname + " ;");
                 result.Add("  26:  !********************* ;");
                 result.Add("  27:  LBL[" + typ.Key + ": " + typname + "] ;");
                 result.Add("  28:   ;");
