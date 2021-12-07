@@ -13,15 +13,20 @@ namespace RobotFilesEditor.Model.Operations.FANUC
 {
     public class FanucFilesValidator
     {
-        public enum CurrentType { Undef ,Motion, Spot, Glue, Search, ProcCall, FrameDef }
+        #region props
         public List<string> FilesList { get; set; }
         public IDictionary<string, FanucRobot> FilesAndContent { get; set; }
         public string RobotName { get; set; }
+        #endregion
+
+        #region fields
+        private enum CurrentType { Undef, Motion, Spot, Glue, Search, ProcCall, FrameDef }
         Regex collzoneNumberRegex = new Regex(@"(?<=^\s*\d+\s*\:(.*PR_CALL.*CollZone.*ZoneNo\s*.\s*\=\s*|\s*!\s*Coll\s*))\d+", RegexOptions.IgnoreCase);
         Regex collDescrRegex = new Regex(@"(?<=^\s*\d+\s*\:(.*PR_CALL.*CollZone.*ZoneNo\s*.\s*\=.*,\s*'|\s*!\s*Coll.*\d+\s*-))[\w\d\s,-_]*", RegexOptions.IgnoreCase);
         Regex isJobRegex = new Regex(@"(?<=^\s*\d+\s*\:.*PR_CALL.*Job.*JobNo\s*.\s*\=\s*)\d+", RegexOptions.IgnoreCase);
         Regex jobDescrRegex = new Regex(@"(?<=^\s*\d+\s*\:.*PR_CALL.*Job.*JobNo\s*.\s*\=.*,\s*')[\w\d\s-_,]*", RegexOptions.IgnoreCase);
         string logContent;
+        #endregion
 
         public FanucFilesValidator(List<string> filesList, out string logContentOut)
         {

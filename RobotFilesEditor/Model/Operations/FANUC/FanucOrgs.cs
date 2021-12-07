@@ -16,12 +16,15 @@ namespace RobotFilesEditor.Model.Operations.FANUC
 {
     public class FanucOrgs
     {
+
+        #region fields
         CreateOrgsViewModel orgsVM;
         enum JumpType { Type, JobNum, UserNum, AnyJobUserNum }
         Regex jobNumRegex = new Regex(@"(?<=Job\s+)\d+", RegexOptions.IgnoreCase);
         Regex jobDescrRegex = new Regex(@"(?<=Job\s+\d+\s*\:\s+)[\w\d\s_-]+", RegexOptions.IgnoreCase);
         List<int> alreadyFoundMaintenances;
         string typeSelection, typeString;
+        #endregion
 
         public FanucOrgs(CreateOrgsViewModel _orgsVM)
         {
@@ -73,6 +76,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                 Dictionary<string, int> maintenancePaths = new Dictionary<string, int>();
                 GlobalData.SrcPathsAndJobs.ToList().Where(x => x.Value == 64).ToList().ForEach(y => maintenancePaths.Add(y.Key, AssignNumber(y.Key)));
                 result.Add("PROG64", CreateMaintenance(maintenancePaths, 64));
+                result.Add("PROG251", Properties.Resources.PROG251);
                 if (apps.isSpotWelding)
                 {
                     result.Add("PROG62", CreateMaintenance(new Dictionary<string, int>(), 62));
@@ -86,7 +90,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                     result.Add("PROG51", CreateMaintenance(new Dictionary<string, int>(), 51));
                     result.Add("PROG52", CreateMaintenance(new Dictionary<string, int>(), 52));
                     result.Add("PROG53", CreateMaintenance(new Dictionary<string, int>(), 53));
-                    result.Add("PROG54", CreateMaintenance(new Dictionary<string, int>(), 54));
+                    result.Add("PROG54", CreateMaintenance(new Dictionary<string, int>(), 54));    
                 }
             }
             return result;
@@ -434,7 +438,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                         jumpRegister = "185:User Num";
                         //element.OrgsElement.AnyJobUserNumValue.ToList().ForEach(x=>x.Value.ForEach(y=> orgElements.Add(y.Value)));
                         element.AnyJobUserNumValue.ToList().First(x => x.Key == anyjobusernumNr).Value.ForEach(y => orgElements.Add(y.Value));
-                        result.Add("  19:  SELECT R[" + jumpRegister + "]="+ orgElements.First() + ",CALL " + element.AnyJobUserNumValue[anyjobusernumNr].First().Key + " ;");
+                        result.Add("  19:  SELECT R[" + jumpRegister + "]=1,CALL " + element.AnyJobUserNumValue[anyjobusernumNr].First().Key + " ;");
                         break;
                     }
             }
@@ -458,7 +462,8 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                             }
                         case JumpType.AnyJobUserNum:
                             {
-                                result.Add("  20:         =" + lblNum + ",CALL " + element.AnyJobUserNumValue[anyjobusernumNr][usernumCounter].Key + " ;");
+                                //result.Add("  20:         =" + lblNum + ",CALL " + element.AnyJobUserNumValue[anyjobusernumNr][usernumCounter].Key + " ;");
+                                result.Add("  20:         =" + (usernumCounter+1) + ",CALL " + element.AnyJobUserNumValue[anyjobusernumNr][usernumCounter].Key + " ;");
                                 usernumCounter++;
                                 break;
                             }

@@ -121,6 +121,9 @@
   <data name="Harvester" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Harvester.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="PROG251" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PROG251.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
+  </data>
   <data name="ProgHeaderFanucDE" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\progheaderfanucde.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;windows-1250</value>
   </data>

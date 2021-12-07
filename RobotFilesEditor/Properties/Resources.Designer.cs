@@ -71,6 +71,38 @@ namespace RobotFilesEditor.Properties {
         }
         
         /// <summary>
+        /// Wyszukuje zlokalizowany ciąg podobny do ciągu /PROG  PROG251
+        ////ATTR
+        ///OWNER		= MNEDITOR;
+        ///COMMENT		= &quot;A01 0.0.1&quot;;
+        ///PROG_SIZE	= 211;
+        ///CREATE		= DATE 00-01-07  TIME 00:22:46;
+        ///MODIFIED	= DATE 16-02-09  TIME 15:53:38;
+        ///FILE_NAME	= ;
+        ///VERSION		= 0;
+        ///LINE_COUNT	= 1;
+        ///MEMORY_SIZE	= 587;
+        ///PROTECT		= READ_WRITE;
+        ///TCD:  STACK_SIZE	= 0,
+        ///      TASK_PRIORITY	= 50,
+        ///      TIME_SLICE	= 0,
+        ///      BUSY_LAMP_OFF	= 0,
+        ///      ABORT_REQUEST	= 0,
+        ///      PAUSE_REQUEST	= 0;
+        ///DEFAULT_GROUP	= 1,*,*,*,*;
+        ///CONTROL_CODE	= 00000000 00000000;
+        ////APPL
+        ///  HANDLING : TRUE ; 
+        ///
+        ///CORNER_ [obcięto pozostałą część ciągu]&quot;;.
+        /// </summary>
+        internal static string PROG251 {
+            get {
+                return ResourceManager.GetString("PROG251", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         /// Wyszukuje zlokalizowany ciąg podobny do ciągu /PROG  PROG{ProgNum}
         ////ATTR
         ///OWNER		= MNEDITOR;
