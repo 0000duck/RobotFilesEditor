@@ -2424,7 +2424,7 @@ namespace RobotFilesEditor.Model.Operations
                 {
                     string line = reader.ReadLine();
                     if (line.ToLower().Contains("coll_safety_") || line.ToLower().Contains("collsafety") && !line.ToLower().Contains("init"))
-                        if (line.ToLower().Trim().Replace(" ","").Substring(0,1) != ";" && !line.ToLower().Replace(" ","").Contains("coll_nr:in") && !line.ToLower().Replace(" ", "").Contains("(coll_nr)"))
+                        if (line.ToLower().Trim().Replace(" ", "").Substring(0, 1) != ";" && !line.ToLower().Replace(" ", "").Contains("coll_nr:in") && !line.ToLower().Replace(" ", "").Contains("(coll_nr)"))
                         {
                             Match match = regexNr.Match(line);
                             int.TryParse(match.ToString(), out number);
@@ -2432,10 +2432,13 @@ namespace RobotFilesEditor.Model.Operations
                             {
                                 MessageBox.Show("Coll 0 found!!!!!!");
                             }
-                            if (line.ToLower().Contains("coll_safety_req") || line.ToLower().Contains("collsafetyreq"))
-                                result.Add(new CollisionWithoutDescr(number, "Request"));
-                            else
-                                result.Add(new CollisionWithoutDescr(number, "Release"));
+                            if (number != 255)
+                            {
+                                if (line.ToLower().Contains("coll_safety_req") || line.ToLower().Contains("collsafetyreq"))
+                                    result.Add(new CollisionWithoutDescr(number, "Request"));
+                                else
+                                    result.Add(new CollisionWithoutDescr(number, "Release"));
+                            }
                         }
 
                 }

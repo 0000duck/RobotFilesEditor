@@ -427,8 +427,8 @@ namespace RobotFilesEditor
                 if (this.OperationName == "Copy InitProduction")
                 {
                     string destination = FilesMenager.CreateDestinationFolderPath(DestinationPath, DestinationFolder);
-                    File.Copy("Resources\\GlobalFiles\\KRC4\\InitProduction.src", destination + "\\InitProduction.src");
-
+                    if (!File.Exists(destination + "\\InitProduction.src"))
+                        File.Copy("Resources\\GlobalFiles\\KRC4\\InitProduction.src", destination + "\\InitProduction.src");
                 }
                 if (this.OperationName == "Create SymName.txt")
                 {
