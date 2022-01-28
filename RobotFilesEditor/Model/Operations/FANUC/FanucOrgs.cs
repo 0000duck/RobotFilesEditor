@@ -154,6 +154,8 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                 result.AddRange(GenerateJump(JumpType.UserNum, element));
             }
             else
+            {
+                string toAdd = string.Empty;
                 switch (orgnum)
                 {
                     case 50:
@@ -161,18 +163,22 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                             if (isGlue == "glue")
                                 result.Add("   1:  CALL A08_System_Purge1    ;");
                             else
-                                result.Add("   1:  CALL LJT_WIRE_CUT    ;");
+                            {
+                                toAdd = GlobalData.LaserType == "B15" ? "   1:  CALL LJT_WIRE_CUT    ;" : "  1:  CALL LRS_PowerMeasurement    ;";
+                                result.Add(toAdd);
+                            }
                             break;
                         }
                     case 51:
-                        { result.Add("   1:  CALL LJT_POWER_MEASURE    ;"); break; }
+                        { toAdd = GlobalData.LaserType == "B15" ? "   1:  CALL LJT_POWER_MEASURE    ;" : "  1:  CALL LRS_TestShot    ;";  result.Add(toAdd); break; }
                     case 52:
-                        { result.Add("   1:  CALL LJT_TEST_SHOT    ;"); break; }
+                        { toAdd = GlobalData.LaserType == "B15" ? "   1:  CALL LJT_TEST_SHOT    ;" : "  1:  CALL LRS_SamplePanel    ;"; result.Add(toAdd); break; }
                     case 53:
-                        { result.Add("   1:  CALL LJT_MAINTENANCE    ;"); break; }
+                        { toAdd = GlobalData.LaserType == "B15" ? "   1:  CALL LJT_CLEANING    ;" : "  1:  CALL LRS_Maintenance    ;"; result.Add(toAdd); break; }
                     case 54:
-                        { result.Add("   1:  CALL LJT_SAMPLE_PANEL    ;"); break; }
+                        { toAdd = GlobalData.LaserType == "B15" ? "   1:  CALL LJT_SAMPLE_PANEL    ;" : "  11:  CALL LRS_Optic_Change    ;";  result.Add(toAdd); break; }
                 }
+            }
             result.Add("/POS");
             result.Add("/END");
             return result;
@@ -248,7 +254,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             foreach (var typ in dataToProcess)
             {
                 bool firstPathProcessed = false;
-                bool isUserNum = false, isAnyJob = false;
+                bool isUserNum = false, isAnyJob = false, is1jobAnyjob = false;
                 string typname = GetTypeName(typ.Key, orgsVM.SelectedLine);
                 result.Add("  23:  !********************* ;");
                 result.Add("  24:  !******  Start  ****** ;");
@@ -258,23 +264,28 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                 result.Add("  28:   ;");
                 if (typ.Value.First().OrgsElement.Path.ToLower().Contains("anyjob"))
                 {
+                    List<int> alreadyAddedJobs = new List<int>();
                     isAnyJob = true;
                     currentLabelToEscapeAnyjob++;
                     result.AddRange(GenerateJump(JumpType.JobNum, typ.Value.First().OrgsElement, typ.Key));
                     result.Add("  18:   ;");
                     foreach (var job in typ.Value.First().OrgsElement.AnyJobValue)
                     {
-                        result.Add("  28:  LBL[" + CreateAnyJobNumLabel(typ.Key, job.Value) + ": Job " + job.Value + " ] ;");
-                        if (typ.Value.First().OrgsElement.JobAndDescription.ToLower().Contains("usernum"))
+                        if (!alreadyAddedJobs.Contains(job.Value))
                         {
-                            var anyjobusernum = typ.Value.First().OrgsElement.AnyJobUserNumValue[job.Value];
-                            result.AddRange(GenerateJump(JumpType.AnyJobUserNum, typ.Value.First().OrgsElement, typ.Key,anyjobusernum.First().Value));
-                            result.Add("  30:   ;");
+                            alreadyAddedJobs.Add(job.Value);
+                            result.Add("  28:  LBL[" + CreateAnyJobNumLabel(typ.Key, job.Value) + ": Job " + job.Value + " ] ;");
+                            if (typ.Value.First().OrgsElement.JobAndDescription.ToLower().Contains("usernum"))
+                            {
+                                var anyjobusernum = typ.Value.First().OrgsElement.AnyJobUserNumValue[job.Value];
+                                result.AddRange(GenerateJump(JumpType.AnyJobUserNum, typ.Value.First().OrgsElement, typ.Key, anyjobusernum.First().Value));
+                                result.Add("  30:   ;");
+                            }
+                            else
+                                result.Add("  28:  CALL " + job.Key + "    ;");
+                            result.Add("  32:  JMP LBL[" + currentLabelToEscapeAnyjob + "] ;");
+                            result.Add("  18:   ;");
                         }
-                        else
-                            result.Add("  28:  CALL " + job.Key + "    ;");
-                        result.Add("  32:  JMP LBL["+currentLabelToEscapeAnyjob+"] ;");
-                        result.Add("  18:   ;");
                     }
                     result.Add("  34:  LBL["+currentLabelToEscapeAnyjob+"] ;");
                 }
@@ -291,52 +302,94 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                 }                
                 foreach (var path in typ.Value)
                 {
+                    int anyjobnum = 0;
+                    if (path.OrgsElement.JobAndDescription == "ANYJOB" && path.OrgsElement.AnyJobValue.Count == 1)
+                        anyjobnum = path.OrgsElement.AnyJobValue.First().Value;
+                    if (path.OrgsElement.JobAndDescription == "ANYJOB/USERNUM" && path.OrgsElement.AnyJobUserNumValue.Count == 1)
+                        anyjobnum = path.OrgsElement.AnyJobUserNumValue.First().Key;
                     isUserNum = false;
                     isAnyJob = false;
+                    is1jobAnyjob = false;
                     if (firstPathProcessed)
                     {
                         string jobDesrc = GetJobDescr(path.OrgsElement);
                         result.Add("  31:  !********************* ;");
                         result.Add("  32:  !* WAIT FOR " + jobDesrc + " ;");
                         result.Add("  33:  !********************* ;");
-                        result.Add("  34:  " + CreateJobReqest(path.OrgsElement, false));
+                        result.Add("  34:  " + CreateJobReqest(path.OrgsElement, false, anyjobnum));
                         result.Add("  35:   ;");
-                        if (path.OrgsElement.JobAndDescription.ToLower().Contains("anyjob"))
+                        if (path.OrgsElement.JobAndDescription == "ANYJOB")
+                        {
+                            if (path.OrgsElement.AnyJobValue.Count > 1)
+                            {
+                                isAnyJob = true;
+                                currentLabelToEscapeAnyjob++;
+                                result.AddRange(GenerateJump(JumpType.JobNum, path.OrgsElement, typ.Key));
+                                result.Add("  36:   ;");
+                                foreach (var job in path.OrgsElement.AnyJobValue)
+                                {
+                                    result.Add("  28:  LBL[" + CreateAnyJobNumLabel(typ.Key, job.Value) + ": Job " + job.Value + " ] ;");
+                                    result.Add("  37:  !********************* ;");
+                                    result.Add("  38:  !* WAIT FOR JOB " + job.Value + " " + GlobalData.Jobs[job.Value] + " ;");
+                                    result.Add("  39:  !********************* ;");
+                                    result.Add("  39:  " + CreateJobReqest(path.OrgsElement, false, job.Value));
+                                    result.Add("  34:   ;");
+                                    //if ((path.OrgsElement.JobAndDescription.ToLower().Contains("usernum")))
+                                        //{
+                                        //    var anyjobusernum = path.OrgsElement.AnyJobUserNumValue[job.Value];
+                                        //    result.AddRange(GenerateJump(JumpType.AnyJobUserNum, path.OrgsElement, typ.Key, anyjobusernum.First().Value));
+                                        //    result.Add("  30:   ;");
+                                        //}
+                                        //else
+                                        //{
+                                    result.Add("  35:  CALL " + job.Key + "    ;");
+                                    //}
+                                    result.Add("  32:  JMP LBL[" + currentLabelToEscapeAnyjob + "] ;");
+                                    result.Add("  34:   ;");
+                                }
+                                result.Add("  34:  LBL[" + currentLabelToEscapeAnyjob + "] ;");
+                            }
+                            else
+                            {
+                                is1jobAnyjob = true;
+                                result.Add("  36:  CALL " + path.OrgsElement.AnyJobValue.First().Key + "    ;");
+                                result.Add("  37:   ;");
+                            }
+                        }
+                        else if (path.OrgsElement.JobAndDescription == "ANYJOB/USERNUM")
                         {
                             isAnyJob = true;
-                            currentLabelToEscapeAnyjob++;
-                            result.AddRange(GenerateJump(JumpType.JobNum, path.OrgsElement, typ.Key));
-                            result.Add("  36:   ;");
-                            foreach (var job in path.OrgsElement.AnyJobValue)
+                            if (anyjobnum != 0)
+                                result.AddRange(GenerateJump(JumpType.AnyJobUserNum, path.OrgsElement, typ.Key, anyjobnum));
+                            else
                             {
-                                result.Add("  28:  LBL[" + CreateAnyJobNumLabel(typ.Key, job.Value) + ": Job " + job.Value + " ] ;");
-                                result.Add("  37:  !********************* ;");
-                                result.Add("  38:  !* WAIT FOR JOB " + job.Value + " " + GlobalData.Jobs[job.Value] + " ;");
-                                result.Add("  39:  !********************* ;");
-                                result.Add("  39:  " + CreateJobReqest(path.OrgsElement, false, job.Value));
-                                result.Add("  34:   ;");
-                                if ((path.OrgsElement.JobAndDescription.ToLower().Contains("usernum")))
+                                currentLabelToEscapeAnyjob++;
+                                result.AddRange(GenerateJump(JumpType.JobNum, path.OrgsElement, typ.Key));
+                                result.Add("  36:   ;");
+                                foreach (var anyjob in path.OrgsElement.AnyJobUserNumValue)
                                 {
-                                    var anyjobusernum = path.OrgsElement.AnyJobUserNumValue[job.Value];
-                                    result.AddRange(GenerateJump(JumpType.AnyJobUserNum, path.OrgsElement, typ.Key, anyjobusernum.First().Value));
-                                    result.Add("  30:   ;");
+                                    result.Add("  28:  LBL[" + CreateAnyJobNumLabel(typ.Key, anyjob.Key) + ": Job " + anyjob.Key + " ] ;");
+                                    result.Add("  37:  !********************* ;");
+                                    result.Add("  38:  !* WAIT FOR JOB " + anyjob.Key + " " + GlobalData.Jobs[anyjob.Key] + " ;");
+                                    result.Add("  39:  !********************* ;");
+                                    result.Add("  39:  " + CreateJobReqest(path.OrgsElement, false, anyjob.Key));
+                                    result.Add("  34:   ;");
+                                    result.AddRange(GenerateJump(JumpType.AnyJobUserNum, path.OrgsElement, typ.Key, anyjob.Key));
+                                    result.Add("  32:  JMP LBL[" + currentLabelToEscapeAnyjob + "] ;");
+                                    result.Add("  34:   ;");
                                 }
-                                else
-                                {
-                                    result.Add("  35:  CALL " + job.Key + "    ;");
-                                }
-                                result.Add("  32:  JMP LBL[" + currentLabelToEscapeAnyjob + "] ;");
-                                result.Add("  34:   ;");
+                                result.Add("  34:  LBL[" + currentLabelToEscapeAnyjob + "] ;");
                             }
-                            result.Add("  34:  LBL[" + currentLabelToEscapeAnyjob + "] ;");
+                            result.Add("  30:   ;");
                         }
-                        else if (path.OrgsElement.JobAndDescription.ToLower().Contains("usernum"))
+                        else if (path.OrgsElement.JobAndDescription == "USERNUM")
                         {
                             isUserNum = true;
                             result.AddRange(GenerateJump(JumpType.UserNum, path.OrgsElement, typ.Key));
                             result.Add("  30:   ;");
                         }
-                        if (!isAnyJob && !isUserNum)
+
+                        if (!isAnyJob && !isUserNum && !is1jobAnyjob)
                         {
                             result.Add("  36:  CALL " + path.OrgsElement.Path + "    ;");
                             result.Add("  37:   ;");
@@ -377,13 +430,15 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             string result = string.Empty;
             bool isUserNum = false, isAnyJob = false;
             if (job.JobAndDescription == "ANYJOB")
+            {
                 isAnyJob = true;
+            }
             else if (job.JobAndDescription == "ANYJOB/USERNUM")
             {
                 isAnyJob = true;
                 isUserNum = true;
             }
-            else if (job.JobAndDescription == "USERNUM" || job.JobAndDescription.ContainsAny(new string[] { "Maintenance" , "Tipdress", "Tipchange"}))
+            else if (job.JobAndDescription == "USERNUM" || job.JobAndDescription.ContainsAny(new string[] { "Maintenance", "Tipdress", "Tipchange" }))
                 isUserNum = true;
 
             if (anyJobNumber > 0)
@@ -423,6 +478,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                         jumpRegister = "187:Job Num";
                         initialValue = CreateAnyJobNumLabel(typNum, element.AnyJobValue.First().Value);
                         element.AnyJobValue.ToList().ForEach(x => orgElements.Add(x.Value));
+                        orgElements = FilterOrgElements(orgElements);
                         result.Add("  19:  SELECT R[" + jumpRegister + "]=" + element.AnyJobValue.First().Value + ",JMP LBL[" + initialValue + "] ;");
                         break;
                     }
@@ -473,6 +529,15 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                 firstCycle = false;
             }
             result.Add("  21:         ELSE,CALL WAITFOREVER ;");
+            return result;
+        }
+
+        private List<int> FilterOrgElements(List<int> orgElements)
+        {
+            List<int> result = new List<int>();
+            foreach (var org in orgElements)
+                if (!result.Contains(org))
+                    result.Add(org);
             return result;
         }
 
@@ -585,7 +650,13 @@ namespace RobotFilesEditor.Model.Operations.FANUC
         private string GetJobDescr(OrgsElement orgsElement)
         {
             if (orgsElement.JobAndDescription.Contains("ANYJOB"))
-                return BuildAnyJobString(orgsElement.AnyJobValue);
+            {
+                if (orgsElement.AnyJobValue.Count > 1)
+                    return BuildAnyJobString(orgsElement.AnyJobValue);
+                else
+                    return GlobalData.Jobs[orgsElement.AnyJobValue.First().Value];
+                //return "Job " + orgsElement.AnyJobValue.First().Value + ": " + GlobalData.Jobs[orgsElement.AnyJobValue.First().Value];
+            }
             if (orgsElement.JobAndDescription.Contains("USERNUM"))
                 return GlobalData.Jobs[orgsElement.UserNumValue.First().Value];
             if (jobDescrRegex.IsMatch(orgsElement.JobAndDescription))

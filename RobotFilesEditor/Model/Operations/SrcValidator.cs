@@ -63,6 +63,7 @@ namespace RobotFilesEditor.Model.Operations
                     return false;
                 GlobalData.ToolchangerType = DetectApp(srcFiles.Keys, "a02", "b02", new string[3] { "dock", "dockdresser", "_tch_" }, "toolchanger");
                 GlobalData.WeldingType = DetectApp(srcFiles.Keys, "a04", "a05", new string[3] { "spot", "notUsed", "_swx_" }, "welding");
+                //GlobalData.RivetingType = DetectApp(srcFiles.Keys, "a13", "c13", new string[3] { "rivet", "notUsed", "notUsed" }, "riveting");
                 IDictionary<string, List<string>> resultSrcFiles = DivideToFolds(srcFiles);
                 //TEMP
                 List<string> GlobalFDATs = GetGlobalFDATs(GlobalData.AllFiles);
@@ -118,6 +119,7 @@ namespace RobotFilesEditor.Model.Operations
                 Result = new Dictionary<string, string>();
                 string log;
                 FANUC.FanucFilesValidator fanucFiles = new FANUC.FanucFilesValidator(files.Keys.ToList(), out log);
+                GlobalData.LaserType = DetectApp(fanucFiles.FilesList, "b15", "b16", new string[3] { "laser", "notUsed", "notUsed" }, "laser");
                 foreach (var file in fanucFiles.FilesAndContent)
                 {
                     Result.Add(file.Key, FANUC.FanucFilesValidator.GetFileContenetFANUC(file.Value));
@@ -196,9 +198,9 @@ namespace RobotFilesEditor.Model.Operations
         {
             if (keys.Any(x => x.ToLower().Contains(type[0]) && !x.ToLower().Contains(type[1])) || keys.Any(x => x.ToLower().Contains(type[2].Replace("x","p"))) || keys.Any(x => x.ToLower().Contains(type[2].Replace("x", "i"))))
             {
-                if (keys.Any(x => x.ToLower().Contains(variantA)))
+                if (keys.Any(x => Path.GetFileNameWithoutExtension(x).ToLower().Contains(variantA)))
                     return variantA.ToUpper();
-                else if (keys.Any(x => x.ToLower().Contains(variantB)))
+                else if (keys.Any(x => Path.GetFileNameWithoutExtension(x).ToLower().Contains(variantB)))
                     return variantB.ToUpper();
                 else
                 {

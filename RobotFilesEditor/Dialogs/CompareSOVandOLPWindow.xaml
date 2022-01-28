@@ -1,0 +1,21 @@
+﻿<Window x:Class="RobotFilesEditor.Dialogs.CompareSOVandOLPWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RobotFilesEditor.Dialogs"
+        mc:Ignorable="d"
+        Title="CompareSOVandOLPWindow" SizeToContent="WidthAndHeight">
+    <Grid>
+        <StackPanel HorizontalAlignment="Center">
+            <DataGrid ItemsSource="{Binding Items}" CanUserAddRows="True" CanUserDeleteRows="True"                 
+                SelectionMode="Single" SelectionUnit="FullRow">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Path in backup" Binding="{Binding Path=FileInSet1}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Path in OLP" Binding="{Binding Path=FileInSet2}" IsReadOnly="True" />
+                </DataGrid.Columns>
+            </DataGrid>
+            
+        </StackPanel>
+    </Grid>
+</Window>

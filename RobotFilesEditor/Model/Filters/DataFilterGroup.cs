@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -170,7 +171,10 @@ namespace RobotFilesEditor
             LinesToAddToFile = LinesToAddToFile.DistinctBy(x => x.LineContent).ToList();
 
             if (Filter.Contain.Contains("POZYCJE CENTRALNE"))
+            {
                 LinesToAddToFile = Model.Operations.SrcValidator.FilterGlobalFDATs(LinesToAddToFile);
+                ModifyLinesToAdd();
+            }
             if (Filter.Contain.Contains("g_tipdressg") && GlobalData.isWeldingRobot)
             {
                 bool tipdressfound = false;
@@ -214,6 +218,35 @@ namespace RobotFilesEditor
                     MessageBox.Show("Not definitions for " + message + " found. Correct names", "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }   
             }
+        }
+
+        private void ModifyLinesToAdd()
+        {
+            List<FileLineProperties> lines = new List<FileLineProperties>();
+            int counter = 1;
+            StringReader reader = new StringReader(Properties.Resources.UserVariables);
+            while (true)
+            {
+                string line = reader.ReadLine();
+                if (line == null)
+                    break;
+                if (!line.Contains("{LINES}"))
+                {
+                    if (!line.Contains("{ADD_OR_NOT}"))
+                        lines.Add(new FileLineProperties() { LineContent = line.Replace("{USER_NAME}", ConfigurationManager.AppSettings["Ersteller"]).Replace("{DATE}", DateTime.Now.ToString("yyyy.MM.dd")), HasExeption = false, Variable = "CurrentVariable" + counter });
+                    else
+                    {
+                        if (LinesToAddToFile.Count > 0)
+                            lines.Add(new FileLineProperties() { LineContent = line.Replace("{ADD_OR_NOT}", "").Replace("{USER_NAME}", ConfigurationManager.AppSettings["Ersteller"]).Replace("{DATE}", DateTime.Now.ToString("yyyy.MM.dd")), HasExeption = false, Variable = "CurrentVariable" + counter });
+                    }
+                }
+                else
+                    foreach (var item in LinesToAddToFile)
+                        lines.Add(item);
+                counter++;
+            }
+            LinesToAddToFile = lines;
+            
         }
 
         public void DistinctLinesToAddToFile()

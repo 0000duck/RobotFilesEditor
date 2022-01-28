@@ -1,0 +1,50 @@
+&ACCESS RVO
+&REL 5
+DEFDAT  UserVariables Public
+
+;***************************************************
+;*
+;*  Default .dat Template for Kuka-Krc-Bmw-User
+;*
+;* In this file the user can define additional
+;* needed variables.
+;*
+;* Rules like naming, language etc. must be
+;* according to the standard concept.
+;*
+;***************************************************
+
+;================================================
+;* Variable name               : MyTypNum
+;*
+;* Description of the function : TypNum Selection
+;*
+;* Variable added by User: {USER_NAME}
+;* Company               : AIUT              
+;* Date                  : {DATE}
+========================================
+GLOBAL INT MyTypNum
+
+;================================================
+;* Variable name               : MyUserNum
+;*
+;* Description of the function : UserNum Selection
+;*
+;* Variable added by User: {USER_NAME}
+;* Company               : AIUT 
+;* Date                  : {DATE}
+;================================================
+GLOBAL INT MyUserNum
+
+{ADD_OR_NOT};================================================
+{ADD_OR_NOT};* Variable name               : Central pos
+{ADD_OR_NOT};*
+{ADD_OR_NOT};* Description of the function : Central positions definition
+{ADD_OR_NOT};*
+{ADD_OR_NOT};* Variable added by User: {USER_NAME}
+{ADD_OR_NOT};* Company               : AIUT 
+{ADD_OR_NOT};* Date                  : {DATE}
+{ADD_OR_NOT};================================================
+{LINES}
+
+ENDDAT

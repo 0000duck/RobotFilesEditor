@@ -2,7 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -176,9 +178,28 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             foreach (var file in FilesAndContent)
             {
                 List<string> renumberedProgramSection = RenumberLinesFanucMethods.GetRenumberedBody(file.Value.ProgramSection);
+                List<string> newInitialSection = GetLineCount(file.Value.InitialSection, renumberedProgramSection.Count);
                 result.Add(file.Key, new FanucRobot(file.Value.InitialSection, renumberedProgramSection, file.Value.DeclarationSection));
             }
             return result;
+        }
+
+        private List<string> GetLineCount(List<string> initialSection, int count)
+        {
+            Regex getLineCountRegex = new Regex(@"\s*LINE_COUNT\s*\=\s*(?=\d+)", RegexOptions.IgnoreCase);
+            int counter = 0;
+            string lineToAdd = string.Empty;
+            foreach (var line in initialSection)
+            {
+                if (getLineCountRegex.IsMatch(line))
+                {
+                    lineToAdd = getLineCountRegex.Match(line).ToString() + count + ";";
+                    break;
+                }
+                counter++;
+            }
+            initialSection[counter] = lineToAdd;
+            return initialSection;
         }
 
         private IDictionary<string, FanucRobot> ReadFiles()
@@ -277,7 +298,6 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             RobotName = vm.RobotName == null ? string.Empty : vm.RobotName;
             GlobalData.RobotNameFanuc = RobotName;
         }
-
 
         private void CheckOpenAndCloseCommands()
         {
@@ -383,6 +403,407 @@ namespace RobotFilesEditor.Model.Operations.FANUC
            
             GlobalData.SrcPathsAndJobs = pathsAndJobs;
             GlobalData.Jobs = jobs;
+        }
+    }
+
+    public class FanucCreateSOVBackup
+    {
+        public FanucCreateSOVBackup()
+        {
+            DialogResult dialogResult = MessageBox.Show("Would you like to create SOV backup?\r\n", "Create SOV backup?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (dialogResult == DialogResult.Yes)
+            {
+                try
+                {
+                    Regex isProg = new Regex(@"PROG\d+\.ls", RegexOptions.IgnoreCase);
+                    List<string> programPaths = Directory.GetFiles(Path.Combine(GlobalData.DestinationPath, "Program"), "*.ls").ToList();
+                    List<string> orgs = Directory.GetFiles(GlobalData.DestinationPath,"*.ls",SearchOption.AllDirectories).Where(x => isProg.IsMatch(x)).ToList();
+                    if (orgs.Count == 0)
+                        orgs = Directory.GetFiles(GlobalData.SourcePath, "*.ls", SearchOption.AllDirectories).Where(x => isProg.IsMatch(x)).ToList();
+                    if (orgs.Count == 0)
+                    {
+                        DialogResult dialogResult2 = MessageBox.Show("No orgs found. Would you like to:\r\nYes - Create orgs\r\nNo - select folder with orgs\r\nCancel - abort", "Create orgs?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                        if (dialogResult2 == DialogResult.Yes)
+                        {
+                            bool isSuccessOrgs = CreateOrgsFanuc();
+                            if (!isSuccessOrgs)
+                            {
+                                MessageBox.Show("No orgs created. SOV backup was not created.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            }
+                            orgs = Directory.GetFiles(GlobalData.DestinationPath, "*.ls", SearchOption.AllDirectories).Where(x => isProg.IsMatch(x)).ToList();
+                        }
+                        else if (dialogResult2 == DialogResult.No)
+                        {
+                            string orgsFolder = CommonLibrary.CommonMethods.SelectDirOrFile(true);
+                            if (Directory.Exists(orgsFolder))
+                                orgs = Directory.GetFiles(orgsFolder, "*.ls", SearchOption.AllDirectories).Where(x => isProg.IsMatch(x)).ToList();
+                            if (orgs.Count == 0)
+                            {
+                                MessageBox.Show("No orgs found. SOV backup was not created.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("No orgs created. SOV backup was not created.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
+                    }
+                    MessageBox.Show("Select XVR workbook file", "Select XVR", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    string xvrFile = CommonLibrary.CommonMethods.SelectDirOrFile(false, "XVR file", "*.xvr");
+                    if (string.IsNullOrEmpty(xvrFile))
+                    {
+                        MessageBox.Show("XVR file not selected. SOV backup won't be created", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    IDictionary<int, List<double>> homes = GetHomes(); 
+                    if (homes.Count == 0)
+                    {
+                        MessageBox.Show("No home positions found in olp files. SOV Backup will not be created", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                    StreamReader reader = new StreamReader(xvrFile);
+                    var xvrFileContent = reader.ReadToEnd();
+                    reader.Close();
+
+                    List<AppPair> foundPairs = FindPairs();
+                    ApplicationSelectorViewModel vm = new ApplicationSelectorViewModel(foundPairs);
+                    ApplicationSelector dialog = new ApplicationSelector(vm);
+                    dialog.ShowDialog();
+
+                    xvrFileContent = UpdateXvr(xvrFileContent, homes,vm.Data.ToList());
+
+                    string backdate = Properties.Resources.BACKDATE.Replace("{DATE_AND_TIME}", DateTime.Now.ToString("yy/MM/dd hh:mm:ss").Replace(".", "/"));
+                    string pathOfSOVBackups = Path.Combine(GlobalData.DestinationPath, "SOV_Backup");
+                    if (!Directory.Exists(pathOfSOVBackups))
+                        Directory.CreateDirectory(pathOfSOVBackups);
+                    var asciiFile = File.Create(Path.Combine(pathOfSOVBackups, "ASCII.zip"));
+                    asciiFile.Close();
+
+                    using (FileStream zipToOpen = new FileStream(Path.Combine(pathOfSOVBackups, "ASCII.zip"), FileMode.Open))
+                    {
+                        using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
+                        {
+                            programPaths.ForEach(x => archive.CreateEntryFromFile(x, Path.GetFileName(x)));
+                            orgs.ForEach(x => archive.CreateEntryFromFile(x, Path.GetFileName(x)));
+                        }
+                        zipToOpen.Close();
+                    }
+                    File.WriteAllText(Path.Combine(GlobalData.DestinationPath, "SOV_Backup", "BACKDATE.DT"), backdate);
+                    File.WriteAllText(Path.Combine(GlobalData.DestinationPath, "SOV_Backup", "WORKBOOK.XVR"), xvrFileContent);
+                    var sovBackupFile = File.Create(Path.Combine(pathOfSOVBackups, GlobalData.RobotNameFanuc + ".zip"));
+                    sovBackupFile.Close();
+                    using (FileStream zipToOpen = new FileStream(Path.Combine(pathOfSOVBackups, GlobalData.RobotNameFanuc + ".zip"), FileMode.Open))
+                    {
+                        using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
+                        {
+                            archive.CreateEntryFromFile(Path.Combine(pathOfSOVBackups, "ASCII.zip"), "ASCII.zip");
+                            archive.CreateEntryFromFile(Path.Combine(pathOfSOVBackups, "BACKDATE.DT"), "BACKDATE.DT");
+                            archive.CreateEntryFromFile(Path.Combine(pathOfSOVBackups, "WORKBOOK.XVR"), "WORKBOOK.XVR");
+                        }
+                        zipToOpen.Close();
+                    }
+                    File.Delete(Path.Combine(pathOfSOVBackups, "ASCII.zip"));
+                    File.Delete(Path.Combine(pathOfSOVBackups, "BACKDATE.DT"));
+                    File.Delete(Path.Combine(pathOfSOVBackups, "WORKBOOK.XVR"));
+
+                    MessageBox.Show("SOV Backup successfuly created.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private List<AppPair> FindPairs()
+        {
+            List<AppPair> result = new List<AppPair>();
+            foreach (var path in GlobalData.AllFiles.Where(x=> Path.GetExtension(x).ToLower() == ".ls"))
+            {
+                string pathfiltered = Path.GetFileNameWithoutExtension(path).ToLower();
+                if (pathfiltered.Contains("b02") || pathfiltered.Contains("dock") && !pathfiltered.Contains("a04"))
+                    result.Add(new AppPair("B", 2, true));
+                if (pathfiltered.Contains("a03") || pathfiltered.Contains("pick") && !pathfiltered.Contains("drop"))
+                    result.Add(new AppPair("A", 3, true));
+                if (pathfiltered.Contains("a04") || pathfiltered.Contains("spot"))
+                    result.Add(new AppPair("A", 4, true));
+                if (pathfiltered.Contains("a05"))
+                    result.Add(new AppPair("A", 5, true));
+                if (pathfiltered.Contains("a08") || pathfiltered.Contains("glue"))
+                    result.Add(new AppPair("A", 8, true));
+                if (pathfiltered.Contains("a10") || pathfiltered.Contains("search"))
+                    result.Add(new AppPair("A", 10, true));
+                if (pathfiltered.Contains("a12") || pathfiltered.Contains("stack"))
+                    result.Add(new AppPair("A", 12, true));
+                if (pathfiltered.Contains("a13") || pathfiltered.Contains("rivet") && !pathfiltered.Contains("blindrivet"))
+                    result.Add(new AppPair("A", 13, true));
+                if (pathfiltered.Contains("a15") || pathfiltered.Contains("laser"))
+                    result.Add(new AppPair("A", 15, true));
+                if (pathfiltered.Contains("a16") || pathfiltered.Contains("laser"))
+                    result.Add(new AppPair("A", 16, true));
+                if (pathfiltered.Contains("a19") || pathfiltered.Contains("clinch"))
+                    result.Add(new AppPair("A", 19, true));
+                if (pathfiltered.Contains("a20") || pathfiltered.Contains("stud"))
+                    result.Add(new AppPair("A", 20, true));
+                if (pathfiltered.Contains("a21") || pathfiltered.Contains("stud"))
+                    result.Add(new AppPair("A", 21, true));
+                if (pathfiltered.Contains("a22") || pathfiltered.Contains("flow"))
+                    result.Add(new AppPair("A", 22, true));
+                if (pathfiltered.Contains("a23") || pathfiltered.Contains("hem"))
+                    result.Add(new AppPair("A", 23, true));
+                if (pathfiltered.Contains("a24") || pathfiltered.Contains("inline"))
+                    result.Add(new AppPair("A", 24, true));
+                if (pathfiltered.Contains("a27") || pathfiltered.Contains("blindrivet"))
+                    result.Add(new AppPair("A", 27, true));
+                if (pathfiltered.Contains("a28") || pathfiltered.Contains("fasten"))
+                    result.Add(new AppPair("A", 28, true));
+                if (pathfiltered.Contains("a47"))
+                    result.Add(new AppPair("A", 47, true));
+            }
+            result = FilterResult(result);
+            return result;
+        }
+
+        private List<AppPair> FilterResult(List<AppPair> input)
+        {
+            List<AppPair> result = new List<AppPair>();
+            foreach (var item in input)
+            {
+                //if (result.FirstOrDefault(x=> x.Prefix == item.Prefix) == null && !result.Where(x => x.Prefix == item.Prefix).Any(y => y.Suffix == item.Suffix))
+                if (!result.Where(x => x.Prefix == item.Prefix).Any(y => y.Suffix == item.Suffix))
+                    result.Add(item);
+            }
+            return result;
+        }
+
+        private string UpdateXvr(string xvrFileContent, IDictionary<int, List<double>> homes, List<AppPair> apps)
+        {
+            IDictionary<string[], string> setupDatas = new Dictionary<string[], string>();
+            Regex isPosArrayRegex = new Regex("^\\s*<\\s*ARRAY\\s+name\\s*\\=\\s*\"\\s*\\$POSREG\\s*\\[\\s*1\\s*\\]", RegexOptions.IgnoreCase);
+            Regex isEndRegex = new Regex(@"^\s*<\s*/\s*XMLVAR\s*>", RegexOptions.IgnoreCase);
+            Regex isProgRegex = new Regex(@"^\s*<\s*PROG\s+", RegexOptions.IgnoreCase);
+            Regex isProgEndRegex = new Regex(@"^\s*<\s*/\s*PROG\s*>", RegexOptions.IgnoreCase);
+            Regex isSetupDataRegx = new Regex(@"^\s*<\s*VAR\s+name.*SETUP_DATA", RegexOptions.IgnoreCase);
+            Regex setupDataContentRegex = new Regex(@"(?<=^\s*<\s*ARRAY.*SETUP_DATA.*)\d+",RegexOptions.IgnoreCase);
+            Regex setupDataFieldRegex = new Regex(@"(?<=^\s*<\s*FIELD.*COMMENT.*\>).*(?=\<)", RegexOptions.IgnoreCase);
+            Regex isRefPosRegex = new Regex(@"^\s*<\s*VAR.*REFPOS1", RegexOptions.IgnoreCase);
+            //Regex isSystemRegex = new Regex(@"^\s*<\s*PROG\s+.*\*SYSTEM\*", RegexOptions.IgnoreCase);
+            string result = string.Empty;
+            int progLevel = 0;
+            bool isSetupData = false, setupDataFound = false, isMnuframe = false, isRefPos = false;
+            MatchCollection currentSetupData = null;
+            string refPosString = FindRefPosString(xvrFileContent, apps.Where(x=>x.IsSelected==true).ToList().Count, homes.First().Value[6] == -999999 ? 6 : 7);
+            
+            StringReader reader = new StringReader(xvrFileContent);
+            while (true)
+            {
+                string line = reader.ReadLine();
+                if (line == null)
+                    break;
+                if (isProgRegex.IsMatch(line))
+                    progLevel++;
+                if (isProgEndRegex.IsMatch(line))
+                    progLevel--;
+                if (progLevel > 1)
+                {
+                    result += "</PROG>\r\n";
+                    progLevel = 1;
+                }
+                if (line.ToLower().Contains("$mnuframe"))
+                    isMnuframe = true;
+                if (isRefPosRegex.IsMatch(line))
+                    isRefPos = true;
+                if (isSetupDataRegx.IsMatch(line))
+                    isSetupData = true;
+                if (isEndRegex.IsMatch(line))
+                {
+                    string stringToAdd = " <PROG name=\"A01_CMN_VAR\">\r\n";
+                    stringToAdd += "  <VAR name=\"AR_APPS\">\r\n";
+                    foreach (var app in apps.Where(x=>x.IsSelected == true))
+                    {
+                        stringToAdd += "    <ARRAY name=\"AR_APPS[" + app.Suffix + "]\">\r\n";
+                        stringToAdd += "      <FIELD name=\""+app.Prefix+"\">\r\n";
+                        stringToAdd += "        <FIELD name=\"ST_PREFIX\" prot=\"RW\">___</FIELD>\r\n";
+                        stringToAdd += "        <FIELD name=\"B_INSTALLED\" prot=\"RW\">TRUE</FIELD>\r\n";
+                        stringToAdd += "        <FIELD name=\"ST_VERSION\" prot=\"RW\" />\r\n";
+                        stringToAdd += "        <FIELD name=\"$DUMMY3\" prot=\"RW\">255</FIELD>\r\n";
+                        stringToAdd += "        <FIELD name=\"$DUMMY4\" prot=\"RW\">255</FIELD>\r\n";
+                        stringToAdd += "      </FIELD>\r\n";
+                        stringToAdd += "    </ARRAY>\r\n";
+                    }
+                    stringToAdd += "  </VAR>\r\n</PROG>\r\n";
+                    result += stringToAdd;
+                }
+                if (!isSetupData && !isRefPos)
+                    result += line + "\r\n";
+                if (isRefPos && line.ToLower().Contains("</var>"))
+                    isRefPos = false;
+                if (isMnuframe && line.ToLower().Contains("</var>"))
+                {
+                    isMnuframe = false;
+                    result += refPosString;
+                }
+                if (isSetupData && setupDataContentRegex.IsMatch(line) && setupDataContentRegex.Matches(line).Count== 3)
+                {
+                    currentSetupData = setupDataContentRegex.Matches(line);
+                    setupDataFound = true;
+                }
+                if (setupDataFound && setupDataFieldRegex.IsMatch(line))
+                {
+                    setupDatas.Add(new string[3] { currentSetupData[0].ToString(), currentSetupData[1].ToString(), currentSetupData[2].ToString() }, setupDataFieldRegex.Match(line).ToString());
+                    currentSetupData = null;
+                    setupDataFound = false;
+                }
+                if (isSetupData && line.ToLower().Contains("</var>"))
+                {
+                    isSetupData = false;
+                    result += "    <VAR name=\"$REFPOS1\">\r\n    </VAR>\r\n";
+                    foreach (var item in setupDatas)
+                    {
+                        result += "    <VAR name=\"SETUP_DATA["+item.Key[0]+", "+ item.Key[1] + ", "+ item.Key[2] + "].$COMMENT\" prot=\"RO\">"+item.Value+ "</VAR>\r\n";
+                    }
+                }
+                if (isPosArrayRegex.IsMatch(line))
+                {
+                    foreach (var home in homes)
+                    {
+                        string stringToAdd = "      <ARRAY name = \"$POSREG[1,"+home.Key+"]\" prot = \"RW\">  'HOME"+home.Key+"'\r\n";
+                        stringToAdd += "gnum: 1 rep: 9 axes: "+(home.Value[6] == -999999 ? "6" : "7") +" utool: 253 uframe: 253 Config: \r\n";
+                        stringToAdd += "J1 = "+home.Value[0]+" deg   J2 = "+ home.Value[1] + " deg   J3 = "+ home.Value[2] + " deg\r\n";
+                        stringToAdd += "J4 = " + home.Value[3] + " deg   J5 = " + home.Value[4] + " deg   J6 = " + home.Value[5] + " deg\r\n";
+                        if (home.Value[6] != -999999)
+                            stringToAdd += "EXT1: "+home.Value[6]+" mm  \r\n";
+                        stringToAdd += "      </ARRAY>\r\n";
+                        result += stringToAdd;
+                    }
+                }
+            }
+            return result;
+        }
+
+        private string FindRefPosString(string xvrFileContent, int appcount, int axisCount)
+        {
+            Regex refposStartRegex = new Regex(@"^\s*<\s*ARRAY.*REFPOS1\s*\[\s*\d+", RegexOptions.IgnoreCase);
+            Regex refposEndRegex = new Regex(@"^\s*<\s*/ARRAY\s*>", RegexOptions.IgnoreCase);
+            string result = string.Empty;
+            bool refposstarted = false;
+            StringReader reader = new StringReader(xvrFileContent);
+            while (true)
+            {
+                string line = reader.ReadLine();
+                if (line == null)
+                    break;
+                if (refposStartRegex.IsMatch(line))
+                    refposstarted = true;
+                if (refposstarted)
+                    result += line + "\r\n";
+                if (refposstarted && refposEndRegex.IsMatch(line))
+                    refposstarted = false;
+            }
+            reader.Close();
+            result += "    <VAR name=\"$ROBOT_NAME\" prot=\"RW\">"+ GlobalData.RobotNameFanuc + "</VAR>\r\n";
+            result += "    <ARRAY name=\"$APPLICATION["+ appcount + "]\" prot=\"RO\">VIRTUAL</ARRAY>\r\n";
+            result += "    <VAR name=\"$SCR.$NUM_TOT_AXS\" prot=\"RO\">"+ axisCount + "</VAR>\r\n";
+            return result;
+        }
+
+        private IDictionary<int, List<double>> GetHomes()
+        {
+            Regex homenumRegex = new Regex(@"(?<=^\s*\[\s*\d+\s*,\s*)\d+", RegexOptions.IgnoreCase);
+            Regex joint123Regex = new Regex(@"(?<=J(1|2|3)\s*=\s*)(-\d+\.\d+|-\d+|\d+\.\d+|\d+)",RegexOptions.IgnoreCase);
+            Regex joint456Regex = new Regex(@"(?<=J(4|5|6)\s*=\s*)(-\d+\.\d+|-\d+|\d+\.\d+|\d+)", RegexOptions.IgnoreCase);
+            Regex ext1Regex = new Regex(@"(?<=EXT1\s*\:\s*)(-\d+\.\d+|-\d+|\d+\.\d+|\d+)", RegexOptions.IgnoreCase);
+            IDictionary<int, List<double>> result = new SortedDictionary<int, List<double>>();
+            List<string> olpFiles = Directory.GetFiles(GlobalData.SourcePath, "*.olp", SearchOption.AllDirectories).ToList();
+            foreach (var file in olpFiles)
+            {
+                int currentHomenum = 0;
+                bool firtsHomeFound = false, j123Found = false, j456Found = false, ext1Found = false, emptyLineFound = false;
+                StreamReader reader = new StreamReader(file);
+                double[] joints = new double[7];
+                while (!reader.EndOfStream)
+                {                    
+                    string line = reader.ReadLine();
+                    if (homenumRegex.IsMatch(line))
+                    {
+                        currentHomenum = int.Parse(homenumRegex.Match(line).ToString());
+                        if (currentHomenum > 5)
+                            currentHomenum = 0;
+                        else
+                            firtsHomeFound = true;
+                        
+                    }
+                    if (joint123Regex.IsMatch(line) && currentHomenum > 0)
+                    {
+                        j123Found = true;
+                        var matches = joint123Regex.Matches(line);
+                        joints[0] = double.Parse(matches[0].ToString(), CultureInfo.InvariantCulture);
+                        joints[1] = double.Parse(matches[1].ToString(), CultureInfo.InvariantCulture);
+                        joints[2] = double.Parse(matches[2].ToString(), CultureInfo.InvariantCulture);
+                    }
+                    if (joint456Regex.IsMatch(line) && currentHomenum > 0)
+                    {
+                        j456Found = true;
+                        var matches = joint456Regex.Matches(line);
+                        joints[3] = double.Parse(matches[0].ToString(), CultureInfo.InvariantCulture);
+                        joints[4] = double.Parse(matches[1].ToString(), CultureInfo.InvariantCulture);
+                        joints[5] = double.Parse(matches[2].ToString(), CultureInfo.InvariantCulture);
+                    }
+                    if (ext1Regex.IsMatch(line) && currentHomenum > 0)
+                    {
+                        ext1Found = true;
+                        joints[6] = double.Parse(ext1Regex.Match(line).ToString(), CultureInfo.InvariantCulture);
+                    }
+                    if (string.IsNullOrEmpty(line.Trim()) && firtsHomeFound && currentHomenum > 0 && j123Found && j456Found)
+                        emptyLineFound = true;
+                    if (firtsHomeFound && currentHomenum > 0 && j123Found && j456Found && (ext1Found || emptyLineFound))
+                    {
+                        if (!ext1Found)
+                            joints[6] = -999999;
+                        if (!result.Keys.Contains(currentHomenum))
+                        {
+                            result.Add(currentHomenum, joints.ToList());
+                        }
+                        else
+                        {
+                            if (joints[0] != result[currentHomenum][0] || joints[1] != result[currentHomenum][1] || joints[2] != result[currentHomenum][2] || joints[3] != result[currentHomenum][3] || joints[4] != result[currentHomenum][4] || joints[5] != result[currentHomenum][5] || joints[6] != result[currentHomenum][6])
+                                MessageBox.Show("Definition of home " + currentHomenum + " is ambiguous. Verify values in .olp files!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+                        currentHomenum = 0;
+                        joints = new double[7];
+                        j123Found = false;
+                        j456Found = false;
+                        ext1Found = false;
+                        emptyLineFound = false;
+                    }
+
+                }
+                if (firtsHomeFound && currentHomenum > 0 && j123Found && j456Found && !result.Keys.Contains(currentHomenum))
+                {
+                    if (!ext1Found)
+                        joints[6] = -999999;
+                    result.Add(currentHomenum, joints.ToList());
+                }
+                reader.Close();
+            }
+            return result;
+        }
+
+        private bool CreateOrgsFanuc()
+        {
+            var vm = new CreateOrgsViewModel(GlobalData.SrcPathsAndJobs, GlobalData.Jobs);
+            CreateOrgs sW = new CreateOrgs(vm);
+            var dialogResult = sW.ShowDialog();
+            if ((bool)dialogResult)
+            {
+                FanucOrgs org = new FanucOrgs(vm);
+                org.CreateOrgs();
+                return true;
+            }
+            return false;
         }
     }
 }

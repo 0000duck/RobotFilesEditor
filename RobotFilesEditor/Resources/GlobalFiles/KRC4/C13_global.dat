@@ -1,0 +1,12 @@
+&ACCESS R
+&COMMENT V_1_4_4
+DEFDAT C13_GLOBAL PUBLIC
+
+;********************************
+;Date: 07.11.2018
+;Programmer: AIUT
+;Description: Global positions
+;********************************
+
+
+ENDDAT

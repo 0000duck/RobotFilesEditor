@@ -61,6 +61,21 @@ namespace RobotFilesEditor.Properties {
         }
         
         /// <summary>
+        /// Wyszukuje zlokalizowany ciąg podobny do ciągu {DATE_AND_TIME}
+        ///
+        ///Version:  V8.36P/06/None
+        ///Build ID: V8.3607        2/8/2017
+        ///
+        ///1A05B-2500-H510
+        ///.
+        /// </summary>
+        internal static string BACKDATE {
+            get {
+                return ResourceManager.GetString("BACKDATE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Wyszukuje zlokalizowany zasób typu System.Drawing.Icon podobny do zasobu (Ikona).
         /// </summary>
         internal static System.Drawing.Icon Harvester {
@@ -163,6 +178,34 @@ namespace RobotFilesEditor.Properties {
         internal static string ProgHeaderFanucEN {
             get {
                 return ResourceManager.GetString("ProgHeaderFanucEN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        /// Wyszukuje zlokalizowany ciąg podobny do ciągu &amp;ACCESS RVO
+        ///&amp;REL 5
+        ///DEFDAT  UserVariables Public
+        ///
+        ///;***************************************************
+        ///;*
+        ///;*  Default .dat Template for Kuka-Krc-Bmw-User
+        ///;*
+        ///;* In this file the user can define additional
+        ///;* needed variables.
+        ///;*
+        ///;* Rules like naming, language etc. must be
+        ///;* according to the standard concept.
+        ///;*
+        ///;***************************************************
+        ///
+        ///;================================================
+        ///;* Variable name               : MyTypNum
+        ///;*
+        ///;* Description of the function : [obcięto pozostałą część ciągu]&quot;;.
+        /// </summary>
+        internal static string UserVariables {
+            get {
+                return ResourceManager.GetString("UserVariables", resourceCulture);
             }
         }
     }

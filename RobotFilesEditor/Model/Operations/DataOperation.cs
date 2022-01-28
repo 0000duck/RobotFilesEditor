@@ -276,14 +276,10 @@ namespace RobotFilesEditor
 
                 if (DetectDuplicates)
                 {
-                    foreach (var item in DataFilterGroups)
-                        foreach (var line in item.LinesToAddToFile.Where(x => x.LineContent.Contains("E6AXIS")))
-                            GlobalData.E6axisGlobalsfound.Add(line.LineContent);
-                    DataFilterGroups.ForEach(x => x.LinesToAddToFile = ValidateText.FindVaribleDuplicates(x.LinesToAddToFile));
+                    CentralPositionModificator();                    
                 }
                 DataFilterGroups = DataContentSortManager.SortData(DataFilterGroups, SortType);
                 ClearUnnecessaryFDATS();
-                CleadLocalCentralPos();
                 FindExceptions();
             }
             catch (Exception ex)
@@ -291,11 +287,6 @@ namespace RobotFilesEditor
                 SrcValidator.GetExceptionLine(ex);
                 throw ex;
             }
-        }
-
-        private void CleadLocalCentralPos()
-        {
-            
         }
 
         private void FindExceptions()
@@ -505,6 +496,8 @@ namespace RobotFilesEditor
                 return;
             if (sourceText.Any(x => x.Contains("A04_swp_global") && GlobalData.WeldingType == "A05") || sourceText.Any(x => x.Contains("A05_swi_global") && GlobalData.WeldingType == "A04"))
                 return;
+            //if (sourceText.Any(x => x.Contains("a13_rvt_global") && GlobalData.RivetingType == "C13") || sourceText.Any(x => x.Contains("c13_rvt_global") && GlobalData.RivetingType == "A13"))
+            //    return;
             List<ResultInfo> resultInfos = new List<ResultInfo>();
             _resultInfos = new List<ResultInfo>();
             _resultToWrite = new List<string>();
@@ -1011,7 +1004,32 @@ namespace RobotFilesEditor
             List<DataFilterGroup> _dataFilterGroups=new List<DataFilterGroup>();
             List<string> _filesToPrepare=new List<string>();
             List<ResultInfo> _resultInfos=new List<ResultInfo>();
-        }   
+        }
+
+        private void CentralPositionModificator()
+        {
+            Regex replaceRegex = new Regex(@"(?<=DECL)\s+(?=E6AXIS)", RegexOptions.IgnoreCase);
+            foreach (var item in DataFilterGroups)
+                foreach (var line in item.LinesToAddToFile.Where(x => x.LineContent.Contains("E6AXIS")))
+                {
+
+                    string lineToAdd = replaceRegex.Replace(line.LineContent, " GLOBAL ");
+                    GlobalData.E6axisGlobalsfound.Add(lineToAdd);
+                }
+            if (DataFilterGroups.Any(x => x.Filter.Contain.Any(y => y == "POZYCJE CENTRALNE")))
+            {
+                DataFilterGroup centralPosGroup = DataFilterGroups.First(x => x.Filter.Contain.Any(y => y == "POZYCJE CENTRALNE"));
+                List<FileLineProperties> replaceList = new List<FileLineProperties>();
+                foreach (var item in centralPosGroup.LinesToAddToFile)
+                {
+                    FileLineProperties fileLine = item;
+                    fileLine.LineContent = replaceRegex.Replace(item.LineContent, " GLOBAL ");
+                    replaceList.Add(fileLine);
+                }
+                centralPosGroup.LinesToAddToFile = replaceList;
+            }
+            DataFilterGroups.ForEach(x => x.LinesToAddToFile = ValidateText.FindVaribleDuplicates(x.LinesToAddToFile));
+        }
         #endregion InterfaceImplementation
     }
 }

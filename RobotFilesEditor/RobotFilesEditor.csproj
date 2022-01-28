@@ -29,7 +29,7 @@
     <MinimumRequiredVersion>1.0.0.54</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>380</ApplicationRevision>
+    <ApplicationRevision>395</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -164,6 +164,10 @@
     <Compile Include="Dialogs\ABBRenameWindow.xaml.cs">
       <DependentUpon>ABBRenameWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\ApplicationSelector.xaml.cs">
+      <DependentUpon>ApplicationSelector.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\ApplicationSelectorViewModel.cs" />
     <Compile Include="Dialogs\BaseShifterViewModel.cs" />
     <Compile Include="Dialogs\BaseShifterWindow.xaml.cs">
       <DependentUpon>BaseShifterWindow.xaml</DependentUpon>
@@ -176,6 +180,10 @@
       <DependentUpon>ChangeTypIdList.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dialogs\ChangeTypIdViewModel.cs" />
+    <Compile Include="Dialogs\CompareSOVandOLPViewModel.cs" />
+    <Compile Include="Dialogs\CompareSOVandOLPWindow.xaml.cs">
+      <DependentUpon>CompareSOVandOLPWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\CreateUserNum2.xaml.cs">
       <DependentUpon>CreateUserNum2.xaml</DependentUpon>
     </Compile>
@@ -314,6 +322,7 @@
     <Compile Include="Model\Operations\DataClass\SasFillerClass.cs" />
     <Compile Include="Model\Operations\DataClass\SpotComparerClass.cs" />
     <Compile Include="Model\Operations\DataClass\TrelloReportDatas.cs" />
+    <Compile Include="Model\Operations\FANUC\FanucCompareSOVToOLPMethods.cs" />
     <Compile Include="Model\Operations\FANUC\FanucMethods.cs" />
     <Compile Include="Model\Operations\FANUC\FanucOrgs.cs" />
     <Compile Include="Model\Operations\FANUC\FanucRobot.cs" />
@@ -375,6 +384,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Dialogs\ApplicationSelector.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dialogs\BaseShifterWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -384,6 +397,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\ChangeTypIdList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\CompareSOVandOLPWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -522,6 +539,11 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="Resources\BACKDATE.DT" />
+    <Content Include="Resources\GlobalFiles\KRC4\C13_global.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\UserVariables.txt" />
     <None Include="Resources\PROG251.txt" />
     <Resource Include="Resources\ProgHeaderFanucEN.txt" />
     <None Include="Resources\ProgHeaderFanucDE.txt" />
@@ -532,7 +554,7 @@
     </EmbeddedResource>
     <None Include="app.config">
       <SubType>Designer</SubType>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Content Include="Application.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -548,6 +570,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <None Include="Resources\BACKDATE.txt" />
     <Content Include="Resources\GlobalFiles\KRC4\B02_tch_global.dat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

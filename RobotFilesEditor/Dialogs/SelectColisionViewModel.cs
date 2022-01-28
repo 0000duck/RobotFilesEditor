@@ -53,7 +53,8 @@ namespace RobotFilesEditor.Dialogs
             set
             {
                 Set(ref _selectedIndexInReq,value);
-                RequestText = Pair.Value[value];
+                if (value > -1)
+                    RequestText = Pair.Value[value];
             }
         }
 

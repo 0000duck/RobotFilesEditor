@@ -38,6 +38,7 @@ namespace RobotFilesEditor
         public static List<string> InputDataList { get; set; }
         public static List<string> GlobalDatsList { get; set; }
         public static string DestinationPath { get; set; }
+        public static string SourcePath { get; set; }
         public static CreateGripperViewModel GripperVM { get; internal set; }
         public static IDictionary<string, int> Paths { get; internal set; }
         //public static List<KeyValuePair<string,int>> SelectedJobsForAnyJob { get; internal set; }
@@ -49,6 +50,8 @@ namespace RobotFilesEditor
         public static string RobotType { get; set; }
         public static string ToolchangerType { get; set; }
         public static string WeldingType { get; set; }
+        public static string LaserType { get; set; }
+        //public static string RivetingType { get; set; }
         public static bool LocalHomesFound { get; set; }
         public static IDictionary<int, string> loadVars { get; set; }
         private static string[] _viewerPrograms = { "notepad++.exe"};

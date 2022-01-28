@@ -143,6 +143,7 @@ namespace RobotFilesEditor.ViewModel
                     _sourcePath = value;
                     RaisePropertyChanged(nameof(SourcePath));
                     WriteToApplicationConfig(false);
+                    GlobalData.SourcePath = value;
                     if(SelectedControler!=null)
                     {
                         SelectedControler.SourcePath = SourcePath;
@@ -494,8 +495,8 @@ namespace RobotFilesEditor.ViewModel
         public ICommand ScanContent { get; set; }
         public ICommand ShiftBase { get; set; }        
         public ICommand GenerateOrgsFanuc { get; set; }
-
-
+        public ICommand CompareSOVAndOLP { get; set; }
+        
         private void SetCommands()
         {
             ChangeName = new RelayCommand(ChangeNameExecute);
@@ -548,6 +549,12 @@ namespace RobotFilesEditor.ViewModel
             ScanContent = new RelayCommand(ScanContentExecute);
             ShiftBase = new RelayCommand(ShiftBaseExecute);
             GenerateOrgsFanuc = new RelayCommand(GenerateOrgsFanucExecute);
+            CompareSOVAndOLP = new RelayCommand(CompareSOVAndOLPExecute);
+        }
+
+        private void CompareSOVAndOLPExecute()
+        {
+            var comparer = new Model.Operations.FANUC.FanucCompareSOVToOLPMethods();
         }
 
         private void ShiftBaseExecute()
@@ -934,7 +941,11 @@ namespace RobotFilesEditor.ViewModel
             foreach (var operation in AllOperations)
             {
                 operation.ExecuteOperationCommandExecute();
-            }          
+            }
+            if (GlobalData.ControllerType == "FANUC")
+            { 
+                Model.Operations.FANUC.FanucCreateSOVBackup fanucBackup = new Model.Operations.FANUC.FanucCreateSOVBackup();
+            }
         }
 
         private void ShowAllOperationsResults()

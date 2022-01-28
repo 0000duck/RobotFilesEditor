@@ -15,18 +15,28 @@ namespace RobotFilesEditor.Model.Operations
     {
         public static void Execute()
         {
-            MessageBox.Show("Select .ls file for renumber.", "Select file", MessageBoxButton.OK, MessageBoxImage.Information);
-            string filePath = CommonLibrary.CommonMethods.SelectDirOrFile(false, filter1Descr: "LS file", filter1: "*.ls");
+            bool allSuccess = true;
+            MessageBox.Show("Select directory containing files to renumber.", "Select directory", MessageBoxButton.OK, MessageBoxImage.Information);
+            string filePath = CommonLibrary.CommonMethods.SelectDirOrFile(true);
             if (string.IsNullOrEmpty(filePath))
                 return;
-            FanucProgramClass originalFile = GetOriginalHeaderFanuc(filePath);
-            FanucProgramClass resultFile = new FanucProgramClass(originalFile.Header,GetRenumberedBody(originalFile.Body),originalFile.Footer);
-            WriteFile(resultFile,filePath);
-
+            List<string> filesToRenumber = Directory.GetFiles(filePath, "*.ls", SearchOption.TopDirectoryOnly).ToList();
+            foreach (var file in filesToRenumber)
+            {
+                FanucProgramClass originalFile = GetOriginalHeaderFanuc(file);
+                FanucProgramClass resultFile = new FanucProgramClass(originalFile.Header, GetRenumberedBody(originalFile.Body), originalFile.Footer);
+                if (!WriteFile(resultFile, file))
+                    allSuccess = false;
+            }
+            if (allSuccess)
+                MessageBox.Show("Successfully saved at " + filePath + "\\RenumberedPrograms\\", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+            else
+                MessageBox.Show("Task completed with errors!", "Success", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
-        private static void WriteFile(FanucProgramClass inputFile, string filePath)
+        private static bool WriteFile(FanucProgramClass inputFile, string filePath)
         {
+            bool result = false;
             try
             {
                 bool success = false;
@@ -54,12 +64,15 @@ namespace RobotFilesEditor.Model.Operations
                     File.WriteAllLines(currentDirectory + "\\RenumberedPrograms\\" + Path.GetFileName(filePath), resultString);
                     success = true;
                 }
-                if (success)
-                    MessageBox.Show("Successfully saved at " + currentDirectory + "\\RenumberedPrograms\\" + Path.GetFileName(filePath), "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                //if (success)
+                    //MessageBox.Show("Successfully saved at " + currentDirectory + "\\RenumberedPrograms\\" + Path.GetFileName(filePath), "Success", MessageBoxButton.OK, MessageBoxImage.Information);
+                result = success;
+                return result;
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Something went wrong", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return result;
             }
         }
 
