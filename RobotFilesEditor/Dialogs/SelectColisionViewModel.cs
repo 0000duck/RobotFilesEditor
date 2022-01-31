@@ -24,7 +24,7 @@ namespace RobotFilesEditor.Dialogs
             if (fillDescr)
             {
                 IsVisible = Visibility.Visible;
-                LimitText = "Description lenght is limited to " + maxLength + " signs!";
+                LimitText = "Description length is limited to " + maxLength + " signs!";
             }
             else
                 IsVisible = Visibility.Collapsed;

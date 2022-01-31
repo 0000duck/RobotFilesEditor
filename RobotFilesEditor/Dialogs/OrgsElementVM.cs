@@ -213,6 +213,19 @@ namespace RobotFilesEditor.Dialogs
             }
         }
 
+        public string HomeToCentralPath
+        {
+            get { return OrgsElement.HomeToCentralPath; }
+            set
+            {
+                if (OrgsElement.HomeToCentralPath != value)
+                {
+                    OrgsElement.HomeToCentralPath = value;
+                    RaisePropertyChanged(() => HomeToCentralPath);
+                }
+            }
+        }
+
         ObservableCollection<IntItem> _abortNrs;
         public ObservableCollection<IntItem> AbortNrs
         {
@@ -223,6 +236,20 @@ namespace RobotFilesEditor.Dialogs
                 {
                     _abortNrs = value;
                     RaisePropertyChanged("AbortNrs");
+                }
+            }
+        }
+
+        ObservableCollection<TextItem> _homeToCentral;
+        public ObservableCollection<TextItem> HomeToCentral
+        {
+            get { return _homeToCentral; }
+            set
+            {
+                if (_homeToCentral != value)
+                {
+                    _homeToCentral = value;
+                    RaisePropertyChanged("HomeToCentral");
                 }
             }
         }

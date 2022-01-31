@@ -38,7 +38,7 @@
                 <StackPanel>
                     <ListBox x:Name="CollDescriptionsClr" SelectedIndex="{Binding SelectedIndexInClr}"  Margin="10,5,10,5" ItemsSource="{Binding Pair.Value}" HorizontalAlignment="Center"
                          FocusManager.IsFocusScope="False"></ListBox>
-                     <TextBox Text="{Binding ReleaseText}" MinWidth="50" Margin="10,0,10,0" TextAlignment="Center"/>
+                    <TextBox Text="{Binding ReleaseText, UpdateSourceTrigger=PropertyChanged}" MinWidth="50" Margin="10,0,10,0" TextAlignment="Center"/>
                 </StackPanel>
             </GroupBox>
             <Button x:Name="CollDescrOk" Margin="20,5,20,5" HorizontalAlignment="Center" Width="50" Content="OK" FontWeight="Bold" Click="CollDescrOk_Click" IsDefault="True"></Button>

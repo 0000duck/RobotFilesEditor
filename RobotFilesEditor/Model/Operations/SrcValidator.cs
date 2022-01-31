@@ -38,6 +38,7 @@ namespace RobotFilesEditor.Model.Operations
         public static IDictionary<string, string> Result { get; set; }
         private static bool UnusedDataPresent { get; set; }
         private static string matchRoboter;
+        private static bool fillDescrs;
 
         internal static bool ValidateFile(IDictionary<string, string> files)
         {
@@ -73,6 +74,7 @@ namespace RobotFilesEditor.Model.Operations
                 resultSrcFiles = ClearHeader(resultSrcFiles);
                 GlobalData.Roboter = roboter;
                 FillListOfOpsInGlobal(resultSrcFiles);
+                SetFillDescr();
                 if (GlobalData.ControllerType != "KRC4 Not BMW")
                 {
                     collisions = GetCollisions(srcFiles);
@@ -889,14 +891,12 @@ namespace RobotFilesEditor.Model.Operations
             }
             List<CollisionWithDescr> result = new List<CollisionWithDescr>();
 
-
-            //foreach (var item in inconsistentCollDescriptions.Where(x => x.Value.Count > 1))
             foreach (var item in inconsistentCollDescriptions)
             {
                 string chosenItemReq = null, chosenItemClr = null;
                 while (chosenItemReq == null || chosenItemClr == null)
                 {
-                    var vm = new SelectColisionViewModel(item,true); // ViewModel Creation, parameter - KeyValue payr
+                    var vm = new SelectColisionViewModel(item,fillDescrs); // ViewModel Creation, parameter - KeyValue payr
                     SelectCollisionFromDuplicate sW = new SelectCollisionFromDuplicate(vm); // DialogView Creation - parameter ViewModel
                     var dialogResult = sW.ShowDialog();
                     chosenItemReq = vm.RequestText;
@@ -912,16 +912,19 @@ namespace RobotFilesEditor.Model.Operations
             return result;
         }
 
-
-        private static IDictionary<string, List<string>> CorrectCollisionComments(IDictionary<string, List<string>> filteredFiles)
+        private static void SetFillDescr()
         {
-            bool fillDescrs = false;
+            fillDescrs = false;
             if (GlobalData.ControllerType == "KRC4")
             {
                 DialogResult dialogResult = MessageBox.Show("Would you like to fill the description in Collzone statement?\r\nYes - Fill Colldescr\r\nNo - leave it blank", "Fill descriptions", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (dialogResult == DialogResult.Yes)
                     fillDescrs = true;
             }
+        }
+         
+        private static IDictionary<string, List<string>> CorrectCollisionComments(IDictionary<string, List<string>> filteredFiles)
+        {
             filteredFiles = RemoveCollisionComments(filteredFiles);
             IDictionary<string, List<string>> result = new Dictionary<string, List<string>>();
             Regex isCollDescrRegex = new Regex(@";\s*" + ConfigurationManager.AppSettings["CollisionDescription" + GlobalData.ControllerType.Replace(" ", "_") + language], RegexOptions.IgnoreCase);

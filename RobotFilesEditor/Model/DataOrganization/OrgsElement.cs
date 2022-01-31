@@ -13,6 +13,7 @@ namespace RobotFilesEditor.Model.DataOrganization
         public string Path { get; set; }
         public string SelectedPLC { get; set; }
         public string WithPart { get; set; }
+        public string HomeToCentralPath { get; set; }
         public string JobAndDescription { get; set; }
         //public string AbortDescription { get; set; }
         public ObservableCollection<KeyValuePair<string, int>> AnyJobValue { get; set; }

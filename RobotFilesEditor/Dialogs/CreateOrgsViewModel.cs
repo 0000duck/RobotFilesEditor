@@ -18,6 +18,7 @@ namespace RobotFilesEditor.Dialogs
     public class CreateOrgsViewModel : ViewModelBase
     {
         SortedDictionary<int, string> typesAndNames;
+        ObservableCollection<TextItem> hometocentrals;
 
         #region Ctor
         public CreateOrgsViewModel(IDictionary<string, int> paths, IDictionary<int,string> jobs)
@@ -31,6 +32,8 @@ namespace RobotFilesEditor.Dialogs
             typesAndNames = new SortedDictionary<int, string>();
             Abort = new ObservableCollection<TextItem>( FillAbort());
             WithParts = new ObservableCollection<TextItem>(FillWithParts());
+            //HomeToCentral = new ObservableCollection<TextItem>(FillHomeToCentrals(paths));
+            hometocentrals = new ObservableCollection<TextItem>(FillHomeToCentrals(paths));
             AbortNumber = new ObservableCollection<IntItem>();
             SafeRobot = false;
             Lines = FillLines();
@@ -58,6 +61,17 @@ namespace RobotFilesEditor.Dialogs
             DictOrgsElementVM.Add(0, OrgsElements);
             DictOrgsElements = new Dictionary<int, ICollection<IOrgsElement>>();
             SetCommands();
+        }
+
+        private ObservableCollection<TextItem> FillHomeToCentrals(IDictionary<string, int> paths)
+        {
+            ObservableCollection<TextItem> result = new ObservableCollection<TextItem>();
+            foreach (var path in GlobalData.AllFiles.Where(x=> GlobalData.ControllerType == "FANUC" ? System.IO.Path.GetExtension(x).ToLower() == ".ls" : System.IO.Path.GetExtension(x).ToLower() == ".src"))
+            {
+                if (!paths.Keys.Any(x => x.ToLower() == System.IO.Path.GetFileNameWithoutExtension(path).ToLower()))
+                    result.Add(new TextItem(System.IO.Path.GetFileNameWithoutExtension(path)));
+            }
+            return result;
         }
 
         private string GetRobotName()
@@ -463,6 +477,17 @@ namespace RobotFilesEditor.Dialogs
             }
         }
 
+        private ObservableCollection<TextItem> _homeToCentral;
+        public ObservableCollection<TextItem> HomeToCentral
+        {
+            get { return _homeToCentral; }
+            set
+            {
+                _homeToCentral = value;
+                RaisePropertyChanged(() => HomeToCentral);
+            }
+        }
+
         #endregion
 
 
@@ -529,11 +554,17 @@ namespace RobotFilesEditor.Dialogs
             OrgsElementVM orgsElement = (OrgsElementVM)sender;
             List<IntItem> currentList = new List<IntItem>();
             if (orgsElement.Abort == "Home")
+            {
                 for (int i = 1; i < 3; i++)
                     currentList.Add(new IntItem { Value = i });
+                orgsElement.HomeToCentral = new ObservableCollection<TextItem>();
+            }
             if (orgsElement.Abort == "AbortProg")
+            {
                 for (int i = 0; i < 33; i++)
                     currentList.Add(new IntItem { Value = i });
+                orgsElement.HomeToCentral = hometocentrals;
+            }
             orgsElement.AbortNrs = new ObservableCollection<IntItem>(currentList); 
 
         }
@@ -544,10 +575,12 @@ namespace RobotFilesEditor.Dialogs
                 if (_selectedOrgsElement.AbortNrs == null)
                 {
                     AbortNumber = null;
+                    HomeToCentral = null;
                 }
                 else
                 {
                     AbortNumber = new ObservableCollection<IntItem>(_selectedOrgsElement.AbortNrs);
+                    HomeToCentral = new ObservableCollection<TextItem>(_selectedOrgsElement.HomeToCentral);
                 }
             }
         }

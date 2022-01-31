@@ -275,6 +275,8 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                         {
                             alreadyAddedJobs.Add(job.Value);
                             result.Add("  28:  LBL[" + CreateAnyJobNumLabel(typ.Key, job.Value) + ": Job " + job.Value + " ] ;");
+                            if (typ.Value.First().OrgsElement.HomeToCentralPath != null)
+                                result.Add("  28:  CALL " + typ.Value.First().OrgsElement.HomeToCentralPath + "    ;");
                             if (typ.Value.First().OrgsElement.JobAndDescription.ToLower().Contains("usernum"))
                             {
                                 var anyjobusernum = typ.Value.First().OrgsElement.AnyJobUserNumValue[job.Value];
@@ -282,7 +284,9 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                                 result.Add("  30:   ;");
                             }
                             else
+                            {
                                 result.Add("  28:  CALL " + job.Key + "    ;");
+                            }
                             result.Add("  32:  JMP LBL[" + currentLabelToEscapeAnyjob + "] ;");
                             result.Add("  18:   ;");
                         }
@@ -292,11 +296,15 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                 else if (typ.Value.First().OrgsElement.Path.ToLower().Contains("usernum"))                
                 {
                     isUserNum = true;
+                    if (typ.Value.First().OrgsElement.HomeToCentralPath != null)
+                        result.Add("  28:  CALL " + typ.Value.First().OrgsElement.HomeToCentralPath + "    ;");
                     result.AddRange(GenerateJump(JumpType.UserNum, typ.Value.First().OrgsElement, typ.Key));
                     result.Add("  30:   ;");
                 }
                 if (!isAnyJob && !isUserNum)
                 {
+                    if (typ.Value.First().OrgsElement.HomeToCentralPath != null)
+                        result.Add("  29:  CALL " + typ.Value.First().OrgsElement.HomeToCentralPath + "    ;");
                     result.Add("  29:  CALL " + typ.Value.First().OrgsElement.Path + "    ;");
                     result.Add("  30:   ;");
                 }                

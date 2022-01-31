@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Create Organization Programs" SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterScreen" Loaded="Window_Loaded" ResizeMode="NoResize">
-    <Grid Margin="5,5,5,5">
+    <Grid Margin="5,5,5,5" HorizontalAlignment="Center">
         
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -23,7 +23,7 @@
             <ColumnDefinition Width="100"/>
             <ColumnDefinition Width="160"/>
             <ColumnDefinition Width="160"/>
-            <ColumnDefinition Width="210"/>
+            <ColumnDefinition Width="260"/>
         </Grid.ColumnDefinitions>
         <Label Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Content="Select line first!" Foreground="Tomato" FontWeight="Bold" Margin="5.667,5,4.266,5.2" HorizontalAlignment="Center"/>
         <Label Grid.Row="1" Grid.Column="1" Content="Line" Margin="5.667,5,4.266,5.2" HorizontalAlignment="Center"/>
@@ -142,6 +142,23 @@
                     <DataGridComboBoxColumn.EditingElementStyle>
                         <Style TargetType="ComboBox">
                             <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.WithParts}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.EditingElementStyle>
+                </DataGridComboBoxColumn>
+
+                <DataGridComboBoxColumn  Header="Home to central" MinWidth="150"
+                    SelectedValueBinding="{Binding HomeToCentralPath, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"      
+                                SelectedValuePath="Text"
+                                DisplayMemberPath="Text"
+                                         >
+                    <DataGridComboBoxColumn.ElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding HomeToCentral}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.ElementStyle>
+                    <DataGridComboBoxColumn.EditingElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding HomeToCentral}"/>
                         </Style>
                     </DataGridComboBoxColumn.EditingElementStyle>
                 </DataGridComboBoxColumn>
