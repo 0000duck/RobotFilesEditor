@@ -47,6 +47,12 @@ namespace Fanuc_mirro
 
         private static FileAndPath MirrorString(FileInfo file, bool isWorkbook)
         {
+            Regex isPosRegStartRegex = new Regex(@"^\s*<.*\$POSREG", RegexOptions.IgnoreCase);
+            Regex isPosRegStopRegex = new Regex(@"^\s*<\s*/\s*VAR\s*>", RegexOptions.IgnoreCase);
+            Regex joint123Regex = new Regex(@"(?<=J(1|2|3)\s*=\s*)(-\d+\.\d+|-\d+|\d+\.\d+|\d+)", RegexOptions.IgnoreCase);
+            Regex joint456Regex = new Regex(@"(?<=J(4|5|6)\s*=\s*)(-\d+\.\d+|-\d+|\d+\.\d+|\d+)", RegexOptions.IgnoreCase);
+            Regex joint4Regex = new Regex(@"(?<=J4\s*=\s*)(-\d+\.\d+|-\d+|\d+\.\d+|\d+)", RegexOptions.IgnoreCase);
+            Regex joint6Regex = new Regex(@"(?<=J6\s*=\s*)(-\d+\.\d+|-\d+|\d+\.\d+|\d+)", RegexOptions.IgnoreCase);
             string arg1, arg2, regex1, regex2;
             if (isWorkbook)
             {
@@ -70,19 +76,38 @@ namespace Fanuc_mirro
             string currentLine = "";
             List<string> foundValues = new List<string>();
             var reader = new StreamReader(file.FullName);
-            bool modifyLine = false;
+            bool modifyLine = false, isPosReg = false;
             while (!reader.EndOfStream)
             {
                 var line = reader.ReadLine();
-                if (line.ToLower().Replace(" ","").Contains("config:"))
+                if (isPosRegStartRegex.IsMatch(line))
+                    isPosReg = true;
+                if (isPosRegStopRegex.IsMatch(line))
+                    isPosReg = false;
+                if (isWorkbook && joint123Regex.IsMatch(line))
                 {
-                    regex = new Regex(@"^.*:\s*'", RegexOptions.IgnoreCase);
+                    double j1modified = double.Parse(joint123Regex.Matches(line)[0].ToString(), CultureInfo.InvariantCulture);
+                    currentLine = joint123Regex.Replace(line, (-j1modified).ToString(nfi), 1, 0) + "\r\n";
+                    modifyLine = true;
+                }
+                if (isWorkbook && joint456Regex.IsMatch(line) && !modifyLine)
+                {
+                    double j4modified = double.Parse(joint456Regex.Matches(line)[0].ToString(), CultureInfo.InvariantCulture);
+                    double j6modified = double.Parse(joint456Regex.Matches(line)[2].ToString(), CultureInfo.InvariantCulture);
+                    currentLine = joint4Regex.Replace(line, (-j4modified).ToString(nfi));
+                    currentLine = joint6Regex.Replace(currentLine, (-j6modified).ToString(nfi)) + "\r\n";
+                    modifyLine = true;
+                }
+                if (line.ToLower().Replace(" ","").Contains("config:") && !isPosReg && !modifyLine)
+                {
+                    regex = new Regex(@"^.*CONFIG\s*:\s*", RegexOptions.IgnoreCase);
                     Match m = regex.Match(line);
                     string templine = m.ToString();
                     foundValues = new List<string>();
                     //regex = new Regex(@"((?<=CONFIG :..).(?=\ ))")|;
                     //regex = new Regex(@"((?<=CONFIG.*).(?=\ ))|((?<= CONFIG.*).(?=\,))");
-                    string configString = (new Regex(@"(?<=')[\w\d-]*", RegexOptions.IgnoreCase)).Match(line.Replace(" ", "").Replace(",", "").Replace("\t", "")).ToString();
+                    //string configString = (new Regex(@"(?<=')[\w\d-]*", RegexOptions.IgnoreCase)).Match(line.Replace(" ", "").Replace(",", "").Replace("\t", "")).ToString();
+                    string configString = (new Regex(@"(?<=CONFIG\s*:\s*)[',\s\w_-]*", RegexOptions.IgnoreCase)).Match(line.Replace(" ", "").Replace(",", "").Replace("\t", "").Replace("'","")).ToString();
                     regex = new Regex(@"(\w|-\d|\d)", RegexOptions.IgnoreCase);
                     foreach (Match currentMatch in regex.Matches(configString))
                     {
@@ -104,7 +129,7 @@ namespace Fanuc_mirro
                         conf.Arg5 = -conf.Arg5;
                     if (conf.Arg6 != 0)
                         conf.Arg6 = -conf.Arg6;
-                    currentLine = templine + conf.Arg1 + " " + conf.Arg2 + " " + conf.Arg3 + "," + conf.Arg4.ToString() + "," + conf.Arg5.ToString() + "," + conf.Arg6.ToString() + "',\n";
+                    currentLine = templine + (isWorkbook ? "" : "'") + conf.Arg1 + " " + conf.Arg2 + " " + conf.Arg3 + "," + conf.Arg4.ToString() + "," + conf.Arg5.ToString() + "," + conf.Arg6.ToString() + (isWorkbook ? "" : "',") + "\r\n";
                     modifyLine = true;
 
                 }
@@ -139,7 +164,7 @@ namespace Fanuc_mirro
                     P = float.Parse(foundValues[1], CultureInfo.InvariantCulture);
                     RInvert = -float.Parse(foundValues[2], CultureInfo.InvariantCulture);
                     if (isWorkbook)
-                        currentLine = "  W:   " + WInvert.ToString(nfi) + "   P:  " + P.ToString(nfi) + "   R:   " + RInvert.ToString(nfi)+"</ARRAY>\n";
+                        currentLine = "  W:   " + WInvert.ToString(nfi) + "   P:  " + P.ToString(nfi) + "   R:   " + RInvert.ToString(nfi)+"\r\n";
                     else
                         currentLine = "        W = " + (WInvert.ToString(nfi) + " deg,    P = " + P.ToString(nfi) + " deg,    R = " + RInvert.ToString(nfi) + " deg\n");
                     modifyLine = true;

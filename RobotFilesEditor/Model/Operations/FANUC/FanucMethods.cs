@@ -49,10 +49,10 @@ namespace RobotFilesEditor.Model.Operations.FANUC
         {
             bool fillDescrs = false;
             IDictionary<string, FanucRobot> result = new Dictionary<string, FanucRobot>();
-            IDictionary<int, string> collAndDescription = GetCollDescriptions();
             DialogResult dialogResult = MessageBox.Show("Would you like to fill the description in Collzone statement?\r\nYes - Fill Colldescr\r\nNo - leave it blank", "Fill descriptions", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (dialogResult == DialogResult.Yes)
                 fillDescrs = true;
+            IDictionary<int, string> collAndDescription = GetCollDescriptions(fillDescrs);
             foreach (var file in FilesAndContent)
             {
                 List<string> lines = RemoveCollComments(file.Value.ProgramSection);
@@ -94,7 +94,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             return result;
         }
 
-        private IDictionary<int, string> GetCollDescriptions()
+        private IDictionary<int, string> GetCollDescriptions(bool fillDescr)
         {
             IDictionary<int, string> result = new Dictionary<int, string>();
             IDictionary<int, List<string>> tempCollList = new SortedDictionary<int, List<string>>();
@@ -112,7 +112,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             }
             foreach (var collision in tempCollList)
             {
-                SelectColisionViewModel vm = new SelectColisionViewModel(collision, false);
+                SelectColisionViewModel vm = new SelectColisionViewModel(collision, fillDescr, false);
                 SelectCollisionFromDuplicate sW = new SelectCollisionFromDuplicate(vm);
                 var dialogResult = sW.ShowDialog();
                 result.Add(collision.Key, vm.RequestText);

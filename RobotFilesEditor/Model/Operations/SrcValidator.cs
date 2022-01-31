@@ -896,7 +896,7 @@ namespace RobotFilesEditor.Model.Operations
                 string chosenItemReq = null, chosenItemClr = null;
                 while (chosenItemReq == null || chosenItemClr == null)
                 {
-                    var vm = new SelectColisionViewModel(item); // ViewModel Creation, parameter - KeyValue payr
+                    var vm = new SelectColisionViewModel(item,true); // ViewModel Creation, parameter - KeyValue payr
                     SelectCollisionFromDuplicate sW = new SelectCollisionFromDuplicate(vm); // DialogView Creation - parameter ViewModel
                     var dialogResult = sW.ShowDialog();
                     chosenItemReq = vm.RequestText;

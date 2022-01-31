@@ -25,6 +25,7 @@
         </Grid.ColumnDefinitions>
         <StackPanel Grid.ColumnSpan="2">
             <TextBlock HorizontalAlignment="Center" Margin="20,5,20,5" Text="Select description for collision number:"></TextBlock>
+            <TextBlock HorizontalAlignment="Center" Margin="20,5,20,5" Visibility="{Binding IsVisible}" Text="{Binding LimitText}" Foreground="Red" FontWeight="Bold"></TextBlock>
             <TextBlock x:Name="CollNum" Margin="20,5,20,5" Text="{Binding Pair.Key}" HorizontalAlignment="Center" FontWeight="Bold"></TextBlock>
             <GroupBox Header="{Binding RequestHeader}" Margin="10,0,10,0">
                 <StackPanel>

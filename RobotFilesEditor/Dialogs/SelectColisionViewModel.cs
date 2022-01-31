@@ -12,9 +12,23 @@ namespace RobotFilesEditor.Dialogs
 {
     public class SelectColisionViewModel : ViewModelBase
     {
+        #region fields
+        int maxLength = GlobalData.ControllerType == "FANUC" ? 32 : 40;
+        bool limitLength;
+        #endregion
+
         #region Ctor
-        public SelectColisionViewModel(KeyValuePair<int, List<string>> pair, bool releaseVisible = true)
+        public SelectColisionViewModel(KeyValuePair<int, List<string>> pair, bool fillDescr, bool releaseVisible = true)
         {
+            limitLength = fillDescr;
+            if (fillDescr)
+            {
+                IsVisible = Visibility.Visible;
+                LimitText = "Description lenght is limited to " + maxLength + " signs!";
+            }
+            else
+                IsVisible = Visibility.Collapsed;
+
             Pair = pair;
             if (releaseVisible)
             {
@@ -77,10 +91,15 @@ namespace RobotFilesEditor.Dialogs
             {
                 if (_requestText != value)
                 {
+
+                    if (limitLength && value.Length > maxLength)
+                        value = value.Substring(0, maxLength);
+                    
                     _requestText = value;
                     ReleaseText = value;
                     //SelectedIndexInReq = -1;
                     RaisePropertyChanged(() => RequestText);
+                    
                 }
             }
         }
@@ -106,8 +125,11 @@ namespace RobotFilesEditor.Dialogs
             {
                 if (_releaseText != value)
                 {
+                    if (limitLength && value.Length > maxLength)
+                        value = value.Substring(0, maxLength);
                     _releaseText = value;
                     RaisePropertyChanged(() => ReleaseText);
+
                 }
             }
         }
@@ -123,6 +145,35 @@ namespace RobotFilesEditor.Dialogs
                     _releaseVisible = value;
                     //SelectedIndexInClr = -1;
                     RaisePropertyChanged(() => ReleaseVisible);
+                }
+            }
+        }
+
+        Visibility _isVisible;
+        public Visibility IsVisible
+        {
+            get { return _isVisible; }
+            set
+            {
+                if (_isVisible != value)
+                {
+                    _isVisible = value;
+                    //SelectedIndexInClr = -1;
+                    RaisePropertyChanged(() => IsVisible);
+                }
+            }
+        }
+
+        string _limitText;
+        public string LimitText
+        {
+            get { return _limitText; }
+            set
+            {
+                if (_limitText != value)
+                {
+                    _limitText = value;
+                    RaisePropertyChanged(() => LimitText);
                 }
             }
         }
