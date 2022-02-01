@@ -29,7 +29,7 @@
     <MinimumRequiredVersion>1.0.0.54</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>398</ApplicationRevision>
+    <ApplicationRevision>402</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -539,6 +539,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="Resources\utils.txt" />
     <None Include="Resources\BACKDATE.DT" />
     <Content Include="Resources\GlobalFiles\KRC4\C13_global.dat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

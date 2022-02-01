@@ -175,7 +175,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
         private IDictionary<string, FanucRobot> RenumberLines()
         {
             IDictionary<string, FanucRobot> result = new Dictionary<string, FanucRobot>();
-            foreach (var file in FilesAndContent)
+            foreach (var file in FilesAndContent.Where(x=> Path.GetExtension(x.Key).ToLower() == ".ls"))
             {
                 List<string> renumberedProgramSection = RenumberLinesFanucMethods.GetRenumberedBody(file.Value.ProgramSection);
                 List<string> newInitialSection = GetLineCount(file.Value.InitialSection, renumberedProgramSection.Count);
@@ -408,112 +408,123 @@ namespace RobotFilesEditor.Model.Operations.FANUC
 
     public class FanucCreateSOVBackup
     {
-        public FanucCreateSOVBackup()
+        public FanucCreateSOVBackup(bool isSov)
         {
+            if (isSov)
+            { 
             DialogResult dialogResult = MessageBox.Show("Would you like to create SOV backup?\r\n", "Create SOV backup?", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (dialogResult == DialogResult.Yes)
-            {
-                try
+                if (dialogResult == DialogResult.Yes)
                 {
-                    Regex isProg = new Regex(@"PROG\d+\.ls", RegexOptions.IgnoreCase);
-                    List<string> programPaths = Directory.GetFiles(Path.Combine(GlobalData.DestinationPath, "Program"), "*.ls").ToList();
-                    List<string> orgs = Directory.GetFiles(GlobalData.DestinationPath,"*.ls",SearchOption.AllDirectories).Where(x => isProg.IsMatch(x)).ToList();
-                    if (orgs.Count == 0)
-                        orgs = Directory.GetFiles(GlobalData.SourcePath, "*.ls", SearchOption.AllDirectories).Where(x => isProg.IsMatch(x)).ToList();
-                    if (orgs.Count == 0)
+                    try
                     {
-                        DialogResult dialogResult2 = MessageBox.Show("No orgs found. Would you like to:\r\nYes - Create orgs\r\nNo - select folder with orgs\r\nCancel - abort", "Create orgs?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
-                        if (dialogResult2 == DialogResult.Yes)
+                        Regex isProg = new Regex(@"PROG\d+\.ls", RegexOptions.IgnoreCase);
+                        List<string> programPaths = Directory.GetFiles(Path.Combine(GlobalData.DestinationPath, "Program"), "*.ls").ToList();
+                        List<string> orgs = Directory.GetFiles(GlobalData.DestinationPath, "*.ls", SearchOption.AllDirectories).Where(x => isProg.IsMatch(x)).ToList();
+                        if (orgs.Count == 0)
+                            orgs = Directory.GetFiles(GlobalData.SourcePath, "*.ls", SearchOption.AllDirectories).Where(x => isProg.IsMatch(x)).ToList();
+                        if (orgs.Count == 0)
                         {
-                            bool isSuccessOrgs = CreateOrgsFanuc();
-                            if (!isSuccessOrgs)
+                            DialogResult dialogResult2 = MessageBox.Show("No orgs found. Would you like to:\r\nYes - Create orgs\r\nNo - select folder with orgs\r\nCancel - abort", "Create orgs?", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+                            if (dialogResult2 == DialogResult.Yes)
+                            {
+                                bool isSuccessOrgs = CreateOrgsFanuc();
+                                if (!isSuccessOrgs)
+                                {
+                                    MessageBox.Show("No orgs created. SOV backup was not created.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    return;
+                                }
+                                orgs = Directory.GetFiles(GlobalData.DestinationPath, "*.ls", SearchOption.AllDirectories).Where(x => isProg.IsMatch(x)).ToList();
+                            }
+                            else if (dialogResult2 == DialogResult.No)
+                            {
+                                string orgsFolder = CommonLibrary.CommonMethods.SelectDirOrFile(true);
+                                if (Directory.Exists(orgsFolder))
+                                    orgs = Directory.GetFiles(orgsFolder, "*.ls", SearchOption.AllDirectories).Where(x => isProg.IsMatch(x)).ToList();
+                                if (orgs.Count == 0)
+                                {
+                                    MessageBox.Show("No orgs found. SOV backup was not created.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    return;
+                                }
+                            }
+                            else
                             {
                                 MessageBox.Show("No orgs created. SOV backup was not created.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                                 return;
                             }
-                            orgs = Directory.GetFiles(GlobalData.DestinationPath, "*.ls", SearchOption.AllDirectories).Where(x => isProg.IsMatch(x)).ToList();
                         }
-                        else if (dialogResult2 == DialogResult.No)
+                        string xvrFile = string.Empty;
+                        if (Directory.GetFiles(GlobalData.SourcePath, "*.xvr", SearchOption.AllDirectories).Any())
                         {
-                            string orgsFolder = CommonLibrary.CommonMethods.SelectDirOrFile(true);
-                            if (Directory.Exists(orgsFolder))
-                                orgs = Directory.GetFiles(orgsFolder, "*.ls", SearchOption.AllDirectories).Where(x => isProg.IsMatch(x)).ToList();
-                            if (orgs.Count == 0)
-                            {
-                                MessageBox.Show("No orgs found. SOV backup was not created.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                return;
-                            }
+                            xvrFile = Directory.GetFiles(GlobalData.SourcePath, "*.xvr", SearchOption.AllDirectories).First();
                         }
                         else
                         {
-                            MessageBox.Show("No orgs created. SOV backup was not created.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            MessageBox.Show("Select XVR workbook file", "Select XVR", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            xvrFile = CommonLibrary.CommonMethods.SelectDirOrFile(false, "XVR file", "*.xvr");
+                            if (string.IsNullOrEmpty(xvrFile))
+                            {
+                                MessageBox.Show("XVR file not selected. SOV backup won't be created", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return;
+                            }
+                        }
+                        IDictionary<int, List<double>> homes = GetHomes();
+                        if (homes.Count == 0)
+                        {
+                            MessageBox.Show("No home positions found in olp files. SOV Backup will not be created", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             return;
                         }
-                    }
-                    MessageBox.Show("Select XVR workbook file", "Select XVR", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    string xvrFile = CommonLibrary.CommonMethods.SelectDirOrFile(false, "XVR file", "*.xvr");
-                    if (string.IsNullOrEmpty(xvrFile))
-                    {
-                        MessageBox.Show("XVR file not selected. SOV backup won't be created", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
-                    IDictionary<int, List<double>> homes = GetHomes(); 
-                    if (homes.Count == 0)
-                    {
-                        MessageBox.Show("No home positions found in olp files. SOV Backup will not be created", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
-                    }
-                    StreamReader reader = new StreamReader(xvrFile);
-                    var xvrFileContent = reader.ReadToEnd();
-                    reader.Close();
+                        StreamReader reader = new StreamReader(xvrFile);
+                        var xvrFileContent = reader.ReadToEnd();
+                        reader.Close();
 
-                    List<AppPair> foundPairs = FindPairs();
-                    ApplicationSelectorViewModel vm = new ApplicationSelectorViewModel(foundPairs);
-                    ApplicationSelector dialog = new ApplicationSelector(vm);
-                    dialog.ShowDialog();
+                        List<AppPair> foundPairs = FindPairs();
+                        ApplicationSelectorViewModel vm = new ApplicationSelectorViewModel(foundPairs);
+                        ApplicationSelector dialog = new ApplicationSelector(vm);
+                        dialog.ShowDialog();
 
-                    xvrFileContent = UpdateXvr(xvrFileContent, homes,vm.Data.ToList());
+                        xvrFileContent = UpdateXvr(xvrFileContent, homes, vm.Data.ToList(), true);
 
-                    string backdate = Properties.Resources.BACKDATE.Replace("{DATE_AND_TIME}", DateTime.Now.ToString("yy/MM/dd hh:mm:ss").Replace(".", "/"));
-                    string pathOfSOVBackups = Path.Combine(GlobalData.DestinationPath, "SOV_Backup");
-                    if (!Directory.Exists(pathOfSOVBackups))
-                        Directory.CreateDirectory(pathOfSOVBackups);
-                    var asciiFile = File.Create(Path.Combine(pathOfSOVBackups, "ASCII.zip"));
-                    asciiFile.Close();
+                        string backdate = Properties.Resources.BACKDATE.Replace("{DATE_AND_TIME}", DateTime.Now.ToString("yy/MM/dd hh:mm:ss").Replace(".", "/"));
+                        string pathOfSOVBackups = Path.Combine(GlobalData.DestinationPath, "SOV_Backup");
+                        if (!Directory.Exists(pathOfSOVBackups))
+                            Directory.CreateDirectory(pathOfSOVBackups);
+                        var asciiFile = File.Create(Path.Combine(pathOfSOVBackups, "ASCII.zip"));
+                        asciiFile.Close();
 
-                    using (FileStream zipToOpen = new FileStream(Path.Combine(pathOfSOVBackups, "ASCII.zip"), FileMode.Open))
-                    {
-                        using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
+                        using (FileStream zipToOpen = new FileStream(Path.Combine(pathOfSOVBackups, "ASCII.zip"), FileMode.Open))
                         {
-                            programPaths.ForEach(x => archive.CreateEntryFromFile(x, Path.GetFileName(x)));
-                            orgs.ForEach(x => archive.CreateEntryFromFile(x, Path.GetFileName(x)));
+                            using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
+                            {
+                                programPaths.ForEach(x => archive.CreateEntryFromFile(x, Path.GetFileName(x)));
+                                orgs.ForEach(x => archive.CreateEntryFromFile(x, Path.GetFileName(x)));
+                            }
+                            zipToOpen.Close();
                         }
-                        zipToOpen.Close();
-                    }
-                    File.WriteAllText(Path.Combine(GlobalData.DestinationPath, "SOV_Backup", "BACKDATE.DT"), backdate);
-                    File.WriteAllText(Path.Combine(GlobalData.DestinationPath, "SOV_Backup", "WORKBOOK.XVR"), xvrFileContent);
-                    var sovBackupFile = File.Create(Path.Combine(pathOfSOVBackups, GlobalData.RobotNameFanuc + ".zip"));
-                    sovBackupFile.Close();
-                    using (FileStream zipToOpen = new FileStream(Path.Combine(pathOfSOVBackups, GlobalData.RobotNameFanuc + ".zip"), FileMode.Open))
-                    {
-                        using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
+                        File.WriteAllText(Path.Combine(GlobalData.DestinationPath, "SOV_Backup", "BACKDATE.DT"), backdate);
+                        File.WriteAllText(Path.Combine(GlobalData.DestinationPath, "SOV_Backup", "WORKBOOK.XVR"), xvrFileContent);
+                        var sovBackupFile = File.Create(Path.Combine(pathOfSOVBackups, GlobalData.RobotNameFanuc + ".zip"));
+                        sovBackupFile.Close();
+                        using (FileStream zipToOpen = new FileStream(Path.Combine(pathOfSOVBackups, GlobalData.RobotNameFanuc + ".zip"), FileMode.Open))
                         {
-                            archive.CreateEntryFromFile(Path.Combine(pathOfSOVBackups, "ASCII.zip"), "ASCII.zip");
-                            archive.CreateEntryFromFile(Path.Combine(pathOfSOVBackups, "BACKDATE.DT"), "BACKDATE.DT");
-                            archive.CreateEntryFromFile(Path.Combine(pathOfSOVBackups, "WORKBOOK.XVR"), "WORKBOOK.XVR");
+                            using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
+                            {
+                                archive.CreateEntryFromFile(Path.Combine(pathOfSOVBackups, "ASCII.zip"), "ASCII.zip");
+                                archive.CreateEntryFromFile(Path.Combine(pathOfSOVBackups, "BACKDATE.DT"), "BACKDATE.DT");
+                                archive.CreateEntryFromFile(Path.Combine(pathOfSOVBackups, "WORKBOOK.XVR"), "WORKBOOK.XVR");
+                            }
+                            zipToOpen.Close();
                         }
-                        zipToOpen.Close();
-                    }
-                    File.Delete(Path.Combine(pathOfSOVBackups, "ASCII.zip"));
-                    File.Delete(Path.Combine(pathOfSOVBackups, "BACKDATE.DT"));
-                    File.Delete(Path.Combine(pathOfSOVBackups, "WORKBOOK.XVR"));
+                        File.Delete(Path.Combine(pathOfSOVBackups, "ASCII.zip"));
+                        File.Delete(Path.Combine(pathOfSOVBackups, "BACKDATE.DT"));
+                        File.Delete(Path.Combine(pathOfSOVBackups, "WORKBOOK.XVR"));
 
-                    MessageBox.Show("SOV Backup successfuly created.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("SOV Backup successfuly created.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
@@ -579,7 +590,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             return result;
         }
 
-        private string UpdateXvr(string xvrFileContent, IDictionary<int, List<double>> homes, List<AppPair> apps)
+        public string UpdateXvr(string xvrFileContent, IDictionary<int, List<double>> homes, List<AppPair> apps, bool isSOV)
         {
             IDictionary<string[], string> setupDatas = new Dictionary<string[], string>();
             Regex isPosArrayRegex = new Regex("^\\s*<\\s*ARRAY\\s+name\\s*\\=\\s*\"\\s*\\$POSREG\\s*\\[\\s*1\\s*\\]", RegexOptions.IgnoreCase);
@@ -595,7 +606,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             int progLevel = 0;
             bool isSetupData = false, setupDataFound = false, isMnuframe = false, isRefPos = false;
             MatchCollection currentSetupData = null;
-            string refPosString = FindRefPosString(xvrFileContent, apps.Where(x=>x.IsSelected==true).ToList().Count, homes.First().Value[6] == -999999 ? 6 : 7);
+            string refPosString = isSOV ? FindRefPosString(xvrFileContent, apps.Where(x=>x.IsSelected==true).ToList().Count, homes.First().Value[6] == -999999 ? 6 : 7) : string.Empty;
             
             StringReader reader = new StringReader(xvrFileContent);
             while (true)
@@ -612,13 +623,13 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                     result += "</PROG>\r\n";
                     progLevel = 1;
                 }
-                if (line.ToLower().Contains("$mnuframe"))
+                if (line.ToLower().Contains("$mnuframe") && isSOV)
                     isMnuframe = true;
-                if (isRefPosRegex.IsMatch(line))
+                if (isRefPosRegex.IsMatch(line) && isSOV)
                     isRefPos = true;
-                if (isSetupDataRegx.IsMatch(line))
+                if (isSetupDataRegx.IsMatch(line) && isSOV)
                     isSetupData = true;
-                if (isEndRegex.IsMatch(line))
+                if (isEndRegex.IsMatch(line) && isSOV)
                 {
                     string stringToAdd = " <PROG name=\"A01_CMN_VAR\">\r\n";
                     stringToAdd += "  <VAR name=\"AR_APPS\">\r\n";
@@ -639,31 +650,31 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                 }
                 if (!isSetupData && !isRefPos)
                     result += line + "\r\n";
-                if (isRefPos && line.ToLower().Contains("</var>"))
+                if (isRefPos && line.ToLower().Contains("</var>") && isSOV)
                     isRefPos = false;
-                if (isMnuframe && line.ToLower().Contains("</var>"))
+                if (isMnuframe && line.ToLower().Contains("</var>") && isSOV)
                 {
                     isMnuframe = false;
                     result += refPosString;
                 }
-                if (isSetupData && setupDataContentRegex.IsMatch(line) && setupDataContentRegex.Matches(line).Count== 3)
+                if (isSetupData && setupDataContentRegex.IsMatch(line) && setupDataContentRegex.Matches(line).Count== 3 && isSOV)
                 {
                     currentSetupData = setupDataContentRegex.Matches(line);
                     setupDataFound = true;
                 }
-                if (setupDataFound && setupDataFieldRegex.IsMatch(line))
+                if (setupDataFound && setupDataFieldRegex.IsMatch(line) && isSOV)
                 {
                     setupDatas.Add(new string[3] { currentSetupData[0].ToString(), currentSetupData[1].ToString(), currentSetupData[2].ToString() }, setupDataFieldRegex.Match(line).ToString());
                     currentSetupData = null;
                     setupDataFound = false;
                 }
-                if (isSetupData && line.ToLower().Contains("</var>"))
+                if (isSetupData && line.ToLower().Contains("</var>") && isSOV)
                 {
                     isSetupData = false;
                     result += "    <VAR name=\"$REFPOS1\">\r\n    </VAR>\r\n";
                     foreach (var item in setupDatas)
                     {
-                        result += "    <VAR name=\"SETUP_DATA["+item.Key[0]+", "+ item.Key[1] + ", "+ item.Key[2] + "].$COMMENT\" prot=\"RO\">"+item.Value+ "</VAR>\r\n";
+                        result += "    <VAR name=\"SETUP_DATA["+item.Key[0]+","+ item.Key[1] + ","+ item.Key[2] +"].$COMMENT\" prot=\"RO\">"+item.Value+ "</VAR>\r\n";
                     }
                 }
                 if (isPosArrayRegex.IsMatch(line))
@@ -710,7 +721,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             return result;
         }
 
-        private IDictionary<int, List<double>> GetHomes()
+        public IDictionary<int, List<double>> GetHomes()
         {
             Regex homenumRegex = new Regex(@"(?<=^\s*\[\s*\d+\s*,\s*)\d+", RegexOptions.IgnoreCase);
             Regex joint123Regex = new Regex(@"(?<=J(1|2|3)\s*=\s*)(-\d+\.\d+|-\d+|\d+\.\d+|\d+)",RegexOptions.IgnoreCase);

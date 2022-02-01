@@ -62,6 +62,7 @@ namespace RobotFilesEditor.Dialogs
                         UserNumValue = Model.Operations.CreateOrgsMethods.CreateUserNumOrAnyJob(Id, ChooseType.Usernum);
                         RaisePropertyChanged(() => UserNumValue);
                         OrgsElement.JobAndDescription = "USERNUM";
+                        OrgsElement.JobDescription = "USERNUMJOB" + UserNumValue.First().Value;
                     }
                     else if (value == "ANYJOB/USERNUM")
                     {

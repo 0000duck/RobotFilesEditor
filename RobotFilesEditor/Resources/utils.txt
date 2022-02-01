@@ -1,0 +1,36 @@
+&ACCESS RVO8
+&REL 8
+DEF Utils( )
+END
+
+GLOBAL DEFFCT BOOL CHK_AXIS_POS (INPOS :IN)
+E6AXIS INPOS
+
+;***********************************************************
+;* Programm           : CHK_AXIS_POS
+;* Description        : CHK_AXIS_POS
+;* Robot              : KUKA KRC4
+;* Company            : AIUT 
+;* Programmer         : {NAME}
+;* Date               : {DATE}
+;* Change history     : V1.0 i.O.
+;***********************************************************
+
+IF ( ABS($axis_act.A1 - INPOS.A1)<0.1) THEN
+ IF ( ABS($axis_act.A2 - INPOS.A2)<0.1) THEN
+  IF ( ABS($axis_act.A3 - INPOS.A3)<0.1) THEN
+   IF ( ABS($axis_act.A4 - INPOS.A4)<0.1) THEN
+    IF ( ABS($axis_act.A5 - INPOS.A5)<0.1) THEN 
+   	 IF ( ABS($axis_act.A6 - INPOS.A6)<0.1) THEN
+	  {OPTIONAL}IF ( ABS($axis_act.E1 - INPOS.E1)<0.1) THEN
+	   RETURN TRUE
+	  {OPTIONAL}ENDIF
+	 ENDIF
+   	ENDIF
+   ENDIF
+  ENDIF
+ ENDIF
+ENDIF
+RETURN FALSE
+
+ENDFCT

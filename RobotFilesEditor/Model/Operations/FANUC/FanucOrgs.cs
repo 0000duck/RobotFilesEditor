@@ -459,9 +459,10 @@ namespace RobotFilesEditor.Model.Operations.FANUC
 
         private string GetJobNrInJobReq(OrgsElement orgsElement)
         {
-           
+
             if (orgsElement.JobAndDescription.Contains("USERNUM"))
-                return orgsElement.UserNumValue.First().Value.ToString();
+                return orgsElement.JobDescription.Replace("USERNUMJOB", "");
+                //return orgsElement.UserNumValue.First().Value.ToString();
             return jobNumRegex.Match(orgsElement.JobAndDescription).ToString();
         }
 
@@ -493,7 +494,13 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                 case JumpType.UserNum:
                     {
                         jumpRegister = "185:User Num";
-                        element.UserNumValue.ToList().ForEach(x => orgElements.Add(x.Value));
+                        if (element.JobDescription != null && element.JobDescription.Contains("USERNUMJOB"))
+                        {
+                            for (int i = 1; i <= element.UserNumValue.Count; i++)
+                                orgElements.Add(i);
+                        }
+                        else
+                            element.UserNumValue.ToList().ForEach(x => orgElements.Add(x.Value));
                         result.Add("  19:  SELECT R[" + jumpRegister + "]=" + orgElements.First() + ",CALL " + element.UserNumValue.First().Key + " ;");
                         break;
                     }
@@ -520,19 +527,24 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                             { result.Add("  20:         =" + lblNum.ToString() + ",JMP LBL[" + CreateAnyJobNumLabel(typNum, lblNum) + "] ;"); break; }
                         case JumpType.UserNum:
                             {
-                                result.Add("  20:         =" + lblNum + ",CALL " + element.UserNumValue.First(x => x.Value == lblNum).Key + " ;");
+                                if (element.JobDescription != null && element.JobDescription.Contains("USERNUMJOB"))
+                                {
+                                    result.Add("  20:         =" + lblNum + ",CALL " + element.UserNumValue[usernumCounter].Key + " ;");
+                                }
+                                else
+                                    result.Add("  20:         =" + lblNum + ",CALL " + element.UserNumValue.First(x => x.Value == lblNum).Key + " ;");
                                 usernumCounter++;
                                 break;
                             }
                         case JumpType.AnyJobUserNum:
                             {
                                 //result.Add("  20:         =" + lblNum + ",CALL " + element.AnyJobUserNumValue[anyjobusernumNr][usernumCounter].Key + " ;");
-                                result.Add("  20:         =" + (usernumCounter+1) + ",CALL " + element.AnyJobUserNumValue[anyjobusernumNr][usernumCounter].Key + " ;");
+                                result.Add("  20:         =" + (usernumCounter + 1) + ",CALL " + element.AnyJobUserNumValue[anyjobusernumNr][usernumCounter].Key + " ;");
                                 usernumCounter++;
                                 break;
                             }
                     }
-                    
+
                 }
                 firstCycle = false;
             }

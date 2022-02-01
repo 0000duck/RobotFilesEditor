@@ -208,5 +208,32 @@ namespace RobotFilesEditor.Properties {
                 return ResourceManager.GetString("UserVariables", resourceCulture);
             }
         }
+        
+        /// <summary>
+        /// Wyszukuje zlokalizowany ciąg podobny do ciągu &amp;ACCESS RVO8
+        ///&amp;REL 8
+        ///DEF Utils( )
+        ///END
+        ///
+        ///GLOBAL DEFFCT BOOL CHK_AXIS_POS (INPOS :IN)
+        ///E6AXIS INPOS
+        ///
+        ///;***********************************************************
+        ///;* Programm           : CHK_AXIS_POS
+        ///;* Description        : CHK_AXIS_POS
+        ///;* Robot              : {ROBOT}
+        ///;* Company            : AIUT 
+        ///;* Programmer         : {NAME}
+        ///;* Date               : {DATE}
+        ///;* Change history     : V1.0 i.O.
+        ///;***********************************************************
+        ///
+        ///IF ( ABS($axis_act.A1 - INPOS.A1)&lt;0.1) THEN [obcięto pozostałą część ciągu]&quot;;.
+        /// </summary>
+        internal static string utils {
+            get {
+                return ResourceManager.GetString("utils", resourceCulture);
+            }
+        }
     }
 }

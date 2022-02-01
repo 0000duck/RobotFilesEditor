@@ -87,6 +87,7 @@ namespace RobotFilesEditor.Model.Operations
                 resultSrcFiles = CorrectFoldCommentIfZone0(resultSrcFiles);
                 resultSrcFiles = RemoveHash(resultSrcFiles);
                 FindRetrClo(resultSrcFiles);
+                CheckChkAxisPos(resultSrcFiles);
                 FindLocalHomes(datFiles);
                 if (GlobalData.ControllerType != "KRC4 Not BMW")
                 {
@@ -132,6 +133,49 @@ namespace RobotFilesEditor.Model.Operations
 
             return true;
 
+        }
+
+        private static void CheckChkAxisPos(IDictionary<string, List<string>> resultSrcFiles)
+        {
+            Regex findCentralPosRegex = new Regex(@"(?<=^\s*WAIT\s+FOR\s+CHK_AXIS_POS\s*\(\s*).*(?=\))", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+            Regex findMovePointRegex = new Regex(@"(?<=^\s*(PTP|LIN)\s+)[\w_-]+", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+            string currentLogFileContent = string.Empty;
+            foreach (var file in resultSrcFiles)
+            {
+                bool firstPointFound = false, chkAxisPosFound = false;
+                string chkAxisPointName = string.Empty, firstPointName = string.Empty;
+                foreach(var line in file.Value)
+                {
+                    if (findCentralPosRegex.IsMatch(line))
+                    {
+                        chkAxisPosFound = true;
+                        chkAxisPointName = findCentralPosRegex.Match(line).ToString();
+                    }
+                    if (findMovePointRegex.IsMatch(line))
+                    {
+                        firstPointFound = true;
+                        firstPointName = findMovePointRegex.Match(line).ToString();
+                        if (firstPointName.ToLower().Trim() == "xhome1" || firstPointName.ToLower().Trim() == "xhome2")
+                            break;
+                    }
+                    if (firstPointFound && !chkAxisPosFound)
+                    {
+                        currentLogFileContent += "Motion to central pos without CHK_AXIS_POS in path: " + Path.GetFileNameWithoutExtension(file.Key) + "\r\n";
+                        break;
+                    }
+                    if (firstPointFound && chkAxisPosFound)
+                    {
+                        if (chkAxisPointName.ToLower().Trim() != firstPointName.ToLower().Trim())
+                            currentLogFileContent += "Central pos name is different than CHK_AXIS_POS argument in path: " + Path.GetFileNameWithoutExtension(file.Key) + "\r\n";
+                        break;
+                    }
+                }
+            }
+            if (!string.IsNullOrEmpty(currentLogFileContent))
+            {
+                MessageBox.Show("Inconsistency in CHK_AXIS_POS for central positions found.\r\nSee log file for details", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                logFileContent += currentLogFileContent;
+            }
         }
 
         private static IDictionary<int, string> FindLoadVars(IDictionary<string, List<string>> inputFiles)
@@ -1543,7 +1587,7 @@ namespace RobotFilesEditor.Model.Operations
                     if (!flag)
                     {
                         string message = "Operation " + Path.GetFileName(file.Key) + " is of unknown type. Check if operation name is correct";
-                        logFileContent = logFileContent + " " + message + "\r\n";
+                        logFileContent = logFileContent + message + "\r\n";
                         //MessageBox.Show(message, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
                 }
@@ -1874,7 +1918,7 @@ namespace RobotFilesEditor.Model.Operations
                         {
                             message = "Path: " + file.Key.ToString() + ": " + item.Value.Type + " number: " + item.Value.Number.ToString() + " is released but not requested";
                             //MessageBox.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            logFileContent = logFileContent + " " + message + "\r\n";
+                            logFileContent = logFileContent + message + "\r\n";
                         }
                         if (item.Value.StartLines.Count == item.Value.EndLines.Count)
                         {
@@ -3399,6 +3443,7 @@ namespace RobotFilesEditor.Model.Operations
 
         public static List<FileLineProperties> FixMissingExternalAxis(List<FileLineProperties> listToCheck)
         {
+            GlobalData.Has7thAxis = false;
             Regex getValuesRegex = new Regex(@"(?<=(A|E)\d+\s+)((-\d+\.\d+)|(\d+\.\d+)|(-\d+)|(\d+))", RegexOptions.IgnoreCase);
             List<FileLineProperties> tempList = new List<FileLineProperties>();
             foreach (var line in listToCheck)
@@ -3409,18 +3454,19 @@ namespace RobotFilesEditor.Model.Operations
                     string currentLine = line.LineContent.Trim();
                     currentLine = currentLine.Replace("}", ",E1 0.0, E2 0.0, E3 0.0, E4 0.0, E5 0.0, E6 0.0}");
                     line.LineContent = currentLine;
-
                 }
+                if (!GlobalData.Has7thAxis && line.LineContent.ToLower().Contains("e1 ") && matches.Count >= 7)
+                    GlobalData.Has7thAxis = true;
                 else if (line.LineContent.ToLower().Contains("e1 ") && matches.Count < 12)
                 {
                     int firstMissingExt = (6 - matches.Count) * (-1) + 1;
                     string tempstring = "";
-                    for (int i = firstMissingExt; i <=6; i++)
+                    for (int i = firstMissingExt; i <= 6; i++)
                     {
                         tempstring += "E" + i + " 0,";
                     }
                     string currentLine = line.LineContent.Trim();
-                    currentLine = currentLine.Replace("}", ","+tempstring);
+                    currentLine = currentLine.Replace("}", "," + tempstring);
                     currentLine = currentLine.Substring(0, currentLine.Length - 1) + "}";
                     line.LineContent = currentLine;
                 }

@@ -293,15 +293,17 @@ namespace RobotFilesEditor
 
             string destination = Path.Combine(DestinationPath, DestinationFolder);
             IDictionary<string, string> filteredFilesIterator = new Dictionary<string, string>(FilteredFiles);
-            GlobalData.AllFiles = this.AllFiles;
+            if (GlobalData.ControllerType != "FANUC" || GlobalData.CurrentOpNumFanuc == 0)
+                GlobalData.AllFiles = this.AllFiles;
             if (GlobalData.CurrentOpNum == null)
                 GlobalData.CurrentOpNum = 0;
             GlobalData.CurrentOpNum++;
             //if (GlobalData.ControllerType == "KRC4 Not BMW")
             //    SrcValidator.ValidateFile();
-            if (GlobalData.CurrentOpNum == GlobalData.AllOperations)
+            if (GlobalData.ControllerType != "FANUC" && GlobalData.CurrentOpNum == GlobalData.AllOperations || GlobalData.ControllerType == "FANUC" && GlobalData.CurrentOpNumFanuc == 0)
             {
                 GlobalData.CurrentOpNum = 0;
+                GlobalData.CurrentOpNumFanuc++;
 
                 if (!SrcValidator.ValidateFile(filteredFilesIterator))
                     return;
@@ -430,7 +432,57 @@ namespace RobotFilesEditor
                     if (!File.Exists(destination + "\\InitProduction.src"))
                         File.Copy("Resources\\GlobalFiles\\KRC4\\InitProduction.src", destination + "\\InitProduction.src");
                 }
-                if (this.OperationName == "Create SymName.txt")
+                if (this.OperationName == "Copy utils")
+                {
+                    string destination = FilesMenager.CreateDestinationFolderPath(DestinationPath, DestinationFolder);
+                    string utilsString = Properties.Resources.utils, resultString = string.Empty;
+                    StringReader reader = new StringReader(utilsString);
+                    while (true)
+                    {
+                        bool addLine = true;
+                        var line = reader.ReadLine();
+                        string lineToAdd = string.Empty;
+                        if (line == null)
+                            break;
+                        if (line.Contains("{NAME}"))
+                            lineToAdd = line.Replace("{NAME}", ConfigurationManager.AppSettings["Ersteller"]);
+                        else if (line.Contains("{DATE}"))
+                            lineToAdd = line.Replace("{DATE}", DateTime.Now.ToString("dd.MM.yyyy"));
+                        else if (line.Contains("{OPTIONAL}"))
+                        {
+                            if (GlobalData.Has7thAxis)
+                                lineToAdd = line.Replace("{OPTIONAL}", "");
+                            else
+                                addLine = false;
+                        }
+                        else
+                            lineToAdd = line;
+
+                        if (addLine)
+                            resultString += lineToAdd + "\r\n";
+                    }
+                    if (!Directory.Exists(destination))
+                        Directory.CreateDirectory(destination);
+                    File.WriteAllText(destination + "\\Utils.src", resultString);
+                }
+                if (this.OperationName == "Copy Workbook.xvr")
+                {
+                    if (FilteredFiles.Keys.Any(x => Path.GetExtension(x).ToLower() == ".xvr"))
+                    {
+                        string pathToSave = FilesMenager.CreateDestinationFolderPath(DestinationPath, DestinationFolder);
+                        Model.Operations.FANUC.FanucCreateSOVBackup xvrValidator = new Model.Operations.FANUC.FanucCreateSOVBackup(false);
+                        IDictionary<int, List<double>> homes = xvrValidator.GetHomes();
+                        StreamReader reader = new StreamReader(FilteredFiles.First().Key);
+                        string xvrFileStart = reader.ReadToEnd();
+                        reader.Close();
+                        string xvrFileContent = xvrValidator.UpdateXvr(xvrFileStart, homes, null, false);
+                        if (!Directory.Exists(pathToSave))
+                            Directory.CreateDirectory(pathToSave);
+                        File.WriteAllText(Path.Combine(pathToSave, "WORKBOOK.xvr"), xvrFileContent);
+                    }
+                    filesToCopy = new Dictionary<string, string>();
+                }
+                    if (this.OperationName == "Create SymName.txt")
                 {
                     CreateGripperMethods.CreateSymName(FilesMenager.CreateDestinationFolderPath(DestinationPath, DestinationFolder));
                 }

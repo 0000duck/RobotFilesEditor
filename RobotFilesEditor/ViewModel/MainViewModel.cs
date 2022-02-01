@@ -564,6 +564,7 @@ namespace RobotFilesEditor.ViewModel
 
         private void ScanContentExecute()
         {
+            GlobalData.CurrentOpNumFanuc = 0;
             var controller = ControlerChooser.FirstOrDefault(x => x.Checked == true);
             if (controller!=null)
                 controller.ClickedCommandExecuteTest(true);
@@ -944,7 +945,7 @@ namespace RobotFilesEditor.ViewModel
             }
             if (GlobalData.ControllerType == "FANUC")
             { 
-                Model.Operations.FANUC.FanucCreateSOVBackup fanucBackup = new Model.Operations.FANUC.FanucCreateSOVBackup();
+                Model.Operations.FANUC.FanucCreateSOVBackup fanucBackup = new Model.Operations.FANUC.FanucCreateSOVBackup(true);
             }
         }
 

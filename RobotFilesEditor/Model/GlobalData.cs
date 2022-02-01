@@ -13,12 +13,14 @@ namespace RobotFilesEditor
     {
         public static string PathFile {get; set;}
         public static int? CurrentOpNum { get; set; }
+        public static int? CurrentOpNumFanuc { get; set; }
         public static int AllOperations { get; set; }
         public static bool HasToolchager { get; set; }
         public static bool CheckOrder { get; set; }
         public static bool RoboterFound { get; set; }
         public static bool isWeldingRobot { get; set; }
         public static bool isHandlingRobot { get; set; }
+        public static bool Has7thAxis { get; set; }
         public static string Roboter = "";
         public static List<string> Operations = new List<string>();        
         //public const string ConfigurationFileName = "Application.config";       
