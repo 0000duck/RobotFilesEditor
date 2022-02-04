@@ -24,7 +24,7 @@ namespace RobotFilesEditor.Model.Operations
             foreach (var file in filesToRenumber)
             {
                 FanucProgramClass originalFile = GetOriginalHeaderFanuc(file);
-                FanucProgramClass resultFile = new FanucProgramClass(originalFile.Header, GetRenumberedBody(originalFile.Body), originalFile.Footer);
+                FanucProgramClass resultFile = new FanucProgramClass(originalFile.Header, CommonLibrary.CommonMethods.GetRenumberedBody(originalFile.Body), originalFile.Footer);
                 if (!WriteFile(resultFile, file))
                     allSuccess = false;
             }
@@ -74,37 +74,6 @@ namespace RobotFilesEditor.Model.Operations
                 MessageBox.Show("Something went wrong", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return result;
             }
-        }
-
-        public static List<string> GetRenumberedBody(List<string> body)
-        {
-            Regex lineNumberRegex = new Regex(@"(?<=^\s*)\d+\s*(?=\:)", RegexOptions.IgnoreCase);
-            List<string> result = new List<string>();
-            int counter = 1;
-            foreach (string line in body)
-            {
-                string tempLine = line.TrimStart();
-                if (string.IsNullOrEmpty(line.Trim().Replace(" ","")))
-                {
-                    result.Add(AddSpaces(counter.ToString()) + ":   ;");
-                }
-                else
-                    result.Add(lineNumberRegex.Replace(tempLine, AddSpaces(counter.ToString())));
-                counter++;
-            }
-
-            return result;
-        }
-
-        private static string AddSpaces(string numberString)
-        {
-            string tempstring = string.Empty;
-            for (int i = numberString.Length; i < 4; i++)
-            {
-                tempstring += " ";
-            }
-            return tempstring + numberString;
-
         }
 
         private static FanucProgramClass GetOriginalHeaderFanuc(string filePath)

@@ -15,7 +15,7 @@ namespace Fanuc_mirro
     {
         public static string toolsToMirrorString;
 
-        internal static CompleteMirror ReadLSFile(string text, bool mirrorWorkbook, int renumberStep)
+        internal static CompleteMirror ReadLSFile(string text, bool mirrorWorkbook, int renumberStep, bool removeHeader)
         {
             bool workbookFound = false;
             List<FileAndPath> resultPaths = new List<FileAndPath>();
@@ -25,6 +25,8 @@ namespace Fanuc_mirro
             foreach (var file in d.GetFiles("*.ls"))
             {
                 result = MirrorString(file,false, renumberStep);
+                if (removeHeader)
+                    result = RemoveHeader(result);
                 if (result == null)
                     return null;
                 resultPaths.Add(result);
@@ -46,6 +48,46 @@ namespace Fanuc_mirro
             else
                 results = new CompleteMirror(resultPaths);
             return results ;
+        }
+
+        private static FileAndPath RemoveHeader(FileAndPath file)
+        {
+            Regex isOldHeaderPart = new Regex(@"^\s*\d+\s*\:\s*!\s*\*", RegexOptions.IgnoreCase);
+            Regex commentRegex = new Regex(@"^\s*\d+\s*\:\s*!", RegexOptions.IgnoreCase);
+            Regex emptyLineRegex = new Regex(@"^\s*\d+\s*:\s*;", RegexOptions.IgnoreCase);
+            StringReader reader = new StringReader(file.Path);
+            string resultString = string.Empty;
+            List<string> initialLines = new List<string>();
+            List<string> linesToRenumber = new List<string>();
+
+            bool isComment = false, isHeaderEnd = false;
+            while (true)
+            {
+                string line = reader.ReadLine();
+                if (line == null)
+                    break;
+                if (!emptyLineRegex.IsMatch(line))
+                {
+                    if (commentRegex.IsMatch(line))
+                        isComment = true;
+                    else
+                    {
+                        if (isComment)
+                            isHeaderEnd = true;
+                        isComment = false;
+                    }
+                    if (!isHeaderEnd && !isComment)
+                        initialLines.Add(line);
+                    if (!isComment && isHeaderEnd && !string.IsNullOrEmpty(line.Trim()))
+                        linesToRenumber.Add(line);
+                    //resultString += line + "\r\n";
+                }
+            }
+            List<string> renumberedLines = CommonMethods.GetRenumberedBody(linesToRenumber);
+            initialLines.ForEach(x => resultString += x + "\r\n");
+            renumberedLines.ForEach(x => resultString += x + "\r\n");
+
+            return new FileAndPath(file.FileName, resultString);
         }
 
         private static FileAndPath MirrorString(FileInfo file, bool isWorkbook, int renumberStep)

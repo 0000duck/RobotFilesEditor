@@ -18,7 +18,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
     {
         #region props
         public List<string> FilesList { get; set; }
-        public IDictionary<string, FanucRobot> FilesAndContent { get; set; }
+        public IDictionary<string, FanucRobotPath> FilesAndContent { get; set; }
         public string RobotName { get; set; }
         #endregion
 
@@ -46,10 +46,10 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             logContentOut = logContent;
         }
 
-        private IDictionary<string, FanucRobot> CheckJobsAndCollisions()
+        private IDictionary<string, FanucRobotPath> CheckJobsAndCollisions()
         {
             bool fillDescrs = false;
-            IDictionary<string, FanucRobot> result = new Dictionary<string, FanucRobot>();
+            IDictionary<string, FanucRobotPath> result = new Dictionary<string, FanucRobotPath>();
             DialogResult dialogResult = MessageBox.Show("Would you like to fill the description in Collzone statement?\r\nYes - Fill Colldescr\r\nNo - leave it blank", "Fill descriptions", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (dialogResult == DialogResult.Yes)
                 fillDescrs = true;
@@ -81,7 +81,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                     else   
                         linesToAdd.Add(line);
                 }
-                result.Add(file.Key, new FanucRobot(file.Value.InitialSection, linesToAdd, file.Value.DeclarationSection));
+                result.Add(file.Key, new FanucRobotPath(file.Value.InitialSection, linesToAdd, file.Value.DeclarationSection));
             }
             return result;
         }
@@ -122,7 +122,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             return result;
         }
 
-        private IDictionary<string, FanucRobot> AddSpaces()
+        private IDictionary<string, FanucRobotPath> AddSpaces()
         {
             Regex isMotionPoint = new Regex(@"^\s*\d+\s*\:\s*(J|L)\s*(PR|P)\s*\[\s*\d+\s*(|\:\s*[\w\d-_]+)\s*\]\s+\d+(\%|mm/sec)\s+(FINE|CNT\d+)\s*;", RegexOptions.IgnoreCase);
             Regex isSpotPoint = new Regex(@"^\s*\d+\s*\:\s*(J|L)\s*(PR|P)\s*\[\s*\d+.*SWP_P", RegexOptions.IgnoreCase);
@@ -131,7 +131,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             Regex isProcedureCall = new Regex(@"^\s*\d+\s*\:\s*PR_CALL", RegexOptions.IgnoreCase);
             Regex isFrameDef = new Regex(@"^\s*\d+\s*\:\s*(UFRAME|UTOOL|PAYLOAD)", RegexOptions.IgnoreCase);
 
-            IDictionary<string, FanucRobot> result = new Dictionary<string, FanucRobot>();
+            IDictionary<string, FanucRobotPath> result = new Dictionary<string, FanucRobotPath>();
             foreach (var file in FilesAndContent)
             {
                 List<string> lines = RemoveSpaces(file.Value.ProgramSection);
@@ -159,7 +159,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                     
                     previousType = currentType;
                 }
-                result.Add(file.Key, new FanucRobot(file.Value.InitialSection, currentFileContent, file.Value.DeclarationSection));
+                result.Add(file.Key, new FanucRobotPath(file.Value.InitialSection, currentFileContent, file.Value.DeclarationSection));
             }
             return result;
         }
@@ -173,14 +173,14 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             return result;
         }
 
-        private IDictionary<string, FanucRobot> RenumberLines()
+        private IDictionary<string, FanucRobotPath> RenumberLines()
         {
-            IDictionary<string, FanucRobot> result = new Dictionary<string, FanucRobot>();
+            IDictionary<string, FanucRobotPath> result = new Dictionary<string, FanucRobotPath>();
             foreach (var file in FilesAndContent.Where(x=> Path.GetExtension(x.Key).ToLower() == ".ls"))
             {
-                List<string> renumberedProgramSection = RenumberLinesFanucMethods.GetRenumberedBody(file.Value.ProgramSection);
+                List<string> renumberedProgramSection = CommonLibrary.CommonMethods.GetRenumberedBody(file.Value.ProgramSection);
                 List<string> newInitialSection = GetLineCount(file.Value.InitialSection, renumberedProgramSection.Count);
-                result.Add(file.Key, new FanucRobot(file.Value.InitialSection, renumberedProgramSection, file.Value.DeclarationSection));
+                result.Add(file.Key, new FanucRobotPath(file.Value.InitialSection, renumberedProgramSection, file.Value.DeclarationSection));
             }
             return result;
         }
@@ -203,11 +203,11 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             return initialSection;
         }
 
-        private IDictionary<string, FanucRobot> ReadFiles()
+        private IDictionary<string, FanucRobotPath> ReadFiles()
         {
             Regex isprogramSectionStart = new Regex(@"^\d+\s*\:(J|L|\s)", RegexOptions.IgnoreCase);
             Regex isDeclarationSectionStart = new Regex(@"^\/\s*POS\s*$", RegexOptions.IgnoreCase);
-            IDictionary<string, FanucRobot> result = new Dictionary<string, FanucRobot>();
+            IDictionary<string, FanucRobotPath> result = new Dictionary<string, FanucRobotPath>();
             foreach (var file in FilesList)
             {
                 int sectionNum = 1;
@@ -234,16 +234,16 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                     }
                 }
                 reader.Close();
-                result.Add(file, new FanucRobot(initialSection,programSection,declarationSection));
+                result.Add(file, new FanucRobotPath(initialSection,programSection,declarationSection));
             }
             return result;
         }
 
-        private IDictionary<string, FanucRobot> AddHeader()
+        private IDictionary<string, FanucRobotPath> AddHeader()
         {
             Regex isOldHeaderPart = new Regex(@"^\s*\d+\s*\:\s*!\s*\*", RegexOptions.IgnoreCase);
             Regex commentRegex = new Regex(@"^\s*\d+\s*\:\s*!", RegexOptions.IgnoreCase);
-            IDictionary<string, FanucRobot> result = new Dictionary<string, FanucRobot>();
+            IDictionary<string, FanucRobotPath> result = new Dictionary<string, FanucRobotPath>();
             foreach (var file in FilesAndContent)
             {
                 int headreLinesCounter = 0;
@@ -260,12 +260,12 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                 }
                 List<string> newProgramSection = header;
                 newProgramSection.AddRange(currentFile);
-                result.Add(file.Key, new FanucRobot(file.Value.InitialSection, newProgramSection, file.Value.DeclarationSection));
+                result.Add(file.Key, new FanucRobotPath(file.Value.InitialSection, newProgramSection, file.Value.DeclarationSection));
             }
             return result;
         }
 
-        internal static string GetFileContenetFANUC(FanucRobot files)
+        internal static string GetFileContenetFANUC(FanucRobotPath files)
         {
             string result = string.Empty;
             foreach (var line in files.InitialSection)

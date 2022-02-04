@@ -10,7 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static RobotFilesEditor.Model.Operations.FANUC.FanucRobot;
+using static RobotFilesEditor.Model.Operations.FANUC.FanucRobotPath;
 
 namespace RobotFilesEditor.Model.Operations.FANUC
 {
@@ -608,7 +608,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                 if (bodyStartRegex.IsMatch(line))
                     beginingEnd = true;
             }
-            body = RenumberLinesFanucMethods.GetRenumberedBody(body);
+            body = CommonLibrary.CommonMethods.GetRenumberedBody(body);
             foreach (var line in body.Where(x=> lineNumRegex.IsMatch(x)))
                 counter++;
             var indexToChange = begining.FindIndex(x => x.Trim().ToLower().Contains("line_count"));

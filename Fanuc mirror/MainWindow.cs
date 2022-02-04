@@ -53,7 +53,7 @@ namespace Fanuc_mirro
             bool mirrorWorkbook = false;
             if (mirrorWorkbook_checkbox.Checked)
                 mirrorWorkbook = true;
-            resultFiles = Methods.ReadLSFile(pathTextBox.Text, mirrorWorkbook, checkBox1.Checked ? int.Parse(textBox1.Text) : 0);
+            resultFiles = Methods.ReadLSFile(pathTextBox.Text, mirrorWorkbook, checkBox1.Checked ? int.Parse(textBox1.Text) : 0, checkBox2.Checked ? true : false);
 
             SaveFileDialog sf = new SaveFileDialog();
             sf.FileName = "Save here";

@@ -585,6 +585,37 @@ namespace CommonLibrary
                 await streamWriter.WriteAsync(text);
             }
         }
+
+        public static List<string> GetRenumberedBody(List<string> body)
+        {
+            Regex lineNumberRegex = new Regex(@"(?<=^\s*)\d+\s*(?=\:)", RegexOptions.IgnoreCase);
+            List<string> result = new List<string>();
+            int counter = 1;
+            foreach (string line in body)
+            {
+                string tempLine = line.TrimStart();
+                if (string.IsNullOrEmpty(line.Trim().Replace(" ", "")))
+                {
+                    result.Add(AddSpaces(counter.ToString()) + ":   ;");
+                }
+                else
+                    result.Add(lineNumberRegex.Replace(tempLine, AddSpaces(counter.ToString())));
+                counter++;
+            }
+
+            return result;
+        }
+
+        private static string AddSpaces(string numberString)
+        {
+            string tempstring = string.Empty;
+            for (int i = numberString.Length; i < 4; i++)
+            {
+                tempstring += " ";
+            }
+            return tempstring + numberString;
+
+        }
     }
 }
 
