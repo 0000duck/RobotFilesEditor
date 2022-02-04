@@ -21,12 +21,14 @@ namespace Fanuc_mirro
         {
             this.TopMost = true;
             InitializeComponent();
+            TextBox_ToolsToMirror.Enabled = true;
+            TextBox_ToolsToMirror.Text = "51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70";
+            Methods.toolsToMirrorString = TextBox_ToolsToMirror.Text;
         }
 
         private void SelectButton_Click(object sender, EventArgs e)
         {
             this.TopMost = false;
-            bool mirrorWorkbook = false;
             resultFiles = null;
             var dialog = new CommonOpenFileDialog();
             //dialog.Filters.Add(new CommonFileDialogFilter("Mod file (*.ls)", ".ls"));
@@ -37,13 +39,9 @@ namespace Fanuc_mirro
             {
                 pathTextBox.Text = dialog.FileName;
                 Properties.Settings.Default.Save();
-                if (mirrorWorkbook_checkbox.Checked)
-                    mirrorWorkbook = true;
-                resultFiles = Methods.ReadLSFile(pathTextBox.Text, mirrorWorkbook);
-
             }
-            if (resultFiles != null)
-                if (resultFiles.Paths.Count != 0)
+            if (Directory.Exists(pathTextBox.Text))
+                if (Directory.GetFiles(pathTextBox.Text,"*.ls",SearchOption.TopDirectoryOnly).Any() || mirrorWorkbook_checkbox.Checked && Directory.GetFiles(pathTextBox.Text, "*.xvr", SearchOption.TopDirectoryOnly).Any())
                     saveButton.Enabled = true;
                 else
                     saveButton.Enabled = false;
@@ -52,6 +50,11 @@ namespace Fanuc_mirro
 
         private void saveButton_Click(object sender, EventArgs e)
         {
+            bool mirrorWorkbook = false;
+            if (mirrorWorkbook_checkbox.Checked)
+                mirrorWorkbook = true;
+            resultFiles = Methods.ReadLSFile(pathTextBox.Text, mirrorWorkbook, checkBox1.Checked ? int.Parse(textBox1.Text) : 0);
+
             SaveFileDialog sf = new SaveFileDialog();
             sf.FileName = "Save here";
             List<string> savedFiles = new List<string>();
@@ -84,7 +87,7 @@ namespace Fanuc_mirro
                 string outputString = "The following paths have been mirrored:\n";
                 foreach (string file in savedFiles)
                     outputString = outputString + file + "\n";
-                if (resultFiles.Workbook.FileName != null | resultFiles.Workbook.Path != null)
+                if (resultFiles.Workbook != null && (resultFiles.Workbook.FileName != null | resultFiles.Workbook.Path != null))
                 {
                     bool saveFile = true;
                     if (File.Exists(savePath + "\\workbook.xvr"))
@@ -108,13 +111,45 @@ namespace Fanuc_mirro
                             outputString = outputString + "\nWorkbook.xvr has been mirrored";
                         }
                     }
-                    if (savedFiles.Count == 0)
-                        MessageBox.Show("No paths were mirrored");
-                    else
-                        MessageBox.Show(outputString);
                 }
+                if (savedFiles.Count == 0)
+                    MessageBox.Show("No paths were mirrored");
+                else
+                    MessageBox.Show(outputString);
             }
 
+        }
+
+        private void mirrorWorkbook_checkbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (mirrorWorkbook_checkbox.Checked)
+                TextBox_ToolsToMirror.Enabled = true;
+            else
+                TextBox_ToolsToMirror.Enabled = false;
+        }
+
+        private void TextBox_ToolsToMirror_TextChanged(object sender, EventArgs e)
+        {
+            Methods.toolsToMirrorString = TextBox_ToolsToMirror.Text;
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox1.Checked)
+                textBox1.Enabled = true;
+            else
+                textBox1.Enabled = false;
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            if (System.Text.RegularExpressions.Regex.IsMatch(textBox1.Text, "[^0-9]"))
+            {
+                MessageBox.Show("Please enter only numbers.");
+                textBox1.Text = textBox1.Text.Remove(textBox1.Text.Length - 1);
+
+              
+            }
         }
     }
 }

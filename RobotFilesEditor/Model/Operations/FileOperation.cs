@@ -472,7 +472,11 @@ namespace RobotFilesEditor
                         string pathToSave = FilesMenager.CreateDestinationFolderPath(DestinationPath, DestinationFolder);
                         Model.Operations.FANUC.FanucCreateSOVBackup xvrValidator = new Model.Operations.FANUC.FanucCreateSOVBackup(false);
                         IDictionary<int, List<double>> homes = xvrValidator.GetHomes();
-                        StreamReader reader = new StreamReader(FilteredFiles.First().Key);
+                        StreamReader reader;
+                        if (FilteredFiles.Count == 1)
+                            reader = new StreamReader(FilteredFiles.First().Key);
+                        else
+                            reader = new StreamReader(xvrValidator.DetectWorkbookFile(FilteredFiles.Keys));
                         string xvrFileStart = reader.ReadToEnd();
                         reader.Close();
                         string xvrFileContent = xvrValidator.UpdateXvr(xvrFileStart, homes, null, false);

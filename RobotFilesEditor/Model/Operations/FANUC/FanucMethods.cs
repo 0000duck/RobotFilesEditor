@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace RobotFilesEditor.Model.Operations.FANUC
 {
@@ -815,6 +816,28 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                 return true;
             }
             return false;
+        }
+
+        internal string DetectWorkbookFile(Dictionary<string, string>.KeyCollection keys)
+        {
+            try
+            {
+                string fileToRead = string.Empty;
+                foreach (var file in keys)
+                {
+                    XDocument docu = XDocument.Load(file);
+                    var xvrFile = docu.Element("XMLVAR").Elements("PROG").Attributes("name").Where(x=>x.Value == "TPFDEF");
+                    if (xvrFile.ToList().Count > 0)
+                    {
+                        return file;
+                    }
+                }
+                return fileToRead;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
     }
 }

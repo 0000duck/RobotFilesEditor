@@ -32,13 +32,19 @@
             this.pathTextBox = new System.Windows.Forms.TextBox();
             this.saveButton = new System.Windows.Forms.Button();
             this.mirrorWorkbook_checkbox = new System.Windows.Forms.CheckBox();
+            this.TextBox_ToolsToMirror = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // SelectButton
             // 
-            this.SelectButton.Location = new System.Drawing.Point(12, 12);
+            this.SelectButton.Location = new System.Drawing.Point(9, 10);
+            this.SelectButton.Margin = new System.Windows.Forms.Padding(2);
             this.SelectButton.Name = "SelectButton";
-            this.SelectButton.Size = new System.Drawing.Size(642, 38);
+            this.SelectButton.Size = new System.Drawing.Size(482, 31);
             this.SelectButton.TabIndex = 0;
             this.SelectButton.Text = "Select directory";
             this.SelectButton.UseVisualStyleBackColor = true;
@@ -47,17 +53,19 @@
             // pathTextBox
             // 
             this.pathTextBox.Enabled = false;
-            this.pathTextBox.Location = new System.Drawing.Point(12, 56);
+            this.pathTextBox.Location = new System.Drawing.Point(9, 46);
+            this.pathTextBox.Margin = new System.Windows.Forms.Padding(2);
             this.pathTextBox.Name = "pathTextBox";
-            this.pathTextBox.Size = new System.Drawing.Size(642, 22);
+            this.pathTextBox.Size = new System.Drawing.Size(482, 20);
             this.pathTextBox.TabIndex = 1;
             // 
             // saveButton
             // 
             this.saveButton.Enabled = false;
-            this.saveButton.Location = new System.Drawing.Point(12, 112);
+            this.saveButton.Location = new System.Drawing.Point(9, 179);
+            this.saveButton.Margin = new System.Windows.Forms.Padding(2);
             this.saveButton.Name = "saveButton";
-            this.saveButton.Size = new System.Drawing.Size(642, 41);
+            this.saveButton.Size = new System.Drawing.Size(482, 33);
             this.saveButton.TabIndex = 2;
             this.saveButton.Text = "Save";
             this.saveButton.UseVisualStyleBackColor = true;
@@ -68,22 +76,80 @@
             this.mirrorWorkbook_checkbox.AutoSize = true;
             this.mirrorWorkbook_checkbox.Checked = true;
             this.mirrorWorkbook_checkbox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.mirrorWorkbook_checkbox.Location = new System.Drawing.Point(12, 85);
+            this.mirrorWorkbook_checkbox.Location = new System.Drawing.Point(9, 157);
+            this.mirrorWorkbook_checkbox.Margin = new System.Windows.Forms.Padding(2);
             this.mirrorWorkbook_checkbox.Name = "mirrorWorkbook_checkbox";
-            this.mirrorWorkbook_checkbox.Size = new System.Drawing.Size(139, 21);
+            this.mirrorWorkbook_checkbox.Size = new System.Drawing.Size(108, 17);
             this.mirrorWorkbook_checkbox.TabIndex = 3;
             this.mirrorWorkbook_checkbox.Text = "Mirror workbook?";
             this.mirrorWorkbook_checkbox.UseVisualStyleBackColor = true;
+            this.mirrorWorkbook_checkbox.CheckedChanged += new System.EventHandler(this.mirrorWorkbook_checkbox_CheckedChanged);
+            // 
+            // TextBox_ToolsToMirror
+            // 
+            this.TextBox_ToolsToMirror.Enabled = false;
+            this.TextBox_ToolsToMirror.Location = new System.Drawing.Point(9, 100);
+            this.TextBox_ToolsToMirror.Margin = new System.Windows.Forms.Padding(2);
+            this.TextBox_ToolsToMirror.Name = "TextBox_ToolsToMirror";
+            this.TextBox_ToolsToMirror.Size = new System.Drawing.Size(482, 20);
+            this.TextBox_ToolsToMirror.TabIndex = 4;
+            this.TextBox_ToolsToMirror.TextChanged += new System.EventHandler(this.TextBox_ToolsToMirror_TextChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(11, 82);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(103, 13);
+            this.label1.TabIndex = 5;
+            this.label1.Text = "Tools to be mirrored:";
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Checked = true;
+            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox1.Location = new System.Drawing.Point(9, 132);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(152, 17);
+            this.checkBox1.TabIndex = 6;
+            this.checkBox1.Text = "Renumber process points?";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(241, 133);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(89, 13);
+            this.label2.TabIndex = 7;
+            this.label2.Text = "Renumber factor:";
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(336, 129);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(56, 20);
+            this.textBox1.TabIndex = 8;
+            this.textBox1.Text = "1";
+            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // MainWindow
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(666, 166);
+            this.ClientSize = new System.Drawing.Size(500, 223);
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.checkBox1);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.TextBox_ToolsToMirror);
             this.Controls.Add(this.mirrorWorkbook_checkbox);
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.pathTextBox);
             this.Controls.Add(this.SelectButton);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "MainWindow";
             this.Text = "Fanuc mirror";
             this.ResumeLayout(false);
@@ -97,6 +163,11 @@
         private System.Windows.Forms.TextBox pathTextBox;
         private System.Windows.Forms.Button saveButton;
         private System.Windows.Forms.CheckBox mirrorWorkbook_checkbox;
+        private System.Windows.Forms.TextBox TextBox_ToolsToMirror;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
 
