@@ -78,7 +78,7 @@ namespace Fanuc_mirro
                     }
                     if (!isHeaderEnd && !isComment)
                         initialLines.Add(line);
-                    if (!isComment && isHeaderEnd && !string.IsNullOrEmpty(line.Trim()))
+                    if (!isComment && isHeaderEnd && !string.IsNullOrEmpty(line.Trim()) || isHeaderEnd)
                         linesToRenumber.Add(line);
                     //resultString += line + "\r\n";
                 }

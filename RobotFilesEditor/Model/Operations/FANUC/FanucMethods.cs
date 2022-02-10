@@ -243,6 +243,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
         {
             Regex isOldHeaderPart = new Regex(@"^\s*\d+\s*\:\s*!\s*\*", RegexOptions.IgnoreCase);
             Regex commentRegex = new Regex(@"^\s*\d+\s*\:\s*!", RegexOptions.IgnoreCase);
+            Regex isEmptyLineRegex = new Regex(@"^\s*\d+\s*\:\s*;\s*$", RegexOptions.IgnoreCase);
             IDictionary<string, FanucRobotPath> result = new Dictionary<string, FanucRobotPath>();
             foreach (var file in FilesAndContent)
             {
@@ -251,7 +252,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                 List<string> currentFile = new List<string>();
                 foreach (var line in file.Value.ProgramSection)
                 {
-                    if (!commentRegex.IsMatch(line))
+                    if (!commentRegex.IsMatch(line) && ! isEmptyLineRegex.IsMatch(line))
                         headreLinesCounter = 2;
                     if (headreLinesCounter >= 2)
                         currentFile.Add(line);

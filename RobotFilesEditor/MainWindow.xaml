@@ -134,7 +134,7 @@
                                         <Button Content="Mirror" Command="{Binding FanucMirror}" Margin="3"/>
                                         <Button Content="Safety tools" Command="{Binding SafetyTools}" Margin="3"/>
                                         <Button Content="Renumber Lines" Command="{Binding RenumberLinesFanuc}" Margin="3"/>
-                                        <Button Content="Compare offline and SOV backup" Command="{Binding CompareSOVAndOLP}" Visibility="Collapsed" Margin="3"/>
+                                        <Button Content="Compare offline and SOV backup" Command="{Binding CompareSOVAndOLP}" Visibility="{Binding DebugVisibility}" Margin="3"/>
                                     </StackPanel>
                                 </GroupItem>
                             </Expander>

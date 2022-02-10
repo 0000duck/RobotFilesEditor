@@ -312,6 +312,23 @@ namespace RobotFilesEditor.ViewModel
             }
         }
 
+        private Visibility debugVisibility;
+        public Visibility DebugVisibility
+        {
+            get { return debugVisibility; }
+            set
+            {
+                //debugVisibility = value;
+                if (Environment.UserName.ToLower().Contains("ttrojniar"))
+                    value = Visibility.Visible;
+                else
+                    value = Visibility.Collapsed;
+                debugVisibility = value;
+                RaisePropertyChanged(() => DebugVisibility);
+            }
+        }
+
+
 
         private List<Controler> _controlers;
         private Controler _selectedControler;
@@ -323,6 +340,7 @@ namespace RobotFilesEditor.ViewModel
         {
             if (!ViewModelBase.IsInDesignModeStatic)
             {
+                DebugVisibility = Visibility.Visible;
                 CheckOrder = false;
                 ControlerChooser = new ObservableCollection<ControlItem>();
                 MoveFilesOperations = new ObservableCollection<ControlItem>();
