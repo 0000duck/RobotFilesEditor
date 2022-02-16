@@ -29,7 +29,7 @@
     <MinimumRequiredVersion>1.0.0.54</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>412</ApplicationRevision>
+    <ApplicationRevision>413</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -180,6 +180,10 @@
       <DependentUpon>ChangeTypIdList.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dialogs\ChangeTypIdViewModel.cs" />
+    <Compile Include="Dialogs\CompareOLPToSOVLineByLine.xaml.cs">
+      <DependentUpon>CompareOLPToSOVLineByLine.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\CompareOLPToSOVLineByLineViewModel.cs" />
     <Compile Include="Dialogs\CompareSOVandOLPViewModel.cs" />
     <Compile Include="Dialogs\CompareSOVandOLPWindow.xaml.cs">
       <DependentUpon>CompareSOVandOLPWindow.xaml</DependentUpon>
@@ -312,6 +316,7 @@
     <Compile Include="Model\Operations\CompareSpotsExecute.cs" />
     <Compile Include="Model\Operations\CreateGripperMethods.cs" />
     <Compile Include="Model\Operations\CreateOrgsMethods.cs" />
+    <Compile Include="Model\Operations\DataClass\BackupToOLPComparerDataSet.cs" />
     <Compile Include="Model\Operations\DataClass\DataForSOV.cs" />
     <Compile Include="Model\Operations\DataClass\Datas.cs" />
     <Compile Include="Model\Operations\DataClass\FanucChecksums.cs" />
@@ -397,6 +402,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\ChangeTypIdList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\CompareOLPToSOVLineByLine.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

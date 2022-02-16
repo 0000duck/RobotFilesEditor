@@ -205,38 +205,44 @@ namespace RobotFilesEditor.Model.Operations.FANUC
 
         private IDictionary<string, FanucRobotPath> ReadFiles()
         {
-            Regex isprogramSectionStart = new Regex(@"^\d+\s*\:(J|L|\s)", RegexOptions.IgnoreCase);
-            Regex isDeclarationSectionStart = new Regex(@"^\/\s*POS\s*$", RegexOptions.IgnoreCase);
             IDictionary<string, FanucRobotPath> result = new Dictionary<string, FanucRobotPath>();
             foreach (var file in FilesList)
             {
-                int sectionNum = 1;
-                List<string> initialSection = new List<string>();
-                List<string> programSection = new List<string>();
-                List<string> declarationSection = new List<string>();
-                StreamReader reader = new StreamReader(file);
-                while (!reader.EndOfStream)
-                {
-                    string line = reader.ReadLine();
-                    if (sectionNum ==1 && isprogramSectionStart.IsMatch(line.Trim()) || sectionNum == 2 && isDeclarationSectionStart.IsMatch(line.Trim()))
-                        sectionNum++;
-                    switch (sectionNum)
-                    {                        
-                        case 1:
-                            initialSection.Add(line);
-                            break;
-                        case 2:
-                            programSection.Add(line);
-                            break;
-                        case 3:
-                            declarationSection.Add(line);
-                            break;
-                    }
-                }
-                reader.Close();
-                result.Add(file, new FanucRobotPath(initialSection,programSection,declarationSection));
+                var fanucFileContent = ReadFanucFile(file);
+                result.Add(file, fanucFileContent);
             }
             return result;
+        }
+
+        private FanucRobotPath ReadFanucFile(string file)
+        {
+            Regex isprogramSectionStart = new Regex(@"^\d+\s*\:(J|L|\s)", RegexOptions.IgnoreCase);
+            Regex isDeclarationSectionStart = new Regex(@"^\/\s*POS\s*$", RegexOptions.IgnoreCase);
+            int sectionNum = 1;
+            List<string> initialSection = new List<string>();
+            List<string> programSection = new List<string>();
+            List<string> declarationSection = new List<string>();
+            StreamReader reader = new StreamReader(file);
+            while (!reader.EndOfStream)
+            {
+                string line = reader.ReadLine();
+                if (sectionNum == 1 && isprogramSectionStart.IsMatch(line.Trim()) || sectionNum == 2 && isDeclarationSectionStart.IsMatch(line.Trim()))
+                    sectionNum++;
+                switch (sectionNum)
+                {
+                    case 1:
+                        initialSection.Add(line);
+                        break;
+                    case 2:
+                        programSection.Add(line);
+                        break;
+                    case 3:
+                        declarationSection.Add(line);
+                        break;
+                }
+            }
+            reader.Close();
+            return new FanucRobotPath(initialSection, programSection, declarationSection);
         }
 
         private IDictionary<string, FanucRobotPath> AddHeader()

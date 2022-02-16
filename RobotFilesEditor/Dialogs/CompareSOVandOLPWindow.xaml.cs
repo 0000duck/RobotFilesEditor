@@ -19,10 +19,27 @@ namespace RobotFilesEditor.Dialogs
     /// </summary>
     public partial class CompareSOVandOLPWindow : Window
     {
+        //CompareSOVandOLPViewModel Vm;
+
         public CompareSOVandOLPWindow(CompareSOVandOLPViewModel vm)
         {
             DataContext = vm;
+            //Vm = vm;
             InitializeComponent();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            //if (Vm.Items.Count > 0)
+            //{
+            //    var currentItem = Vm.Items[0];
+            //    foreach (var prop in currentItem.GetType().GetProperties())
+            //    {
+
+            //        MainDataGridView.Columns.First(x=>x.SortMemberPath == prop.Name).Visibility = Visibility.Collapsed;
+            //    }
+
+            //}
         }
     }
 }

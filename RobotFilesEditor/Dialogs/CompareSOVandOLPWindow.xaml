@@ -5,17 +5,58 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:RobotFilesEditor.Dialogs"
         mc:Ignorable="d"
-        Title="CompareSOVandOLPWindow" SizeToContent="WidthAndHeight">
+        Title="CompareSOVandOLPWindow" SizeToContent="WidthAndHeight" Loaded="Window_Loaded">
     <Grid>
         <StackPanel HorizontalAlignment="Center">
-            <DataGrid ItemsSource="{Binding Items}" CanUserAddRows="True" CanUserDeleteRows="True"                 
-                SelectionMode="Single" SelectionUnit="FullRow">
+            <DataGrid ItemsSource="{Binding Items}" Name="MainDataGridView" AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True"              
+                SelectionMode="Single" SelectionUnit="FullRow" MaxHeight="800">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Path in backup" Binding="{Binding Path=FileInSet1}" IsReadOnly="True" />
                     <DataGridTextColumn Header="Path in OLP" Binding="{Binding Path=FileInSet2}" IsReadOnly="True" />
+                    <!--<DataGridCheckBoxColumn Header="Is same?" Binding="{Binding Path=IsSame}" IsReadOnly="True"/>-->
+                    <DataGridTemplateColumn Header="See comparison">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Content="Compare" Command="{Binding CompareCommand}" IsEnabled="{Binding EnableButtons}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Comparison status" Binding="{Binding Path=CompStatusMsg}" IsReadOnly="True">
+                        <DataGridTextColumn.CellStyle>
+                            <Style TargetType="DataGridCell">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CompareStatus}" Value="1">
+                                        <Setter Property="Background" Value="#FF70D870"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding CompareStatus}" Value="2">
+                                        <Setter Property="Background" Value="#FFF38B8B"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding CompareStatus}" Value="3">
+                                        <Setter Property="Background" Value="#FFE0BA75"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGridTextColumn.CellStyle>
+                    </DataGridTextColumn>
+                    <DataGridTemplateColumn Header="Use from Backup/OLP">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <RadioButton GroupName="{Binding RadioButtonGroupName}" Content="Use backup" IsChecked="{Binding Path=UseBackup, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding EnableRBBackup}"/>
+                                    <RadioButton GroupName="{Binding RadioButtonGroupName}" Content="Use OLP   " IsChecked="{Binding Path=UseOLP, Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding EnableRBOLP}"/>
+                                    <RadioButton GroupName="{Binding RadioButtonGroupName}" Content="NN" IsChecked="{Binding Path=NotSelected, Mode=TwoWay}" IsEnabled="{Binding EnableButtons}" Visibility="Collapsed"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                 </DataGrid.Columns>
             </DataGrid>
-            
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="OK" IsEnabled="{Binding OKButtonEnable}" Command="{Binding OKCommand}" Width="100" Margin="5,5,5,5"/>
+                <Button Content="Cancel" Command="{Binding CancelCommand}" Width="100" Margin="5,5,5,5"/>
+                <Button Content="Set all Use backup" Command="{Binding SetAllUseBackup}" Width="100" Margin="5,5,5,5"/>
+                <Button Content="Set all Use OLP" Command="{Binding SetAllUseOLP}" Width="100" Margin="5,5,5,5"/>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>
