@@ -127,7 +127,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                             }
                         }
                         zipToOpen.Close();
-                        var dialogSuccess = System.Windows.Forms.MessageBox.Show("Select directory to save results at " + destinationDirectory +".\r\nWould you like to open directory?", "Success", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question);
+                        var dialogSuccess = System.Windows.Forms.MessageBox.Show("Successfuly saved at: " + destinationDirectory +".\r\nWould you like to open directory?", "Success", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question);
                         if (dialogSuccess == System.Windows.Forms.DialogResult.Yes)
                             Process.Start(destinationDirectory);
                     }

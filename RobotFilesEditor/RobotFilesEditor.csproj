@@ -29,7 +29,7 @@
     <MinimumRequiredVersion>1.0.0.54</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>413</ApplicationRevision>
+    <ApplicationRevision>417</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -208,6 +208,10 @@
       <DependentUpon>CreateOrgs.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dialogs\CreateOrgsViewModel.cs" />
+    <Compile Include="Dialogs\FanucCommentValidatorViewModel.cs" />
+    <Compile Include="Dialogs\FanucCommentValidatorWindow.xaml.cs">
+      <DependentUpon>FanucCommentValidatorWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\GripperElementSensorsVM.cs" />
     <Compile Include="Dialogs\GripperElementsVM.cs" />
     <Compile Include="Dialogs\IBUSSegmentName.xaml.cs">
@@ -322,15 +326,18 @@
     <Compile Include="Model\Operations\DataClass\FanucChecksums.cs" />
     <Compile Include="Model\Operations\DataClass\FanucProgramClass.cs" />
     <Compile Include="Model\Operations\DataClass\FillTypIDData.cs" />
+    <Compile Include="Model\Operations\DataClass\KukaCommandClass.cs" />
     <Compile Include="Model\Operations\DataClass\RenumberPointClasses.cs" />
     <Compile Include="Model\Operations\DataClass\RobotData.cs" />
     <Compile Include="Model\Operations\DataClass\SasFillerClass.cs" />
     <Compile Include="Model\Operations\DataClass\SpotComparerClass.cs" />
     <Compile Include="Model\Operations\DataClass\TrelloReportDatas.cs" />
     <Compile Include="Model\Operations\FANUC\FanucCompareSOVToOLPMethods.cs" />
+    <Compile Include="Model\Operations\FANUC\FanucHelpers.cs" />
     <Compile Include="Model\Operations\FANUC\FanucMethods.cs" />
     <Compile Include="Model\Operations\FANUC\FanucOrgs.cs" />
     <Compile Include="Model\Operations\FANUC\FanucRobot.cs" />
+    <Compile Include="Model\Operations\FANUC\FanucValidateCommentsMethods.cs" />
     <Compile Include="Model\Operations\FilesMenager.cs" />
     <Compile Include="Model\DataOrganization\DistinctBy.cs" />
     <Compile Include="Model\DataOrganization\DataContentSortManager.cs" />
@@ -430,6 +437,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Dialogs\CreateUserNum2.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\FanucCommentValidatorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

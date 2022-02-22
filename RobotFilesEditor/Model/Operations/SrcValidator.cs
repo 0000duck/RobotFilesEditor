@@ -16,7 +16,6 @@ using RobotFilesEditor.Model.DataOrganization;
 using System.Diagnostics;
 using CommonLibrary;
 using System.Collections.ObjectModel;
-//using RobotFilesEditor.Model.Operations.DataClass;
 
 namespace RobotFilesEditor.Model.Operations
 {
@@ -940,7 +939,7 @@ namespace RobotFilesEditor.Model.Operations
                 string chosenItemReq = null, chosenItemClr = null;
                 while (chosenItemReq == null || chosenItemClr == null)
                 {
-                    var vm = new SelectColisionViewModel(item,fillDescrs); // ViewModel Creation, parameter - KeyValue payr
+                    var vm = new SelectColisionViewModel(item,fillDescrs,40, false); // ViewModel Creation, parameter - KeyValue payr
                     SelectCollisionFromDuplicate sW = new SelectCollisionFromDuplicate(vm); // DialogView Creation - parameter ViewModel
                     var dialogResult = sW.ShowDialog();
                     chosenItemReq = vm.RequestText;
@@ -1647,6 +1646,7 @@ namespace RobotFilesEditor.Model.Operations
 
             foreach (var file in filteredFiles)
             {
+                bool headerFinished = false, headerStarted = false;
                 List<string> contentWithoutHeader = new List<string>();
                 foreach (string line in file.Value)
                 {
@@ -1661,10 +1661,17 @@ namespace RobotFilesEditor.Model.Operations
                         if (!roboterFound)
                         roboter = "";
 
-                    if (lineWithoutSpaces.Contains(";*"))
+                    if (lineWithoutSpaces.Contains(";*") && !headerFinished)
+                    {
+                        headerStarted = true;
                         header.Add(line);
+                    }
                     else
+                    {
+                        if (headerStarted)
+                            headerFinished = true;
                         contentWithoutHeader.Add(line);
+                    }
                 }
                 result.Add(file.Key, contentWithoutHeader);
             }
@@ -1675,104 +1682,45 @@ namespace RobotFilesEditor.Model.Operations
         public static IDictionary<string, string> AddSpaces(IDictionary<string, List<string>> filesAndContent)
         {
             IDictionary<string, string> result = new Dictionary<string, string>();
-            //if (GlobalData.ControllerType == "KRC4 Not BMW")
-            //{
-            //    foreach (var file in filesAndContent)
-            //    {
-            //        List<string> currentFile = new List<string>();
-            //        string resultstring = "";
-            //        foreach (string fileContent in file.Value)
-            //        {
-            //            resultstring += fileContent;
-            //        }
-            //        result.Add(file.Key, resultstring);
-            //    }
-            //    return result;
-            //}
             foreach (var file in filesAndContent)
             {
-                List<string> currentFile = new List<string>();
-                string resultstring = "";
-                int counter = 0;
-
-                foreach (string item in file.Value)
+                string resultString = string.Empty;
+                DataClass.KukaCommandClass previousCommand = null;
+                foreach (var command in file.Value)
                 {
-                    if (item.ToLower().Contains("endswitch"))
-                    {
-                        IDictionary<string, string> dict = new Dictionary<string, string>();
-                        dict.Add(file.Key, item);
-                        IDictionary<string, List<string>> splitswitch = DivideToFolds(dict);
-                        currentFile.AddRange(splitswitch[file.Key]);
-                    }
+                    DataClass.KukaCommandClass currentItem = new DataClass.KukaCommandClass(command);
+               
+                    if (CheckAddSpaceBeforeCurrentKuka(currentItem,previousCommand))
+                        resultString += "\r\n" + currentItem.Content;
                     else
-                        currentFile.Add(item);
+                        resultString += currentItem.Content;
+                    previousCommand = currentItem;
                 }
-
-                //foreach (var fileContent in currentFile.Where(x=>x != "\r\n" && x != "\n"))
-                foreach (var fileContent in currentFile)
-                {
-                    if (fileContent.ToLower().Contains("grobgewindebolzen"))
-                    { }
-                    string previousItem = "";
-                    if (counter > 0)
-                        previousItem = currentFile[counter - 1];
-                    bool isJob = fileContent.Contains("Job");
-                    bool isPLCCom = (fileContent.Contains("PLC_COM") && !previousItem.Contains("PLC_COM"));
-                    bool isCollisionGroup = (fileContent.ToLower().ContainsAny(new string[] { "koll", "coll" }) && !previousItem.ToLower().ContainsAny(new string[] { "koll", "coll" }));
-                    bool isAreaGroup = (fileContent.Contains("Area") && !previousItem.Contains("Area") || DetectAreaGroupL6(fileContent, previousItem));
-                    //bool isGripperGroup = (fileContent.Contains("Grp") && !previousItem.Contains("Grp"));
-                    bool isGripperGroup = false;
-                    bool isMovement = (fileContent.Contains(" PTP ") | fileContent.Contains(" LIN ") && !fileContent.ToLower().Contains("swi_mainspot"));
-                    //bool isWaitForHome = fileContent.Contains(ConfigurationManager.AppSettings["WaitForHome" + GlobalData.ControllerType.Replace(" ", "_")]);
-                    bool isWaitForHome = false;
-                    bool isHandshake = false;
-                    bool isEnd = fileContent.Contains("END\r\n");
-                    //bool isComment = fileContent.Substring(0, 1) == ";" && !fileContent.ToLower().Contains("fold") && !fileContent.Contains(";#") && !fileContent.Contains(";*");
-                    bool isComment = fileContent.Substring(0, 1) == ";" && !fileContent.ToLower().Contains("fold") && !fileContent.Contains(";#") && !fileContent.Contains(";*") && (previousItem.Trim().Replace(" ","").Substring(0,1) != ";" || previousItem.ToLower().Trim().Replace(" ", "").Contains(";fold"));
-                    bool isCase = fileContent.ToLower().Contains("case ") || fileContent.ToLower().Contains("default");
-                    bool isSwitch = fileContent.ToLower().Contains("switch") && !fileContent.ToLower().Contains("endswitch");
-
-
-                    if (counter + 2 < file.Value.Count & counter > 0)
-                    {
-                        isHandshake = DetectCompleteHandshake(fileContent, file.Value[counter - 1], file.Value[counter + 2]);
-                    }
-                    else
-                        if (fileContent.Contains(" OUT "))
-                        isHandshake = true;
-
-                    bool isPreviousProcessPoint = (previousItem.ToLower().Contains("swp_exe") || previousItem.ToLower().Contains("fls_exe") || previousItem.ToLower().Contains("rvt_exe"));
-                    bool isPreviousItemSwitch = previousItem.ToLower().Contains("switch");
-                    bool isPreviousItemDeltaMFG = previousItem.ToLower().Contains("deltamfg");
-                    bool isPreviousItemMovement = !(previousItem.Contains(" PTP ")) ^ (previousItem.Contains(" LIN "));
-                    bool isPreviousItemWaitForHome = previousItem.Contains(ConfigurationManager.AppSettings["WaitForHome" + GlobalData.ControllerType.Replace(" ", "_")]) || previousItem.Contains(ConfigurationManager.AppSettings["WaitForChkAxis"]);
-                    bool isPreviousCase = previousItem.ToLower().Contains("case ");
-                    ////test
-                    if (((isMovement && isPreviousItemMovement && !isPreviousItemWaitForHome && !isPreviousItemDeltaMFG) | isPreviousProcessPoint | isGripperGroup | isAreaGroup | isCollisionGroup | isWaitForHome | isJob | isHandshake | isPLCCom | isEnd | isComment | (isCase && !isPreviousItemSwitch) | isSwitch) && !isPreviousCase)
-                        resultstring = resultstring + Environment.NewLine + fileContent;
-                    //else if (fileContent.Contains("START PATH :"))
-                    //    resultstring = resultstring + fileContent + Environment.NewLine;
-                    else
-                        resultstring = resultstring + fileContent;
-
-                    counter++;
-                }
-
-                StringReader reader = new StringReader(resultstring);
-                string fixedResult = "";
-                while (true)
-                {
-                    string line = reader.ReadLine();
-                    if (line == null)
-                        break;
-                    fixedResult += line.Replace(Char.ConvertFromUtf32(160), "") + "\r\n";
-                    if (line.ToString().Trim().ToLower() == "end")
-                        break;
-                }
-                result[file.Key] = fixedResult;
-
+                result.Add(file.Key, resultString);
             }
+
             return result;
+        }
+
+        private static bool CheckAddSpaceBeforeCurrentKuka(DataClass.KukaCommandClass currentItem, DataClass.KukaCommandClass previousCommand)
+        {
+            bool addSpaceBeforeCurrent = false;
+            if (previousCommand != null)
+            {
+                if (currentItem.IsComment && previousCommand.IsMeaningfulFold)
+                    addSpaceBeforeCurrent = true;
+                if ((previousCommand.IsSingleInstruction || previousCommand.IsMeaningfulFold) && !previousCommand.IsTriggeredAction && !previousCommand.IsMotionFoldFold && currentItem.IsMotionFoldFold)
+                    addSpaceBeforeCurrent = true;
+                if (currentItem.IsCollisionReqRel && !previousCommand.IsCollisionReqRel)
+                    addSpaceBeforeCurrent = true;
+                if (currentItem.IsEnd)
+                    addSpaceBeforeCurrent = true;
+                if (currentItem.IsMeaningfulFold && !currentItem.IsCollisionReqRel && previousCommand.IsCollisionReqRel)
+                    addSpaceBeforeCurrent = true;
+                if (currentItem.IsMotionFoldFold && previousCommand.IsTriggeredAction)
+                    addSpaceBeforeCurrent = true;
+            }
+            return addSpaceBeforeCurrent;
         }
 
         private static bool DetectAreaGroupL6(string fileContent, string previousItem)

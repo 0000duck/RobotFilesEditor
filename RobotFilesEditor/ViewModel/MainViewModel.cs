@@ -514,7 +514,8 @@ namespace RobotFilesEditor.ViewModel
         public ICommand ShiftBase { get; set; }        
         public ICommand GenerateOrgsFanuc { get; set; }
         public ICommand CompareSOVAndOLP { get; set; }
-        
+        public ICommand ValidateComments { get; set; }
+
         private void SetCommands()
         {
             ChangeName = new RelayCommand(ChangeNameExecute);
@@ -568,6 +569,12 @@ namespace RobotFilesEditor.ViewModel
             ShiftBase = new RelayCommand(ShiftBaseExecute);
             GenerateOrgsFanuc = new RelayCommand(GenerateOrgsFanucExecute);
             CompareSOVAndOLP = new RelayCommand(CompareSOVAndOLPExecute);
+            ValidateComments = new RelayCommand(ValidateCommentsFanucExecute);
+        }
+
+        private void ValidateCommentsFanucExecute()
+        {
+            var validator = new Model.Operations.FANUC.FanucValidateCommentsMethods();
         }
 
         private void CompareSOVAndOLPExecute()

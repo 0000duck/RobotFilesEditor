@@ -419,12 +419,13 @@ namespace RobotFilesEditor.Model.Operations.FANUC
 
         private string BuildAnyJobString(ObservableCollection<KeyValuePair<string, int>> anyJobValue)
         {
-            string result = "ANYJOB: ";
-            foreach (var job in anyJobValue)
-            {
-                result += GlobalData.Jobs[job.Value] + " / ";
-            }
-            result = result.Remove(result.Length - 3, 3);
+            string result = "ANYJOB";
+            //string result = "ANYJOB: ";
+            //foreach (var job in anyJobValue)
+            //{
+            //    result += GlobalData.Jobs[job.Value] + " / ";
+            //}
+            //result = result.Remove(result.Length - 3, 3);
             return result;
         }
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using GalaSoft.MvvmLight;
@@ -13,23 +14,40 @@ namespace RobotFilesEditor.Dialogs
     public class SelectColisionViewModel : ViewModelBase
     {
         #region fields
-        int maxLength = GlobalData.ControllerType == "FANUC" ? 32 : 40;
+        //int maxLength = GlobalData.ControllerType == "FANUC" ? 32 : 40;
+        int maxLength;
         bool limitLength;
         #endregion
 
         #region Ctor
-        public SelectColisionViewModel(KeyValuePair<int, List<string>> pair, bool fillDescr, bool releaseVisible = true)
+        public SelectColisionViewModel(KeyValuePair<int, List<string>> pair, bool fillDescr, int lenght, bool line2Visible, bool releaseVisible = true)
         {
+            Line2Visibility = line2Visible ? Visibility.Visible : Visibility.Collapsed;
+            List<string> pairValue = new List<string>();
+            if (line2Visible)
+            {
+                foreach (var coll in pair.Value)
+                {
+                    pairValue.Add(" Coll " + pair.Key + ": " + coll);
+                }
+            }
+            else
+                pairValue = pair.Value;
+            maxLength = lenght;
             limitLength = fillDescr;
-            if (fillDescr)
+            if (fillDescr || lenght > 0)
             {
                 IsVisible = Visibility.Visible;
-                LimitText = "Description length is limited to " + maxLength + " signs!";
+                LimitText = "Description length is limited to " + maxLength + " signs for each line!";
             }
             else
                 IsVisible = Visibility.Collapsed;
+            if (fillDescr && line2Visible)
+                CollDescrWarning = Visibility.Visible;
+            else
+                CollDescrWarning = Visibility.Collapsed;
 
-            Pair = pair;
+            Pair = new KeyValuePair<int, List<string>>(pair.Key,pairValue);
             if (releaseVisible)
             {
                 ReleaseVisible = Visibility.Visible;
@@ -66,9 +84,13 @@ namespace RobotFilesEditor.Dialogs
             get { return _selectedIndexInReq; }
             set
             {
-                Set(ref _selectedIndexInReq,value);
+                Set(ref _selectedIndexInReq, value);
                 if (value > -1)
+                {
+                    RequestTextLine2 = string.Empty;
                     RequestText = Pair.Value[value];
+                    
+                }
             }
         }
 
@@ -78,8 +100,11 @@ namespace RobotFilesEditor.Dialogs
             get { return _selectedIndexInClr; }
             set
             {
-                Set (ref _selectedIndexInClr, value);
-                ReleaseText = Pair.Value[value];
+                if (value > -1)
+                {
+                    Set(ref _selectedIndexInClr, value);
+                    ReleaseText = Pair.Value[value];
+                }
             }
         }
 
@@ -91,18 +116,54 @@ namespace RobotFilesEditor.Dialogs
             {
                 if (_requestText != value)
                 {
-
-                    if (limitLength && value.Length > maxLength)
-                        value = value.Substring(0, maxLength);
-                    
-                    _requestText = value;
-                    ReleaseText = value;
-                    //SelectedIndexInReq = -1;
+                    Regex collRegex = new Regex(@"^\sColl\s" + Pair.Key+ @":\s", RegexOptions.IgnoreCase);
+                    if (collRegex.IsMatch(value) || GlobalData.ControllerType != null && GlobalData.ControllerType != "FANUC")
+                    {
+                        if ((limitLength || Line2Visibility == Visibility.Visible) && value.Length > maxLength)
+                            if (Line2Visibility == Visibility.Visible)
+                            {
+                                if (RequestTextLine2 == null)
+                                    RequestTextLine2 = string.Empty;
+                                RequestTextLine2 = value.Substring(maxLength, value.Length - maxLength) + RequestTextLine2;
+                                //RequestTextLine2 = value.Substring(maxLength, value.Length - maxLength);
+                                value = value.Substring(0, maxLength).TrimEnd();
+                            }
+                            else
+                                value = value.Substring(0, maxLength);
+                        else
+                        {
+                            //if (!string.IsNullOrEmpty(RequestTextLine2))
+                                //RequestTextLine2 = string.Empty;
+                        }
+                        _requestText = value;
+                        ReleaseText = value;
+                        //SelectedIndexInReq = -1;
+                    }
                     RaisePropertyChanged(() => RequestText);
                     
                 }
             }
         }
+
+        string _requestTextLine2;
+        public string RequestTextLine2
+        {
+            get { return _requestTextLine2; }
+            set
+            {
+                if (_requestTextLine2 != value)
+                {
+
+                    if ((limitLength || Line2Visibility == Visibility.Visible) && value.Length <= maxLength)
+                    //value = value.Substring(0, maxLength);
+                    {
+                        _requestTextLine2 = value.TrimStart();
+                        RaisePropertyChanged(() => RequestTextLine2);
+                    }
+                }
+            }
+        }
+
         string _requestHeader;
         public string RequestHeader
         {
@@ -134,6 +195,23 @@ namespace RobotFilesEditor.Dialogs
             }
         }
 
+        string _releaseTextLine2;
+        public string ReleaseTextLine2
+        {
+            get { return _releaseTextLine2; }
+            set
+            {
+                if (_releaseTextLine2 != value)
+                {
+                    if (limitLength && value.Length > maxLength)
+                        value = value.Substring(0, maxLength);
+                    _releaseTextLine2 = value;
+                    RaisePropertyChanged(() => ReleaseTextLine2);
+
+                }
+            }
+        }
+
         Visibility _releaseVisible;
         public Visibility ReleaseVisible
         {
@@ -160,6 +238,36 @@ namespace RobotFilesEditor.Dialogs
                     _isVisible = value;
                     //SelectedIndexInClr = -1;
                     RaisePropertyChanged(() => IsVisible);
+                }
+            }
+        }
+
+        Visibility _line2Visibility;
+        public Visibility Line2Visibility
+        {
+            get { return _line2Visibility; }
+            set
+            {
+                if (_line2Visibility != value)
+                {
+                    _line2Visibility = value;
+                    //SelectedIndexInClr = -1;
+                    RaisePropertyChanged(() => Line2Visibility);
+                }
+            }
+        }
+
+        Visibility _collDescrWarning;
+        public Visibility CollDescrWarning
+        {
+            get { return _collDescrWarning; }
+            set
+            {
+                if (_collDescrWarning != value)
+                {
+                    _collDescrWarning = value;
+                    //SelectedIndexInClr = -1;
+                    RaisePropertyChanged(() => CollDescrWarning);
                 }
             }
         }

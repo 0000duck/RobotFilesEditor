@@ -71,7 +71,7 @@ namespace RobotFilesEditor
                 {
                     _selectedItemFromList = value;
                     RaisePropertyChanged<ResultInfo>(() => SelectedItemFromList);
-                    if (!string.IsNullOrEmpty(_selectedItemFromList.Path))
+                    if (_selectedItemFromList !=null && !string.IsNullOrEmpty(_selectedItemFromList.Path))
                     {
                         _selectedItemFromList.OpenInOtherProgramCommandExecute();
                     }

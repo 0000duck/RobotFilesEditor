@@ -28,9 +28,13 @@ namespace RobotFilesEditor.Model.Operations.FANUC
         Regex collDescrRegex = new Regex(@"(?<=^\s*\d+\s*\:(.*PR_CALL.*CollZone.*ZoneNo\s*.\s*\=.*,\s*'|\s*!\s*Coll.*\d+\s*-))[\w\d\s,-_]*", RegexOptions.IgnoreCase);
         Regex isJobRegex = new Regex(@"(?<=^\s*\d+\s*\:.*PR_CALL.*Job.*JobNo\s*.\s*\=\s*)\d+", RegexOptions.IgnoreCase);
         Regex jobDescrRegex = new Regex(@"(?<=^\s*\d+\s*\:.*PR_CALL.*Job.*JobNo\s*.\s*\=.*,\s*')[\w\d\s-_,]*", RegexOptions.IgnoreCase);
+        Regex isCommentRegex = new Regex(@"(?<=^\s*\d+\s*:\s*!).*", RegexOptions.IgnoreCase);
+        Regex isSeparatorLine = new Regex(@"^\s*\d+\s*:\s*!\s*\*+\s*;", RegexOptions.IgnoreCase);
+        Regex isCollComment = new Regex(@"^\s*\d+\s*:\s*!\s*Coll\s+\d+", RegexOptions.IgnoreCase);
         string logContent;
         #endregion
 
+        #region ctor
         public FanucFilesValidator(List<string> filesList, out string logContentOut)
         {
             logContent = string.Empty;
@@ -40,13 +44,79 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             FillGlobalData();
             FilesAndContent = AddHeader();
             CheckOpenAndCloseCommands();
-            FilesAndContent = CheckJobsAndCollisions();
+            FilesAndContent = CheckJobsAndCollisions(false);
+            CheckCommentLength();
+            DivideToLines();
             FilesAndContent = AddSpaces();
             FilesAndContent = RenumberLines();
             logContentOut = logContent;
         }
 
-        private IDictionary<string, FanucRobotPath> CheckJobsAndCollisions()
+        public FanucFilesValidator(List<string> filesList)
+        {
+            logContent = string.Empty;
+            FilesList = filesList;
+            FilesAndContent = ReadFiles();
+            FilesAndContent = CheckJobsAndCollisions(true);
+            CheckCommentLength();
+            DivideToLines();
+            FilesAndContent = RenumberLines();
+        }
+        #endregion
+
+        #region methods
+        private void CheckCommentLength()
+        {
+            Regex lineContentRegex = new Regex(@"(?<=^\s*\d+\s*:\s*(!|PR_CALL CMN.*'))[^']+", RegexOptions.IgnoreCase);
+            Regex procCallRegex = new Regex(@"(?<=^\s*\d+\s*:\s*PR_CALL\s+CMN.*').*(?=')", RegexOptions.IgnoreCase);
+            foreach (var file in FilesAndContent)
+            {
+                List<string> tempList = new List<string>();
+                foreach (var line in file.Value.ProgramSection)
+                {
+                    Regex isCommentRgx = new Regex(@"(?<=^\s*\d+\s*:\s*!).*(?=;)", RegexOptions.IgnoreCase);
+                    if (!isCollComment.IsMatch(line) && (isCommentRgx.IsMatch(line) && isCommentRgx.Match(line).ToString().Length > 32) || (procCallRegex.IsMatch(line) && procCallRegex.Match(line).ToString().Length > 32))
+                    {
+                        if (isSeparatorLine.IsMatch(line))
+                            tempList.Add(" 666:  ! ***************************** ;");
+                        else
+                        {
+                            FanucCommentValidatorViewModel vm = new FanucCommentValidatorViewModel(line, Path.GetFileNameWithoutExtension(file.Key), 32);
+                            var window = new FanucCommentValidatorWindow(vm);
+                            var dialog = window.ShowDialog();
+                            string tempLine = lineContentRegex.Replace(line, vm.OutputLine, 1);
+                            if (!string.IsNullOrEmpty(tempLine) && !new Regex(@"^.*;$", RegexOptions.IgnoreCase).IsMatch(tempLine.Trim()))
+                                tempLine += ";";
+                            tempList.Add(tempLine);
+                        }
+                    }
+                    else
+                        tempList.Add(line);
+                }
+                file.Value.ProgramSection = tempList;
+            }
+        }
+
+        private void DivideToLines()
+        {
+            foreach (var file in this.FilesAndContent)
+            {
+                List<string> tempList = new List<string>();
+                foreach (var line in file.Value.ProgramSection)
+                {
+                    if (isCommentRegex.IsMatch(line) && line.Contains("\r\n"))
+                    {
+                        var lines = line.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries).ToList();
+                        tempList.AddRange(lines);
+                    }
+                    else
+                        tempList.Add(line);
+                }
+                FilesAndContent.First(x => x.Key == file.Key).Value.ProgramSection = tempList;
+            }
+        }
+
+        private IDictionary<string, FanucRobotPath> CheckJobsAndCollisions(bool onlyColls)
         {
             bool fillDescrs = false;
             IDictionary<string, FanucRobotPath> result = new Dictionary<string, FanucRobotPath>();
@@ -63,15 +133,17 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                     if (collzoneNumberRegex.IsMatch(line))
                     {
                         int collZoneNumber = int.Parse(collzoneNumberRegex.Match(line).ToString());
-                        linesToAdd.Add(" 666:  ! Coll " + collZoneNumber.ToString() + " - " + collAndDescription[collZoneNumber] + " ;");
+                        linesToAdd.Add(" 666:  !"+ collAndDescription[collZoneNumber] + ";");
                         string tempLine = string.Empty;
                         if (fillDescrs)
-                            tempLine = collDescrRegex.Replace(line, collAndDescription[collZoneNumber]);
+                        {
+                            tempLine = collDescrRegex.Replace(line, new Regex(@"(?<=Coll\s+\d+\s*:\s*).*(?=\r\n)",RegexOptions.IgnoreCase).Match(collAndDescription[collZoneNumber]).ToString().Trim().Replace(";",""));
+                        }
                         else
                             tempLine = collDescrRegex.Replace(line, "...");
                         linesToAdd.Add(tempLine);
                     }
-                    else if (isJobRegex.IsMatch(line))
+                    else if (isJobRegex.IsMatch(line) && !onlyColls)
                     {
                         string templine = string.Empty;
                         int jobNum = int.Parse(isJobRegex.Match(line).ToString());
@@ -88,10 +160,26 @@ namespace RobotFilesEditor.Model.Operations.FANUC
 
         private List<string> RemoveCollComments(List<string> programSection)
         {
+            //List<string> result = new List<string>();
+            //Regex collzoneDescrLine = new Regex(@"(?<=^\s*\d+\s*\:\s*!\s*Coll\s*)\d+", RegexOptions.IgnoreCase);
+            //foreach (var line in programSection.Where(x => !collzoneDescrLine.IsMatch(x)))
+            //    result.Add(line);
+            //return result;
+
             List<string> result = new List<string>();
             Regex collzoneDescrLine = new Regex(@"(?<=^\s*\d+\s*\:\s*!\s*Coll\s*)\d+", RegexOptions.IgnoreCase);
-            foreach (var line in programSection.Where(x => !collzoneDescrLine.IsMatch(x)))
-                result.Add(line);
+            bool isCollCommentActive = false;
+            foreach (var line in programSection)
+            {
+                if (collzoneDescrLine.IsMatch(line) || isCollCommentActive && isCommentRegex.IsMatch(line))
+                    isCollCommentActive = true;
+                else
+                    isCollCommentActive = false;
+
+                if (!isCollCommentActive)
+                    result.Add(line);
+            }
+                
             return result;
         }
 
@@ -101,22 +189,48 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             IDictionary<int, List<string>> tempCollList = new SortedDictionary<int, List<string>>();
             foreach (var file in FilesAndContent)
             {
-                foreach (var line in file.Value.ProgramSection.Where(x=>collzoneNumberRegex.IsMatch(x)))
+                bool collCommentActive = false;
+                int collNum = 0;
+                string collComment = string.Empty;
+                foreach (var line in file.Value.ProgramSection)
                 {
-                    int collNum = int.Parse(collzoneNumberRegex.Match(line).ToString());
-                    if (!tempCollList.Keys.Contains(collNum))
-                        tempCollList.Add(collNum, new List<string>());
-                    string descr = collDescrRegex.Match(line).ToString().Replace(";", "").Trim();
-                    if (!tempCollList[collNum].Contains(descr))
-                        tempCollList[collNum].Add(descr);
+                    if (collzoneNumberRegex.IsMatch(line) && !isCommentRegex.IsMatch(line))
+                    {
+                        int collZoneNr = int.Parse(collzoneNumberRegex.Match(line).ToString());
+                        if (!tempCollList.Keys.Contains(collZoneNr))
+                            tempCollList.Add(collZoneNr, new List<string>());
+                        string descr = new Regex(@"(?<=^.*PR_CALL.*CollZone.*').*(?=')", RegexOptions.IgnoreCase).Match(line).ToString();
+                        if (!tempCollList[collZoneNr].Contains(descr))
+                            tempCollList[collZoneNr].Add(descr);
+                    }
+                    if (!collCommentActive && isCollComment.IsMatch(line))
+                    {
+                        collNum = int.Parse(collzoneNumberRegex.Match(line).ToString());
+                        collCommentActive = true;
+                        collComment = new Regex(@"(?<=^\s*\d+\s*:\s*!\s*Coll\s*\d+\s*(-|:)\s*)(.[^;])*", RegexOptions.IgnoreCase).Match(line).ToString().Trim();
+                    }
+                    else if (collCommentActive)
+                    {
+                        if (isCommentRegex.IsMatch(line))
+                            collComment += "\r\n" + isCommentRegex.Match(line).ToString();
+                        if (!tempCollList.Keys.Contains(collNum))
+                            tempCollList.Add(collNum, new List<string>());
+                        //string descr = collDescrRegex.Match(line).ToString().Replace(";", "").Trim();
+                        if (!tempCollList[collNum].Contains(collComment))
+                            tempCollList[collNum].Add(collComment);
+                        collCommentActive = false;
+                        collNum = 0;
+                        collComment = string.Empty;
+                    }
+
                 }
             }
             foreach (var collision in tempCollList)
             {
-                SelectColisionViewModel vm = new SelectColisionViewModel(collision, fillDescr, false);
+                SelectColisionViewModel vm = new SelectColisionViewModel(collision, fillDescr,32, true, releaseVisible:false);
                 SelectCollisionFromDuplicate sW = new SelectCollisionFromDuplicate(vm);
                 var dialogResult = sW.ShowDialog();
-                result.Add(collision.Key, vm.RequestText);
+                result.Add(collision.Key, (vm.Line2Visibility == System.Windows.Visibility.Visible && !string.IsNullOrEmpty(vm.RequestTextLine2) ? vm.RequestText + ";\r\n 666:  !" + vm.RequestTextLine2 : vm.RequestText));
             }
 
             return result;
@@ -287,13 +401,13 @@ namespace RobotFilesEditor.Model.Operations.FANUC
         private List<string> CreateHeader(string progname)
         {
             List<string> header = new List<string>();
-            header.Add("   1:  ! *********************************************;");
+            header.Add("   1:  ! ***************************** ;");
             header.Add("   2:  ! Prog: "+progname+";");
             header.Add("   3:  ! created on: "+DateTime.Now.ToString("yyyy-MM-dd")+";");
             header.Add("   4:  ! IR: "+RobotName+";");
             header.Add("   5:  ! Creator: "+ConfigurationManager.AppSettings["Ersteller"] + ";");
             header.Add("   6:  ! Last Update: "+ DateTime.Now.ToString("yyyy-MM-dd") + ";");
-            header.Add("   7:  ! *********************************************;");
+            header.Add("   7:  ! ***************************** ;");
 
             return header;
         }
@@ -412,6 +526,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             GlobalData.SrcPathsAndJobs = pathsAndJobs;
             GlobalData.Jobs = jobs;
         }
+        #endregion
     }
 
     public class FanucCreateSOVBackup

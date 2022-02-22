@@ -75,6 +75,7 @@
     <Compile Include="RobKalDatCommon\MatrixOperations.cs" />
     <Compile Include="SafetyKUKADataClass.cs" />
     <Compile Include="SafetyKUKAMethods.cs" />
+    <Compile Include="VirtualAndAbstractMethods.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

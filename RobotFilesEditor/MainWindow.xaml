@@ -136,6 +136,7 @@
                                         <Button Content="Renumber Lines" Command="{Binding RenumberLinesFanuc}" Margin="3"/>
                                         <!--<Button Content="Compare OLP and SOV backup" Command="{Binding CompareSOVAndOLP}" Visibility="{Binding DebugVisibility}" Margin="3"/>-->
                                         <Button Content="Compare OLP and SOV backup" Command="{Binding CompareSOVAndOLP}" Visibility="Visible" Margin="3"/>
+                                        <Button Content="Validate comments" Command="{Binding ValidateComments}" Visibility="Visible" Margin="3"/>
                                     </StackPanel>
                                 </GroupItem>
                             </Expander>
