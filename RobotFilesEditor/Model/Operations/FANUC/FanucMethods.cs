@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using static RobotFilesEditor.Model.Operations.FANUC.FanucRobotPath;
 
 namespace RobotFilesEditor.Model.Operations.FANUC
 {
@@ -23,7 +24,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
         #endregion
 
         #region fields
-        private enum CurrentType { Undef, Motion, Spot, Glue, Search, ProcCall, FrameDef }
+        private enum CurrentType { Undef, Motion, Spot, Glue, Search, ProcCall, FrameDef, Comment, CollComment }
         Regex collzoneNumberRegex = new Regex(@"(?<=^\s*\d+\s*\:(.*PR_CALL.*CollZone.*ZoneNo\s*.\s*\=\s*|\s*!\s*Coll\s*))\d+", RegexOptions.IgnoreCase);
         Regex collDescrRegex = new Regex(@"(?<=^\s*\d+\s*\:(.*PR_CALL.*CollZone.*ZoneNo\s*.\s*\=.*,\s*'|\s*!\s*Coll.*\d+\s*-))[\w\d\s,-_]*", RegexOptions.IgnoreCase);
         Regex isJobRegex = new Regex(@"(?<=^\s*\d+\s*\:.*PR_CALL.*Job.*JobNo\s*.\s*\=\s*)\d+", RegexOptions.IgnoreCase);
@@ -123,7 +124,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             DialogResult dialogResult = MessageBox.Show("Would you like to fill the description in Collzone statement?\r\nYes - Fill Colldescr\r\nNo - leave it blank", "Fill descriptions", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (dialogResult == DialogResult.Yes)
                 fillDescrs = true;
-            IDictionary<int, string> collAndDescription = GetCollDescriptions(fillDescrs);
+            IDictionary<int, FanucCollDescr> collAndDescription = GetCollDescriptions(fillDescrs);
             foreach (var file in FilesAndContent)
             {
                 List<string> lines = RemoveCollComments(file.Value.ProgramSection);
@@ -133,11 +134,18 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                     if (collzoneNumberRegex.IsMatch(line))
                     {
                         int collZoneNumber = int.Parse(collzoneNumberRegex.Match(line).ToString());
-                        linesToAdd.Add(" 666:  !"+ collAndDescription[collZoneNumber] + ";");
+                        linesToAdd.Add(" 666:  !"+ collAndDescription[collZoneNumber].Lines[0] + ";");
+                        if (collAndDescription[collZoneNumber].Lines.Count == 2)
+                            linesToAdd.Add(" 666:  !" + collAndDescription[collZoneNumber].Lines[1] + ";");
                         string tempLine = string.Empty;
                         if (fillDescrs)
                         {
-                            tempLine = collDescrRegex.Replace(line, new Regex(@"(?<=Coll\s+\d+\s*:\s*).*(?=\r\n)",RegexOptions.IgnoreCase).Match(collAndDescription[collZoneNumber]).ToString().Trim().Replace(";",""));
+                            string textToAdd = string.Empty;
+                            if (collAndDescription[collZoneNumber].LineNumberToAdd == 1)
+                                textToAdd = new Regex(@"(?<=Coll\s+\d+\s*:\s*).*", RegexOptions.IgnoreCase).Match(collAndDescription[collZoneNumber].Lines[collAndDescription[collZoneNumber].LineNumberToAdd - 1]).ToString().Trim().Replace(";", "");
+                            else
+                                textToAdd = collAndDescription[collZoneNumber].Lines[collAndDescription[collZoneNumber].LineNumberToAdd - 1].Trim();
+                            tempLine = collDescrRegex.Replace(line, textToAdd);
                         }
                         else
                             tempLine = collDescrRegex.Replace(line, "...");
@@ -183,9 +191,9 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             return result;
         }
 
-        private IDictionary<int, string> GetCollDescriptions(bool fillDescr)
+        private IDictionary<int, FanucCollDescr> GetCollDescriptions(bool fillDescr)
         {
-            IDictionary<int, string> result = new Dictionary<int, string>();
+            IDictionary<int, FanucCollDescr> result = new Dictionary<int, FanucCollDescr>();
             IDictionary<int, List<string>> tempCollList = new SortedDictionary<int, List<string>>();
             foreach (var file in FilesAndContent)
             {
@@ -207,12 +215,12 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                     {
                         collNum = int.Parse(collzoneNumberRegex.Match(line).ToString());
                         collCommentActive = true;
-                        collComment = new Regex(@"(?<=^\s*\d+\s*:\s*!\s*Coll\s*\d+\s*(-|:)\s*)(.[^;])*", RegexOptions.IgnoreCase).Match(line).ToString().Trim();
+                        collComment = new Regex(@"(?<=^\s*\d+\s*:\s*!\s*Coll\s*\d+\s*(-|:)\s*).*[^;]", RegexOptions.IgnoreCase).Match(line).ToString().Trim();
                     }
                     else if (collCommentActive)
                     {
                         if (isCommentRegex.IsMatch(line))
-                            collComment += "\r\n" + isCommentRegex.Match(line).ToString();
+                            collComment += "\r\n" + isCommentRegex.Match(line).ToString().Replace(";", "").Trim();
                         if (!tempCollList.Keys.Contains(collNum))
                             tempCollList.Add(collNum, new List<string>());
                         //string descr = collDescrRegex.Match(line).ToString().Replace(";", "").Trim();
@@ -230,7 +238,11 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                 SelectColisionViewModel vm = new SelectColisionViewModel(collision, fillDescr,32, true, releaseVisible:false);
                 SelectCollisionFromDuplicate sW = new SelectCollisionFromDuplicate(vm);
                 var dialogResult = sW.ShowDialog();
-                result.Add(collision.Key, (vm.Line2Visibility == System.Windows.Visibility.Visible && !string.IsNullOrEmpty(vm.RequestTextLine2) ? vm.RequestText + ";\r\n 666:  !" + vm.RequestTextLine2 : vm.RequestText));
+                //result.Add(collision.Key, (vm.Line2Visibility == System.Windows.Visibility.Visible && !string.IsNullOrEmpty(vm.RequestTextLine2) ? vm.RequestText + ";\r\n 666:  !" + vm.RequestTextLine2 + (vm.Line2Selected ? "ADDLINE2" : "") : vm.RequestText));
+                List<string> descrption = new List<string>() { vm.RequestText};
+                if (!string.IsNullOrEmpty(vm.RequestTextLine2.Trim()))
+                    descrption.Add(vm.RequestTextLine2);
+                result.Add(collision.Key, new FanucCollDescr(descrption, vm.Line1Selected ? 1 : 2));
             }
 
             return result;
@@ -244,6 +256,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             Regex isSearchPoint = new Regex(@"^\s*\d+\s*\:\s*(J|L)\s*(PR|P)\s*\[\s*\d+.*SEARCH_S_P", RegexOptions.IgnoreCase);
             Regex isProcedureCall = new Regex(@"^\s*\d+\s*\:\s*PR_CALL", RegexOptions.IgnoreCase);
             Regex isFrameDef = new Regex(@"^\s*\d+\s*\:\s*(UFRAME|UTOOL|PAYLOAD)", RegexOptions.IgnoreCase);
+            Regex isComment = new Regex(@"^\s*\d+\s*\:\s*!", RegexOptions.IgnoreCase);
 
             IDictionary<string, FanucRobotPath> result = new Dictionary<string, FanucRobotPath>();
             foreach (var file in FilesAndContent)
@@ -252,8 +265,10 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                 CurrentType previousType = CurrentType.Undef;
                 CurrentType currentType = CurrentType.Undef;
                 List<string> currentFileContent = new List<string>();
+                bool isCollSection = false, firstCycle = true;
                 foreach (var line in lines)
                 {
+                    currentType = CurrentType.Undef;
                     if (isMotionPoint.IsMatch(line))
                         currentType = CurrentType.Motion;
                     else if (isSpotPoint.IsMatch(line))
@@ -262,15 +277,24 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                         currentType = CurrentType.Glue;
                     else if (isSearchPoint.IsMatch(line))
                         currentType = CurrentType.Search;
-                    else if (isProcedureCall.IsMatch(line))
-                        currentType = CurrentType.ProcCall;
                     else if (isFrameDef.IsMatch(line))
                         currentType = CurrentType.FrameDef;
+                    else if (collzoneNumberRegex.IsMatch(line))
+                        currentType = CurrentType.CollComment;
+                    else if (isComment.IsMatch(line))
+                         currentType = CurrentType.Comment;
+                    else if (isProcedureCall.IsMatch(line))
+                        currentType = CurrentType.ProcCall;
 
-                    if (currentType != previousType)
+                    if (currentType == CurrentType.CollComment && (previousType == CurrentType.Comment || previousType == CurrentType.Undef) || previousType == CurrentType.CollComment && (currentType == CurrentType.Comment || currentType == CurrentType.Undef))
+                        isCollSection = true;
+                    else
+                        isCollSection = false;
+
+                    if (currentType != previousType && !isCollSection && previousType != CurrentType.Motion && !firstCycle)
                         currentFileContent.Add("666:  ;");
                     currentFileContent.Add(line);
-                    
+                    firstCycle = false;
                     previousType = currentType;
                 }
                 result.Add(file.Key, new FanucRobotPath(file.Value.InitialSection, currentFileContent, file.Value.DeclarationSection));
@@ -280,7 +304,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
 
         private List<string> RemoveSpaces(List<string> programSection)
         {
-            Regex isBlankLineRegex = new Regex(@"^\s*\d+\s*\:\s*(|!)\s*;", RegexOptions.IgnoreCase);
+            Regex isBlankLineRegex = new Regex(@"^\s*\d+\s*\:\s*(|!)\s*(|;)\s*$", RegexOptions.IgnoreCase);
             List<string> result = new List<string>();
             foreach (var line in programSection.Where(x => !isBlankLineRegex.IsMatch(x.Trim())))
                 result.Add(line);

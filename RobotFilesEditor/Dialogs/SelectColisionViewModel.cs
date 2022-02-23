@@ -22,6 +22,7 @@ namespace RobotFilesEditor.Dialogs
         #region Ctor
         public SelectColisionViewModel(KeyValuePair<int, List<string>> pair, bool fillDescr, int lenght, bool line2Visible, bool releaseVisible = true)
         {
+            Line1Selected = true;
             Line2Visibility = line2Visible ? Visibility.Visible : Visibility.Collapsed;
             List<string> pairValue = new List<string>();
             if (line2Visible)
@@ -127,17 +128,20 @@ namespace RobotFilesEditor.Dialogs
                                 RequestTextLine2 = value.Substring(maxLength, value.Length - maxLength) + RequestTextLine2;
                                 //RequestTextLine2 = value.Substring(maxLength, value.Length - maxLength);
                                 value = value.Substring(0, maxLength).TrimEnd();
+                                _requestText = value;
                             }
                             else
                                 value = value.Substring(0, maxLength);
+                        else if (value.Contains("\r\n"))
+                        {
+                            _requestText = new Regex(@".*(?=\r\n)").Match(value).ToString();
+                            RequestTextLine2 = new Regex(@"(?<=\r\n).*").Match(value).ToString();
+                        }
                         else
                         {
-                            //if (!string.IsNullOrEmpty(RequestTextLine2))
-                                //RequestTextLine2 = string.Empty;
+                            _requestText = value;
                         }
-                        _requestText = value;
                         ReleaseText = value;
-                        //SelectedIndexInReq = -1;
                     }
                     RaisePropertyChanged(() => RequestText);
                     
@@ -157,8 +161,18 @@ namespace RobotFilesEditor.Dialogs
                     if ((limitLength || Line2Visibility == Visibility.Visible) && value.Length <= maxLength)
                     //value = value.Substring(0, maxLength);
                     {
-                        _requestTextLine2 = value.TrimStart();
+                        _requestTextLine2 = " " + value.TrimStart();
+                        //_requestTextLine2 = value;
                         RaisePropertyChanged(() => RequestTextLine2);
+                        if (string.IsNullOrEmpty(value.Trim()))
+                        {
+                            Line1Selected = true;
+                            Line2DescriptionEnabled = false;
+                        }
+                        else
+                            Line2DescriptionEnabled = true;
+
+
                     }
                 }
             }
@@ -283,6 +297,36 @@ namespace RobotFilesEditor.Dialogs
                     _limitText = value;
                     RaisePropertyChanged(() => LimitText);
                 }
+            }
+        }
+
+        private bool line1Selected;
+        public bool Line1Selected
+        {
+            get { return line1Selected; }
+            set
+            {
+                Set(ref line1Selected, value);
+            }
+        }
+
+        private bool line2Selected;
+        public bool Line2Selected
+        {
+            get { return line2Selected; }
+            set
+            {
+                Set(ref line2Selected, value);
+            }
+        }
+
+        private bool line2DescriptionEnabled;
+        public bool Line2DescriptionEnabled
+        {
+            get { return line2DescriptionEnabled; }
+            set
+            {
+                Set(ref line2DescriptionEnabled, value);
             }
         }
         #endregion

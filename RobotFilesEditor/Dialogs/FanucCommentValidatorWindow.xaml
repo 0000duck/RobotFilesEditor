@@ -15,10 +15,11 @@
             <TextBlock Text="{Binding InputLine.Line2}" Foreground="Red" HorizontalAlignment="Center" Margin="5,5,5,5"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="5,5,5,5">
                 <TextBlock Text="Line: " FontWeight="Bold"/>
-                <TextBlock Text="{Binding InputLine.Line3}"/>
+                <TextBox BorderThickness="0" Text="{Binding InputLine.Line3, Mode=OneWay}" IsReadOnly="True" TextWrapping="Wrap"/>
             </StackPanel>
             <TextBox Text="{Binding OutputLine, UpdateSourceTrigger=PropertyChanged}" Margin="5,5,5,5"/>
-            <Button Command="{Binding OkCommand}" Content="OK" Width="50" Margin="5,5,5,5"/>
+            <TextBlock Text="{Binding CharCounter}" HorizontalAlignment="Center"/>
+            <Button Command="{Binding OkCommand}" IsEnabled="{Binding EnableOK}" Content="OK" Width="50" Margin="5,5,5,5"/>
         </StackPanel>
     </Grid>
 </Window>

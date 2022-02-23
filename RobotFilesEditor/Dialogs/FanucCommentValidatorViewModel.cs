@@ -23,7 +23,8 @@ namespace RobotFilesEditor.Dialogs
             Regex lineContentRegex = new Regex(@"(?<=^\s*\d+\s*:\s*(!|PR_CALL CMN.*'))[^']+");
             string lineContent = lineContentRegex.Match(line).ToString();
             InputLine = new TextForCommenValidator(path, lengthLimit, line);
-            OutputLine = lineContent.Substring(0, lengthLimit);
+            //OutputLine = lineContent.Substring(0, lengthLimit);
+            OutputLine = lineContent;
             SetCommands();
         }
         #endregion
@@ -41,11 +42,40 @@ namespace RobotFilesEditor.Dialogs
         {
             get { return outputLine; }
             set
+            {                
+                //if (value != outputLine && value.Length > lengthLimitInternal)
+                //{
+                //    value = value.Substring(0, lengthLimitInternal);
+                //}
+                Set(ref outputLine, value);
+                CharCounter = "";
+                if (outputLine.Length > 32)
+                    EnableOK = false;
+                else
+                    EnableOK = true;
+            }
+        }
+
+        private string charCounter;
+        public string CharCounter
+        {
+            get { return charCounter; }
+            set
             {
-                if (value != outputLine && value.Length <= lengthLimitInternal)
+                if (value != charCounter)
                 {
-                    Set(ref outputLine, value);
+                    value = "Character counter: " + OutputLine.Length + "/" + lengthLimitInternal;
+                    Set(ref charCounter, value);
                 }
+            }
+        }
+
+        private bool enableOK;
+        public bool EnableOK
+        {
+            get { return enableOK; }
+            set {
+                Set(ref enableOK, value);
             }
         }
 

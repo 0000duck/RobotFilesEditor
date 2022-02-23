@@ -1604,7 +1604,8 @@ namespace RobotFilesEditor.Model.Operations
                 if (!isDat)
                 {
                     // Char.ConvertFromUtf32(160) = twarda spacja
-                    header = header + Char.ConvertFromUtf32(160) + "\r\n" + Char.ConvertFromUtf32(160) + "\r\n" + ";# --------- START PATH : " + Path.GetFileNameWithoutExtension(file.Key) + " ---------\r\n" + Char.ConvertFromUtf32(160);
+                    //header = header + Char.ConvertFromUtf32(160) + "\r\n" + Char.ConvertFromUtf32(160) + "\r\n" + ";# --------- START PATH : " + Path.GetFileNameWithoutExtension(file.Key) + " ---------\r\n" + Char.ConvertFromUtf32(160);
+                    header = header + Char.ConvertFromUtf32(160) + "\r\n" + Char.ConvertFromUtf32(160) + "\r\n" + ";# --------- START PATH : " + Path.GetFileNameWithoutExtension(file.Key) + " ---------\r\n\r\n";
                 }
                 List<string> resultStrings = new List<string>();
                 foreach (string currentLine in file.Value)

@@ -40,5 +40,17 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             public bool isFLS { get; set; }
             public bool isDocking { get; set; }
         }
+
+        public class FanucCollDescr
+        {
+            public List<string> Lines { get; set; }
+            public int LineNumberToAdd { get; set; }
+
+            public FanucCollDescr(List<string> lines, int lineNumberToAdd)
+            {
+                Lines = lines;
+                LineNumberToAdd = lineNumberToAdd;
+            }
+        }
     }
 }

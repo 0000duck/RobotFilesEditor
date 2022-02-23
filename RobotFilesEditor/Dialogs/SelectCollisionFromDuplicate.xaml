@@ -26,8 +26,12 @@
         <StackPanel Grid.ColumnSpan="2">
             <TextBlock HorizontalAlignment="Center" Margin="20,5,20,5" Text="Select description for collision number:"></TextBlock>
             <TextBlock HorizontalAlignment="Center" Margin="20,5,20,5" Visibility="{Binding IsVisible}" Text="{Binding LimitText}" Foreground="Red" FontWeight="Bold"></TextBlock>
-            <TextBlock HorizontalAlignment="Center" Margin="20,5,20,0" Visibility="{Binding CollDescrWarning}" Text="Only line 1 will be visible in coll" Foreground="Red" FontWeight="Bold"></TextBlock>
-            <TextBlock HorizontalAlignment="Center" Margin="20,0,20,5" Visibility="{Binding CollDescrWarning}" Text="description within PR_Call statement!" Foreground="Red" FontWeight="Bold"></TextBlock>
+            <!--<TextBlock HorizontalAlignment="Center" Margin="20,5,20,0" Visibility="{Binding CollDescrWarning}" Text="Only line 1 will be visible in coll" Foreground="Red" FontWeight="Bold"></TextBlock>
+            <TextBlock HorizontalAlignment="Center" Margin="20,0,20,5" Visibility="{Binding CollDescrWarning}" Text="description within PR_Call statement!" Foreground="Red" FontWeight="Bold"></TextBlock>-->
+            <StackPanel Visibility="{Binding CollDescrWarning}">
+                <RadioButton Content="Description from line 1" GroupName="DescrLine" IsChecked="{Binding Line1Selected}" Margin="5"/>
+                <RadioButton Content="Description form line 2" GroupName="DescrLine" IsChecked="{Binding Line2Selected}" Margin="5" IsEnabled="{Binding Line2DescriptionEnabled}"/>
+            </StackPanel>
             <TextBlock x:Name="CollNum" Margin="20,5,20,5" Text="{Binding Pair.Key}" HorizontalAlignment="Center" FontWeight="Bold"></TextBlock>
             <GroupBox Header="{Binding RequestHeader}" Margin="10,0,10,0">
                 <StackPanel>
