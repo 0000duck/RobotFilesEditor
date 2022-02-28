@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using CommonLibrary.RobKalDatCommon;
 using RobotFilesEditor.Dialogs;
+using RobotFilesEditor.Dialogs.BaseShifter;
 using RobotFilesEditor.Model.DataInformations;
 using RobotFilesEditor.Model.Operations.DataClass;
 

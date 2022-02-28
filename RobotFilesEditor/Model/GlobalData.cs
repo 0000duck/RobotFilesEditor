@@ -1,5 +1,5 @@
 ﻿using Microsoft.Win32;
-using RobotFilesEditor.Dialogs;
+using RobotFilesEditor.Dialogs.CreateGripper;
 using RobotFilesEditor.Model.DataInformations;
 using RobotFilesEditor.Model.Operations;
 using System;

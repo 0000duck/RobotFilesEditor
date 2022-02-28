@@ -7,7 +7,9 @@ using System.IO;
 using System.Windows.Input;
 using GalaSoft.MvvmLight.Command;
 using System.Windows;
-using RobotFilesEditor.Dialogs;
+using RobotFilesEditor.Dialogs.CreateOrgs;
+using RobotFilesEditor.Dialogs.ChangeName;
+using RobotFilesEditor.Dialogs.CreateGripper;
 using RobotFilesEditor.Model.Operations;
 using System.Xml;
 

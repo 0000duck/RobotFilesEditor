@@ -1,4 +1,4 @@
-﻿using RobotFilesEditor.Dialogs;
+﻿using RobotFilesEditor.Dialogs.ABBRename;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

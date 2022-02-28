@@ -1,0 +1,21 @@
+﻿<Window x:Class="RobotFilesEditor.Dialogs.IBUSSegmentName.IBUSSegmentName"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RobotFilesEditor.Dialogs"
+        mc:Ignorable="d" SizeToContent="WidthAndHeight"
+        Title="IBUSSegmentName"  WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+    <Grid FocusManager.FocusedElement="{Binding ElementName=IBUSName}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0" Content="Type name of IBUS device number:" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,10,10,0"/>
+        <Label Grid.Row="1" Content="{Binding CurrentTool}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,10,10,0" FontWeight="Bold"/>
+        <TextBox Name="IBUSName" Grid.Row="2" Text="{Binding NameTool}" Margin="10,10,10,0"/>
+        <Button Grid.Row="3" Content="OK" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="72,0,72.2,0.2" Click="Button_Click" IsDefault="True"/>
+    </Grid>
+</Window>

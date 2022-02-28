@@ -47,8 +47,8 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             List<string> filesInOlpList = Directory.GetFiles(dirWithOLP, "*.ls", SearchOption.AllDirectories).ToList();
             IDictionary<string, string> filesInBackup = GetFilesFromBackup(backupFile);
             IDictionary<string, string> filesInOlp = GetFilesFromOLP(filesInOlpList);
-            Dialogs.CompareSOVandOLPViewModel vm = new Dialogs.CompareSOVandOLPViewModel(filesInBackup, filesInOlp);
-            var dialog = new Dialogs.CompareSOVandOLPWindow(vm);
+            Dialogs.CompareSOVAndOLP.CompareSOVandOLPViewModel vm = new Dialogs.CompareSOVAndOLP.CompareSOVandOLPViewModel(filesInBackup, filesInOlp);
+            var dialog = new Dialogs.CompareSOVAndOLP.CompareSOVandOLPWindow(vm);
             var dialogresult =  dialog.ShowDialog();
                 if ((bool)dialogresult)
                 {

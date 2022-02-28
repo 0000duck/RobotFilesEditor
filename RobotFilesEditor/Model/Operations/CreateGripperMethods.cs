@@ -1,4 +1,5 @@
-﻿using RobotFilesEditor.Dialogs;
+﻿using RobotFilesEditor.Dialogs.SignalName;
+using RobotFilesEditor.Dialogs.CreateGripper;
 using RobotFilesEditor.Model.DataInformations;
 using RobotFilesEditor.Model.Operations.DataClass;
 using System;

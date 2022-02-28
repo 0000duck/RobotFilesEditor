@@ -1,0 +1,67 @@
+﻿<Window x:Class="RobotFilesEditor.Dialogs.SelectCollision.SelectCollisionFromDuplicate"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"        
+        xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"        
+        mc:Ignorable="d"
+        Title="SelectCollisionFromDuplicate" SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing">
+            <cmd:EventToCommand Command="{Binding Path=ClosingCommand}" PassEventArgsToCommand="True" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <Window.Resources>
+        <!--DataTemplate DataType="{x:Type models:FileValidationData}"></-->
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="109*"/>
+            <ColumnDefinition Width="37*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.ColumnSpan="2">
+            <TextBlock HorizontalAlignment="Center" Margin="20,5,20,5" Text="Select description for collision number:"></TextBlock>
+            <TextBlock HorizontalAlignment="Center" Margin="20,5,20,5" Visibility="{Binding IsVisible}" Text="{Binding LimitText}" Foreground="Red" FontWeight="Bold"></TextBlock>
+            <!--<TextBlock HorizontalAlignment="Center" Margin="20,5,20,0" Visibility="{Binding CollDescrWarning}" Text="Only line 1 will be visible in coll" Foreground="Red" FontWeight="Bold"></TextBlock>
+            <TextBlock HorizontalAlignment="Center" Margin="20,0,20,5" Visibility="{Binding CollDescrWarning}" Text="description within PR_Call statement!" Foreground="Red" FontWeight="Bold"></TextBlock>-->
+            <StackPanel Visibility="{Binding CollDescrWarning}">
+                <RadioButton Content="Description from line 1" GroupName="DescrLine" IsChecked="{Binding Line1Selected}" Margin="5"/>
+                <RadioButton Content="Description form line 2" GroupName="DescrLine" IsChecked="{Binding Line2Selected}" Margin="5" IsEnabled="{Binding Line2DescriptionEnabled}"/>
+            </StackPanel>
+            <TextBlock x:Name="CollNum" Margin="20,5,20,5" Text="{Binding Pair.Key}" HorizontalAlignment="Center" FontWeight="Bold"></TextBlock>
+            <GroupBox Header="{Binding RequestHeader}" Margin="10,0,10,0">
+                <StackPanel>
+                    <ListBox x:Name="CollDescriptionsReq" SelectedIndex="{Binding SelectedIndexInReq}" Margin="10,5,10,5" ItemsSource="{Binding Pair.Value}" HorizontalAlignment="Center"
+                         FocusManager.IsFocusScope="False"></ListBox>
+                    <StackPanel Orientation="Horizontal" Margin="10,0,10,0" HorizontalAlignment="Center">
+                        <TextBlock Text="Line1:" Visibility="{Binding Line2Visibility}"/>
+                        <TextBox Text="{Binding RequestText, UpdateSourceTrigger=PropertyChanged}" MinWidth="50"  TextAlignment="Center"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="10,5,10,0" Visibility="{Binding Line2Visibility}" HorizontalAlignment="Center">
+                        <TextBlock Text="Line2:"/>
+                        <TextBox Text="{Binding RequestTextLine2, UpdateSourceTrigger=PropertyChanged}" MinWidth="50" TextAlignment="Center"/>
+                    </StackPanel>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Release:" Margin="10,10,10,0" Visibility="{Binding ReleaseVisible}">
+                <StackPanel>
+                    <ListBox x:Name="CollDescriptionsClr" SelectedIndex="{Binding SelectedIndexInClr}"  Margin="10,5,10,5" ItemsSource="{Binding Pair.Value}" HorizontalAlignment="Center"
+                         FocusManager.IsFocusScope="False"></ListBox>
+                    <StackPanel Orientation="Horizontal" Margin="10,0,10,0" HorizontalAlignment="Center">
+                        <TextBlock Text="Line1:" Visibility="{Binding Line2Visibility}"/>
+                        <TextBox Text="{Binding ReleaseText, UpdateSourceTrigger=PropertyChanged}" MinWidth="50" TextAlignment="Center"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="10,5,10,0" Visibility="{Binding Line2Visibility}" HorizontalAlignment="Center">
+                        <TextBlock Text="Line2:"/>
+                        <TextBox Text="{Binding ReleaseTextLine2, UpdateSourceTrigger=PropertyChanged}" MinWidth="50"  TextAlignment="Center"/>
+                    </StackPanel>
+                </StackPanel>
+            </GroupBox>
+            <Button x:Name="CollDescrOk" Margin="20,5,20,5" HorizontalAlignment="Center" Width="50" Content="OK" FontWeight="Bold" Click="CollDescrOk_Click" IsDefault="True"></Button>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,4 +1,5 @@
-﻿using RobotFilesEditor.Dialogs;
+﻿using RobotFilesEditor.Dialogs.LoadingMessage;
+using RobotFilesEditor.Dialogs.TypIdChanger;
 using RobotFilesEditor.Model.DataInformations;
 using System;
 using System.Collections.Generic;

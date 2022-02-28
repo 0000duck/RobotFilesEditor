@@ -1,6 +1,6 @@
 ﻿using CommonLibrary;
 using Microsoft.CSharp;
-using RobotFilesEditor.Dialogs;
+using RobotFilesEditor.Dialogs.SelectJob;
 using RobotFilesEditor.Model.Operations.DataClass;
 using System;
 using System.CodeDom.Compiler;
@@ -59,8 +59,8 @@ namespace RobotFilesEditor.Model.Operations
             }
             List<RobotFromSas> robotsInSas = FindRobotsInSas(sasXml);
 
-            Dialogs.SasFillerAssignRobotsViewModel vm = new Dialogs.SasFillerAssignRobotsViewModel(CreateRobotDataObsCollection(robotsInSas) , CovertListToObsCollection(foundBackups));
-            Dialogs.SasFillerAssignRobots sW = new Dialogs.SasFillerAssignRobots(vm);
+            Dialogs.SasFiller.SasFillerAssignRobotsViewModel vm = new Dialogs.SasFiller.SasFillerAssignRobotsViewModel(CreateRobotDataObsCollection(robotsInSas) , CovertListToObsCollection(foundBackups));
+            Dialogs.SasFiller.SasFillerAssignRobots sW = new Dialogs.SasFiller.SasFillerAssignRobots(vm);
             var dialogResult = sW.ShowDialog();
             if (dialogResult == false)
                 return;

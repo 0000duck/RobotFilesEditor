@@ -1,4 +1,9 @@
-﻿using RobotFilesEditor.Dialogs;
+﻿using RobotFilesEditor.Dialogs.SelectCollision;
+using RobotFilesEditor.Dialogs.ApplicationSelector;
+using RobotFilesEditor.Dialogs.CreateOrgs;
+using RobotFilesEditor.Dialogs.FanucCommentValidator;
+using RobotFilesEditor.Dialogs.SelectJob;
+using RobotFilesEditor.Dialogs.NameRobot;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -42,6 +47,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             FilesList = filesList;
             GetRobotName();
             FilesAndContent = ReadFiles();
+            ValidateFiles();
             FillGlobalData();
             FilesAndContent = AddHeader();
             CheckOpenAndCloseCommands();
@@ -550,6 +556,32 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             GlobalData.SrcPathsAndJobs = pathsAndJobs;
             GlobalData.Jobs = jobs;
         }
+
+        private void ValidateFiles()
+        {
+            CheckSemicolons();
+        }
+
+        private void CheckSemicolons()
+        {
+            bool areFilesOK = true;
+            string logContentLocal = string.Empty;
+            Regex isSemicolonOk = new Regex(@"^.*;\s*$");
+            foreach (var file in FilesAndContent)
+            {
+                if (file.Value.ProgramSection.Any(x=>!isSemicolonOk.IsMatch(x) && !string.IsNullOrEmpty(x)))
+                {
+                    areFilesOK = false;
+                    var faulLines = file.Value.ProgramSection.Where(x => !isSemicolonOk.IsMatch(x) && !string.IsNullOrEmpty(x));
+                    faulLines.ToList().ForEach(x => logContentLocal += "Missing semicolon! Path: " + Path.GetFileNameWithoutExtension(file.Key) + ", Line: " + x + "\r\n");
+                }
+            }
+            if (!areFilesOK)
+            {
+                MessageBox.Show("Missing semicolons found. See log for details.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                logContent += logContentLocal;
+            }
+        }
         #endregion
     }
 
@@ -982,6 +1014,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             }
             catch (Exception ex)
             {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
         }

@@ -1,0 +1,23 @@
+﻿<Window x:Class="RobotFilesEditor.Dialogs.TypIdChanger.TypIdChangerTypeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RobotFilesEditor.Dialogs"
+        mc:Ignorable="d"
+        Title="TypIdChangerTypeWindow" SizeToContent="WidthAndHeight" MinWidth="200" WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="200"/>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Text="Choose if you want to change point by point or by same typId" Margin="10,10,10,10" HorizontalAlignment="Center"/>
+        <Button Content="Point by point" Grid.Row="1" Grid.Column="0" Margin="10,10,10,10" Command="{Binding PointByPoint}"/>
+        <Button Content="By same TypId" Grid.Row="1" Grid.Column="1" Margin="10,10,10,10" Command="{Binding BySameTypId}"/>
+    </Grid>
+</Window>

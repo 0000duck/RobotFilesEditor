@@ -55,18 +55,22 @@ namespace Fanuc_mirro
             Regex isOldHeaderPart = new Regex(@"^\s*\d+\s*\:\s*!\s*\*", RegexOptions.IgnoreCase);
             Regex commentRegex = new Regex(@"^\s*\d+\s*\:\s*!", RegexOptions.IgnoreCase);
             Regex emptyLineRegex = new Regex(@"^\s*\d+\s*:\s*;", RegexOptions.IgnoreCase);
+            Regex isPosRegex = new Regex(@"^\s*/\s*POS\s*$",RegexOptions.IgnoreCase);
             StringReader reader = new StringReader(file.Path);
             string resultString = string.Empty;
             List<string> initialLines = new List<string>();
             List<string> linesToRenumber = new List<string>();
+            List<string> posList = new List<string>();
 
-            bool isComment = false, isHeaderEnd = false;
+            bool isComment = false, isHeaderEnd = false, isPosSection = false;
             while (true)
             {
                 string line = reader.ReadLine();
                 if (line == null)
                     break;
-                if (!emptyLineRegex.IsMatch(line))
+                if (isPosRegex.IsMatch(line))
+                    isPosSection = true;
+                if (!emptyLineRegex.IsMatch(line) && !isPosSection)
                 {
                     if (commentRegex.IsMatch(line))
                         isComment = true;
@@ -82,8 +86,11 @@ namespace Fanuc_mirro
                         linesToRenumber.Add(line);
                     //resultString += line + "\r\n";
                 }
+                else if (isPosSection)
+                    posList.Add(line);
             }
             List<string> renumberedLines = CommonMethods.GetRenumberedBody(linesToRenumber);
+            renumberedLines.AddRange(posList);
             initialLines.ForEach(x => resultString += x + "\r\n");
             renumberedLines.ForEach(x => resultString += x + "\r\n");
 

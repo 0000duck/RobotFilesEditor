@@ -10,9 +10,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using CommonLibrary;
 using RobotFilesEditor.Dialogs;
+using RobotFilesEditor.Dialogs.CreateOrgs;
 using RobotFilesEditor.Model.DataInformations;
 using RobotFilesEditor.Model.DataOrganization;
-using static RobotFilesEditor.Dialogs.OrgsElementVM;
+using static RobotFilesEditor.Dialogs.CreateOrgs.OrgsElementVM;
 using RobotFilesEditor.ViewModel;
 namespace RobotFilesEditor.Model.Operations
 {
@@ -1707,8 +1708,8 @@ namespace RobotFilesEditor.Model.Operations
                     GlobalData.SelectedUserNums = new ObservableCollection<KeyValuePair<string, int>>();
                     break;
             }                      
-            CreateUserNumsViewModel2 vm = new CreateUserNumsViewModel2(id, chooseType, jobNr);
-            CreateUserNum2 sW = new CreateUserNum2(vm);
+            CreateUserNumsViewModel vm = new CreateUserNumsViewModel(id, chooseType, jobNr);
+            CreateUserNum sW = new CreateUserNum(vm);
             var dialogResult = sW.ShowDialog();
 
             switch (chooseType)

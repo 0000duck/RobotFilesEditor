@@ -1,0 +1,33 @@
+﻿<Window x:Class="RobotFilesEditor.Dialogs.CompareSOVAndOLP.CompareOLPToSOVLineByLine"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RobotFilesEditor.Dialogs"
+        mc:Ignorable="d"
+        Title="CompareOLPToSOVLineByLine" MaxHeight="800" MaxWidth="1200">
+    <Grid>
+        <DataGrid ItemsSource="{Binding Data}" Name="MainDataGridView" AutoGenerateColumns="False" CanUserAddRows="True" CanUserDeleteRows="True"              
+                SelectionMode="Single" SelectionUnit="FullRow">
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsSame}" Value="1">
+                            <Setter Property="Background" Value="#FF70D870"></Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsSame}" Value="2">
+                            <Setter Property="Background" Value="#FFF38B8B"></Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsSame}" Value="3">
+                            <Setter Property="Background" Value="#FFE0BA75"></Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
+            <DataGrid.Columns>
+                    <DataGridTextColumn Header="Line in backup" Binding="{Binding Path=Line1}" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Line in OLP" Binding="{Binding Path=Line2}" IsReadOnly="True" />
+                </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>

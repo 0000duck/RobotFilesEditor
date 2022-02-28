@@ -29,7 +29,7 @@
     <MinimumRequiredVersion>1.0.0.54</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>421</ApplicationRevision>
+    <ApplicationRevision>423</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -160,138 +160,130 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Dialogs\ABBRenameViewModel.cs" />
-    <Compile Include="Dialogs\ABBRenameWindow.xaml.cs">
+    <Compile Include="Dialogs\ABBRename\ABBRenameViewModel.cs" />
+    <Compile Include="Dialogs\ABBRename\ABBRenameWindow.xaml.cs">
       <DependentUpon>ABBRenameWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\ApplicationSelector.xaml.cs">
+    <Compile Include="Dialogs\ApplicationSelector\ApplicationSelector.xaml.cs">
       <DependentUpon>ApplicationSelector.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\ApplicationSelectorViewModel.cs" />
-    <Compile Include="Dialogs\BaseShifterViewModel.cs" />
-    <Compile Include="Dialogs\BaseShifterWindow.xaml.cs">
+    <Compile Include="Dialogs\ApplicationSelector\ApplicationSelectorViewModel.cs" />
+    <Compile Include="Dialogs\BaseShifter\BaseShifterViewModel.cs" />
+    <Compile Include="Dialogs\BaseShifter\BaseShifterWindow.xaml.cs">
       <DependentUpon>BaseShifterWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\ChangeName.xaml.cs">
-      <DependentUpon>ChangeName.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\ChangeNameViewModel.cs" />
-    <Compile Include="Dialogs\ChangeTypIdList.xaml.cs">
-      <DependentUpon>ChangeTypIdList.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\ChangeTypIdViewModel.cs" />
-    <Compile Include="Dialogs\CompareOLPToSOVLineByLine.xaml.cs">
-      <DependentUpon>CompareOLPToSOVLineByLine.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\CompareOLPToSOVLineByLineViewModel.cs" />
-    <Compile Include="Dialogs\CompareSOVandOLPViewModel.cs" />
-    <Compile Include="Dialogs\CompareSOVandOLPWindow.xaml.cs">
-      <DependentUpon>CompareSOVandOLPWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\CreateUserNum2.xaml.cs">
-      <DependentUpon>CreateUserNum2.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\CreateUserNumsViewModel2.cs" />
-    <Compile Include="Dialogs\CreateUserNumsViewModel.cs" />
-    <Compile Include="Dialogs\CreateUserNum.xaml.cs">
-      <DependentUpon>CreateUserNum.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\CreateAnyJob.xaml.cs">
-      <DependentUpon>CreateAnyJob.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\CreateAnyJobViewModel.cs" />
-    <Compile Include="Dialogs\CreateGripper.xaml.cs">
-      <DependentUpon>CreateGripper.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\CreateGripperViewModel.cs" />
-    <Compile Include="Dialogs\CreateOrgs.xaml.cs">
-      <DependentUpon>CreateOrgs.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\CreateOrgsViewModel.cs" />
-    <Compile Include="Dialogs\FanucCommentValidatorViewModel.cs" />
-    <Compile Include="Dialogs\FanucCommentValidatorWindow.xaml.cs">
-      <DependentUpon>FanucCommentValidatorWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\GripperElementSensorsVM.cs" />
-    <Compile Include="Dialogs\GripperElementsVM.cs" />
-    <Compile Include="Dialogs\IBUSSegmentName.xaml.cs">
-      <DependentUpon>IBUSSegmentName.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\IBUSSegmentNameViewModel.cs" />
-    <Compile Include="Dialogs\LoadingMessage.xaml.cs">
-      <DependentUpon>LoadingMessage.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\LoadingMessageVM.cs" />
-    <Compile Include="Dialogs\MPLListParams.xaml.cs">
-      <DependentUpon>MPLListParams.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\MPLListParamsVM.cs" />
-    <Compile Include="Dialogs\NameRobot.xaml.cs">
-      <DependentUpon>NameRobot.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\NameRoboterViewModel.cs" />
-    <Compile Include="Dialogs\OrgsElementVM.cs" />
-    <Compile Include="Dialogs\PleaseWaitDialog.xaml.cs">
-      <DependentUpon>PleaseWaitDialog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\RenameBase.xaml.cs">
-      <DependentUpon>RenameBase.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\RenameBaseViewModel.cs" />
-    <Compile Include="Dialogs\SasFillerAssignRobots.xaml.cs">
-      <DependentUpon>SasFillerAssignRobots.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\SasFillerAssignRobotsViewModel.cs" />
-    <Compile Include="Dialogs\SelectLoadVar.xaml.cs">
-      <DependentUpon>SelectLoadVar.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Dialogs\SelectLoadVarViewModel.cs" />
-    <Compile Include="Dialogs\SelectPathsToShiftBase.xaml.cs">
+    <Compile Include="Dialogs\BaseShifter\SelectPathsToShiftBase.xaml.cs">
       <DependentUpon>SelectPathsToShiftBase.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\SelectPathsToShiftBaseViewModel.cs" />
-    <Compile Include="Dialogs\SelectRobotType.xaml.cs">
+    <Compile Include="Dialogs\ChangeName\ChangeName.xaml.cs">
+      <DependentUpon>ChangeName.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\ChangeName\ChangeNameViewModel.cs" />
+    <Compile Include="Dialogs\CreateOrgs\CreateOrgs.xaml.cs">
+      <DependentUpon>CreateOrgs.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\LoadingMessage\LoadingMessageVM.cs" />
+    <Compile Include="Dialogs\TypIdChanger\ChangeTypIdList.xaml.cs">
+      <DependentUpon>ChangeTypIdList.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\TypIdChanger\ChangeTypIdViewModel.cs" />
+    <Compile Include="Dialogs\CompareSOVAndOLP\CompareOLPToSOVLineByLine.xaml.cs">
+      <DependentUpon>CompareOLPToSOVLineByLine.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\CompareSOVAndOLP\CompareOLPToSOVLineByLineViewModel.cs" />
+    <Compile Include="Dialogs\CompareSOVAndOLP\CompareSOVandOLPViewModel.cs" />
+    <Compile Include="Dialogs\CompareSOVAndOLP\CompareSOVandOLPWindow.xaml.cs">
+      <DependentUpon>CompareSOVandOLPWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\CreateOrgs\CreateUserNum.xaml.cs">
+      <DependentUpon>CreateUserNum.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\CreateOrgs\CreateUserNumsViewModel.cs" />
+    <Compile Include="Dialogs\CreateGripper\CreateGripper.xaml.cs">
+      <DependentUpon>CreateGripper.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\CreateGripper\CreateGripperViewModel.cs" />
+    <Compile Include="Dialogs\CreateOrgs\CreateOrgsViewModel.cs" />
+    <Compile Include="Dialogs\FanucCommentValidator\FanucCommentValidatorViewModel.cs" />
+    <Compile Include="Dialogs\FanucCommentValidator\FanucCommentValidatorWindow.xaml.cs">
+      <DependentUpon>FanucCommentValidatorWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\CreateGripper\GripperElementSensorsVM.cs" />
+    <Compile Include="Dialogs\CreateGripper\GripperElementsVM.cs" />
+    <Compile Include="Dialogs\IBUSSegmentName\IBUSSegmentName.xaml.cs">
+      <DependentUpon>IBUSSegmentName.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\IBUSSegmentName\IBUSSegmentNameViewModel.cs" />
+    <Compile Include="Dialogs\LoadingMessage\LoadingMessage.xaml.cs">
+      <DependentUpon>LoadingMessage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\MPLListParams\MPLListParams.xaml.cs">
+      <DependentUpon>MPLListParams.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\MPLListParams\MPLListParamsVM.cs" />
+    <Compile Include="Dialogs\NameRobot\NameRobot.xaml.cs">
+      <DependentUpon>NameRobot.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\NameRobot\NameRoboterViewModel.cs" />
+    <Compile Include="Dialogs\CreateOrgs\OrgsElementVM.cs" />
+    <Compile Include="Dialogs\PleaseWait\PleaseWaitDialog.xaml.cs">
+      <DependentUpon>PleaseWaitDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\RenameBase\RenameBase.xaml.cs">
+      <DependentUpon>RenameBase.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\RenameBase\RenameBaseViewModel.cs" />
+    <Compile Include="Dialogs\SasFiller\SasFillerAssignRobots.xaml.cs">
+      <DependentUpon>SasFillerAssignRobots.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\SasFiller\SasFillerAssignRobotsViewModel.cs" />
+    <Compile Include="Dialogs\SelectLoadVar\SelectLoadVar.xaml.cs">
+      <DependentUpon>SelectLoadVar.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\SelectLoadVar\SelectLoadVarViewModel.cs" />
+    <Compile Include="Dialogs\BaseShifter\SelectPathsToShiftBaseViewModel.cs" />
+    <Compile Include="Dialogs\SelectRobotType\SelectRobotType.xaml.cs">
       <DependentUpon>SelectRobotType.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\SelectRobotTypeVM.cs" />
-    <Compile Include="Dialogs\SetRobotStartAddress.xaml.cs">
+    <Compile Include="Dialogs\SelectRobotType\SelectRobotTypeVM.cs" />
+    <Compile Include="Dialogs\SetRobotStartAddress\SetRobotStartAddress.xaml.cs">
       <DependentUpon>SetRobotStartAddress.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\SetRobotStartAddressVM.cs" />
-    <Compile Include="Dialogs\SignalName.xaml.cs">
+    <Compile Include="Dialogs\SetRobotStartAddress\SetRobotStartAddressVM.cs" />
+    <Compile Include="Dialogs\SignalName\SignalName.xaml.cs">
       <DependentUpon>SignalName.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\RenameTool.xaml.cs">
+    <Compile Include="Dialogs\RenameTool\RenameTool.xaml.cs">
       <DependentUpon>RenameTool.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\SignalNameViewModel.cs" />
-    <Compile Include="Dialogs\RenameToolViewModel.cs" />
-    <Compile Include="Dialogs\SelectColisionViewModel.cs" />
-    <Compile Include="Dialogs\SelectJob.xaml.cs">
+    <Compile Include="Dialogs\SignalName\SignalNameViewModel.cs" />
+    <Compile Include="Dialogs\RenameTool\RenameToolViewModel.cs" />
+    <Compile Include="Dialogs\SelectCollision\SelectColisionViewModel.cs" />
+    <Compile Include="Dialogs\SelectJob\SelectJob.xaml.cs">
       <DependentUpon>SelectJob.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\SelectJobViewModel.cs" />
-    <Compile Include="Dialogs\AppTypeSelect.xaml.cs">
+    <Compile Include="Dialogs\SelectJob\SelectJobViewModel.cs" />
+    <Compile Include="Dialogs\AppTypeSelect\AppTypeSelect.xaml.cs">
       <DependentUpon>AppTypeSelect.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\AppTypeSelectViewModel.cs" />
-    <Compile Include="Dialogs\TypeCollisionComment.xaml.cs">
+    <Compile Include="Dialogs\AppTypeSelect\AppTypeSelectViewModel.cs" />
+    <Compile Include="Dialogs\TypeCollisionComment\TypeCollisionComment.xaml.cs">
       <DependentUpon>TypeCollisionComment.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\TypeCollisionCommentViewModel.cs" />
+    <Compile Include="Dialogs\TypeCollisionComment\TypeCollisionCommentViewModel.cs" />
     <Compile Include="Model\DataOrganization\TypId.cs" />
-    <Compile Include="Dialogs\TypIDBySameIDWindow.xaml.cs">
+    <Compile Include="Dialogs\TypIdChanger\TypIDBySameIDWindow.xaml.cs">
       <DependentUpon>TypIDBySameIDWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\TypIDBySameIDWindowVM.cs" />
-    <Compile Include="Dialogs\TypIdChanger.xaml.cs">
+    <Compile Include="Dialogs\TypIdChanger\TypIDBySameIDWindowVM.cs" />
+    <Compile Include="Dialogs\TypIdChanger\TypIdChanger.xaml.cs">
       <DependentUpon>TypIdChanger.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\TypIdChangerTypeWindow.xaml.cs">
+    <Compile Include="Dialogs\TypIdChanger\TypIdChangerTypeWindow.xaml.cs">
       <DependentUpon>TypIdChangerTypeWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\TypIdChangerTypeWindowVM.cs" />
-    <Compile Include="Dialogs\TypIdChangerViewModel.cs" />
+    <Compile Include="Dialogs\TypIdChanger\TypIdChangerTypeWindowVM.cs" />
+    <Compile Include="Dialogs\TypIdChanger\TypIdChangerViewModel.cs" />
     <Compile Include="Model\Converters\SasFillerBackupPathConverter.cs" />
     <Compile Include="Model\DataInformations\E6AxisPoint.cs" />
     <Compile Include="Model\DataInformations\FileValidationData.cs" />
@@ -379,7 +371,7 @@
     <Compile Include="OperationControl.xaml.cs">
       <DependentUpon>OperationControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Dialogs\SelectCollisionFromDuplicate.xaml.cs">
+    <Compile Include="Dialogs\SelectCollision\SelectCollisionFromDuplicate.xaml.cs">
       <DependentUpon>SelectCollisionFromDuplicate.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModel\ControlItem.cs" />
@@ -392,131 +384,123 @@
     <Compile Include="ViewModel\Helper\NotifyTaskCompletion.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
-    <Page Include="Dialogs\ABBRenameWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\ApplicationSelector.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\BaseShifterWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\ChangeName.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\ChangeTypIdList.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\CompareOLPToSOVLineByLine.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\CompareSOVandOLPWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\CreateUserNum.xaml">
+    <Page Include="Dialogs\ABBRename\ABBRenameWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Dialogs\CreateAnyJob.xaml">
+    <Page Include="Dialogs\ApplicationSelector\ApplicationSelector.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Dialogs\CreateGripper.xaml">
+    <Page Include="Dialogs\BaseShifter\BaseShifterWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Dialogs\CreateOrgs.xaml">
+    <Page Include="Dialogs\BaseShifter\SelectPathsToShiftBase.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Dialogs\CreateUserNum2.xaml">
+    <Page Include="Dialogs\ChangeName\ChangeName.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Dialogs\FanucCommentValidatorWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\IBUSSegmentName.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\LoadingMessage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\MPLListParams.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\NameRobot.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\PleaseWaitDialog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\RenameBase.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\SasFillerAssignRobots.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\SelectLoadVar.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\SelectPathsToShiftBase.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\SelectRobotType.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\SetRobotStartAddress.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Dialogs\SignalName.xaml">
+    <Page Include="Dialogs\CreateOrgs\CreateOrgs.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Dialogs\RenameTool.xaml">
+    <Page Include="Dialogs\TypIdChanger\ChangeTypIdList.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Dialogs\SelectJob.xaml">
+    <Page Include="Dialogs\CompareSOVAndOLP\CompareOLPToSOVLineByLine.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Dialogs\AppTypeSelect.xaml">
+    <Page Include="Dialogs\CompareSOVAndOLP\CompareSOVandOLPWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Dialogs\TypeCollisionComment.xaml">
+    <Page Include="Dialogs\CreateGripper\CreateGripper.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Dialogs\TypIDBySameIDWindow.xaml">
+    <Page Include="Dialogs\CreateOrgs\CreateUserNum.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Dialogs\TypIdChanger.xaml">
+    <Page Include="Dialogs\FanucCommentValidator\FanucCommentValidatorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Dialogs\TypIdChangerTypeWindow.xaml">
+    <Page Include="Dialogs\IBUSSegmentName\IBUSSegmentName.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\LoadingMessage\LoadingMessage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\MPLListParams\MPLListParams.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\NameRobot\NameRobot.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\PleaseWait\PleaseWaitDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\RenameBase\RenameBase.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\SasFiller\SasFillerAssignRobots.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\SelectLoadVar\SelectLoadVar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\SelectRobotType\SelectRobotType.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\SetRobotStartAddress\SetRobotStartAddress.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\SignalName\SignalName.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dialogs\RenameTool\RenameTool.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\SelectJob\SelectJob.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\AppTypeSelect\AppTypeSelect.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\TypeCollisionComment\TypeCollisionComment.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\TypIdChanger\TypIDBySameIDWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\TypIdChanger\TypIdChanger.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\TypIdChanger\TypIdChangerTypeWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -539,7 +523,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Dialogs\SelectCollisionFromDuplicate.xaml">
+    <Page Include="Dialogs\SelectCollision\SelectCollisionFromDuplicate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -788,6 +772,7 @@
       <Name>RobotSafetyGenerator</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

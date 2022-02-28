@@ -1,4 +1,4 @@
-﻿using RobotFilesEditor.Dialogs;
+﻿using RobotFilesEditor.Dialogs.CreateOrgs;
 using RobotFilesEditor.Model.DataOrganization;
 using System;
 using System.Collections.Generic;

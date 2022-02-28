@@ -1,7 +1,7 @@
 ﻿using CommonLibrary;
 using Microsoft.Office.Interop.Excel;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using RobotFilesEditor.Dialogs;
+using RobotFilesEditor.Dialogs.SetRobotStartAddress;
 using RobotFilesEditor.Model.DataInformations;
 using RobotFilesEditor.Model.Operations.DataClass;
 using System;

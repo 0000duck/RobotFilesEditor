@@ -1,0 +1,420 @@
+﻿<Window x:Class="RobotFilesEditor.Dialogs.CreateGripper.CreateGripper"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RobotFilesEditor.Dialogs"
+        mc:Ignorable="d"
+        SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterScreen"
+        Title="CreateGripper" Height="Auto" Width="1000" Loaded="Window_Loaded">
+    <Grid Margin="5,5,5,5">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="245"/>
+            <ColumnDefinition Width="245"/>
+            <ColumnDefinition Width="245"/>
+            <ColumnDefinition Width="245"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition>
+                <RowDefinition.Style>
+                    <Style TargetType="RowDefinition">
+                        <Style.Triggers>
+                            <DataTrigger Binding ="{Binding Path=Controller}" Value="1">
+                                <Setter Property="Height" Value="30"/>
+                            </DataTrigger>
+                            <DataTrigger Binding ="{Binding Path=Controller}" Value="0">
+                                <Setter Property="Height" Value="0"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </RowDefinition.Style>
+            </RowDefinition>
+
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <Label Grid.Column="0" Grid.Row="0" Content="Nr of inputs" HorizontalAlignment="Right" FontWeight="Bold"/>
+        <TextBox Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" Text="{Binding NrOfInputs,Mode=TwoWay}" MinWidth="50" />
+        <Label Grid.Column="2" Grid.Row="0" Content="Nr of Outputs" HorizontalAlignment="Right" FontWeight="Bold"/>
+        <TextBox Grid.Column="3" Grid.Row="0" HorizontalAlignment="Left" Text="{Binding NrOfOutputs,Mode=TwoWay}" MinWidth="50"/>
+
+        <CheckBox Grid.Column="0" Grid.Row="1" Content="SoftStart?" IsChecked="{Binding HasSoftStart}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <Label Grid.Column="1" Grid.Row="1" Content="{Binding SoftStartString}" HorizontalAlignment="Left" FontWeight="Normal" Grid.ColumnSpan="2" Foreground="Red"/>
+        <Label Grid.Column="2" Grid.Row="1" Content="Gripper number:" HorizontalAlignment="Right" FontWeight="Bold"/>
+        <ComboBox Name="choseNumberOfGuns" ItemsSource="{Binding GripperNumbers}" SelectedItem="{Binding SelectedGripperNumber}" Grid.Row="1" Grid.Column="3" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="33.734,6,34,6.2"/>
+
+        <Label Grid.Column="0" Grid.Row="2" Content="Clamps" HorizontalAlignment="Center" FontWeight="Bold" Grid.ColumnSpan="2"/>
+        <Label Grid.Column="2" Grid.Row="2" Content="Sensors" HorizontalAlignment="Center" FontWeight="Bold" Grid.ColumnSpan="2"/>
+
+        <DataGrid Name="ClampsDataGrid" Grid.Column="0" Grid.Row="3" Margin="5,5,0,5" Grid.ColumnSpan="2"
+                  ItemsSource="{Binding Path=GripperElements}" AutoGenerateColumns="False" SelectedItem="{Binding SelectedGripperElement}"
+                  CanUserAddRows="True" CanUserDeleteRows="True"
+                  SelectionMode="Single" SelectionUnit="FullRow">
+            <DataGrid.Resources>
+                <Style TargetType="DataGridCell">
+                    <Style.Triggers>
+                        <Trigger Property="IsReadOnly" Value="True">
+                            <Setter Property="IsTabStop" Value="False"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridComboBoxColumn Header="Group Nr"
+                                        MinWidth="20"
+                                        SelectedValueBinding="{Binding SelectedGroup, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                                        IsReadOnly="False"
+                                        SelectedValuePath="Value"
+                                        DisplayMemberPath="Value">
+                    <DataGridComboBoxColumn.ElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.Groups}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.ElementStyle>
+                    <DataGridComboBoxColumn.EditingElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.Groups}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.EditingElementStyle>
+                </DataGridComboBoxColumn>
+                
+                <DataGridComboBoxColumn Header="Nr. of clamps"
+                                        MinWidth="30"
+                                        SelectedValueBinding="{Binding SelectedClampsNr, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                                        IsReadOnly="False"
+                                        SelectedValuePath="Value"
+                                        DisplayMemberPath="Value">
+                    <DataGridComboBoxColumn.ElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.Clamps}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.ElementStyle>
+                    <DataGridComboBoxColumn.EditingElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.Clamps}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.EditingElementStyle>
+                </DataGridComboBoxColumn>
+
+                <DataGridComboBoxColumn Header="Start adr."
+                                        MinWidth="30"
+                                        SelectedValueBinding="{Binding StartAddress, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                                        IsReadOnly="False"
+                                        SelectedValuePath="Value"
+                                        DisplayMemberPath="Value">
+                    <DataGridComboBoxColumn.ElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.StartAddresses}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.ElementStyle>
+                    <DataGridComboBoxColumn.EditingElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.StartAddresses}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.EditingElementStyle>
+                </DataGridComboBoxColumn>
+
+                <DataGridComboBoxColumn Header="Out for close"
+                                        MinWidth="30"
+                                        SelectedValueBinding="{Binding OutForClose, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                                        IsReadOnly="False"
+                                        SelectedValuePath="Value"
+                                        DisplayMemberPath="Value">
+                    <DataGridComboBoxColumn.ElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.OutsForClose}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.ElementStyle>
+                    <DataGridComboBoxColumn.EditingElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.OutsForClose}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.EditingElementStyle>
+                </DataGridComboBoxColumn>
+                
+                <!--<DataGridTextColumn Header="Start adr." IsReadOnly="False" Binding="{Binding Path=StartAddress}"/>-->
+
+                <!--<DataGridTextColumn Header="Out for close" IsReadOnly="False" Binding="{Binding Path=OutForClose}"/>-->
+
+                <DataGridComboBoxColumn Header="Type"
+                                        MinWidth="20"
+                                        SelectedValueBinding="{Binding SelectedClampType, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                                        IsReadOnly="False"
+                                        SelectedValuePath="Text"
+                                        DisplayMemberPath="Text"
+                                        >
+                    <DataGridComboBoxColumn.ElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.Types}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.ElementStyle>
+                    <DataGridComboBoxColumn.EditingElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.Types}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.EditingElementStyle>
+                </DataGridComboBoxColumn>
+
+                <DataGridTextColumn Header="Name" IsReadOnly="False" Binding="{Binding Path=Name}">
+                </DataGridTextColumn>
+            </DataGrid.Columns>
+           
+        </DataGrid>
+
+        <DataGrid Name="SensorsDataGrid" Grid.Column="2" Grid.Row="3" Margin="5,5,0,5" Grid.ColumnSpan="2" MinHeight="50"
+                  ItemsSource="{Binding Path=GripperElementSensors}" AutoGenerateColumns="False" SelectedItem="{Binding SelectedGripperElement}"
+                  CanUserAddRows="True" CanUserDeleteRows="True"
+                  SelectionMode="Single" SelectionUnit="FullRow" SelectionChanged="SensorsDataGrid_SelectionChanged">
+            <DataGrid.Resources>
+                <Style TargetType="DataGridCell">
+                    <Style.Triggers>
+                        <Trigger Property="IsReadOnly" Value="True">
+                            <Setter Property="IsTabStop" Value="False"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridComboBoxColumn Header="Group Nr"
+                                        MinWidth="20"
+                                        SelectedValueBinding="{Binding SelectedGroupSensors, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                                        IsReadOnly="False"
+                                        SelectedValuePath="Value"
+                                        DisplayMemberPath="Value">
+                    <DataGridComboBoxColumn.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=Controller}" Value="1">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                    <Setter Property="Background" Value="Red"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=Controller}" Value="0">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                    <Setter Property="Background" Value="White"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridComboBoxColumn.CellStyle>
+                    <DataGridComboBoxColumn.ElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.GroupsSensors}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.ElementStyle>
+                    <DataGridComboBoxColumn.EditingElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.GroupsSensors}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.EditingElementStyle>
+                </DataGridComboBoxColumn>
+
+                <DataGridComboBoxColumn Header="PP1"
+                                        MinWidth="20"
+                                        SelectedValueBinding="{Binding SelectedSensor1, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                                        IsReadOnly="False"
+                                        SelectedValuePath="Value"
+                                        DisplayMemberPath="Value">
+
+                    <DataGridComboBoxColumn.ElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.Sensors}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.ElementStyle>
+                    <DataGridComboBoxColumn.EditingElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.Sensors}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.EditingElementStyle>
+                </DataGridComboBoxColumn>
+
+                <DataGridComboBoxColumn Header="PP2"
+                                        MinWidth="20"
+                                        SelectedValueBinding="{Binding SelectedSensor2, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                                        IsReadOnly="False"
+                                        SelectedValuePath="Value"
+                                        DisplayMemberPath="Value">
+                    <DataGridComboBoxColumn.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=Controller}" Value="1">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                    <Setter Property="Background" Value="Red"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=Controller}" Value="0">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                    <Setter Property="Background" Value="White"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridComboBoxColumn.CellStyle>
+                    <DataGridComboBoxColumn.ElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.Sensors}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.ElementStyle>
+                    <DataGridComboBoxColumn.EditingElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.Sensors}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.EditingElementStyle>
+                </DataGridComboBoxColumn>
+
+                <DataGridComboBoxColumn Header="PP3"
+                                        MinWidth="20"
+                                        SelectedValueBinding="{Binding SelectedSensor3, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                                        IsReadOnly="False"
+                                        SelectedValuePath="Value"
+                                        DisplayMemberPath="Value">
+                    <DataGridComboBoxColumn.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=Controller}" Value="1">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                    <Setter Property="Background" Value="Red"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=Controller}" Value="0">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                    <Setter Property="Background" Value="White"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridComboBoxColumn.CellStyle>
+                    <DataGridComboBoxColumn.ElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.Sensors}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.ElementStyle>
+                    <DataGridComboBoxColumn.EditingElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.Sensors}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.EditingElementStyle>
+                </DataGridComboBoxColumn>
+
+                <DataGridComboBoxColumn Header="PP4"
+                                        MinWidth="20"
+                                        SelectedValueBinding="{Binding SelectedSensor4, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                                        IsReadOnly="False"
+                                        SelectedValuePath="Value"
+                                        DisplayMemberPath="Value">
+                    <DataGridComboBoxColumn.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=Controller}" Value="1">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                    <Setter Property="Background" Value="Red"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=Controller}" Value="0">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                    <Setter Property="Background" Value="White"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridComboBoxColumn.CellStyle>
+                    <DataGridComboBoxColumn.ElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.Sensors}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.ElementStyle>
+                    <DataGridComboBoxColumn.EditingElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.Sensors}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.EditingElementStyle>
+                </DataGridComboBoxColumn>
+
+                <DataGridComboBoxColumn Header="PP5"
+                                        MinWidth="20"
+                                        SelectedValueBinding="{Binding SelectedSensor5, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                                        IsReadOnly="False"
+                                        SelectedValuePath="Value"
+                                        DisplayMemberPath="Value">
+                    <DataGridComboBoxColumn.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=Controller}" Value="1">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                    <Setter Property="Background" Value="Red"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=Controller}" Value="0">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                    <Setter Property="Background" Value="White"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridComboBoxColumn.CellStyle>
+                    <DataGridComboBoxColumn.ElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.Sensors}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.ElementStyle>
+                    <DataGridComboBoxColumn.EditingElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.Sensors}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.EditingElementStyle>
+                </DataGridComboBoxColumn>
+
+                <DataGridComboBoxColumn Header="PP6"
+                                        MinWidth="20"
+                                        SelectedValueBinding="{Binding SelectedSensor6, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                                        IsReadOnly="False"
+                                        SelectedValuePath="Value"
+                                        DisplayMemberPath="Value">
+                    <DataGridComboBoxColumn.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=Controller}" Value="1">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                    <Setter Property="Background" Value="Red"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=Controller}" Value="0">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                    <Setter Property="Background" Value="White"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridComboBoxColumn.CellStyle>
+                    <DataGridComboBoxColumn.ElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.Sensors}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.ElementStyle>
+                    <DataGridComboBoxColumn.EditingElementStyle>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="ItemsSource" Value="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.Sensors}"/>
+                        </Style>
+                    </DataGridComboBoxColumn.EditingElementStyle>
+                </DataGridComboBoxColumn>
+
+                <DataGridTextColumn Header="Name" IsReadOnly="False" Binding="{Binding Path=Name}">
+                    <DataGridTextColumn.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Path=Controller}" Value="1">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                    <Setter Property="Background" Value="Red"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=Controller}" Value="2">
+                                    <Setter Property="IsEnabled" Value="False"/>
+                                    <Setter Property="Background" Value="Red"/>
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding Path=Controller}" Value="0">
+                                    <Setter Property="IsEnabled" Value="True"/>
+                                    <Setter Property="Background" Value="White"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridTextColumn.CellStyle>
+                </DataGridTextColumn>
+                
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Button Content="OK" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4" HorizontalAlignment="Right" VerticalAlignment="Center" Width="50" Margin="10,10,10,10" Command="{Binding CloseOK}"/>
+        <Button Content="Cancel" Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="4" HorizontalAlignment="Left" VerticalAlignment="Center" Width="50" Margin="10,10,10,10" Command="{Binding CloseCancel}"/>
+    </Grid>
+</Window>
