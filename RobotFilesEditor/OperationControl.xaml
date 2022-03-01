@@ -13,7 +13,7 @@
             <Label Content="{Binding Title}"   DockPanel.Dock="Left" Margin="5"/>
             <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" >
                 <Button Content="Execute" IsEnabled="{Binding ExecuteOperationButtonIsEnabled}" Command="{Binding ExecuteOperationCommand}" Margin="5" HorizontalContentAlignment="Right"/>
-                <Button Content="Preview" IsEnabled="{Binding PreviewOperationButtonIsEnabled}" Command="{Binding PreviewOperationCommand}" Margin="5" HorizontalContentAlignment="Right"/>
+                <!--<Button Content="Preview" IsEnabled="{Binding PreviewOperationButtonIsEnabled}" Command="{Binding PreviewOperationCommand}" Margin="5" HorizontalContentAlignment="Right"/>-->
             </StackPanel>
         </DockPanel>
         <Expander IsExpanded="True" Padding="15,0,0,0" Visibility="{Binding ViewWindowVisibility}" >

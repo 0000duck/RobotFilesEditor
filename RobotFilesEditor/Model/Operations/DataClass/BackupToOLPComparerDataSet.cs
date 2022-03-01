@@ -257,8 +257,8 @@ namespace RobotFilesEditor.Model.Operations.DataClass
                         data.Add(new CompareData(file1Lines[i], file2Lines[i], 1));
                 }
 
-                if (file1Lines.Count == file2Lines.Count)
-                    addStepsPossible = false;
+                //if (file1Lines.Count == file2Lines.Count)
+                //    addStepsPossible = false;
             }
             return result;
         }

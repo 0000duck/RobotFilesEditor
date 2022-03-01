@@ -23,7 +23,7 @@ namespace RobKalDat.ViewModel
             //Measurements = GlobalData.Measurements;
             Messenger.Default.Register<Coords>(this, "selectedCSV", message => SelectedCSV = message);
             Messenger.Default.Register<String>(this, "selectedCSVName", message => SelectedCSVName = message);
-            SelectedMeasurement = 0;
+            SelectedMeasurement = -1;
         }
 
         #endregion
@@ -90,6 +90,17 @@ namespace RobKalDat.ViewModel
                 //RaisePropertyChanged(() => Difference);
             }
         }
+
+        private bool assignEnabled;
+        public bool AssignEnabled
+        {
+            get { return assignEnabled; }
+            set
+            {
+                Set ( ref assignEnabled, value);
+            }
+        }
+
         #endregion
 
         #region commands
@@ -143,8 +154,14 @@ namespace RobKalDat.ViewModel
 
         private void OnSelectedMeasurementChanged()
         {
-            if (Measurements == null)
+            if (Measurements == null || SelectedMeasurement >= Measurements.Count)
+            {
+                AssignEnabled = false;
+                SelectedMeasurementValues = new Coords(0,0,0,0,0,0);
+                Difference = new Coords(0,0,0,0,0,0);
                 return;
+            }
+            AssignEnabled = true;
             var selectedMeas = Measurements[SelectedMeasurement];
             SelectedMeasurementValues = new Coords(selectedMeas.XSoll, selectedMeas.YSoll, selectedMeas.ZSoll, selectedMeas.RXSoll, selectedMeas.RYSoll, selectedMeas.RZSoll);
             Difference = new Coords(Math.Abs(SelectedMeasurementValues.X - SelectedCSV.X), Math.Abs(SelectedMeasurementValues.Y - SelectedCSV.Y), Math.Abs(SelectedMeasurementValues.Z - SelectedCSV.Z), Math.Abs(SelectedMeasurementValues.RX - SelectedCSV.RX), Math.Abs(SelectedMeasurementValues.RY - SelectedCSV.RY), Math.Abs(SelectedMeasurementValues.RZ - SelectedCSV.RZ));

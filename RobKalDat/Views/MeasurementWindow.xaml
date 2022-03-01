@@ -152,7 +152,7 @@
             <TextBlock Text="RZ:" Margin="5,5,5,5" VerticalAlignment="Center"/>
             <TextBox Text="{Binding Difference.RZ}" IsEnabled="False" Margin="5,5,5,5" MaxHeight="30" VerticalAlignment="Center" Background="{Binding Path=Difference.RZ, Converter={StaticResource valConverter}}"/>
         </StackPanel>
-        <Button Grid.Column="0" Grid.Row="4" HorizontalAlignment="Right" Margin="5,5,5,5" Content="Assing" Command="{Binding OK}" Width="50" Height="30"/>
+        <Button Grid.Column="0" Grid.Row="4" HorizontalAlignment="Right" Margin="5,5,5,5" Content="Assing" Command="{Binding OK}" IsEnabled="{Binding AssignEnabled}" Width="50" Height="30"/>
         <Button Grid.Column="1" Grid.Row="4" HorizontalAlignment="Left" Margin="5,5,5,5" Content="Cancel" Command="{Binding Cancel}" Width="50" Height="30"/>
     </Grid>
 </Window>

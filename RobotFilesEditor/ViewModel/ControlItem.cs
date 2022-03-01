@@ -24,7 +24,7 @@ namespace RobotFilesEditor
         public ObservableCollection<ResultInfo> OperationResult { get; set; }
         //public ICommand ClickedCommand { get; set; }
         public ICommand ExecuteOperationCommand { get; set; }
-        public ICommand PreviewOperationCommand { get; set; }
+        //public ICommand PreviewOperationCommand { get; set; }
         public List<IOperation> Operations { get; set; }
         
         private bool _checked;
@@ -89,7 +89,7 @@ namespace RobotFilesEditor
             OperationResult = new ObservableCollection<ResultInfo>();
             //ClickedCommand = new RelayCommand(ClickedCommandExecute);
             ExecuteOperationCommand = new RelayCommand(ExecuteOperationCommandExecute);
-            PreviewOperationCommand = new RelayCommand(PreviewOperationCommandExecute);
+            //PreviewOperationCommand = new RelayCommand(PreviewOperationCommandExecute);
             ExecuteOperationButtonIsEnabled = true;
             PreviewOperationButtonIsEnabled = true;
         }
