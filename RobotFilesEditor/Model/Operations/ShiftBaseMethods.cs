@@ -76,7 +76,7 @@ namespace RobotFilesEditor.Model.Operations
 
     public static class ShiftBaseMethods
     {
-        internal static void Execute()
+        internal static void Execute(string controller)
         {
             MessageBox.Show("Select backup file.", "Select", MessageBoxButton.OK, MessageBoxImage.Information);
             string backupfile = CommonLibrary.CommonMethods.SelectDirOrFile(false, "Zip file", "*.zip");

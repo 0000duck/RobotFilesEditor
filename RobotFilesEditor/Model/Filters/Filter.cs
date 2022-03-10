@@ -156,6 +156,12 @@ namespace RobotFilesEditor
         {
             if (string.IsNullOrEmpty(RegexNotContain) == false)
             {
+                foreach (var file in source)
+                {
+                    if (Regex.IsMatch(Path.GetFileName(file), RegexNotContain, RegexOptions.IgnoreCase))
+                    {
+                    }
+                }
                 source = source.Where(x => Regex.IsMatch(Path.GetFileName(x), RegexNotContain,RegexOptions.IgnoreCase) == false).ToList();
             }
             return source;

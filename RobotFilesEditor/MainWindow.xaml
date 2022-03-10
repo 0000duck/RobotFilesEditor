@@ -110,7 +110,7 @@
                                             <Button Content="Compare spot points between backups" Command="{Binding CompareSpots}" Margin="3" Visibility="Visible"/>
                                             <Button Content="Collisions for PS" Command="{Binding CollisionsForPS}" Margin="3" Visibility="Collapsed"/>
                                             <Button Content="Modify E1" Command="{Binding ModifyE1}" Margin="3" Visibility="Collapsed"/>
-                                            <Button Content="Shift base" Command="{Binding ShiftBase}" Margin="3" Visibility="Collapsed"/>
+                                            <Button Content="Shift base" Command="{Binding ShiftBaseKuka}" Margin="3" Visibility="{Binding DebugVisibility}"/>
                                             <CheckBox Content="Check command order?" IsChecked="{Binding CheckOrder}" Margin="3"/>
                                         </StackPanel>
                                     </GroupItem>
@@ -137,6 +137,7 @@
                                         <!--<Button Content="Compare OLP and SOV backup" Command="{Binding CompareSOVAndOLP}" Visibility="{Binding DebugVisibility}" Margin="3"/>-->
                                         <Button Content="Compare OLP and SOV backup" Command="{Binding CompareSOVAndOLP}" Visibility="Visible" Margin="3"/>
                                         <Button Content="Validate comments" Command="{Binding ValidateComments}" Visibility="Visible" Margin="3"/>
+                                        <Button Content="Shift base" Command="{Binding ShiftBaseFanuc}" Margin="3" Visibility="{Binding DebugVisibility}"/>
                                     </StackPanel>
                                 </GroupItem>
                             </Expander>

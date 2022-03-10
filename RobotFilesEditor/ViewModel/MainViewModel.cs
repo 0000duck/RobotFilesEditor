@@ -513,7 +513,8 @@ namespace RobotFilesEditor.ViewModel
         public ICommand TempExec { get; set; }
         public ICommand DividePathByColls { get; set; }
         public ICommand ScanContent { get; set; }
-        public ICommand ShiftBase { get; set; }        
+        public ICommand ShiftBaseKuka { get; set; }
+        public ICommand ShiftBaseFanuc { get; set; }
         public ICommand GenerateOrgsFanuc { get; set; }
         public ICommand CompareSOVAndOLP { get; set; }
         public ICommand ValidateComments { get; set; }
@@ -568,7 +569,8 @@ namespace RobotFilesEditor.ViewModel
             TempExec = new RelayCommand(TempExecExecute);
             DividePathByColls = new RelayCommand(DividePathByCollsExecute);
             ScanContent = new RelayCommand(ScanContentExecute);
-            ShiftBase = new RelayCommand(ShiftBaseExecute);
+            ShiftBaseKuka = new RelayCommand(ShiftBaseExecuteKuka);
+            ShiftBaseFanuc = new RelayCommand(ShiftBaseExecuteFanuc);
             GenerateOrgsFanuc = new RelayCommand(GenerateOrgsFanucExecute);
             CompareSOVAndOLP = new RelayCommand(CompareSOVAndOLPExecute);
             ValidateComments = new RelayCommand(ValidateCommentsFanucExecute);
@@ -584,9 +586,15 @@ namespace RobotFilesEditor.ViewModel
             var comparer = new Model.Operations.FANUC.FanucCompareSOVToOLPMethods();
         }
 
-        private void ShiftBaseExecute()
+        private void ShiftBaseExecuteKuka()
         {
-            ShiftBaseMethods.Execute();
+            ShiftBaseMethods.Execute("Kuka");
+        }
+
+
+        private void ShiftBaseExecuteFanuc()
+        {
+            ShiftBaseMethods.Execute("Fanuc");
         }
 
         private void ScanContentExecute()
