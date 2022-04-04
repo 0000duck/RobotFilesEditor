@@ -86,6 +86,64 @@ namespace RobotFilesEditor.Properties {
         }
         
         /// <summary>
+        /// Wyszukuje zlokalizowany ciąg podobny do ciągu &amp;ACCESS RV1
+        ///&amp;REL 12
+        ///&amp;PARAM DISKPATH = KRC:\R1\BMW_Program
+        ///DEFDAT  {PATHNAME}
+        ///
+        ///;FOLD EXTERNAL DECLARATIONS;%{PE}%MKUKATPBASIS,%CEXT,%VCOMMON,%P
+        ///;FOLD BASISTECH EXT;%{PE}%MKUKATPBASIS,%CEXT,%VEXT,%P
+        ///EXT  BAS (BAS_COMMAND  :IN,REAL  :IN )
+        ///DECL INT SUCCESS
+        ///;ENDFOLD (BASISTECH EXT)
+        ///;FOLD USER EXT;%{E}%MKUKATPUSER,%CEXT,%VEXT,%P
+        ///;Make your modifications here
+        ///
+        ///;ENDFOLD (USER EXT)
+        ///;ENDFOLD (EXTERNAL DECLARATIONS)
+        ///
+        ///
+        ///;================================================
+        ///; Positions (if any)
+        ///;========== [obcięto pozostałą część ciągu]&quot;;.
+        /// </summary>
+        internal static string KUKA_DAT_TEMPLATE {
+            get {
+                return ResourceManager.GetString("KUKA_DAT_TEMPLATE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        /// Wyszukuje zlokalizowany ciąg podobny do ciągu &amp;ACCESS RV1
+        ///&amp;REL 12
+        ///&amp;PARAM DISKPATH = KRC:\R1\BMW_Program
+        ///DEF  {PATHNAME}	( )
+        ///;###### do not delete this line ######
+        ///;FOLD INI 
+        ///  ;FOLD USER INI
+        ///    ;Make your modifications here
+        ///			IF PLC_CHK_INIT() THEN
+        ///				GLOBAL INTERRUPT DECL 3 WHEN $STOPMESS==TRUE DO IR_STOPM ( )
+        ///				INTERRUPT ON 3 
+        ///				BAS (#INITMOV,0 )
+        ///				;FOLD APPLICATION_INI
+        ///				APPLICATION_INI ( )
+        ///				;ENDFOLD (APPLICATION_INI)
+        ///			ENDIF	
+        ///  ;ENDFOLD (USER INI)
+        ///;ENDFOLD (INI)
+        ///
+        ///{PATH_SRC_CONTENT}
+        ///
+        ///END.
+        /// </summary>
+        internal static string KUKA_SRC_TEMPLATE {
+            get {
+                return ResourceManager.GetString("KUKA_SRC_TEMPLATE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         /// Wyszukuje zlokalizowany ciąg podobny do ciągu /PROG  PROG251
         ////ATTR
         ///OWNER		= MNEDITOR;
@@ -221,14 +279,14 @@ namespace RobotFilesEditor.Properties {
         ///;***********************************************************
         ///;* Programm           : CHK_AXIS_POS
         ///;* Description        : CHK_AXIS_POS
-        ///;* Robot              : {ROBOT}
+        ///;* Robot              : KUKA KRC4
         ///;* Company            : AIUT 
         ///;* Programmer         : {NAME}
         ///;* Date               : {DATE}
         ///;* Change history     : V1.0 i.O.
         ///;***********************************************************
         ///
-        ///IF ( ABS($axis_act.A1 - INPOS.A1)&lt;0.1) THEN [obcięto pozostałą część ciągu]&quot;;.
+        ///IF ( ABS($axis_act.A1 - INPOS.A1)&lt;0.1) TH [obcięto pozostałą część ciągu]&quot;;.
         /// </summary>
         internal static string utils {
             get {

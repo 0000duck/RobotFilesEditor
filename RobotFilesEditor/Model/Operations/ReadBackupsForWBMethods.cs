@@ -37,7 +37,6 @@ namespace RobotFilesEditor.Model.Operations
 
         public static void Execute(string robotType)
         {
-            XElement element = XElement.Load(@"C:\Users\ttrojniar\Desktop\82HRL2\main.xml");
             if (robotType == "KUKA")
                 TypeRobotStartAddress();            
             ReadFile(robotType);

@@ -20,6 +20,7 @@ namespace CommonLibrary
         public Dictionary<string, Variable> STRUCTs { get; set; }
         public Dictionary<string, Variable> SIGNALs { get; set; }
         public Dictionary<string, Variable> Others { get; set; }
+        public Dictionary<string, string> GlobalDat { get; set; }
 
         public FoundVariables()
         {
@@ -35,6 +36,7 @@ namespace CommonLibrary
             STRUCTs = new Dictionary<string, Variable>();
             SIGNALs = new Dictionary<string, Variable>();
             Others = new Dictionary<string, Variable>();
+            GlobalDat = new Dictionary<string, string>();
         }
     }
 

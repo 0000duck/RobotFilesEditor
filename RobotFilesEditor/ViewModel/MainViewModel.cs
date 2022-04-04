@@ -21,7 +21,7 @@ namespace RobotFilesEditor.ViewModel
         private enum OrgController { KUKA, FANUC};
         #endregion
 
-            #region Controls         
+        #region Controls         
         public ObservableCollection<ControlItem> ControlerChooser
         {
             get;
@@ -518,6 +518,7 @@ namespace RobotFilesEditor.ViewModel
         public ICommand GenerateOrgsFanuc { get; set; }
         public ICommand CompareSOVAndOLP { get; set; }
         public ICommand ValidateComments { get; set; }
+        public ICommand ReadMessprotokolKUKA { get; set; }
 
         private void SetCommands()
         {
@@ -574,6 +575,12 @@ namespace RobotFilesEditor.ViewModel
             GenerateOrgsFanuc = new RelayCommand(GenerateOrgsFanucExecute);
             CompareSOVAndOLP = new RelayCommand(CompareSOVAndOLPExecute);
             ValidateComments = new RelayCommand(ValidateCommentsFanucExecute);
+            ReadMessprotokolKUKA = new RelayCommand(ReadMessprotokolExecuteKUKA);
+        }
+
+        private void ReadMessprotokolExecuteKUKA()
+        {
+            var readMessProtokoll = new Model.Operations.ReadMessProtokoll.ReadMessProtokollClass(GlobalData.RobotController.KUKA);
         }
 
         private void ValidateCommentsFanucExecute()

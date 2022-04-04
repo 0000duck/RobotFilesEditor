@@ -127,6 +127,7 @@ namespace CommonLibrary
 
         public static FoundVariables FindVarsInBackup(string file, bool isGlobal)
         {
+            Regex globalFileRegex = new Regex(@"(A|B|C)\d+_.*global.dat", RegexOptions.IgnoreCase);
             FoundVariables foundVars = new FoundVariables();
             string doubleDecls = "";
             using (ZipArchive archive = ZipFile.Open(file, ZipArchiveMode.Read))
@@ -137,6 +138,7 @@ namespace CommonLibrary
                     StreamReader reader = new StreamReader(currentFile.Open());
                     while (!reader.EndOfStream)
                     {
+
                         string line = reader.ReadLine();
                         if (line.Trim().Replace(" ", "").Length > 1 && line.Trim().Replace(" ", "").Substring(0, 1) != ";")
                         {
@@ -231,6 +233,12 @@ namespace CommonLibrary
                         }
                     }
                     reader.Close();
+                    if (globalFileRegex.IsMatch(Path.GetFileName(currentFile.FullName)))
+                    {
+                        reader = new StreamReader(currentFile.Open());
+                        foundVars.GlobalDat.Add(Path.GetFileName(currentFile.FullName), reader.ReadToEnd());
+                        reader.Close();
+                    }
                 }
             }
             return foundVars;

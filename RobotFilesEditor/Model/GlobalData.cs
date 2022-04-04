@@ -60,8 +60,10 @@ namespace RobotFilesEditor
         internal static FileValidationData.Userbits SignalNames { get; set; }
         public static IDictionary<int, string> ToolsAndNamesFromStandar { get; internal set; }
         public static string RobotNameFanuc { get; set; }
+        public enum RobotController { KUKA, FANUC, ABB };
+        public enum RenameWindowType { Point, Path };
 
-        
+
 
         public static void SetViewProgram()
         {

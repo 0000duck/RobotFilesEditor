@@ -12,7 +12,7 @@
             <TextBox Text="{Binding BaseData}" MinWidth="150" Margin="5,5,5,5"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Content="OK" Width="50" Command="{Binding OK}" Margin="5,5,5,5"/>
-                <Button Content="Cnacel" Width="50" Command="{Binding Cancel}" Margin="5,5,5,5"/>
+                <Button Content="Cancel" Width="50" Command="{Binding Cancel}" Margin="5,5,5,5"/>
             </StackPanel>
         </StackPanel>
     </Grid>

@@ -13,6 +13,7 @@ using RobotFilesEditor.Dialogs;
 using RobotFilesEditor.Dialogs.BaseShifter;
 using RobotFilesEditor.Model.DataInformations;
 using RobotFilesEditor.Model.Operations.DataClass;
+using MathNet.Numerics.LinearAlgebra;
 
 namespace RobotFilesEditor.Model.Operations
 {
@@ -89,6 +90,7 @@ namespace RobotFilesEditor.Model.Operations
             IDictionary<string, SrcDatPair> srcDatPairs = CreateSrcDatPairs(resultSrcFiles, dataToProcess.DatFiles);
             SelectPathsToShiftBaseViewModel vm = new SelectPathsToShiftBaseViewModel(srcDatPairs);
             SelectPathsToShiftBase sW = new SelectPathsToShiftBase(vm);
+            List<PointBaseAndCoords> globalPoints = new List<PointBaseAndCoords>();
             var dialog = sW.ShowDialog();
             if (dialog == false)
                 return;
@@ -126,25 +128,57 @@ namespace RobotFilesEditor.Model.Operations
                         break;
                     if (pointNameRegex.IsMatch(line))
                     {
-                        PointBaseAndCoords pointToShift = pointsFound.First(x => x.Name.Equals(pointNameRegex.Match(line).ToString()));
-                        resultDatFile += CalculateBaseShift(pointToShift, basesInConfigDat[pointToShift.BaseNum], baseToBeShifted[pointToShift.BaseNum]) + "\r\n";
+                        PointBaseAndCoords pointToShift;
+                        string pointName = pointNameRegex.Match(line).ToString();
+                        pointToShift = pointsFound.FirstOrDefault(x => x.Name.Equals(pointName));
+                        if (pointToShift != null)
+                            resultDatFile += CalculateBaseShift(pointToShift, basesInConfigDat[pointToShift.BaseNum], baseToBeShifted[pointToShift.BaseNum]) + "\r\n";
+                        pointsFound.Remove(pointToShift);
                     }
                     else
                         resultDatFile += line + "\r\n";
                 }
+                pointsFound.Where(x => x.InitialPoint != null).ToList().ForEach(y => globalPoints.Add(y));
                 reader.Close();
                 SaveResults(Path.GetDirectoryName(backupfile), filePair, resultDatFile);
+                globals.GlobalDat = UpdateGlobalFile(globalPoints, globals.GlobalDat, basesInConfigDat, baseToBeShifted);
             }
+            if (globals.GlobalDat.Count > 0)
+            {
+
+            }
+
+            
+        }
+
+        private static Dictionary<string,string> UpdateGlobalFile(List<PointBaseAndCoords> globalPoints, Dictionary<string, string> globalDat, IDictionary<int, BaseDataKUKA> basesInConfigDat, IDictionary<int, BaseDataKUKA> baseToBeShifted)
+        {
+            Dictionary<string, string> result = globalDat;
+            foreach (var globalPoint in globalPoints)
+            {
+                var globalFileContaining = result.FirstOrDefault(x => x.Value.ToLower().Contains(globalPoint.Name.ToLower()));
+                string e6PosLine = new Regex(@"^.*GLOBAL\s+E6POS\s+" +globalPoint.Name+ @".*$", RegexOptions.Multiline | RegexOptions.IgnoreCase).Match(globalFileContaining.Value).ToString();
+                string modifiedGlobal = globalFileContaining.Value.Replace(e6PosLine, CalculateBaseShift(globalPoint, basesInConfigDat[globalPoint.BaseNum], baseToBeShifted[globalPoint.BaseNum]));
+                result[globalFileContaining.Key] = modifiedGlobal;
+            }
+
+            return result;
         }
 
         private static string CalculateBaseShift(PointBaseAndCoords pointToShift, BaseDataKUKA initialBase, BaseDataKUKA finalBase)
         {
             string result = pointToShift.E6Pos.Trim();
-            // TODO
-            // KALKULACJE
-            var pointCalc = CommonLibrary.CommonMethods.CalculateBases(ToCommonPoint(initialBase), ToCommonPoint(finalBase), ToCommonPoint(pointToShift.InitialPoint));
 
-            PointKUKA point = ToPointKuka(pointCalc);
+            Matrix<double> htmInintialBase = BuildHTMMatrix(initialBase);
+            Matrix<double> htmPointToShift = BuildHTMMatrix(ConvertToBaseDataKuka(pointToShift.E6Pos));
+            Matrix<double> htmFinalBase = BuildHTMMatrix(finalBase);
+
+            Matrix<double> base0HTM = htmInintialBase.Multiply(htmPointToShift);
+            Matrix<double> htmFinalBaseInv = htmFinalBase.Inverse();
+            Matrix<double> resultPoint = htmFinalBaseInv.Multiply(base0HTM);
+
+            PointKUKA pointCalc = GetCalculatedPoint(resultPoint);
+
             Regex regexX = new Regex(@"(?<=\{\s*X\s+)(-\d+\.\d+|-\d+|\d+\.\d+|\d+)", RegexOptions.IgnoreCase);
             Regex regexY = new Regex(@"(?<=,\s*Y\s+)(-\d+\.\d+|-\d+|\d+\.\d+|\d+)", RegexOptions.IgnoreCase);
             Regex regexZ = new Regex(@"(?<=,\s*Z\s+)(-\d+\.\d+|-\d+|\d+\.\d+|\d+)", RegexOptions.IgnoreCase);
@@ -152,14 +186,108 @@ namespace RobotFilesEditor.Model.Operations
             Regex regexB = new Regex(@"(?<=,\s*B\s+)(-\d+\.\d+|-\d+|\d+\.\d+|\d+)", RegexOptions.IgnoreCase);
             Regex regexC = new Regex(@"(?<=,\s*C\s+)(-\d+\.\d+|-\d+|\d+\.\d+|\d+)", RegexOptions.IgnoreCase);
 
-            result = regexX.Replace(result, point.Xpos.ToString(CultureInfo.InvariantCulture));
-            result = regexY.Replace(result, point.Ypos.ToString(CultureInfo.InvariantCulture));
-            result = regexZ.Replace(result, point.Zpos.ToString(CultureInfo.InvariantCulture));
-            result = regexA.Replace(result, point.A.ToString(CultureInfo.InvariantCulture));
-            result = regexB.Replace(result, point.B.ToString(CultureInfo.InvariantCulture));
-            result = regexC.Replace(result, point.C.ToString(CultureInfo.InvariantCulture));
+            result = regexX.Replace(result, pointCalc.Xpos.ToString("0.##", CultureInfo.InvariantCulture));
+            result = regexY.Replace(result, pointCalc.Ypos.ToString("0.##", CultureInfo.InvariantCulture));
+            result = regexZ.Replace(result, pointCalc.Zpos.ToString("0.##", CultureInfo.InvariantCulture));
+            result = regexA.Replace(result, pointCalc.A.ToString("0.###", CultureInfo.InvariantCulture));
+            result = regexB.Replace(result, pointCalc.B.ToString("0.###", CultureInfo.InvariantCulture));
+            result = regexC.Replace(result, pointCalc.C.ToString("0.###", CultureInfo.InvariantCulture));
 
             return result;
+        }
+
+        private static BaseDataKUKA ConvertToBaseDataKuka(string e6Pos)
+        {
+            Regex regex = new Regex(@"((?<=X )-[0-9]*\.[0-9]*)|((?<=X )-[0-9]*)|((?<=X )[0-9]*\.[0-9]*|((?<=X )[0-9]*)|(?<=Y )-[0-9]*\.[0-9]*)|((?<=Y )-[0-9]*)|((?<=Y )[0-9]*\.[0-9]*|((?<=Y )[0-9]*)|(?<=Z )-[0-9]*\.[0-9]*)|((?<=Z )-[0-9]*)|((?<=Z )[0-9]*\.[0-9]*|((?<=Z )[0-9]*)|(?<=A )-[0-9]*\.[0-9]*)|((?<=A )-[0-9]*)|((?<=A )[0-9]*\.[0-9]*|((?<=A )[0-9]*)|(?<=B )-[0-9]*\.[0-9]*)|((?<=B )-[0-9]*)|((?<=B )[0-9]*\.[0-9]*|((?<=B )[0-9]*)|(?<=C )-[0-9]*\.[0-9]*)|((?<=C )-[0-9]*)|((?<=C )[0-9]*\.[0-9]*|((?<=C )[0-9]*))", RegexOptions.IgnoreCase);
+            MatchCollection matches = regex.Matches(e6Pos);
+            BaseDataKUKA currentData = new BaseDataKUKA(float.Parse(matches[0].ToString(), CultureInfo.InvariantCulture), float.Parse(matches[1].ToString(), CultureInfo.InvariantCulture), float.Parse(matches[2].ToString(), CultureInfo.InvariantCulture), float.Parse(matches[3].ToString(), CultureInfo.InvariantCulture), float.Parse(matches[4].ToString(), CultureInfo.InvariantCulture), float.Parse(matches[5].ToString(), CultureInfo.InvariantCulture));
+            return currentData;
+        }
+
+        private static PointKUKA GetCalculatedPoint(Matrix<double> resultPoint)
+        {
+            PointKUKA result = new PointKUKA();
+            result.Xpos = resultPoint[0, 3];
+            result.Ypos = resultPoint[1, 3];
+            result.Zpos = resultPoint[2, 3];
+            result.C = CommonLibrary.CommonMethods.ConvertToDegrees(-0.01 < resultPoint[2, 1] && resultPoint[2, 1] < 0.01 && -0.01 < resultPoint[2, 2] && resultPoint[2, 2] < 0.01 ? 0 : Math.Atan2(resultPoint[2, 1], resultPoint[2, 2]));
+            result.B = CommonLibrary.CommonMethods.ConvertToDegrees(Math.Asin(-resultPoint[2, 0]));
+            result.A = CommonLibrary.CommonMethods.ConvertToDegrees(-0.01 < resultPoint[1, 0] && resultPoint[1, 0] < 0.01 && -0.01 < resultPoint[0, 0] && resultPoint[0, 0] < 0.01 ? 0 : Math.Atan2(resultPoint[1, 0], resultPoint[0, 0]));
+
+            return result;
+        }
+
+        private static Matrix<double> BuildHTMMatrix(BaseDataKUKA frame)
+        {
+            Matrix<double> frameRotMatZ = BuildRotationMatrix("Z", frame.A);
+            Matrix<double> frameRotMatY = BuildRotationMatrix("Y", frame.B);
+            Matrix<double> frameRotMatX = BuildRotationMatrix("X", frame.C);
+            Matrix<double> frameRotMatZYX = frameRotMatZ.Multiply(frameRotMatY).Multiply(frameRotMatX);
+
+            Matrix<double> resultMatrix = Matrix<double>.Build.Dense(4, 4);
+            resultMatrix[0, 0] = frameRotMatZYX[0, 0];
+            resultMatrix[0, 1] = frameRotMatZYX[0, 1];
+            resultMatrix[0, 2] = frameRotMatZYX[0, 2];
+            resultMatrix[1, 0] = frameRotMatZYX[1, 0];
+            resultMatrix[1, 1] = frameRotMatZYX[1, 1];
+            resultMatrix[1, 2] = frameRotMatZYX[1, 2];
+            resultMatrix[2, 0] = frameRotMatZYX[2, 0];
+            resultMatrix[2, 1] = frameRotMatZYX[2, 1];
+            resultMatrix[2, 2] = frameRotMatZYX[2, 2];
+
+            resultMatrix[0, 3] = frame.Xpos;
+            resultMatrix[1, 3] = frame.Ypos;
+            resultMatrix[2, 3] = frame.Zpos;
+            resultMatrix[3, 0] = 0;
+            resultMatrix[3, 1] = 0;
+            resultMatrix[3, 2] = 0;
+            resultMatrix[3, 3] = 1;
+
+            return resultMatrix;
+
+        }
+
+        private static Matrix<double> BuildRotationMatrix(string axis, double rotationValueInDegress)
+        {
+            double rotationValueInRad = CommonLibrary.CommonMethods.ConvertToRadians(rotationValueInDegress);
+            Matrix<double> resultMatrix = Matrix<double>.Build.Dense(3, 3);
+            switch (axis)
+            {
+                case "X":
+                    resultMatrix[0, 0] = 1;
+                    resultMatrix[0, 1] = 0;
+                    resultMatrix[0, 2] = 0;
+                    resultMatrix[1, 0] = 0;
+                    resultMatrix[1, 1] = Math.Cos(rotationValueInRad);
+                    resultMatrix[1, 2] = -Math.Sin(rotationValueInRad);
+                    resultMatrix[2, 0] = 0;
+                    resultMatrix[2, 1] = Math.Sin(rotationValueInRad);
+                    resultMatrix[2, 2] = Math.Cos(rotationValueInRad);
+                    break;
+                case "Y":
+                    resultMatrix[0, 0] = Math.Cos(rotationValueInRad);
+                    resultMatrix[0, 1] = 0;
+                    resultMatrix[0, 2] = Math.Sin(rotationValueInRad);
+                    resultMatrix[1, 0] = 0;
+                    resultMatrix[1, 1] = 1;
+                    resultMatrix[1, 2] = 0;
+                    resultMatrix[2, 0] = -Math.Sin(rotationValueInRad);
+                    resultMatrix[2, 1] = 0;
+                    resultMatrix[2, 2] = Math.Cos(rotationValueInRad);
+                    break;
+                case "Z":
+                    resultMatrix[0, 0] = Math.Cos(rotationValueInRad);
+                    resultMatrix[0, 1] = -Math.Sin(rotationValueInRad);
+                    resultMatrix[0, 2] = 0;
+                    resultMatrix[1, 0] = Math.Sin(rotationValueInRad);
+                    resultMatrix[1, 1] = Math.Cos(rotationValueInRad);
+                    resultMatrix[1, 2] = 0;
+                    resultMatrix[2, 0] = 0;
+                    resultMatrix[2, 1] = 0;
+                    resultMatrix[2, 2] = 1;
+                    break;
+            }
+            return resultMatrix;
         }
 
         private static PointKUKA ToPointKuka(CommonLibrary.RobKalDatCommon.Point pointCalc)
@@ -246,6 +374,8 @@ namespace RobotFilesEditor.Model.Operations
         {
             PointBaseAndCoords point;
             Regex isMotionRegex = new Regex(@"(?<=^(PTP|LIN)\s+)[\w_-]+", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+            Regex replaceFWithXRegex = new Regex(@"^\s*F", RegexOptions.IgnoreCase);
+            Regex reloadRegex = new Regex(@"Reload\d+_\d+_\d+", RegexOptions.IgnoreCase);
             List<PointBaseAndCoords> result = new List<PointBaseAndCoords>();
             foreach (var fold in filePair.Value.SrcFolds.Where(x => isMotionRegex.IsMatch(x)))
             {
@@ -267,13 +397,36 @@ namespace RobotFilesEditor.Model.Operations
                     e6PosForCtor = e6PosInDat;
                 if (string.IsNullOrEmpty(fdatInDat))
                 {
-                    if (globals.FDATs.Values.Any(x => e6PosPointName.Equals(x.Name, StringComparison.OrdinalIgnoreCase)))
-                        fdatForCtor = globals.FDATs.Values.First(x => e6PosPointName.Equals(x.Name, StringComparison.OrdinalIgnoreCase)).Line;
+                    if (globals.FDATs.Values.Any(x => e6PosPointName.Equals(replaceFWithXRegex.Replace(x.Name,"X"), StringComparison.OrdinalIgnoreCase)))
+                        fdatForCtor = globals.FDATs.Values.First(x => e6PosPointName.Equals(replaceFWithXRegex.Replace(x.Name, "X"), StringComparison.OrdinalIgnoreCase)).Line;
                 }
                 else
                     fdatForCtor = fdatInDat;
                 result.Add(new PointBaseAndCoords(isMotionRegex.Match(fold).ToString(), fdatForCtor, e6PosForCtor));
+                if (reloadRegex.IsMatch(fold))
+                {
+                    List<string> fdatReloads = GetReloadVar("FDAT", fold);
+                    List<string> e6PosReloads = GetReloadVar("E6POS", fold);
+                    int counter = 0;
+                    foreach (var fdatReload in fdatReloads)
+                    {
+                        string e6PosInDatReload = (new Regex("^.*e6pos\\s+" + e6PosReloads[counter] + ".*$", RegexOptions.IgnoreCase | RegexOptions.Multiline)).Match(filePair.Value.DatContent).ToString();
+                        string fdatInDatReload = (new Regex("^.*fdat\\s+" + fdatReload + ".*$", RegexOptions.IgnoreCase | RegexOptions.Multiline)).Match(filePair.Value.DatContent).ToString();
+                        result.Add(new PointBaseAndCoords(e6PosReloads[counter], fdatInDatReload, e6PosInDatReload));
+                        counter++;
+                    }
+                }
             }
+            return result;
+        }
+
+        private static List<string> GetReloadVar(string type, string fold)
+        {
+            Regex getVarNameRegex = new Regex(type == "FDAT" ? @"F[\w_]+Reload\d+_\d+_\d+" : @"X[\w_]+Reload\d+_\d+_\d+", RegexOptions.IgnoreCase);
+            MatchCollection matches = getVarNameRegex.Matches(fold);
+            List<string> result = new List<string>();
+            foreach (var match in matches)
+                result.Add(match.ToString());
             return result;
         }
 
