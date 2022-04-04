@@ -141,6 +141,7 @@
                                                 <Button Content="Compare OLP and SOV backup" Command="{Binding CompareSOVAndOLP}" Visibility="Visible" Margin="3"/>
                                                 <Button Content="Validate comments" Command="{Binding ValidateComments}" Visibility="Visible" Margin="3"/>
                                                 <Button Content="Shift base" Command="{Binding ShiftBaseFanuc}" Margin="3" Visibility="{Binding DebugVisibility}"/>
+                                                <Button Content="Read Messprotokol and create PS Path" Command="{Binding ReadMessprotokolFANUC}" Margin="3" Visibility="Visible"/>
                                             </StackPanel>
                                         </GroupItem>
                                     </Expander>

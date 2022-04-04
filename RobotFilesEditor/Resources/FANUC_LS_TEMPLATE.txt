@@ -1,0 +1,39 @@
+/PROG {PATHNAME}
+/ATTR
+OWNER           = PSimulate;
+COMMENT         = "";
+PROG_SIZE       = 0;
+CREATE          = DATE 2022-01-09  TIME 13:48:56;
+MODIFIED        = DATE 2022-01-09  TIME 13:48:56;
+FILE_NAME       = {PATHNAME};
+VERSION         = 0;
+LINE_COUNT      = {LINE_COUNT};
+MEMORY_SIZE     = 0;
+PROTECT         = READ_WRITE;
+TCD:  STACK_SIZE        = 0,
+      TASK_PRIORITY     = 50,
+      TIME_SLICE        = 0,
+      BUSY_LAMP_OFF     = 0,
+      ABORT_REQUEST     = 0,
+      PAUSE_REQUEST     = 0;
+DEFAULT_GROUP   = 1,*,*,*,*;
+CONTROL_CODE    = 00000000 00000000;
+ 
+/APPL
+  HANDLING : TRUE ; 
+ 
+CORNER_SPEED_HEADER;
+  ENABLE_CORNER_SPEED   : FALSE;
+
+
+/MN
+
+  1:  UFRAME_NUM = 99;
+  2:  UTOOL_NUM = 0;
+{POS_MOVEMENT}
+
+/POS
+
+{POS_DECLARATIONS}
+
+/END

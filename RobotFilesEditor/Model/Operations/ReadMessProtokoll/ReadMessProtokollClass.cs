@@ -23,6 +23,7 @@ namespace RobotFilesEditor.Model.Operations.ReadMessProtokoll
         private Excel.Workbook messprotokollXlWorkbook;
         [DllImport("user32.dll")]
         private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+        int rowCounterFanuc;
 
         const int startRow = 14;
         const int startColumn = 1;
@@ -46,6 +47,7 @@ namespace RobotFilesEditor.Model.Operations.ReadMessProtokoll
                 if (pointsInMessProtokoll == null)
                     return;
                 string resultFile = string.Empty, resultDatFileSoll = string.Empty, resultDatFileIst = string.Empty;
+                rowCounterFanuc = 1;
                 foreach (var point in pointsInMessProtokoll)
                 {
                     switch (robotType)
@@ -56,6 +58,26 @@ namespace RobotFilesEditor.Model.Operations.ReadMessProtokoll
                             }
                         case GlobalData.RobotController.FANUC:
                             {
+                                resultFile += string.Join(Environment.NewLine,
+                                    "  "+(rowCounterFanuc + 2)+":J P["+ rowCounterFanuc + ":"+point.Name+"] 100% FINE;",
+                                    "");
+                                resultDatFileSoll  += string.Join(Environment.NewLine,
+                                    "P["+ rowCounterFanuc + ":\""+point.Name+"\"] {",
+                                    "   GP1 :",
+                                    "        UF : 99, UT : 0,    CONFIG : 'F U T,0,0,0',",
+                                    "        X = "+ point.XSoll.ToString(CultureInfo.InvariantCulture) + " mm,    Y = "+ point.YSoll.ToString(CultureInfo.InvariantCulture) + " mm,    Z = "+ point.ZSoll.ToString(CultureInfo.InvariantCulture) + " mm,",
+                                    "        W = "+ point.CSoll.ToString(CultureInfo.InvariantCulture) + " deg,    P = "+ point.BSoll.ToString(CultureInfo.InvariantCulture) + " deg,    R = "+ point.ASoll.ToString(CultureInfo.InvariantCulture) + " deg",
+                                    "};",
+                                    "");
+                                resultDatFileIst += string.Join(Environment.NewLine,
+                                    "P[" + rowCounterFanuc + ":\"" + point.Name + "\"] {",
+                                    "   GP1 :",
+                                    "        UF : 99, UT : 0,    CONFIG : 'F U T,0,0,0',",
+                                    "        X = " + point.XIst.ToString(CultureInfo.InvariantCulture) + " mm,    Y = " + point.YIst.ToString(CultureInfo.InvariantCulture) + " mm,    Z = " + point.ZIst.ToString(CultureInfo.InvariantCulture) + " mm,",
+                                    "        W = " + point.CIst.ToString(CultureInfo.InvariantCulture) + " deg,    P = " + point.BIst.ToString(CultureInfo.InvariantCulture) + " deg,    R = " + point.AIst.ToString(CultureInfo.InvariantCulture) + " deg",
+                                    "};",
+                                    "");
+                                rowCounterFanuc++;
                                 break;
                             }
                         case GlobalData.RobotController.KUKA:
@@ -124,7 +146,12 @@ namespace RobotFilesEditor.Model.Operations.ReadMessProtokoll
             else if (robotType == GlobalData.RobotController.ABB)
             { }
             else if (robotType == GlobalData.RobotController.FANUC)
-            { }
+            {
+                string outPutFileSoll = Properties.Resources.FANUC_LS_TEMPLATE.Replace("{PATHNAME}", messprotokollFile).Replace("{LINE_COUNT}", (rowCounterFanuc + 1).ToString()).Replace("{POS_MOVEMENT}", resultFile).Replace("{POS_DECLARATIONS}", resultDatFileSoll);
+                string outPutFileIst = Properties.Resources.FANUC_LS_TEMPLATE.Replace("{PATHNAME}", messprotokollFile).Replace("{LINE_COUNT}", (rowCounterFanuc + 1).ToString()).Replace("{POS_MOVEMENT}", resultFile).Replace("{POS_DECLARATIONS}", resultDatFileIst);
+                File.WriteAllText(Path.Combine(dirToSave, messprotokollFile + "_Soll.ls"), outPutFileSoll);
+                File.WriteAllText(Path.Combine(dirToSave, messprotokollFile + "_Ist.ls"), outPutFileIst);
+            }
             var dialogSuccess = System.Windows.Forms.MessageBox.Show("Successfuly saved at: " + dirToSave + ".\r\nWould you like to open directory?", "Success", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question);
             if (dialogSuccess == System.Windows.Forms.DialogResult.Yes)
                 Process.Start(dirToSave);
@@ -158,7 +185,7 @@ namespace RobotFilesEditor.Model.Operations.ReadMessProtokoll
 
                     double XSoll, YSoll, ZSoll, RXSoll, RYSoll, RZSoll, XIst, YIst, ZIst, RXIst, RYIst, RZIst;
 
-                    currentMeas.Name = messprotokollxlRange.Cells[rowCounter, startColumn + 0].FormulaLocal.ToString().Replace("-","_").Replace("°","");
+                    currentMeas.Name = messprotokollxlRange.Cells[rowCounter, startColumn + 0].FormulaLocal.ToString().Replace("-","_").Replace("°","").Replace(" ","_");
                     if (currentMeas.Name.Length > 0 && isNumber.IsMatch(currentMeas.Name))
                         currentMeas.Name = "P" + currentMeas.Name;
                     if (currentMeas.Name.Length > 23)

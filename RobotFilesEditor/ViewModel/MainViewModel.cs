@@ -519,6 +519,7 @@ namespace RobotFilesEditor.ViewModel
         public ICommand CompareSOVAndOLP { get; set; }
         public ICommand ValidateComments { get; set; }
         public ICommand ReadMessprotokolKUKA { get; set; }
+        public ICommand ReadMessprotokolFANUC { get; set; }
 
         private void SetCommands()
         {
@@ -576,6 +577,12 @@ namespace RobotFilesEditor.ViewModel
             CompareSOVAndOLP = new RelayCommand(CompareSOVAndOLPExecute);
             ValidateComments = new RelayCommand(ValidateCommentsFanucExecute);
             ReadMessprotokolKUKA = new RelayCommand(ReadMessprotokolExecuteKUKA);
+            ReadMessprotokolFANUC = new RelayCommand(ReadMessprotokolExecuteFANUC);
+        }
+
+        private void ReadMessprotokolExecuteFANUC()
+        {
+            var readMessProtokoll = new Model.Operations.ReadMessProtokoll.ReadMessProtokollClass(GlobalData.RobotController.FANUC);
         }
 
         private void ReadMessprotokolExecuteKUKA()

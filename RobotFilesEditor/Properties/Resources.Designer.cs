@@ -76,6 +76,32 @@ namespace RobotFilesEditor.Properties {
         }
         
         /// <summary>
+        /// Wyszukuje zlokalizowany ciąg podobny do ciągu /PROG {PATHNAME}
+        ////ATTR
+        ///OWNER           = PSimulate;
+        ///COMMENT         = &quot;&quot;;
+        ///PROG_SIZE       = 0;
+        ///CREATE          = DATE 2022-01-09  TIME 13:48:56;
+        ///MODIFIED        = DATE 2022-01-09  TIME 13:48:56;
+        ///FILE_NAME       = {PATHNAME};
+        ///VERSION         = 0;
+        ///LINE_COUNT      = {LINE_COUNT};
+        ///MEMORY_SIZE     = 0;
+        ///PROTECT         = READ_WRITE;
+        ///TCD:  STACK_SIZE        = 0,
+        ///      TASK_PRIORITY     = 50,
+        ///      TIME_SLICE        = 0,
+        ///      BUSY_LAMP_OFF     = 0,
+        ///      ABORT_REQUEST     = 0,
+        ///      PAUSE_REQUEST  [obcięto pozostałą część ciągu]&quot;;.
+        /// </summary>
+        internal static string FANUC_LS_TEMPLATE {
+            get {
+                return ResourceManager.GetString("FANUC_LS_TEMPLATE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Wyszukuje zlokalizowany zasób typu System.Drawing.Icon podobny do zasobu (Ikona).
         /// </summary>
         internal static System.Drawing.Icon Harvester {
