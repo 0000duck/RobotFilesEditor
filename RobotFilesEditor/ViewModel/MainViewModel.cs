@@ -520,6 +520,7 @@ namespace RobotFilesEditor.ViewModel
         public ICommand ValidateComments { get; set; }
         public ICommand ReadMessprotokolKUKA { get; set; }
         public ICommand ReadMessprotokolFANUC { get; set; }
+        public ICommand ReadMessprotokolABB { get; set; }
 
         private void SetCommands()
         {
@@ -578,6 +579,12 @@ namespace RobotFilesEditor.ViewModel
             ValidateComments = new RelayCommand(ValidateCommentsFanucExecute);
             ReadMessprotokolKUKA = new RelayCommand(ReadMessprotokolExecuteKUKA);
             ReadMessprotokolFANUC = new RelayCommand(ReadMessprotokolExecuteFANUC);
+            ReadMessprotokolABB = new RelayCommand(ReadMessprotokolExecuteABB);
+        }
+
+        private void ReadMessprotokolExecuteABB()
+        {
+            var readMessProtokoll = new Model.Operations.ReadMessProtokoll.ReadMessProtokollClass(GlobalData.RobotController.ABB);
         }
 
         private void ReadMessprotokolExecuteFANUC()

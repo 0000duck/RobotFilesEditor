@@ -624,6 +624,29 @@ namespace CommonLibrary
             return tempstring + numberString;
 
         }
+
+        public static List<double> RadToQuat(double heading, double attitude, double bank)
+        {
+            // Assuming the angles are in radians.
+            double c1 = Math.Cos(heading / 2);
+            double s1 = Math.Sin(heading / 2);
+            double c2 = Math.Cos(attitude / 2);
+            double s2 = Math.Sin(attitude / 2);
+            double c3 = Math.Cos(bank / 2);
+            double s3 = Math.Sin(bank / 2);
+            double c1c2 = c1 * c2;
+            double s1s2 = s1 * s2;
+            double w = c1c2 * c3 - s1s2 * s3;
+            double x = c1c2 * s3 + s1s2 * c3;
+            double y = s1 * c2 * c3 + c1 * s2 * s3;
+            double z = c1 * s2 * c3 - s1 * c2 * s3;
+            List<double> quaternion = new List<double>();
+            quaternion.Add(w);
+            quaternion.Add(y);
+            quaternion.Add(z);
+            quaternion.Add(-x);
+            return quaternion;
+        }
     }
 }
 

@@ -127,6 +127,7 @@
                                                 <Button Content="Read process points and compare with MPL" Command="{Binding ReadSpotPointsABB}" Margin="3"/>
                                                 <Button Content="Safety tools" Command="{Binding SafetyTools}" Margin="3"/>
                                                 <Button Content="Read backup for WorkBook" Command="{Binding ReadBackupForWBABB}" Margin="3"/>
+                                                <Button Content="Read Messprotokol and create PS Path" Command="{Binding ReadMessprotokolABB}" Margin="3" Visibility="Visible"/>
                                             </StackPanel>
                                         </GroupItem>
                                     </Expander>

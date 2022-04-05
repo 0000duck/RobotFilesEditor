@@ -54,6 +54,18 @@ namespace RobotFilesEditor.Model.Operations.ReadMessProtokoll
                     {
                         case GlobalData.RobotController.ABB:
                             {
+                                var quatSoll = CommonLibrary.CommonMethods.RadToQuat(point.CSoll, point.BSoll, point.ASoll);
+                                var quatIst = CommonLibrary.CommonMethods.RadToQuat(point.CIst, point.BIst, point.AIst);
+                                resultFile += string.Join(Environment.NewLine,
+                                    "MoveJ "+point.Name+@",vmax,fine,tool0\Wobj:=wobj99;",
+                                    "");
+                                resultDatFileSoll += string.Join(Environment.NewLine,
+                                    "CONST robtarget "+point.Name+":=[["+ point.XSoll.ToString(CultureInfo.InvariantCulture) + ","+ point.YSoll.ToString(CultureInfo.InvariantCulture) + ","+ point.ZSoll.ToString(CultureInfo.InvariantCulture) + "],["+quatSoll[0].ToString(CultureInfo.InvariantCulture)+ "," + quatSoll[1].ToString(CultureInfo.InvariantCulture) + "," + quatSoll[2].ToString(CultureInfo.InvariantCulture) + "," + quatSoll[3].ToString(CultureInfo.InvariantCulture) + "],[1,0,0,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];",
+                                    "");
+                                resultDatFileIst += string.Join(Environment.NewLine,
+                                    "CONST robtarget " + point.Name + ":=[[" + point.XIst.ToString(CultureInfo.InvariantCulture) + "," + point.YIst.ToString(CultureInfo.InvariantCulture) + "," + point.ZIst.ToString(CultureInfo.InvariantCulture) + "],[" + quatIst[0].ToString(CultureInfo.InvariantCulture) + "," + quatIst[1].ToString(CultureInfo.InvariantCulture) + "," + quatIst[2].ToString(CultureInfo.InvariantCulture) + "," + quatIst[3].ToString(CultureInfo.InvariantCulture) + "],[1,0,0,0],[9E+09,9E+09,9E+09,9E+09,9E+09,9E+09]];",
+                                    "");
+
                                 break;
                             }
                         case GlobalData.RobotController.FANUC:
@@ -97,13 +109,13 @@ namespace RobotFilesEditor.Model.Operations.ReadMessProtokoll
                                     ,""
                                     );
                                 resultDatFileSoll += string.Join(Environment.NewLine,
-                                    "DECL FDAT F" + point.Name + "={TOOL_NO 51,BASE_NO 3,IPO_FRAME #BASE,POINT2[] \" \"}",
+                                    "DECL FDAT F" + point.Name + "={TOOL_NO 0,BASE_NO 99,IPO_FRAME #BASE,POINT2[] \" \"}",
                                     "DECL PDAT P" + point.Name + "={VEL 100.000,ACC 100.000,APO_DIST 0.0,GEAR_JERK 50.0000}",
                                     "DECL E6POS X" + point.Name + "={X " + point.XSoll.ToString(CultureInfo.InvariantCulture) + ",Y " + point.YSoll.ToString(CultureInfo.InvariantCulture) + ",Z " + point.ZSoll.ToString(CultureInfo.InvariantCulture) + ",A " + point.ASoll.ToString(CultureInfo.InvariantCulture) + ",B " + point.BSoll.ToString(CultureInfo.InvariantCulture) + ",C " + point.CSoll.ToString(CultureInfo.InvariantCulture) + ",S 2,T 10,E1 0.0,E2 0.0,E3 0.0,E4 0.0,E5 0.0,E6 0.0}"
                                     ,""
                                     );
                                 resultDatFileIst += string.Join(Environment.NewLine,
-                                    "DECL FDAT F" + point.Name + "={TOOL_NO 51,BASE_NO 3,IPO_FRAME #BASE,POINT2[] \" \"}",
+                                    "DECL FDAT F" + point.Name + "={TOOL_NO 0,BASE_NO 99,IPO_FRAME #BASE,POINT2[] \" \"}",
                                     "DECL PDAT P" + point.Name + "={VEL 100.000,ACC 100.000,APO_DIST 0.0,GEAR_JERK 50.0000}",
                                     "DECL E6POS X" + point.Name + "={X " + point.XIst.ToString(CultureInfo.InvariantCulture) + ",Y " + point.YIst.ToString(CultureInfo.InvariantCulture) + ",Z " + point.ZIst.ToString(CultureInfo.InvariantCulture) + ",A " + point.AIst.ToString(CultureInfo.InvariantCulture) + ",B " + point.BIst.ToString(CultureInfo.InvariantCulture) + ",C " + point.CIst.ToString(CultureInfo.InvariantCulture) + ",S 2,T 10,E1 0.0,E2 0.0,E3 0.0,E4 0.0,E5 0.0,E6 0.0}"
                                     ,""
@@ -144,11 +156,17 @@ namespace RobotFilesEditor.Model.Operations.ReadMessProtokoll
                 File.WriteAllText(Path.Combine(dirToSave, messprotokollFile + "_Ist.src"), Properties.Resources.KUKA_SRC_TEMPLATE.Replace("{PATHNAME}", messprotokollFile + "_Ist").Replace("{PATH_SRC_CONTENT}", resultFile));
             }
             else if (robotType == GlobalData.RobotController.ABB)
-            { }
+            {
+                string outPutFileSoll = Properties.Resources.ABB_MOD_TEMPLATE1.Replace("{PATHNAME}", messprotokollFile + "_Soll").Replace("{ABB_ROBTARGETS}", resultDatFileSoll).Replace("{ABB_PROCEDURE}",resultFile);
+                string outPutFileIst = Properties.Resources.ABB_MOD_TEMPLATE1.Replace("{PATHNAME}", messprotokollFile + "_Ist").Replace("{ABB_ROBTARGETS}", resultDatFileIst).Replace("{ABB_PROCEDURE}", resultFile);
+                File.WriteAllText(Path.Combine(dirToSave, messprotokollFile + "_Soll.mod"), outPutFileSoll);
+                File.WriteAllText(Path.Combine(dirToSave, messprotokollFile + "_Ist.mod"), outPutFileIst);
+
+            }
             else if (robotType == GlobalData.RobotController.FANUC)
             {
-                string outPutFileSoll = Properties.Resources.FANUC_LS_TEMPLATE.Replace("{PATHNAME}", messprotokollFile).Replace("{LINE_COUNT}", (rowCounterFanuc + 1).ToString()).Replace("{POS_MOVEMENT}", resultFile).Replace("{POS_DECLARATIONS}", resultDatFileSoll);
-                string outPutFileIst = Properties.Resources.FANUC_LS_TEMPLATE.Replace("{PATHNAME}", messprotokollFile).Replace("{LINE_COUNT}", (rowCounterFanuc + 1).ToString()).Replace("{POS_MOVEMENT}", resultFile).Replace("{POS_DECLARATIONS}", resultDatFileIst);
+                string outPutFileSoll = Properties.Resources.FANUC_LS_TEMPLATE.Replace("{PATHNAME}", messprotokollFile + "_Soll").Replace("{ LINE_COUNT}", (rowCounterFanuc + 1).ToString()).Replace("{POS_MOVEMENT}", resultFile).Replace("{POS_DECLARATIONS}", resultDatFileSoll);
+                string outPutFileIst = Properties.Resources.FANUC_LS_TEMPLATE.Replace("{PATHNAME}", messprotokollFile + "_Ist").Replace("{LINE_COUNT}", (rowCounterFanuc + 1).ToString()).Replace("{POS_MOVEMENT}", resultFile).Replace("{POS_DECLARATIONS}", resultDatFileIst);
                 File.WriteAllText(Path.Combine(dirToSave, messprotokollFile + "_Soll.ls"), outPutFileSoll);
                 File.WriteAllText(Path.Combine(dirToSave, messprotokollFile + "_Ist.ls"), outPutFileIst);
             }
@@ -164,6 +182,7 @@ namespace RobotFilesEditor.Model.Operations.ReadMessProtokoll
             {
                 List<string> alreadyAdded = new List<string>();
                 Regex isNumber = new Regex(@"^\s*\d", RegexOptions.IgnoreCase);
+                Regex replaceRegex = new Regex(@"[^\w_]", RegexOptions.IgnoreCase);
                 MessageBox.Show("Select messprotokoll file.", "Select file", MessageBoxButton.OK, MessageBoxImage.Information);
                 string excelFile = CommonLibrary.CommonMethods.SelectDirOrFile(false, filter1: "*.xls", filter2: "*.xlsx", filter1Descr: "Excel File .xls", filter2Descr: "Excel File .xlsx");
                 if (string.IsNullOrEmpty(excelFile))
@@ -185,7 +204,10 @@ namespace RobotFilesEditor.Model.Operations.ReadMessProtokoll
 
                     double XSoll, YSoll, ZSoll, RXSoll, RYSoll, RZSoll, XIst, YIst, ZIst, RXIst, RYIst, RZIst;
 
-                    currentMeas.Name = messprotokollxlRange.Cells[rowCounter, startColumn + 0].FormulaLocal.ToString().Replace("-","_").Replace("°","").Replace(" ","_");
+                    //currentMeas.Name = messprotokollxlRange.Cells[rowCounter, startColumn + 0].FormulaLocal.ToString().Replace("-","_").Replace("°","").Replace(" ","_").Replace("+","");
+                    currentMeas.Name = messprotokollxlRange.Cells[rowCounter, startColumn + 0].FormulaLocal.ToString();
+                    if (replaceRegex.IsMatch(currentMeas.Name))
+                        currentMeas.Name = replaceRegex.Replace(currentMeas.Name, "");
                     if (currentMeas.Name.Length > 0 && isNumber.IsMatch(currentMeas.Name))
                         currentMeas.Name = "P" + currentMeas.Name;
                     if (currentMeas.Name.Length > 23)

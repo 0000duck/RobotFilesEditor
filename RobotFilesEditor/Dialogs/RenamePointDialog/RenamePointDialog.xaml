@@ -32,8 +32,8 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-                      
-            <Button Content="OK" Command="{Binding OkCommand}" Width="50" IsEnabled="{Binding OKEnabled}"/>
+
+            <Button Content="OK" Command="{Binding OkCommand}" Width="50" IsEnabled="{Binding OKEnabled}" IsDefault="True"/>
         </StackPanel>
     </Grid>
 </Window>

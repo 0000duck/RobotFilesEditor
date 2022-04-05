@@ -29,7 +29,7 @@
     <MinimumRequiredVersion>1.0.0.54</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>428</ApplicationRevision>
+    <ApplicationRevision>431</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -563,6 +563,8 @@
     <None Include="Resources\utils.txt" />
     <None Include="Resources\BACKDATE.DT" />
     <None Include="Resources\FANUC_LS_TEMPLATE.txt" />
+    <None Include="Resources\FANUC_LS_TEMPLATE1.txt" />
+    <None Include="Resources\ABB_MOD_TEMPLATE1.txt" />
     <Content Include="Resources\GlobalFiles\KRC4\C13_global.dat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

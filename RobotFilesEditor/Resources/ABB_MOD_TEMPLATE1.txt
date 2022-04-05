@@ -1,0 +1,13 @@
+MODULE {PATHNAME}
+
+!# ----------------------------------------------
+!# ------ ROBTARGET
+!# ----------------------------------------------
+
+{ABB_ROBTARGETS}
+
+PROC {PATHNAME} ()
+
+{ABB_PROCEDURE}
+
+ENDPROC

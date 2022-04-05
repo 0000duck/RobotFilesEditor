@@ -61,6 +61,27 @@ namespace RobotFilesEditor.Properties {
         }
         
         /// <summary>
+        /// Wyszukuje zlokalizowany ciąg podobny do ciągu MODULE {PATHNAME}
+        ///
+        ///!# ----------------------------------------------
+        ///!# ------ ROBTARGET
+        ///!# ----------------------------------------------
+        ///
+        ///{ABB_ROBTARGETS}
+        ///
+        ///PROC {PATHNAME} ()
+        ///
+        ///{ABB_PROCEDURE}
+        ///
+        ///ENDPROC.
+        /// </summary>
+        internal static string ABB_MOD_TEMPLATE1 {
+            get {
+                return ResourceManager.GetString("ABB_MOD_TEMPLATE1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         /// Wyszukuje zlokalizowany ciąg podobny do ciągu {DATE_AND_TIME}
         ///
         ///Version:  V8.36P/06/None
