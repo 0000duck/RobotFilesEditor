@@ -197,7 +197,7 @@ namespace RobotFilesEditor.Model.Operations
                 {
                     if (command.ToLower().Contains("loadvariante"))
                     {
-                        Regex loadVarNumRegex = new Regex(@"(?<=LoadVariante\s*\:\s*)\d+", RegexOptions.IgnoreCase);
+                        Regex loadVarNumRegex = new Regex(@"(?<=LoadVariante\s*(\:|\=)\s*)\d+", RegexOptions.IgnoreCase);
                         Regex loadVarNameRegex = new Regex(@"(?<=LoadVariante\s*\:\s*\d+\s+'\s*)\w+", RegexOptions.IgnoreCase);
                         int loadVarNum = int.Parse(loadVarNumRegex.Match(command).ToString());
                         string loadVarName = loadVarNameRegex.Match(command).ToString();
@@ -1619,11 +1619,35 @@ namespace RobotFilesEditor.Model.Operations
                     header = header + Char.ConvertFromUtf32(160) + "\r\n" + Char.ConvertFromUtf32(160) + "\r\n" + ";# --------- START PATH : " + Path.GetFileNameWithoutExtension(file.Key) + " ---------\r\n\r\n";
                 }
                 List<string> resultStrings = new List<string>();
+                Regex isFoldStart = new Regex(@"^\s*;\s*FOLD\s+", RegexOptions.IgnoreCase);
+                Regex isFoldEnd = new Regex(@"^\s*;\s*ENDFOLD\s+", RegexOptions.IgnoreCase);
+                Regex notCommentRegex = new Regex(@"^\s*(?!;).*", RegexOptions.IgnoreCase);
+                int foldCount = 0;
+                bool alreadyAdded = false;
                 foreach (string currentLine in file.Value)
                 {
-                    resultStrings.Add(currentLine);
-                    if ((currentLine.Contains(";ENDFOLD (INI)") && !isDat) || (currentLine.Contains("DEFDAT") && isDat))
-                        resultStrings.Add(header);
+                    if (!isDat)
+                    {
+                        resultStrings.Add(currentLine);
+                        if ((currentLine.Contains(";ENDFOLD (INI)") && !isDat))
+                            resultStrings.Add(header);
+                    }
+                    else
+                    {
+                        if (isFoldStart.IsMatch(currentLine))
+                            foldCount++;
+                        if (isFoldEnd.IsMatch(currentLine))
+                            foldCount--;
+                        if (!alreadyAdded && foldCount == 0 && !string.IsNullOrEmpty(currentLine) && notCommentRegex.IsMatch(currentLine) && !currentLine.ToLower().Contains("defdat"))
+                        {
+                            alreadyAdded = true;
+                            resultStrings.Add(header);
+                            resultStrings.Add(";================================================\r\n; Positions(if any)\r\n;================================================ \r\n");
+                        }
+                        resultStrings.Add(currentLine);
+
+                    }
+
                 }
                 result.Add(file.Key, resultStrings);
             }
@@ -1651,6 +1675,8 @@ namespace RobotFilesEditor.Model.Operations
 
         private static IDictionary<string, List<string>> ClearHeader(IDictionary<string, List<string>> filteredFiles)
         {
+            Regex notCommentRegex = new Regex(@"^\s*(?!;).*", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+            Regex headerStartRegex = new Regex(@"^\s*;\s*\*", RegexOptions.IgnoreCase | RegexOptions.Multiline);
             GlobalData.RoboterFound = false;
             List<string> header = new List<string>();
             bool roboterFound = false;
@@ -1658,36 +1684,38 @@ namespace RobotFilesEditor.Model.Operations
 
             foreach (var file in filteredFiles)
             {
-                bool headerFinished = false, headerStarted = false;
+                bool headerFinished = false, headerStarted = false, isMeaningfulFold = false;
                 List<string> contentWithoutHeader = new List<string>();
                 foreach (string line in file.Value)
                 {
+
                     string lineWithoutSpaces = line.Replace(" ", "");
-                    if ((lineWithoutSpaces.Contains("Roboter") || (lineWithoutSpaces.Contains("Robot") && lineWithoutSpaces.Contains(";*"))) && !GlobalData.RoboterFound )
+                    if ((lineWithoutSpaces.Contains("Roboter") || (lineWithoutSpaces.Contains("Robot") && lineWithoutSpaces.Contains(";*"))) && !GlobalData.RoboterFound)
                     {
                         roboter = line;
                         GlobalData.RoboterFound = true;
                         roboterFound = true;
                     }
                     else
+                    {
                         if (!roboterFound)
-                        roboter = "";
+                            roboter = "";
+                    }
 
-                    if (lineWithoutSpaces.Contains(";*") && !headerFinished)
-                    {
+                    isMeaningfulFold = notCommentRegex.IsMatch(line) && !string.IsNullOrEmpty(notCommentRegex.Match(line).ToString());
+                    if (!isMeaningfulFold && !headerFinished && headerStartRegex.IsMatch(line))
                         headerStarted = true;
-                        header.Add(line);
-                    }
-                    else
-                    {
-                        if (headerStarted)
-                            headerFinished = true;
+                    if (isMeaningfulFold && headerStarted && !string.IsNullOrEmpty(line))
+                        headerFinished = true;
+
+                    // jeszcze nie było headera lub już się skończył
+                    if (!headerStarted || headerFinished)
                         contentWithoutHeader.Add(line);
-                    }
+                    
+
                 }
                 result.Add(file.Key, contentWithoutHeader);
             }
-
             return result;
         }
 

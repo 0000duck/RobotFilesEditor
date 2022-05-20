@@ -12,13 +12,20 @@ using RobotFilesEditor.Dialogs.ChangeName;
 using RobotFilesEditor.Dialogs.CreateGripper;
 using RobotFilesEditor.Model.Operations;
 using System.Xml;
+using RobotFilesEditor.Dialogs.SOVBackupsPreparations;
 
 namespace RobotFilesEditor.ViewModel
 {
+
     public class MainViewModel : ViewModelBase, IDisposable
     {
         #region fields
         private enum OrgController { KUKA, FANUC};
+        private List<Controler> _controlers;
+        private Controler _selectedControler;
+        private string _sourcePath;
+        private string _destinationPath;
+        private bool _continueWithoutConfirm;
         #endregion
 
         #region Controls         
@@ -247,9 +254,10 @@ namespace RobotFilesEditor.ViewModel
         {
             get { return _continueWithoutConfirm == false; }            
         }
-      
+
         #endregion Controls
 
+        #region properties
         public Controler SelectedControler
         {
             get { return _selectedControler; }
@@ -329,15 +337,9 @@ namespace RobotFilesEditor.ViewModel
                 RaisePropertyChanged(() => DebugVisibility);
             }
         }
+        #endregion
 
-
-
-        private List<Controler> _controlers;
-        private Controler _selectedControler;
-        private string _sourcePath;
-        private string _destinationPath;
-        private bool _continueWithoutConfirm;
-
+        #region ctor
         public MainViewModel(List<Controler> controlers)
         {
             if (!ViewModelBase.IsInDesignModeStatic)
@@ -362,6 +364,7 @@ namespace RobotFilesEditor.ViewModel
                 CanScanContent = false;
             }
         }
+        #endregion
 
         #region ControlersCreator
         private void CreateControlerChooser()
@@ -494,7 +497,7 @@ namespace RobotFilesEditor.ViewModel
         public ICommand PrepareSOVBackup { get; set; }        
         public ICommand ABBandFanucChecksum { get; set; }
         public ICommand SafetyTools { get; set; }
-        public ICommand ValidateBackup { get; set; }
+        public ICommand ValidateBackupKUKA { get; set; }
         public ICommand ABBHelper { get; set; }
         public ICommand FanucMirror { get; set; }
         public ICommand CreateGripperXML { get; set; }
@@ -521,6 +524,8 @@ namespace RobotFilesEditor.ViewModel
         public ICommand ReadMessprotokolKUKA { get; set; }
         public ICommand ReadMessprotokolFANUC { get; set; }
         public ICommand ReadMessprotokolABB { get; set; }
+        public ICommand CleanLibroot { get; set; }
+        public ICommand ValidateBackupFanuc { get; set; }
 
         private void SetCommands()
         {
@@ -553,7 +558,7 @@ namespace RobotFilesEditor.ViewModel
             PrepareSOVBackup = new RelayCommand(PrepareSOVBackupExecute);
             ABBandFanucChecksum = new RelayCommand(ABBandFanucChecksumExecute);
             SafetyTools = new RelayCommand(SafetyToolsExecute);
-            ValidateBackup = new RelayCommand(ValidateBackupExecute);
+            ValidateBackupKUKA = new RelayCommand(ValidateBackupKUKAExecute);
             ABBHelper = new RelayCommand(ABBHelperExecute);
             FanucMirror = new RelayCommand(FanucMirrorExecute);
             CreateGripperXML = new RelayCommand(CreateGripperXMLExecute);
@@ -580,6 +585,13 @@ namespace RobotFilesEditor.ViewModel
             ReadMessprotokolKUKA = new RelayCommand(ReadMessprotokolExecuteKUKA);
             ReadMessprotokolFANUC = new RelayCommand(ReadMessprotokolExecuteFANUC);
             ReadMessprotokolABB = new RelayCommand(ReadMessprotokolExecuteABB);
+            CleanLibroot = new RelayCommand(CleanLibrootExecute);
+            ValidateBackupFanuc = new RelayCommand(ValidateBackupFanucExecute);
+        }
+
+        private void CleanLibrootExecute()
+        {
+            var libCleaner = new Model.OLPTools.LibrootCleaner(this);
         }
 
         private void ReadMessprotokolExecuteABB()
@@ -723,9 +735,20 @@ namespace RobotFilesEditor.ViewModel
             window.Show();
         }
 
-        private void ValidateBackupExecute()
+        private void ValidateBackupKUKAExecute()
         {
-            Model.Operations.BackupSyntaxValidation.KUKASynataxValidator.Execute();
+            SOVBackupPreparationVM vm = new SOVBackupPreparationVM(false, GlobalData.RobotController.KUKA);
+            SOVBackupsPreparationWindow window = new SOVBackupsPreparationWindow(vm);
+            window.Owner = Application.Current.Windows.Cast<Window>().Single(x => x.DataContext == this);
+            var dialog = window.ShowDialog();
+        }
+
+        private void ValidateBackupFanucExecute()
+        {
+            SOVBackupPreparationVM vm = new SOVBackupPreparationVM(false, GlobalData.RobotController.FANUC);
+            SOVBackupsPreparationWindow window = new SOVBackupsPreparationWindow(vm);
+            window.Owner = Application.Current.Windows.Cast<Window>().Single(x => x.DataContext == this);
+            var dialog = window.ShowDialog();
         }
 
         private void SafetyToolsExecute()
@@ -742,7 +765,8 @@ namespace RobotFilesEditor.ViewModel
 
         private void PrepareSOVBackupExecute()
         {
-            PrepareSOVBackupMethods.Execute();
+            //PrepareSOVBackupMethods.Execute();
+            Dialogs.SOVBackupsPreparations.SOVBackupsPreparation sovBackupCreator = new Dialogs.SOVBackupsPreparations.SOVBackupsPreparation(this);
         }
 
         private void RetrieveBackupsExecute()
@@ -873,7 +897,7 @@ namespace RobotFilesEditor.ViewModel
                             case OrgController.KUKA:
                                 {
                                     CreateOrgsMethods createOrgsMethods = new CreateOrgsMethods();
-                                    createOrgsMethods.CreateOrgs(vm.DictOrgsElements, vm.SelectedToolsNumber, vm.SafeRobot, vm.SelectedLine, vm.SelectedGunsNumber, vm.SelectedPLC, vm.RobotName, vm.SelectedStartOrgNum, vm.WaitForInHome);
+                                    createOrgsMethods.CreateOrgs(vm.DictOrgsElements, vm.SelectedToolsNumber, vm.SafeRobot, vm.SelectedLine, vm.SelectedGunsNumber, vm.SelectedPLC, vm.RobotName, vm.SelectedStartOrgNum, vm.WaitForInHome, vm.linesAndTypes.Single(x=>x.LineName == vm.SelectedLine).Types);
                                     break;
                                 }
                             case OrgController.FANUC:
@@ -902,6 +926,7 @@ namespace RobotFilesEditor.ViewModel
         }
         #endregion Command
 
+        #region Private_methods
         private void ControlerChooser_Click(object sender, ControlItem e)
         {
             try
@@ -995,14 +1020,18 @@ namespace RobotFilesEditor.ViewModel
                 MessageBoxResult ExeptionMessage = MessageBox.Show("No selected controler", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
+            string fullMsg = string.Empty;
             foreach (var operation in AllOperations)
             {
+                operation.ClearMsg();
                 operation.ExecuteOperationCommandExecute();
+                fullMsg += operation.Msg + "\r\n";
             }
             if (GlobalData.ControllerType == "FANUC")
             { 
                 Model.Operations.FANUC.FanucCreateSOVBackup fanucBackup = new Model.Operations.FANUC.FanucCreateSOVBackup(true);
             }
+            MessageBox.Show(fullMsg, "Operations result", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void ShowAllOperationsResults()
@@ -1104,5 +1133,6 @@ namespace RobotFilesEditor.ViewModel
             else
                 MessageBox.Show("Destination folder does not exist", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
         }
+        #endregion
     }
 }

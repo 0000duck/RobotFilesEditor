@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CommonLibrary
@@ -20,7 +22,8 @@ namespace CommonLibrary
         public Dictionary<string, Variable> STRUCTs { get; set; }
         public Dictionary<string, Variable> SIGNALs { get; set; }
         public Dictionary<string, Variable> Others { get; set; }
-        public Dictionary<string, string> GlobalDat { get; set; }
+        //public Dictionary<string, string> GlobalDat { get; set; }
+        public List<Variable> AllVariables { get; private set; }
 
         public FoundVariables()
         {
@@ -36,7 +39,20 @@ namespace CommonLibrary
             STRUCTs = new Dictionary<string, Variable>();
             SIGNALs = new Dictionary<string, Variable>();
             Others = new Dictionary<string, Variable>();
-            GlobalDat = new Dictionary<string, string>();
+            //GlobalDat = new Dictionary<string, string>();
+        }
+
+        public void FillAllVariables()
+        {
+            AllVariables = new List<Variable>();
+            foreach (PropertyInfo prop in this.GetType().GetProperties().Where(x => x.PropertyType.Name.ToLower().Contains("dictionary")))
+            {
+                var property = prop.GetValue(this);
+                foreach (var variable in (Dictionary<string,Variable>)property)
+                {
+                    AllVariables.Add(variable.Value);
+                }
+            }
         }
     }
 
@@ -46,16 +62,65 @@ namespace CommonLibrary
         public string Type { get; set; }
         public bool IsGlobal { get; set; }
         public string Localization { get; set; }
-        public string Line { get; set; }
-        public Variable(string name, string type, bool isGlobal, string localization, string line)
+        public string LineContent { get; set; }
+        public List<string> Names { get; private set; }
+        public int LineNum { get; set; }
+
+        public Variable(string name, string type, bool isGlobal, string localization, string line, int linenum)
         {
             Name = name;
             Type = type;
             IsGlobal = isGlobal;
             Localization = localization;
-            Line = line;
+            LineContent = line;
+            LineNum = linenum;
         }
 
+        public Variable(string line, bool isGlobal, string localization, int linenum)
+        {
+            this.Type = (new Regex(@"(?<=^\s*(DECL|)\s*(GLOBAL|)\s*)("+CommonMethods.typeRegex + ")", RegexOptions.IgnoreCase)).Match(line).ToString().ToLower();
+            string tempName = string.Empty;
+            if (this.Type == "struc")
+                tempName = (new Regex(@"(?<=^\s*(DECL|)\s*(GLOBAL|)\s*(STRUC)\s+)[a-zA-Z_\-]+", RegexOptions.IgnoreCase)).Match(line).ToString();
+            else
+                //tempName = (new Regex(@"(?<=^\s*(DECL|)\s*(GLOBAL|)\s*(INT|CHAR|BOOL|REAL|E6AXIS|E6POS|FDAT|PDAT|LDAT|STRUC|SIGNAL)\s+)[a-zA-Z0-9_\-,\s\[\]]+", RegexOptions.IgnoreCase)).Match(line).ToString();
+                tempName = (new Regex(@"(?<=^\s*(DECL|)\s*(GLOBAL|)\s*(" + CommonMethods.typeRegex + @")\s+)[a-zA-Z0-9_\-,\s]+", RegexOptions.IgnoreCase)).Match(line).ToString();
+            var splitNames = tempName.Split(',');
+            if (splitNames.Count() == 1)
+                Name = tempName.Trim();
+            else
+            {
+                Name = splitNames[0].Trim();
+                Names = new List<string>();
+                splitNames.ToList().ForEach(x => Names.Add(x.Trim()));
+            }
+            Localization = localization;
+            if (isGlobal)
+                IsGlobal = true;
+            else
+            {
+                IsGlobal = false;
+                if (new Regex(@"(?<=^\s*(DECL|)\s*)GLOBAL", RegexOptions.IgnoreCase).IsMatch(line))
+                    IsGlobal = true;
+            }
+            LineContent = line;
+            LineNum = linenum;
+        }
+
+    }
+
+    public class KukaValidationData
+    {
+        public string FilePath { get; set; }
+        public Dictionary<string, List<string>> SrcFiles { get; set; }
+        public Dictionary<string, List<string>> DatFiles { get; set; }
+
+        public KukaValidationData(string filePath, Dictionary<string, List<string>> srcFiles, Dictionary<string, List<string>> datFiles)
+        {
+            FilePath = filePath;
+            SrcFiles = srcFiles;
+            DatFiles = datFiles;
+        }
     }
 
 }

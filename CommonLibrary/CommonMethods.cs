@@ -19,7 +19,9 @@ namespace CommonLibrary
     {
         static string ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         static string[] types = { "int ", "real ", "char ", "bool ", "fdat ", "ldat ", "pdat ", "e6axis ", "e6pos ", "struc ", "signal ", "decl " };
-         
+        public static string typeRegex = "INT|CHAR|BOOL|REAL|E6AXIS|E6POS|FDAT|PDAT|LDAT|STRUC|SIGNAL|KRLMSGOPT_T|BRAKE_STATE|P00_COMMAND|FUNCT_TYPE|STOPMESS|KrlMsg_T|KrlMsgPar_T|KRLMSGDLGSK_T|PRESET|FRAME|LOAD";
+
+
         public static string SelectDirOrFile(bool isDir, string filter1Descr = "", string filter1 = "", string filter2Descr = "", string filter2 = "")
         {
             var dialog = new CommonOpenFileDialog();
@@ -127,22 +129,83 @@ namespace CommonLibrary
 
         public static FoundVariables FindVarsInBackup(string file, bool isGlobal)
         {
-            Regex globalFileRegex = new Regex(@"(A|B|C)\d+_.*global.dat", RegexOptions.IgnoreCase);
-            FoundVariables foundVars = new FoundVariables();
-            string doubleDecls = "";
+            KukaValidationData data = ReadDataFromKukaBackup(file);
+            return FindVarsInBackup(data, isGlobal);
+        }
+
+        public static KukaValidationData ReadDataFromKukaBackup(string file)
+        {
+            Dictionary<string, List<string>> srcFiles = new Dictionary<string, List<string>>();
+            Dictionary<string, List<string>> datFiles = new Dictionary<string, List<string>>();
             using (ZipArchive archive = ZipFile.Open(file, ZipArchiveMode.Read))
             {
-                foreach (var entry in archive.Entries.Where(x => x.FullName.ToLower().Contains(".src") || x.FullName.ToLower().Contains(".dat")))
+                foreach (var entry in archive.Entries.Where(x => Path.GetExtension(x.FullName).ToLower() == ".src"))
                 {
-                    var currentFile = archive.GetEntry(GetEntryName(archive.Entries, entry.ToString()));
-                    StreamReader reader = new StreamReader(currentFile.Open());
+                    List<string> srcFileContent = new List<string>();
+                    StreamReader reader = new StreamReader(entry.Open());
                     while (!reader.EndOfStream)
                     {
-
                         string line = reader.ReadLine();
-                        if (line.Trim().Replace(" ", "").Length > 1 && line.Trim().Replace(" ", "").Substring(0, 1) != ";")
+                        srcFileContent.Add(line);
+                    }
+                    reader.Close();
+                    srcFiles.Add(entry.FullName, srcFileContent);
+                }
+
+                foreach (var entry in archive.Entries.Where(x => Path.GetExtension(x.FullName).ToLower() == ".dat"))
+                {
+                    List<string> datFileContent = new List<string>();
+                    StreamReader reader = new StreamReader(entry.Open());
+                    while (!reader.EndOfStream)
+                    {
+                        string line = reader.ReadLine();
+                        datFileContent.Add(line);
+                    }
+                    reader.Close();
+                    datFiles.Add(entry.FullName, datFileContent);
+                }
+                return new KukaValidationData(file, srcFiles, datFiles);
+            }
+        }
+
+        public static FoundVariables FindVarsInBackup(KukaValidationData data, bool isGlobal)
+        {
+            Regex globalFileRegex = new Regex(@"(A|B|C)\d+_.*global.dat", RegexOptions.IgnoreCase);
+            Regex isVarDeclarationRegex = new Regex(@"^\s*(DECL|)\s*(GLOBAL|)\s*(" + typeRegex + ")", RegexOptions.IgnoreCase);
+            FoundVariables foundVars = new FoundVariables();
+            Dictionary<string, List<string>> allfiles = new Dictionary<string, List<string>>();
+            foreach (var src in data.SrcFiles)
+                allfiles.Add(src.Key, src.Value);
+            foreach (var dat in data.DatFiles)
+                allfiles.Add(dat.Key, dat.Value);
+            string doubleDecls = "";
+            foreach (var entry in allfiles)
+            {
+                int lineCounter = 1;
+                bool isConfigDat = entry.Key.ToLower().Contains("$config") ? true : false;
+                bool tempIsGlobal = entry.Key.ToLower().Contains("$config") ? true : isGlobal;
+                //var currentFile = archive.GetEntry(GetEntryName(archive.Entries, entry.ToString()));
+                //StreamReader reader = new StreamReader(currentFile.Open());
+                foreach (var line in entry.Value)
+                {
+                    if (isVarDeclarationRegex.IsMatch(line) && CheckGlobal(line, isGlobal, isConfigDat))
+                    {
+                        var currentVariable = new Variable(line, tempIsGlobal, Path.GetFileNameWithoutExtension(entry.Key), lineCounter);
+                        List<KeyValuePair<string, Variable>> currentVarList = new List<KeyValuePair<string, Variable>>();
+                        currentVarList.Add(new KeyValuePair<string, Variable>(currentVariable.Name + " " + currentVariable.Localization, currentVariable));
+                        if (currentVariable.Names != null)
                         {
-                            KeyValuePair<string, Variable> currentVar = GetVariable(line, Path.GetFileNameWithoutExtension(currentFile.FullName), isGlobal);
+                            int counter = 0;
+                            foreach (var varName in currentVariable.Names)
+                            {
+                                if (counter > 0)
+                                    currentVarList.Add(new KeyValuePair<string, Variable>(varName + " " + currentVariable.Localization, new Variable(varName, currentVariable.Type, currentVariable.IsGlobal, currentVariable.Localization, line, lineCounter)));
+                                counter++;
+                            }
+                        }
+
+                        foreach (var currentVar in currentVarList)
+                        {
                             if (!String.IsNullOrEmpty(currentVar.Key))
                             {
                                 if (currentVar.Value.Type == "int")
@@ -232,105 +295,46 @@ namespace CommonLibrary
                             }
                         }
                     }
-                    reader.Close();
-                    if (globalFileRegex.IsMatch(Path.GetFileName(currentFile.FullName)))
-                    {
-                        reader = new StreamReader(currentFile.Open());
-                        foundVars.GlobalDat.Add(Path.GetFileName(currentFile.FullName), reader.ReadToEnd());
-                        reader.Close();
-                    }
+                    lineCounter++;
                 }
+                //if (globalFileRegex.IsMatch(Path.GetFileName(entry.Key)))
+                //{
+                //    reader = new StreamReader(currentFile.Open());
+                //    //foundVars.GlobalDat.Add(Path.GetFileName(currentFile.FullName), reader.ReadToEnd());
+                //    reader.Close();
+                //}
             }
+
             return foundVars;
         }
 
-        private static KeyValuePair<string, Variable> GetVariable(string line, string fileName, bool isGlobal)
+        private static bool CheckGlobal(string line, bool shouldBeGlobal, bool isConfigDat)
         {
-            Regex typComparisonRegex = new Regex(@"^[a-zA-Z0-9\[\]_\$]*", RegexOptions.IgnoreCase);
-            string lineAfterModification = line.ToLower().Replace("decl ", "").Replace("global ", "");
-            string foundTyp = "";
-            bool typeFound = false;
-            Regex replaceMulitSpaces = new Regex(@"\s+", RegexOptions.IgnoreCase);
-            line = replaceMulitSpaces.Replace(line, " ");
-            foreach (var typ in types)
+            Regex isGlobalRegex = new Regex(@"^\s*(|DECL\s+)GLOBAL", RegexOptions.IgnoreCase);
+            if (shouldBeGlobal)
             {
-                if (lineAfterModification.ToLower().Contains(typ) && typComparisonRegex.Match(lineAfterModification).ToString() == typ.Trim())
-                {
-                    foundTyp = typ.Trim();
-                    typeFound = true;
-                    break;
-                }
-            }
-            if (!typeFound)
-            {
-                if (line.ToLower().Contains("decl "))
-                {
-                    foundTyp = "decl";
-                    typeFound = true;
-                }
-            }
-            if (!typeFound)
-            {
-                return new KeyValuePair<string, CommonLibrary.Variable>("", null);
+                if (isGlobalRegex.IsMatch(line) || isConfigDat)
+                    return true;
+                else
+                    return false;
             }
             else
             {
-                if (line.ToLower().Contains("global ") && !isGlobal)
-                    return new KeyValuePair<string, CommonLibrary.Variable>("", null);
-                if (!line.ToLower().Contains("global ") && !fileName.ToLower().Contains("$config") && isGlobal)
-                    return new KeyValuePair<string, CommonLibrary.Variable>("", null);
-                if (line.ToLower().Contains("defdat "))
-                    return new KeyValuePair<string, CommonLibrary.Variable>("", null);
-                if (line.ToLower().Contains("interrupt "))
-                    return new KeyValuePair<string, CommonLibrary.Variable>("", null);
-                if (line.ToLower().Contains("def "))
-                    return new KeyValuePair<string, CommonLibrary.Variable>("", null);
-                if (line.ToLower().Contains("deffct "))
-                    return new KeyValuePair<string, CommonLibrary.Variable>("", null);
-
-                string name = "", nameWithProc = "";
-
-
-
-                Regex getVarNameRegex = new Regex(@"(?<=(INT|CHAR|BOOL|REAL|E6AXIS|E6POS|FDAT|PDAT|LDAT|STRUC|SIGNAL)\s+)[a-zA-Z0-9\[\]_\$]*", RegexOptions.IgnoreCase);
-                if (getVarNameRegex.IsMatch(line.Trim()))
-                {
-                    name = getVarNameRegex.Match(line.Trim()).ToString().Trim();
-                    nameWithProc = name + " " + fileName;
-                    name = getVarNameRegex.Match(line).ToString().Trim().Replace(" ", "");
-                    if (string.IsNullOrEmpty(name))
-                    {
-                        // nie znalazło nazwy zmiennej
-                    }
-                }
+                if (isGlobalRegex.IsMatch(line) || isConfigDat)
+                    return false;
                 else
-                {
-                    if (foundTyp == "decl")
-                    {
-                        Regex otherTypRegex;
-                        if (line.ToLower().Contains("global "))
-                            otherTypRegex = new Regex(@"(?<=(DECL\s+GLOBAL)\s+)[a-zA-Z0-9\[\]_\$]*", RegexOptions.IgnoreCase);
-                        else
-                            otherTypRegex = new Regex(@"(?<=DECL\s+)[a-zA-Z0-9\[\]_\$]*", RegexOptions.IgnoreCase);
-                        foundTyp = otherTypRegex.Match(line).ToString().Trim();
-                        getVarNameRegex = new Regex(@"(?<=" + foundTyp + @"\s+)[a-zA-Z0-9\[\]_\$]*", RegexOptions.IgnoreCase);
-                        name = getVarNameRegex.Match(line).ToString().Trim().Replace(" ", "");
-                        if (string.IsNullOrEmpty(name))
-                        {
-                            // nie znalazło nazwy zmiennej
-                        }
-                        nameWithProc = name + " " + fileName;
-                    }
-                    else
-                    {
-                        // regex nic nie znalazl!
-                    }
-                }
+                    return true;
+            }
+        }
 
-                KeyValuePair<string, CommonLibrary.Variable> result = new KeyValuePair<string, CommonLibrary.Variable>(nameWithProc, new CommonLibrary.Variable(name, foundTyp, isGlobal, fileName, line));
+        private static List<KeyValuePair<string, Variable>> GetVariable(string line, string fileName, bool isGlobal)
+        {
+            Regex typeRegex = new Regex(@"(?<=^\s*(DECL|)\s*(GLOBAL|)\s*)(INT|CHAR|BOOL|REAL|E6AXIS|E6POS|FDAT|PDAT|LDAT|STRUC|SIGNAL)", RegexOptions.IgnoreCase);
+            List<KeyValuePair<string, Variable>> result = new List<KeyValuePair<string, Variable>>();
 
-                return result;
-            }           
+
+
+            return result;
         }
 
         public static void CopyFileToWorkFolder(string workingfolder, string[] pathElements)
@@ -646,6 +650,22 @@ namespace CommonLibrary
             quaternion.Add(z);
             quaternion.Add(-x);
             return quaternion;
+        }
+
+        public static List<T> CloneList<T>(List<T> inputList)
+        {
+            List<T> result = new List<T>();
+            foreach (var item in inputList)
+                result.Add(item);
+            return result;
+        }
+
+        public static ObservableCollection<T> ToObservableCollection<T>(List<T> inputList)
+        {
+            ObservableCollection<T> result = new ObservableCollection<T>();
+            foreach (var item in inputList)
+                result.Add(item);
+            return result;
         }
     }
 }

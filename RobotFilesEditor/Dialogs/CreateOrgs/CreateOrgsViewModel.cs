@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows;
 using System.Configuration;
 using System.Text.RegularExpressions;
+using RobotFilesEditor.Dialogs.CreateOrgs.ManageTypes;
 
 namespace RobotFilesEditor.Dialogs.CreateOrgs
 {
@@ -19,6 +20,7 @@ namespace RobotFilesEditor.Dialogs.CreateOrgs
     {
         SortedDictionary<int, string> typesAndNames;
         ObservableCollection<TextItem> hometocentrals;
+        public List<ManageTypesData> linesAndTypes;
 
         #region Ctor
         public CreateOrgsViewModel(IDictionary<string, int> paths, IDictionary<int,string> jobs)
@@ -27,8 +29,8 @@ namespace RobotFilesEditor.Dialogs.CreateOrgs
             if (GlobalData.ControllerType == "KRC2 V8" || GlobalData.ControllerType == "KRC4")
                 RobotName = GetRobotName();
             IsCheckHomeEnabled = GlobalData.ControllerType == "KRC4" ? true : false;
-            WaitForInHome = GlobalData.ControllerType == "KRC4" ? false : true;
-            PLCCheckHome = GlobalData.ControllerType == "KRC4" ? true : false;
+            WaitForInHome = GlobalData.ControllerType == "KRC4" || GlobalData.ControllerType == "FANUC" ? false : true;
+            PLCCheckHome = GlobalData.ControllerType == "KRC4" || GlobalData.ControllerType == "FANUC" ? true : false;
             typesAndNames = new SortedDictionary<int, string>();
             Abort = new ObservableCollection<TextItem>( FillAbort());
             WithParts = new ObservableCollection<TextItem>(FillWithParts());
@@ -36,12 +38,7 @@ namespace RobotFilesEditor.Dialogs.CreateOrgs
             hometocentrals = new ObservableCollection<TextItem>(FillHomeToCentrals(paths));
             AbortNumber = new ObservableCollection<IntItem>();
             SafeRobot = false;
-            Lines = FillLines();
-            NrOfTools = FillTools();
-            SelectedToolsNumber = 1;
-            SelectedGunsNumber = 0;
-            Orgnumbers = FillOrgNums();
-            SelectedStartOrgNum = 1;
+            UpdateLines();
 
             RobotName = GlobalData.RobotNameFanuc;
             Paths = paths;
@@ -61,6 +58,25 @@ namespace RobotFilesEditor.Dialogs.CreateOrgs
             DictOrgsElementVM.Add(0, OrgsElements);
             DictOrgsElements = new Dictionary<int, ICollection<IOrgsElement>>();
             SetCommands();
+        }
+
+        private void DeserializeXML()
+        {
+            linesAndTypes = new ManageTypesModel(true).CreateTypesFromXML();
+        }
+
+        public void UpdateLines()
+        {
+            Types = new List<int>();
+            DeserializeXML();
+            Lines = FillLines();
+            NrOfTools = FillTools();
+            SelectedToolsNumber = 1;
+            SelectedGunsNumber = 0;
+            Orgnumbers = FillOrgNums();
+            SelectedStartOrgNum = 1;
+            SelectedLineIndex = -1;
+            SelectedTypeIndex = -1;
         }
 
         private ObservableCollection<TextItem> FillHomeToCentrals(IDictionary<string, int> paths)
@@ -96,7 +112,8 @@ namespace RobotFilesEditor.Dialogs.CreateOrgs
 
         private List<string> FillLines()
         {
-            List<string> lines = ConfigurationManager.AppSettings["Lines"].Split(',').Select(s => s.Trim()).ToList();
+            List<string> lines = new List<string>();
+            linesAndTypes.ForEach(x => lines.Add(x.LineName));
             return lines;
         }
 
@@ -199,17 +216,6 @@ namespace RobotFilesEditor.Dialogs.CreateOrgs
             }
         }
 
-        //bool _multiTools;
-        //private bool MultiTools
-        //{
-        //    get { return _multiTools; }
-        //    set
-        //    {
-        //        _multiTools = value;
-        //        RaisePropertyChanged(()=> MultiTools);
-        //    }
-        //}
-
         string _selectedLine;
         public string SelectedLine
         {
@@ -271,6 +277,26 @@ namespace RobotFilesEditor.Dialogs.CreateOrgs
             }
         }
 
+        private int _selectedLineIndex;
+        public int SelectedLineIndex
+        {
+            get { return _selectedLineIndex; }
+            set
+            {
+                Set(ref _selectedLineIndex, value);
+            }
+        }
+
+        private int _selectedTypeIndex;
+        public int SelectedTypeIndex
+        {
+            get { return _selectedTypeIndex; }
+            set
+            {
+                Set(ref _selectedTypeIndex, value);
+            }
+        }
+
         int _selectedStartOrgNum;
         public int SelectedStartOrgNum
         {
@@ -293,11 +319,6 @@ namespace RobotFilesEditor.Dialogs.CreateOrgs
                 }
                 SelectedGunsNumber = 0;
             }
-            
-           // RaisePropertyChanged(() => NrOfGuns);
-
-
-
         }
 
         int _selectedGunsNumber;
@@ -311,8 +332,8 @@ namespace RobotFilesEditor.Dialogs.CreateOrgs
             }
         }
 
-        List<string> _types;
-        public List<string> Types
+        List<int> _types;
+        public List<int> Types
         {
             get { return _types; }
             set
@@ -322,8 +343,8 @@ namespace RobotFilesEditor.Dialogs.CreateOrgs
             }
         }
 
-        List<string> _plcs;
-        public List<string> PLCs
+        List<int> _plcs;
+        public List<int> PLCs
         {
             get { return _plcs; }
             set
@@ -345,16 +366,6 @@ namespace RobotFilesEditor.Dialogs.CreateOrgs
             }
         }
 
-        //List<int> _nrOfGuns;
-        //public List<int> NrOfGuns
-        //{
-        //    get { return _nrOfGuns; }
-        //    set
-        //    {
-        //        _nrOfGuns = value;
-        //        RaisePropertyChanged(() => NrOfGuns);
-        //    }
-        //}
         ObservableCollection<int> _nrOfGuns;
         public ObservableCollection<int> NrOfGuns
         {
@@ -590,9 +601,15 @@ namespace RobotFilesEditor.Dialogs.CreateOrgs
             if (Lines != null)
             {
                 EnableOK = true;
-                Types = Model.Operations.CreateOrgsMethods.GetTypesOrPLCs(value, "Line_");
-                PLCs = Model.Operations.CreateOrgsMethods.GetTypesOrPLCs(value, "LinePLC_");
-                typesAndNames = Model.Operations.CreateOrgsMethods.GetTypesWithDescr(value, Types);
+                List<int> types = new List<int>();
+                List<int> plcs = new List<int>();
+                var line = linesAndTypes.Single(x => x.LineName == value);
+                line.Types.ForEach(x => types.Add(x.Number));
+                line.PLCs.ForEach(x => plcs.Add(x));
+                Types = types;
+                PLCs = plcs;
+                typesAndNames = new SortedDictionary<int, string>();
+                line.Types.ForEach(x => typesAndNames.Add(x.Number, x.Description));
                 _selectedtype = 0;
                 _selectedTypeName = "";
                 RaisePropertyChanged(() => SelectedType);
@@ -659,6 +676,19 @@ namespace RobotFilesEditor.Dialogs.CreateOrgs
             }
         }
 
+        RelayCommand _manageTypes;
+        public RelayCommand ManageTypes
+        {
+            get
+            {
+                if (_manageTypes == null)
+                {
+                    _manageTypes = new RelayCommand(manageTypesCall);
+                }
+                return _manageTypes;
+            }
+        }
+
         private void cancel()
         {
             var window = Application.Current.Windows
@@ -681,6 +711,10 @@ namespace RobotFilesEditor.Dialogs.CreateOrgs
             }
         }
 
+        private void manageTypesCall()
+        {
+            var typeManager = new ManageTypes.ManageTypesModel();
+        }
 
         private ObservableCollection<int> FillOrgNums()
         {

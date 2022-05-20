@@ -26,7 +26,8 @@ namespace RobotFilesEditor
         public ICommand ExecuteOperationCommand { get; set; }
         //public ICommand PreviewOperationCommand { get; set; }
         public List<IOperation> Operations { get; set; }
-        
+        public string Msg { get; private set; }
+        private bool? multiPath;
         private bool _checked;
 
         public bool Checked
@@ -162,7 +163,10 @@ namespace RobotFilesEditor
                     
                     if(DetectExceptions()==false)
                     {
-                        MessageBox.Show($"Finish operation \"{Title}\" with success!", "Successed!", MessageBoxButton.OK, MessageBoxImage.Information);
+                        if (multiPath.HasValue && multiPath.Value == true)
+                            Msg = $"Finish operation \"{Title}\" with success!";
+                        else
+                            MessageBox.Show($"Finish operation \"{Title}\" with success!", "Successed!", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                                  
             }
@@ -208,7 +212,8 @@ namespace RobotFilesEditor
 
             if(exceptions.Any() & !SrcValidator.CopiedFiles)
             {
-                MessageBox.Show(message, $"Errors in operation:\"{Title}\"!", MessageBoxButton.OK);
+                Msg = message;
+                //MessageBox.Show(message, $"Errors in operation:\"{Title}\"!", MessageBoxButton.OK);
                 return true;
             }else
             {
@@ -259,6 +264,8 @@ namespace RobotFilesEditor
                 throw ex;
             }
         }
+
+        public void ClearMsg() { Msg = string.Empty; multiPath = true; }
         #endregion
     }
 }

@@ -16,6 +16,7 @@ namespace RobotFilesEditor
     /// </summary>
     public partial class MainWindow : Window
     {
+        [Attributes.AppMainWindow]
         public MainWindow()
         {
             InitializeComponent();

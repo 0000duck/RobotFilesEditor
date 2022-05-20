@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using static RobotFilesEditor.Model.Operations.FANUC.FanucRobotPath;
+using RobotFilesEditor.Dialogs.SOVBackupsPreparations;
 
 namespace RobotFilesEditor.Model.Operations.FANUC
 {
@@ -699,6 +700,11 @@ namespace RobotFilesEditor.Model.Operations.FANUC
 
                         MessageBox.Show("SOV Backup successfuly created.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
+
+                        SOVBackupPreparationVM vm2 = new SOVBackupPreparationVM(false, GlobalData.RobotController.FANUC, Path.Combine(pathOfSOVBackups, GlobalData.RobotNameFanuc + ".zip"));
+                        SOVBackupsPreparationWindow window = new SOVBackupsPreparationWindow(vm2);
+                        //window.Owner = System.Windows.Application.Current.Windows.Cast<System.Windows.Window>().Single(x => x.DataContext == this);
+                        var dialog2 = window.ShowDialog();
                     }
                     catch (Exception ex)
                     {

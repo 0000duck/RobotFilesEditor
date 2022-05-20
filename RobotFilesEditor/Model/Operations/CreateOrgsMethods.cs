@@ -15,6 +15,8 @@ using RobotFilesEditor.Model.DataInformations;
 using RobotFilesEditor.Model.DataOrganization;
 using static RobotFilesEditor.Dialogs.CreateOrgs.OrgsElementVM;
 using RobotFilesEditor.ViewModel;
+using RobotFilesEditor.Dialogs.CreateOrgs.ManageTypes;
+
 namespace RobotFilesEditor.Model.Operations
 {
 
@@ -28,9 +30,11 @@ namespace RobotFilesEditor.Model.Operations
         static bool isRivet;
         static bool isArcWeld;
         static bool isHem;
+        static List<TypeAndNum> typesFromVMField;
 
-        internal void CreateOrgs(Dictionary<int, ICollection<IOrgsElement>> data, int selectedToolsNumber, bool isSafeRobot, string line, int gunsNumber, string plcnum, string robotname, int startOrgNum, bool waitForInHome)
+        internal void CreateOrgs(Dictionary<int, ICollection<IOrgsElement>> data, int selectedToolsNumber, bool isSafeRobot, string line, int gunsNumber, string plcnum, string robotname, int startOrgNum, bool waitForInHome, List<TypeAndNum> typesFromVM)
         {
+            typesFromVMField = typesFromVM;
             string ablaufName = SrcValidator.language == "DE" ? "_ablauf_" : "_sequence_";
             string tipchange = SrcValidator.language == "DE" ? "Kappenwechsel" : "Tipchange";
             string tipdress = SrcValidator.language == "DE" ? "Kappenfraesen" : "Tipdress";
@@ -156,7 +160,9 @@ namespace RobotFilesEditor.Model.Operations
                     isStartOrgGreaterThen1 = true;
 
                 int orgLength = GetOrgLength(data);
-                List<int> dummyTypes = CreateDummyTypes(line, data);
+                //List<int> dummyTypes = CreateDummyTypes(line, data);
+                List<int> dummyTypes = new List<int>();
+                typesFromVM.ForEach(x => dummyTypes.Add(x.Number));
                 for (int i = startOrgNum; i <= (orgLength + startOrgNum-1); i++)
                 {
                     //string header = CreateHeader(i, GetHomeNum(i, data[GetCorrectHomeIndex(i, data)]));
@@ -184,7 +190,7 @@ namespace RobotFilesEditor.Model.Operations
                             firstJobEnable = GetFirstJobEnable(data, i);
                         }
                         //
-                        string types = GetTypesKRC2_V8(data, (i - startOrgNum + 1), typesList,line);
+                        string types = GetTypesKRC2_V8(data, (i - startOrgNum + 1), typesList,line, typesFromVM);
                         orgs.Add(CreateProgName(i) + ablaufName + i, header + firstJobEnable + types);
                     }
                     else if (controllerType == 3)
@@ -200,7 +206,7 @@ namespace RobotFilesEditor.Model.Operations
                             header = CreateHeader(i, GetCorrectHomeIndex(i, data), waitForInHome, comment: CreateProgName(i) + ablaufName + i, progname: CreateProgName(i) + ablaufName + i, robot: robotname);
                             firstJobEnable = GetFirstJobEnable(data, i);
                         }
-                        string types = GetTypesKRC4(data, (i-startOrgNum+1), typesList, line);
+                        string types = GetTypesKRC4(data, (i-startOrgNum+1), typesList, line, typesFromVM);
                         orgs.Add(CreateProgName(i) + ablaufName + i, header + firstJobEnable + types);
                     }
                 }
@@ -1065,55 +1071,8 @@ namespace RobotFilesEditor.Model.Operations
 
         private static string GetTypeName(int key, string line)
         {
-            List<string> types = ConfigurationManager.AppSettings["Line_"+line].Split(',').Select(s => s.Trim()).ToList();
-            return types[key - 1];
+            return typesFromVMField.Single(x => x.Number == key).Description;
         }
-
-        internal static SortedDictionary<int, string> GetTypesWithDescr(string value, List<string> types)
-        {
-            SortedDictionary<int, string> result = new SortedDictionary<int, string>();
-            List<string> typesOnLine = ConfigurationManager.AppSettings["Line_" + value].Split(',').Select(s => s.Trim()).ToList();
-            int counter = 1;
-            result.Add(0, "");
-            foreach (string type in typesOnLine)
-            {
-                result.Add(counter,typesOnLine[counter-1]);
-                counter++;
-            }
-            return result;
-        }
-
-        internal static List<string> GetTypesOrPLCs(string value,string typeOrPlc)
-        {
-            List<string> result = new List<string>();
-            List<string> typesOnLine = ConfigurationManager.AppSettings[typeOrPlc + value].Split(',').Select(s => s.Trim()).ToList();
-            Dictionary<int, string> typeNrAndName = new Dictionary<int, string>();
-            int typeCounter = 1;
-
-            foreach (var type in typesOnLine)
-            {
-                if (!string.IsNullOrEmpty(type))
-                    typeNrAndName.Add(typeCounter, type);
-                typeCounter++;
-            }
-            result.Add("0");
-            int counter = 1;
-            if (typeOrPlc == "Line_")
-            {
-                foreach (var type in typeNrAndName.Keys)
-                {
-                    result.Add(type.ToString());
-                    counter++;
-                }
-            }
-            else
-            {
-                foreach (string type in typesOnLine)
-                    result.Add(type);
-            }
-            return result;
-        }
-
 
         private static string GetAbortLine(IOrgsElement job, bool firstElement)
         {
@@ -1661,42 +1620,6 @@ namespace RobotFilesEditor.Model.Operations
             return result;
         }
 
-
-        private static List<int> CreateDummyTypes(string line, Dictionary<int, ICollection<IOrgsElement>> data)
-        {
-            List<int> result = new List<int>();
-            int typesRequired=0;
-            typesRequired = ConfigurationManager.AppSettings["Line_" + line].Split(',').Select(s => s.Trim()).ToList().Count;
-            //if (line == "KG1")
-            //    typesRequired = 6;
-            //else if (line == "KG2")
-            //    typesRequired = 17;
-            //else if (line == "SR")
-            //    typesRequired = 6;
-            //else if (line == "FFG")
-            //    typesRequired = 6;
-
-            for (int i = 1; i <= typesRequired; i++)
-            {
-                if (!data.ContainsKey(i))
-                {
-                    result.Add(i);
-                }
-            }
-
-            return result;
-        }
-
-        //internal static ObservableCollection<KeyValuePair<string, int>> CreateAnyJob(int? id)
-        //{
-        //    GlobalData.SelectedJobsForAnyJob = new ObservableCollection<KeyValuePair<string, int>>();
-        //    CreateAnyJobViewModel vm = new CreateAnyJobViewModel(id);
-        //    CreateAnyJob sW = new CreateAnyJob(vm);
-        //    var dialogResult = sW.ShowDialog();
-
-        //    return GlobalData.SelectedJobsForAnyJob;
-        //}
-
         internal static ObservableCollection<KeyValuePair<string, int>> CreateUserNumOrAnyJob(int? id, ChooseType chooseType, int jobNr = 0)
         {
             switch (chooseType)
@@ -1890,16 +1813,21 @@ namespace RobotFilesEditor.Model.Operations
             return result;
         }
 
-        private static string GetTypesKRC2_V8(Dictionary<int, ICollection<IOrgsElement>> data, int i, List<int> typesList, string line)
+        private static string GetTypesKRC2_V8(Dictionary<int, ICollection<IOrgsElement>> data, int i, List<int> typesList, string line, List<TypeAndNum> typesFromVM)
         {
             bool isTypNumReq = GetTypNumReq(data, i);
-            List<string> types = ConfigurationManager.AppSettings["Line_" + line].Split(',').Select(s => s.Trim()).ToList();
+            //List<string> types = ConfigurationManager.AppSettings["Line_" + line].Split(',').Select(s => s.Trim()).ToList();
             string result = "";
+            List<string> types = new List<string>();
+            List<int> typeNrs = new List<int>();
+            typesFromVM.ForEach(x => typeNrs.Add(x.Number));
+            typesFromVM.ForEach(x => types.Add(x.Description));
             Regex getJob = new Regex(@"(?<=Job\s+)\d+", RegexOptions.IgnoreCase);
             int jobNr = 0;
             string description = "";
             string usernum = "";
-            for (int typeNr = 1; typeNr <= types.Count; typeNr ++)
+            //for (int typeNr = 1; typeNr <= types.Count; typeNr ++)
+            foreach (var typeNr in typeNrs)
             {
                 bool firstTime = true;
                 if (data.Keys.Contains(typeNr))
@@ -2023,15 +1951,19 @@ namespace RobotFilesEditor.Model.Operations
             return result;
         }
 
-        private static string GetTypesKRC4(Dictionary<int, ICollection<IOrgsElement>> data, int i, List<int> typesList, string line)
+        private static string GetTypesKRC4(Dictionary<int, ICollection<IOrgsElement>> data, int i, List<int> typesList, string line, List<TypeAndNum> typesFromVM)
         {
             bool isTypNumReq = GetTypNumReq(data,i);
 
             Regex getJob = new Regex(@"(?<=Job\s+)\d+", RegexOptions.IgnoreCase);
             data = RemoveOpFromData(data, i);
-            List<string> types = ConfigurationManager.AppSettings["Line_" + line].Split(',').Select(s => s.Trim()).ToList();
+            List<string> types = new List<string>();
+            List<int> typeNrs = new List<int>();
+            typesFromVM.ForEach(x => typeNrs.Add(x.Number));
+            typesFromVM.ForEach(x => types.Add(x.Description));
             string result = "";
-            for (int typeNr = 1; typeNr <= types.Count; typeNr++)
+            //for (int typeNr = 1; typeNr <= types.Count; typeNr++)
+            foreach (var typeNr in typeNrs)
             {
                 bool firstTime = true;
                 if (data.Keys.Contains(typeNr))
@@ -2223,7 +2155,7 @@ namespace RobotFilesEditor.Model.Operations
                 }
                 else
                 {
-                    if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["Line_" + line].Split(',').Select(s => s.Trim()).ToList()[typeNr-1]))
+                    if (typesFromVM.Any(x => x.Number == typeNr))
                     {
                         string typnotused = SrcValidator.language == "DE" ? "Typ nicht verwendet" : "Type not used";
                         result += String.Join(Environment.NewLine,

@@ -148,7 +148,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             if (orgnum > 61)
             {
                 OrgsElement element = new OrgsElement() { JobAndDescription = jobAndDescription, Abort = "Home", AbortNr = 1, UserNumValue = usernums };
-                result.Add("   1:  WAIT (DO[417:PLC_do_InHome_1]=ON)    ;");
+                result.Add("   1:  PR_CALL CMN(\"CheckHome\"=8,\"HomePos\"=1,\" * \"=1,'...');");
                 result.Add("   2:  " + CreateJobReqest(element, false));
                 result.Add("   3:   ;");
                 result.AddRange(GenerateJump(JumpType.UserNum, element));
@@ -232,7 +232,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             List<string> result = new List<string>();
             var initialJob = orgsVM.DictOrgsElements.First().Value.ToList()[orgNum-orgsVM.SelectedStartOrgNum];
             string jobDesrc = GetJobDescr(initialJob.OrgsElement);
-            result.Add(initialJob.OrgsElement.WithPart == "false" ? "  11:  WAIT (DO[417:PLC_do_InHome_1]=ON)    ;" : "  11:  WAIT (DO[418:PLC_do_InHome_2]=ON)    ;");
+            result.Add(initialJob.OrgsElement.WithPart == "false" ? "  11:  PR_CALL CMN(\"CheckHome\"=8,\"HomePos\"=1,\" * \"=1,'...');" : "  11:  PR_CALL CMN(\"CheckHome\"=8,\"HomePos\"=2,\" * \"=1,'...');");
             result.Add("  12:   ;");
             result.Add("  13:  !********************* ;");
             result.Add("  14:  !* "+typeSelection+" ;");
@@ -579,8 +579,7 @@ namespace RobotFilesEditor.Model.Operations.FANUC
 
         private string GetTypeName(int key, string line)
         {
-            List<string> types = ConfigurationManager.AppSettings["Line_" + line].Split(',').Select(s => s.Trim()).ToList();
-            return types[key - 1];
+            return orgsVM.linesAndTypes.Single(x => x.LineName == line).Types.Single(x => x.Number == key).Description;
         }
 
         private string CombineOrg(List<string> strings)

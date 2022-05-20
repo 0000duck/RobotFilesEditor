@@ -29,7 +29,7 @@
     <MinimumRequiredVersion>1.0.0.54</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>431</ApplicationRevision>
+    <ApplicationRevision>433</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -165,6 +165,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Attributes\AppMainWindowAttribute.cs" />
     <Compile Include="Dialogs\ABBRename\ABBRenameViewModel.cs" />
     <Compile Include="Dialogs\ABBRename\ABBRenameWindow.xaml.cs">
       <DependentUpon>ABBRenameWindow.xaml</DependentUpon>
@@ -187,12 +188,33 @@
     <Compile Include="Dialogs\CreateOrgs\CreateOrgs.xaml.cs">
       <DependentUpon>CreateOrgs.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\CreateOrgs\ManageTypes\ManageTypesData.cs" />
+    <Compile Include="Dialogs\CreateOrgs\ManageTypes\ManageTypesModel.cs" />
+    <Compile Include="Dialogs\CreateOrgs\ManageTypes\ManageTypesVM.cs" />
+    <Compile Include="Dialogs\CreateOrgs\ManageTypes\ManageTypesWindow.xaml.cs">
+      <DependentUpon>ManageTypesWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\LibrootCleaner\LibrootCleanerExpander.xaml.cs">
+      <DependentUpon>LibrootCleanerExpander.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\LibrootCleaner\LibrootCleanerExpanderVM.cs" />
+    <Compile Include="Dialogs\LibrootCleaner\LibrootCleanerModel.cs" />
+    <Compile Include="Dialogs\LibrootCleaner\LibrootCleanerVM.cs" />
+    <Compile Include="Dialogs\LibrootCleaner\LibrootCleanerWindow.xaml.cs">
+      <DependentUpon>LibrootCleanerWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\LoadingMessage\LoadingMessageVM.cs" />
     <Compile Include="Dialogs\RenamePointDialog\RenamePointDialog.xaml.cs">
       <DependentUpon>RenamePointDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dialogs\RenamePointDialog\RenamePointDialogVM.cs" />
     <Compile Include="Dialogs\RenamePointDialog\RenamePointModel.cs" />
+    <Compile Include="Dialogs\SOVBackupsPreparations\SOVBackupPreparationModel.cs" />
+    <Compile Include="Dialogs\SOVBackupsPreparations\SOVBackupPreparationVM.cs" />
+    <Compile Include="Dialogs\SOVBackupsPreparations\SOVBackupsPreparation.cs" />
+    <Compile Include="Dialogs\SOVBackupsPreparations\SOVBackupsPreparationWindow.xaml.cs">
+      <DependentUpon>SOVBackupsPreparationWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\TypIdChanger\ChangeTypIdList.xaml.cs">
       <DependentUpon>ChangeTypIdList.xaml</DependentUpon>
     </Compile>
@@ -281,6 +303,7 @@
       <DependentUpon>TypeCollisionComment.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dialogs\TypeCollisionComment\TypeCollisionCommentViewModel.cs" />
+    <Compile Include="Model\Converters\SOVMsgTypeToIconConverter.cs" />
     <Compile Include="Model\DataOrganization\TypId.cs" />
     <Compile Include="Dialogs\TypIdChanger\TypIDBySameIDWindow.xaml.cs">
       <DependentUpon>TypIDBySameIDWindow.xaml</DependentUpon>
@@ -312,8 +335,12 @@
     <Compile Include="Model\DataOrganization\PointInDat.cs" />
     <Compile Include="Model\DataOrganization\TextItem.cs" />
     <Compile Include="Model\FileDataValidation\ValidateText.cs" />
+    <Compile Include="Model\OLPTools\LibrootCleaner.cs" />
     <Compile Include="Model\Operations\ABB\ABBProcedure.cs" />
     <Compile Include="Model\Operations\ABB\ABB_Static_Methods.cs" />
+    <Compile Include="Model\Operations\BackupSyntaxValidation\FanucSyntaxValidator.cs" />
+    <Compile Include="Model\Operations\BackupSyntaxValidation\FanucSyntaxValidatorData.cs" />
+    <Compile Include="Model\Operations\BackupSyntaxValidation\IBackupSyntaxValidator.cs" />
     <Compile Include="Model\Operations\BackupSyntaxValidation\KUKASynataxValidator.cs" />
     <Compile Include="Model\Operations\BackupSyntaxValidation\SyntaxValidationData.cs" />
     <Compile Include="Model\Operations\CheckBasesMethods.cs" />
@@ -332,6 +359,7 @@
     <Compile Include="Model\Operations\DataClass\RenumberPointClasses.cs" />
     <Compile Include="Model\Operations\DataClass\RobotData.cs" />
     <Compile Include="Model\Operations\DataClass\SasFillerClass.cs" />
+    <Compile Include="Model\Operations\DataClass\SovBackupsPreparationResult.cs" />
     <Compile Include="Model\Operations\DataClass\SpotComparerClass.cs" />
     <Compile Include="Model\Operations\DataClass\TrelloReportDatas.cs" />
     <Compile Include="Model\Operations\FANUC\FanucCompareSOVToOLPMethods.cs" />
@@ -421,7 +449,23 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Dialogs\CreateOrgs\ManageTypes\ManageTypesWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\LibrootCleaner\LibrootCleanerExpander.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\LibrootCleaner\LibrootCleanerWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dialogs\RenamePointDialog\RenamePointDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\SOVBackupsPreparations\SOVBackupsPreparationWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -565,11 +609,23 @@
     <None Include="Resources\FANUC_LS_TEMPLATE.txt" />
     <None Include="Resources\FANUC_LS_TEMPLATE1.txt" />
     <None Include="Resources\ABB_MOD_TEMPLATE1.txt" />
+    <Content Include="Resources\error.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\alert.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\GlobalFiles\KRC4\C13_global.dat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Resources\KUKA_DAT_TEMPLATE.txt" />
     <None Include="Resources\KUKA_SRC_TEMPLATE.txt" />
+    <Content Include="Resources\info.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\tick.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\UserVariables.txt" />
     <None Include="Resources\PROG251.txt" />
     <Resource Include="Resources\ProgHeaderFanucEN.txt" />

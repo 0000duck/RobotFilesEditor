@@ -141,12 +141,12 @@ namespace RobotFilesEditor.Model.Operations
                 pointsFound.Where(x => x.InitialPoint != null).ToList().ForEach(y => globalPoints.Add(y));
                 reader.Close();
                 SaveResults(Path.GetDirectoryName(backupfile), filePair, resultDatFile);
-                globals.GlobalDat = UpdateGlobalFile(globalPoints, globals.GlobalDat, basesInConfigDat, baseToBeShifted);
+                //globals.GlobalDat = UpdateGlobalFile(globalPoints, globals.GlobalDat, basesInConfigDat, baseToBeShifted);
             }
-            if (globals.GlobalDat.Count > 0)
-            {
+            //if (globals.GlobalDat.Count > 0)
+            //{
 
-            }
+            //}
 
             
         }
@@ -389,16 +389,16 @@ namespace RobotFilesEditor.Model.Operations
                 if (string.IsNullOrEmpty(e6PosInDat))
                 {
                     if (globals.E6AXIS.Values.Any(x => e6PosPointName.Equals(x.Name, StringComparison.OrdinalIgnoreCase)))
-                        e6PosForCtor = globals.E6AXIS.Values.First(x => e6PosPointName.Equals(x.Name, StringComparison.OrdinalIgnoreCase)).Line;
+                        e6PosForCtor = globals.E6AXIS.Values.First(x => e6PosPointName.Equals(x.Name, StringComparison.OrdinalIgnoreCase)).LineContent;
                     else if (globals.E6POS.Values.Any(x => e6PosPointName.Equals(x.Name, StringComparison.OrdinalIgnoreCase)))
-                        e6PosForCtor = globals.E6POS.Values.First(x => e6PosPointName.Equals(x.Name, StringComparison.OrdinalIgnoreCase)).Line;
+                        e6PosForCtor = globals.E6POS.Values.First(x => e6PosPointName.Equals(x.Name, StringComparison.OrdinalIgnoreCase)).LineContent;
                 }
                 else
                     e6PosForCtor = e6PosInDat;
                 if (string.IsNullOrEmpty(fdatInDat))
                 {
                     if (globals.FDATs.Values.Any(x => e6PosPointName.Equals(replaceFWithXRegex.Replace(x.Name,"X"), StringComparison.OrdinalIgnoreCase)))
-                        fdatForCtor = globals.FDATs.Values.First(x => e6PosPointName.Equals(replaceFWithXRegex.Replace(x.Name, "X"), StringComparison.OrdinalIgnoreCase)).Line;
+                        fdatForCtor = globals.FDATs.Values.First(x => e6PosPointName.Equals(replaceFWithXRegex.Replace(x.Name, "X"), StringComparison.OrdinalIgnoreCase)).LineContent;
                 }
                 else
                     fdatForCtor = fdatInDat;

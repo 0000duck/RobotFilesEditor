@@ -27,11 +27,15 @@
         </Grid.ColumnDefinitions>
         <Label Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Content="Select line first!" Foreground="Tomato" FontWeight="Bold" Margin="5.667,5,4.266,5.2" HorizontalAlignment="Center"/>
         <Label Grid.Row="1" Grid.Column="1" Content="Line" Margin="5.667,5,4.266,5.2" HorizontalAlignment="Center"/>
-        <ComboBox Name="choseLine" ItemsSource="{Binding Lines}" SelectedItem="{Binding SelectedLine}"  Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="33.734,6,34,6.2"/>
-        <Label Grid.Row="1" Grid.Column="3" Content="PLC nr" Margin="5.667,5,4.266,5.2" HorizontalAlignment="Center"/>
-        <ComboBox Name="chosePLC" ItemsSource="{Binding PLCs}" SelectedItem="{Binding SelectedPLC, Mode=TwoWay}"  Grid.Row="1" Grid.Column="4" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="33.734,6,34,6.2"/>
+        <ComboBox Name="choseLine" ItemsSource="{Binding Lines}" SelectedItem="{Binding SelectedLine}" SelectedIndex="{Binding SelectedLineIndex}" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="33.734,6,34,6.2"/>
+        <Button Grid.Column="3" Grid.Row="1" Margin="5,5,5.133,5.2" Content="Type manager" Command="{Binding ManageTypes}"  Width="120"/>
+        <StackPanel Grid.Row="1" Grid.Column="4" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Label Content="PLC nr" Margin="5.667,5,4.266,5.2" HorizontalAlignment="Center"/>
+            <ComboBox Name="chosePLC" ItemsSource="{Binding PLCs}" SelectedItem="{Binding SelectedPLC, Mode=TwoWay}" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="33.734,6,34,6.2"/>
+        </StackPanel>
+       
         <Label Grid.Row="2" Grid.Column="0" Content="Type number" Margin="5.667,5,4.266,5.2"/>
-        <ComboBox Name="choseType" ItemsSource="{Binding Types}" SelectedItem="{Binding SelectedType, Mode=TwoWay}"  Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="24,6,24,6" Width="Auto"/>
+        <ComboBox Name="choseType" ItemsSource="{Binding Types}" SelectedItem="{Binding SelectedType, Mode=TwoWay}" SelectedIndex="{Binding SelectedTypeIndex}"  Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="24,6,24,6" Width="Auto"/>
         <Label Grid.Row="2" Grid.Column="2" Content="{Binding SelectedTypeName, Mode=TwoWay}" Margin="5.667,5,4.266,5.2"/>
         <Label Grid.Row="2" Grid.Column="3" Content="Robot:" HorizontalAlignment="Right" Margin="5.667,5,4.266,5.2"/>
         <TextBox Grid.Row="2" Grid.Column="4" Text="{Binding RobotName, Mode=TwoWay}" MinWidth="200" HorizontalAlignment="left" Margin="5.667,5,4.266,5.2"/>

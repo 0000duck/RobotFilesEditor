@@ -62,6 +62,8 @@ namespace RobotFilesEditor
         public static string RobotNameFanuc { get; set; }
         public enum RobotController { KUKA, FANUC, ABB };
         public enum RenameWindowType { Point, Path };
+        public enum SovLogContentInfoTypes { OK, Warning, Error, Information};
+
 
 
 

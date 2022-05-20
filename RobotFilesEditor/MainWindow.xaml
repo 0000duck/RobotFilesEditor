@@ -93,7 +93,7 @@
                                                     <Button Content="Create Gripper.xml" Command="{Binding CreateGripperXML}" Margin="3"/>
                                                     <Button Content="Create Grp SymName from config.dat" Command="{Binding ReadConfigDat}" Margin="3"/>
                                                     <Button Content="Mirror Path" Command="{Binding Mirror}" Margin="3"/>
-                                                    <Button Content="Stopping distances summary" Command="{Binding StoppingDistances}" Margin="3"/>
+                                                    <!--<Button Content="Stopping distances summary" Command="{Binding StoppingDistances}" Margin="3"/>-->
                                                     <Button Content="Read process points and compare with MPL" Command="{Binding ReadSpotPoints}" Margin="3"/>
                                                     <Button Content="Read backup for WorkBook" Command="{Binding ReadBackupForWB}" Margin="3"/>
                                                     <Button Content="Renumber Points in paths" Command="{Binding RenumberPoints}" Margin="3"/>
@@ -104,7 +104,7 @@
                                                     <Button Content="Copy backups to one folder" Command="{Binding RetrieveBackups}" Margin="3"/>
                                                     <Button Content="Prepare SOV backup" Command="{Binding PrepareSOVBackup}" Margin="3"/>
                                                     <Button Content="Fix PTP\LIN Fold KRC4 8.6" Command="{Binding FixPTPandLIN}" Margin="3"/>
-                                                    <Button Content="Validate backup" Command="{Binding ValidateBackup}" Margin="3"/>
+                                                    <Button Content="Validate backup" Command="{Binding ValidateBackupKUKA}" Margin="3"/>
                                                     <Button Content="Safety tools" Command="{Binding SafetyTools}" Margin="3"/>
                                                     <Button Content="RobKalDat" Command="{Binding RobKalDatProp}" Margin="3" Visibility="Visible"/>
                                                     <Button Content="Lazy PLC SAS Uploader" Command="{Binding SasFillerFromBackup}" Margin="3" Visibility="Visible"/>
@@ -138,9 +138,9 @@
                                                 <Button Content="Mirror" Command="{Binding FanucMirror}" Margin="3"/>
                                                 <Button Content="Safety tools" Command="{Binding SafetyTools}" Margin="3"/>
                                                 <Button Content="Renumber Lines" Command="{Binding RenumberLinesFanuc}" Margin="3"/>
-                                                <!--<Button Content="Compare OLP and SOV backup" Command="{Binding CompareSOVAndOLP}" Visibility="{Binding DebugVisibility}" Margin="3"/>-->
                                                 <Button Content="Compare OLP and SOV backup" Command="{Binding CompareSOVAndOLP}" Visibility="Visible" Margin="3"/>
                                                 <Button Content="Validate comments" Command="{Binding ValidateComments}" Visibility="Visible" Margin="3"/>
+                                                <Button Content="Validate backup" Command="{Binding ValidateBackupFanuc}" Visibility="Visible" Margin="3"/>
                                                 <Button Content="Shift base" Command="{Binding ShiftBaseFanuc}" Margin="3" Visibility="{Binding DebugVisibility}"/>
                                                 <Button Content="Read Messprotokol and create PS Path" Command="{Binding ReadMessprotokolFANUC}" Margin="3" Visibility="Visible"/>
                                             </StackPanel>
@@ -150,6 +150,7 @@
                                         <GroupItem x:Name="OLPGroupBox">
                                             <StackPanel>
                                                 <Button Content="Divide path by collisions" Command="{Binding DividePathByColls}" Margin="3"/>
+                                                <Button Content="Clean libroot" Command="{Binding CleanLibroot}" Margin="3"/>
                                             </StackPanel>
                                         </GroupItem>
                                     </Expander>
