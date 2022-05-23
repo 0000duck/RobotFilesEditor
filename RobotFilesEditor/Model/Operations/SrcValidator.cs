@@ -147,7 +147,7 @@ namespace RobotFilesEditor.Model.Operations
 
         private static void CheckChkAxisPos(IDictionary<string, List<string>> resultSrcFiles)
         {
-            Regex findCentralPosRegex = new Regex(@"(?<=^\s*WAIT\s+FOR\s+CHK_AXIS_POS\s*\(\s*).*(?=\))", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+            Regex findCentralPosRegex = new Regex(@"(?<=^\s*((WAIT\s+FOR)|(IF))\s+CHK_AXIS_POS\s*\(\s*).*(?=\))", RegexOptions.IgnoreCase | RegexOptions.Multiline);
             Regex findMovePointRegex = new Regex(@"(?<=^\s*(PTP|LIN)\s+)[\w_-]+", RegexOptions.IgnoreCase | RegexOptions.Multiline);
             string currentLogFileContent = string.Empty;
             foreach (var file in resultSrcFiles)
