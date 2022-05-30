@@ -131,7 +131,11 @@ namespace RobotPointsRenumber.Model.Operations.ABB
                         modFile = entry;
                         currentModName = Path.GetFileNameWithoutExtension((modFile as string));
                     }
-
+                    string file = string.Empty;
+                    if (modFile is string)
+                        file = modFile;
+                    else
+                        file = modFile.Fullname;
                     result.Add(currentModName, new ABBModule(currentModName));
                     StreamReader reader = new StreamReader(archive == null ? modFile : modFile.Open(),Encoding.Default);
                     bool isProcedureActive = false;
@@ -166,8 +170,8 @@ namespace RobotPointsRenumber.Model.Operations.ABB
                                 }
                                 else
                                 {
-                                    if (!inlinePointsFound.Contains(modFile.FullName))
-                                        inlinePointsFound.Add(modFile.FullName);
+                                    if (!inlinePointsFound.Contains(file))
+                                        inlinePointsFound.Add(file);
                                 }
                             }
                             else
@@ -179,8 +183,8 @@ namespace RobotPointsRenumber.Model.Operations.ABB
                                 }
                                 else
                                 {
-                                    if (!inlinePointsFound.Contains(modFile.FullName))
-                                        inlinePointsFound.Add(modFile.FullName);
+                                    if (!inlinePointsFound.Contains(file))
+                                        inlinePointsFound.Add(file);
                                 }
                             }
                         }
