@@ -75,11 +75,11 @@
                                     <Expander IsExpanded="False" Header="General" UseLayoutRounding="False">
                                         <GroupItem x:Name="GeneralGroupBox">
                                             <StackPanel>
-                                                <Button Content="Change user name" Command="{Binding ChangeName}" Margin="3"/>
-                                                <Button Content="Open Log" Command="{Binding OpenLog}" Margin="3"/>
-                                                <Button Content="Open destination folder" Command="{Binding OpenDest}" Margin="3"/>
-                                                <Button Content="Convert Trello Report" Command="{Binding ConvertTrello}" Margin="3"/>
-                                                <Button Content="Fill IBN checklist" Command="{Binding FillExcel}" Margin="3"/>
+                                                <Button Content="Change user name" Command="{Binding ChangeName}" Margin="3" ToolTip="{Binding Tooltips.ChangeNameTooltip}"/>
+                                                <Button Content="Open Log" Command="{Binding OpenLog}" Margin="3"  ToolTip="{Binding Tooltips.OpenLogTooltip}"/>
+                                                <Button Content="Open destination folder" Command="{Binding OpenDest}" Margin="3" ToolTip="{Binding Tooltips.OpenDestTooltip}"/>
+                                                <Button Content="Convert Trello Report" Command="{Binding ConvertTrello}" Margin="3" ToolTip="{Binding Tooltips.ConvertTrelloTooltip}"/>
+                                                <Button Content="Fill IBN checklist" Command="{Binding FillExcel}" Margin="3" ToolTip="{Binding Tooltips.FillExcelTooltip}"/>
                                                 <Button Content="Temp" Command="{Binding TempExec}" Margin="3" Visibility="Collapsed"/>
                                             </StackPanel>
                                         </GroupItem>
@@ -88,32 +88,32 @@
                                         <ScrollViewer VerticalScrollBarVisibility="Auto" IsEnabled="True">
                                             <GroupItem x:Name="KUKAGroupBox">
                                                 <StackPanel>
-                                                    <Button Content="Generate orgs" Command="{Binding CreateOrgsCommand}" Margin="3"/>
-                                                    <Button Content="Generate grippers" Command="{Binding CreateGripperCommand}" Margin="3"/>
-                                                    <Button Content="Create Gripper.xml" Command="{Binding CreateGripperXML}" Margin="3"/>
-                                                    <Button Content="Create Grp SymName from config.dat" Command="{Binding ReadConfigDat}" Margin="3"/>
-                                                    <Button Content="Mirror Path" Command="{Binding Mirror}" Margin="3"/>
+                                                    <Button Content="Generate orgs" Command="{Binding CreateOrgsCommand}" Margin="3" ToolTip="{Binding Tooltips.CreateOrgsCommandTooltip}"/>
+                                                    <Button Content="Generate grippers" Command="{Binding CreateGripperCommand}" Margin="3" ToolTip="{Binding Tooltips.CreateGripperCommandTooltip}" />
+                                                    <Button Content="Create Gripper.xml" Command="{Binding CreateGripperXML}" Margin="3" ToolTip="{Binding Tooltips.CreateGripperXMLTooltip}"/>
+                                                    <Button Content="Create Grp SymName from config.dat" Command="{Binding ReadConfigDat}" Margin="3" ToolTip="{Binding Tooltips.ReadConfigDatTooltip}"/>
+                                                    <Button Content="Mirror Path" Command="{Binding Mirror}" Margin="3" ToolTip="{Binding Tooltips.MirrorTooltip}"/>
                                                     <!--<Button Content="Stopping distances summary" Command="{Binding StoppingDistances}" Margin="3"/>-->
-                                                    <Button Content="Read process points and compare with MPL" Command="{Binding ReadSpotPoints}" Margin="3"/>
-                                                    <Button Content="Read backup for WorkBook" Command="{Binding ReadBackupForWB}" Margin="3"/>
-                                                    <Button Content="Renumber Points in paths" Command="{Binding RenumberPoints}" Margin="3"/>
-                                                    <Button Content="Change TypIDs in backup" Command="{Binding TypIdChange}" Margin="3"/>
-                                                    <Button Content="Check bases with RobKalDat project" Command="{Binding CheckBases}" Margin="3"/>
+                                                    <Button Content="Read process points and compare with MPL" Command="{Binding ReadSpotPoints}" Margin="3" ToolTip="{Binding Tooltips.ReadSpotPointsTooltip}"/>
+                                                    <Button Content="Read backup for WorkBook" Command="{Binding ReadBackupForWB}" Margin="3" ToolTip="{Binding Tooltips.ReadBackupForWBTooltip}"/>
+                                                    <Button Content="Renumber Points in paths" Command="{Binding RenumberPoints}" Margin="3"  ToolTip="{Binding Tooltips.RenumberPointsTooltip}"/>
+                                                    <Button Content="Change TypIDs in backup" Command="{Binding TypIdChange}" Margin="3" ToolTip="{Binding Tooltips.TypIdChangeTooltip}"/>
+                                                    <Button Content="Check bases with RobKalDat project" Command="{Binding CheckBases}" Margin="3" ToolTip="{Binding Tooltips.CheckBasesTooltip}"/>
                                                     <!--<Button Content="Fill TypID with MPL" Command="{Binding FillTypID}" Margin="3"/>-->
-                                                    <Button Content="Compare bosch with TypID list" Command="{Binding CompareBosch}" Margin="3"/>
-                                                    <Button Content="Copy backups to one folder" Command="{Binding RetrieveBackups}" Margin="3"/>
-                                                    <Button Content="Prepare SOV backup" Command="{Binding PrepareSOVBackup}" Margin="3"/>
-                                                    <Button Content="Fix PTP\LIN Fold KRC4 8.6" Command="{Binding FixPTPandLIN}" Margin="3"/>
-                                                    <Button Content="Validate backup" Command="{Binding ValidateBackupKUKA}" Margin="3"/>
-                                                    <Button Content="Safety tools" Command="{Binding SafetyTools}" Margin="3"/>
-                                                    <Button Content="RobKalDat" Command="{Binding RobKalDatProp}" Margin="3" Visibility="Visible"/>
-                                                    <Button Content="Lazy PLC SAS Uploader" Command="{Binding SasFillerFromBackup}" Margin="3" Visibility="Visible"/>
-                                                    <Button Content="Get data for Mengelist" Command="{Binding GetMenge}" Margin="3" Visibility="Visible"/>
-                                                    <Button Content="Compare spot points between backups" Command="{Binding CompareSpots}" Margin="3" Visibility="Visible"/>
+                                                    <!--<Button Content="Compare bosch with TypID list" Command="{Binding CompareBosch}" Margin="3"/>-->
+                                                    <Button Content="Copy backups to one folder" Command="{Binding RetrieveBackups}" Margin="3"  ToolTip="{Binding Tooltips.RetrieveBackupsTooltip}"/>
+                                                    <Button Content="Prepare SOV backup" Command="{Binding PrepareSOVBackup}" Margin="3" ToolTip="{Binding Tooltips.PrepareSOVBackupTooltip}"/>
+                                                    <Button Content="Fix PTP\LIN Fold KRC4 8.6" Command="{Binding FixPTPandLIN}" Margin="3" ToolTip="{Binding Tooltips.FixPTPandLINTooltip}"/>
+                                                    <Button Content="Validate backup" Command="{Binding ValidateBackupKUKA}" Margin="3" ToolTip="{Binding Tooltips.ValidateBackupKUKATooltip}"/>
+                                                    <Button Content="Safety tools" Command="{Binding SafetyTools}" Margin="3"  ToolTip="{Binding Tooltips.SafetyToolsToolTip}"/>
+                                                    <Button Content="RobKalDat" Command="{Binding RobKalDatProp}" Margin="3" Visibility="Visible" ToolTip="{Binding Tooltips.RobKalDatPropTooltip}"/>
+                                                    <Button Content="Fill SAS from backup" Command="{Binding SasFillerFromBackup}" Margin="3" Visibility="Visible" ToolTip="{Binding Tooltips.SasFillerFromBackupTooltip}"/>
+                                                    <Button Content="Get data for Mengelist" Command="{Binding GetMenge}" Margin="3" Visibility="Visible" ToolTip="{Binding Tooltips.GetMengeTooltip}"/>
+                                                    <Button Content="Compare spot points between backups" Command="{Binding CompareSpots}" Margin="3" Visibility="Visible" ToolTip="{Binding Tooltips.CompareSpotsTooltip}"/>
                                                     <Button Content="Collisions for PS" Command="{Binding CollisionsForPS}" Margin="3" Visibility="Collapsed"/>
                                                     <Button Content="Modify E1" Command="{Binding ModifyE1}" Margin="3" Visibility="Collapsed"/>
                                                     <Button Content="Shift base" Command="{Binding ShiftBaseKuka}" Margin="3" Visibility="{Binding DebugVisibility}"/>
-                                                    <Button Content="Read Messprotokol and create PS Path" Command="{Binding ReadMessprotokolKUKA}" Margin="3" Visibility="Visible"/>
+                                                    <Button Content="Read Messprotokol and create PS Path" Command="{Binding ReadMessprotokolKUKA}" Margin="3" Visibility="Visible" ToolTip="{Binding Tooltips.ReadMessprotokolTooltip}"/>
                                                     <CheckBox Content="Check command order?" IsChecked="{Binding CheckOrder}" Margin="3"/>
                                                 </StackPanel>
                                             </GroupItem>
@@ -122,35 +122,35 @@
                                     <Expander IsExpanded="False" Header="ABB" UseLayoutRounding="False">
                                         <GroupItem x:Name="ABBGroupBox">
                                             <StackPanel>
-                                                <Button Content="ABB Helper" Command="{Binding ABBHelper}" Margin="3"/>
-                                                <Button Content="Rename points" Command="{Binding RenamePointsABB}" Margin="3"/>
-                                                <Button Content="Read process points and compare with MPL" Command="{Binding ReadSpotPointsABB}" Margin="3"/>
-                                                <Button Content="Safety tools" Command="{Binding SafetyTools}" Margin="3"/>
-                                                <Button Content="Read backup for WorkBook" Command="{Binding ReadBackupForWBABB}" Margin="3"/>
-                                                <Button Content="Read Messprotokol and create PS Path" Command="{Binding ReadMessprotokolABB}" Margin="3" Visibility="Visible"/>
+                                                <Button Content="ABB Helper" Command="{Binding ABBHelper}" Margin="3" ToolTip="{Binding Tooltips.ABBHelperTooltip}"/>
+                                                <Button Content="Rename points" Command="{Binding RenamePointsABB}" Margin="3" ToolTip="{Binding Tooltips.RenamePointsABBTooltip}"/>
+                                                <Button Content="Read process points and compare with MPL" Command="{Binding ReadSpotPointsABB}" Margin="3" ToolTip="{Binding Tooltips.ReadSpotPointsABBTooltip}"/>
+                                                <Button Content="Safety tools" Command="{Binding SafetyTools}" Margin="3" ToolTip="{Binding Tooltips.SafetyToolsToolTip}"/>
+                                                <Button Content="Read backup for WorkBook" Command="{Binding ReadBackupForWBABB}" Margin="3" ToolTip="{Binding Tooltips.ReadSpotPointsTooltip}"/>
+                                                <Button Content="Read Messprotokol and create PS Path" Command="{Binding ReadMessprotokolABB}" Margin="3" Visibility="Visible" ToolTip="{Binding Tooltips.ReadMessprotokolTooltip}"/>
                                             </StackPanel>
                                         </GroupItem>
                                     </Expander>
                                     <Expander IsExpanded="False" Header="FANUC" UseLayoutRounding="False">
                                         <GroupItem x:Name="FanucGroupBox">
                                             <StackPanel>
-                                                <Button Content="Generate orgs" Command="{Binding GenerateOrgsFanuc}" Margin="3"/>
-                                                <Button Content="Mirror" Command="{Binding FanucMirror}" Margin="3"/>
-                                                <Button Content="Safety tools" Command="{Binding SafetyTools}" Margin="3"/>
-                                                <Button Content="Renumber Lines" Command="{Binding RenumberLinesFanuc}" Margin="3"/>
-                                                <Button Content="Compare OLP and SOV backup" Command="{Binding CompareSOVAndOLP}" Visibility="Visible" Margin="3"/>
-                                                <Button Content="Validate comments" Command="{Binding ValidateComments}" Visibility="Visible" Margin="3"/>
-                                                <Button Content="Validate backup" Command="{Binding ValidateBackupFanuc}" Visibility="Visible" Margin="3"/>
+                                                <Button Content="Generate orgs" Command="{Binding GenerateOrgsFanuc}" Margin="3" ToolTip="{Binding Tooltips.GenerateOrgsFanucTooltip}"/>
+                                                <Button Content="Mirror" Command="{Binding FanucMirror}" Margin="3" ToolTip="{Binding Tooltips.FanucMirrorTooltip}"/>
+                                                <Button Content="Safety tools" Command="{Binding SafetyTools}" Margin="3" ToolTip="{Binding Tooltips.SafetyToolsToolTip}"/>
+                                                <Button Content="Renumber Lines" Command="{Binding RenumberLinesFanuc}" Margin="3" ToolTip="{Binding Tooltips.RenumberLinesFanucToolTip}"/>
+                                                <Button Content="Compare OLP and SOV backup" Command="{Binding CompareSOVAndOLP}" Visibility="Visible" Margin="3" ToolTip="{Binding Tooltips.CompareSOVAndOLPToolTip}"/>
+                                                <Button Content="Validate comments" Command="{Binding ValidateComments}" Visibility="Visible" Margin="3"  ToolTip="{Binding Tooltips.ValidateCommentsToolTip}"/>
+                                                <Button Content="Validate backup" Command="{Binding ValidateBackupFanuc}" Visibility="Visible" Margin="3" ToolTip="{Binding Tooltips.ValidateBackupFanucToolTip}"/>
                                                 <Button Content="Shift base" Command="{Binding ShiftBaseFanuc}" Margin="3" Visibility="{Binding DebugVisibility}"/>
-                                                <Button Content="Read Messprotokol and create PS Path" Command="{Binding ReadMessprotokolFANUC}" Margin="3" Visibility="Visible"/>
+                                                <Button Content="Read Messprotokol and create PS Path" Command="{Binding ReadMessprotokolFANUC}" Margin="3" Visibility="Visible" ToolTip="{Binding Tooltips.ReadMessprotokolTooltip}"/>
                                             </StackPanel>
                                         </GroupItem>
                                     </Expander>
                                     <Expander IsExpanded="False" Header="OLP Tools" UseLayoutRounding="False">
                                         <GroupItem x:Name="OLPGroupBox">
                                             <StackPanel>
-                                                <Button Content="Divide path by collisions" Command="{Binding DividePathByColls}" Margin="3"/>
-                                                <Button Content="Clean libroot" Command="{Binding CleanLibroot}" Margin="3"/>
+                                                <Button Content="Divide path by collisions" Command="{Binding DividePathByColls}" Margin="3" ToolTip="{Binding Tooltips.DividePathByCollsTooltip}"/>
+                                                <Button Content="Clean libroot" Command="{Binding CleanLibroot}" Margin="3" ToolTip="{Binding Tooltips.CleanLibrootTooltip}"/>
                                             </StackPanel>
                                         </GroupItem>
                                     </Expander>

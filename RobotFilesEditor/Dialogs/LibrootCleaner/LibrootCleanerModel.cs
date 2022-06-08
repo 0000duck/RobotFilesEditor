@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Xml.Linq;
 
 namespace RobotFilesEditor.Dialogs.LibrootCleaner
@@ -37,60 +38,82 @@ namespace RobotFilesEditor.Dialogs.LibrootCleaner
         #region methods
         private void ExecuteScan()
         {
-            ScanPSZ();
-            ScanLibroot();
+            if (ScanPSZ());
+                ScanLibroot();
         }
 
-        private void ScanPSZ()
+        private bool ScanPSZ()
         {
-            Regex instanceRegex = new Regex(@"Pm.*Instance", RegexOptions.IgnoreCase);
-            cojts = new List<CojtPair>();
-            string copyFile = Path.Combine(Path.GetDirectoryName(pszFilePath), Path.GetFileNameWithoutExtension(pszFilePath) + "_copy.psz");
-            if (!File.Exists(copyFile))
-                File.Copy(pszFilePath, copyFile);
-            using (FileStream zipToOpen = new FileStream(copyFile, FileMode.Open))
+            string errorstring = string.Empty;
+            string instanceString = string.Empty;
+            try
             {
-                using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
+                Regex instanceRegex = new Regex(@"Pm.*Instance", RegexOptions.IgnoreCase);
+                cojts = new List<CojtPair>();
+                string copyFile = Path.Combine(Path.GetDirectoryName(pszFilePath), Path.GetFileNameWithoutExtension(pszFilePath) + "_copy.psz");
+                if (!File.Exists(copyFile))
+                    File.Copy(pszFilePath, copyFile);
+                using (FileStream zipToOpen = new FileStream(copyFile, FileMode.Open))
                 {
-                    var psState = archive.GetEntry("StandaloneStudy_PsState.xml");
-                    StreamReader reader = new StreamReader(psState.Open());
-                    XDocument dokument = XDocument.Parse(reader.ReadToEnd());
-                    reader.Close();
-
-                    var pmInstances = dokument.Element("Data").Element("Objects").Elements().Where(x=>instanceRegex.IsMatch(x.Name.ToString()));
-                    foreach (var instance in pmInstances)
+                    using (ZipArchive archive = new ZipArchive(zipToOpen, ZipArchiveMode.Update))
                     {
-                        List<string> prototypes = new List<string>();
-                        string objtype = instance.Name.LocalName;
-                        if (instance.Element("masterObj") != null && instance.Element("masterObj").Value.ToLower() != "null")
+                        var psState = archive.GetEntry("StandaloneStudy_PsState.xml");
+                        StreamReader reader = new StreamReader(psState.Open());
+                        XDocument dokument = XDocument.Parse(reader.ReadToEnd());
+                        reader.Close();
+
+                        var pmInstances = dokument.Element("Data").Element("Objects").Elements().Where(x => instanceRegex.IsMatch(x.Name.ToString()));
+                        foreach (var instance in pmInstances)
                         {
-                            var masterObj = instance.Element("masterObj").Value.ToLower();
-                            var tempComponent = dokument.Element("Data").Element("Objects").Elements().First(x => x.Attribute("ExternalId").Value.ToLower() == masterObj);
-                            if (tempComponent.Element("threeDRep") != null)
-                                prototypes.Add(masterObj);
-                            else
+                            if (instance.Attribute("ExternalId").Value == "E2E28D7B-9317-40AF-9E21-F41673EF2C9F")
+                            { }
+                            instanceString = instance.Attribute("ExternalId").Value;
+                            List<string> prototypes = new List<string>();
+                            string objtype = instance.Name.LocalName;
+                            if (instance.Element("masterObj") != null && instance.Element("masterObj").Value.ToLower() != "null")
                             {
-                                prototypes.Add(tempComponent.Element("prototype").Value.ToLower());
-                                if (tempComponent.Element("parentPrototype") != null)
-                                    prototypes.Add(tempComponent.Element("parentPrototype").Value.ToLower());
+                                var masterObj = instance.Element("masterObj").Value.ToLower();
+                                var tempComponent = dokument.Element("Data").Element("Objects").Elements().First(x => x.Attribute("ExternalId").Value.ToLower() == masterObj);
+                                if (tempComponent.Element("threeDRep") != null)
+                                    prototypes.Add(masterObj);
+                                else
+                                {
+                                    prototypes.Add(tempComponent.Element("prototype").Value.ToLower());
+                                    if (tempComponent.Element("parentPrototype") != null)
+                                        prototypes.Add(tempComponent.Element("parentPrototype").Value.ToLower());
+                                }
+                            }
+                            else
+                                prototypes.Add(instance.Element("prototype").Value.ToLower());
+                            foreach (var prototype in prototypes)
+                            {
+                                var component = dokument.Element("Data").Element("Objects").Elements().First(x => x.Attribute("ExternalId").Value.ToLower() == prototype);
+                                var threeDRep = component.Element("threeDRep").Value.ToLower();
+                                var pm3DRep = dokument.Element("Data").Element("Objects").Elements("Pm3DRep").FirstOrDefault(x => x.Attribute("ExternalId").Value.ToLower() == threeDRep);
+                                if (pm3DRep != null)
+                                {
+                                    var file = pm3DRep.Element("file").Value.ToLower();
+                                    var pmReferenceFile = dokument.Element("Data").Element("Objects").Elements("PmReferenceFile").First(x => x.Attribute("ExternalId").Value.ToLower() == file);
+                                    var filename = pmReferenceFile.Element("fileName").Value;
+                                    if (!cojts.Any(x => x.CojtInPSZ.ToLower() == filename.ToLower()))
+                                        cojts.Add(new CojtPair(objtype, filename, pmReferenceFile.Attribute("ExternalId").Value));
+                                }
+                                else
+                                    errorstring += "Error: missing pm3DRep file for instance " + instanceString + "\r\n";
+
                             }
                         }
-                        else
-                            prototypes.Add(instance.Element("prototype").Value.ToLower());
-                        foreach (var prototype in prototypes)
-                        {
-                            var component = dokument.Element("Data").Element("Objects").Elements().First(x => x.Attribute("ExternalId").Value.ToLower() == prototype);
-                            var threeDRep = component.Element("threeDRep").Value.ToLower();
-                            var pm3DRep = dokument.Element("Data").Element("Objects").Elements("Pm3DRep").First(x => x.Attribute("ExternalId").Value.ToLower() == threeDRep);
-                            var file = pm3DRep.Element("file").Value.ToLower();
-                            var pmReferenceFile = dokument.Element("Data").Element("Objects").Elements("PmReferenceFile").First(x => x.Attribute("ExternalId").Value.ToLower() == file);
-                            var filename = pmReferenceFile.Element("fileName").Value;
-                            if (!cojts.Any(x => x.CojtInPSZ.ToLower() == filename.ToLower()))
-                                cojts.Add(new CojtPair(objtype,filename, pmReferenceFile.Attribute("ExternalId").Value));
-                        }
                     }
+                    zipToOpen.Close();
                 }
-                zipToOpen.Close();
+                if (!string.IsNullOrEmpty(errorstring))
+                    MessageBox.Show(errorstring, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message + "\r\n" + instanceString, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
             }
         }
 

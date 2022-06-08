@@ -1,0 +1,24 @@
+﻿<Window x:Class="RobotFilesEditor.Dialogs.OptionSelector.OptionSelectorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RobotFilesEditor.Dialogs.OptionSelector"
+        mc:Ignorable="d"
+        Title="OptionSelectorWindow" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <StackPanel Margin="5,5,5,5">
+            <TextBlock Text="Select" HorizontalAlignment="Center"/>
+            <TextBlock Text="{Binding OptionType}" HorizontalAlignment="Center"/>
+            <RadioButton GroupName="OptionSelect" Content="{Binding OptionsToSelect[0]}" IsChecked="{Binding Selected[0]}" Visibility="{Binding VisibilityEnabled[0]}" Margin="5,5,5,0"/>
+            <RadioButton GroupName="OptionSelect" Content="{Binding OptionsToSelect[1]}" IsChecked="{Binding Selected[1]}" Visibility="{Binding VisibilityEnabled[1]}" Margin="5,5,5,0"/>
+            <RadioButton GroupName="OptionSelect" Content="{Binding OptionsToSelect[2]}" IsChecked="{Binding Selected[2]}" Visibility="{Binding VisibilityEnabled[2]}" Margin="5,5,5,0"/>
+            <RadioButton GroupName="OptionSelect" Content="{Binding OptionsToSelect[3]}" IsChecked="{Binding Selected[3]}" Visibility="{Binding VisibilityEnabled[3]}" Margin="5,5,5,0"/>
+            <RadioButton GroupName="OptionSelect" Content="{Binding OptionsToSelect[4]}" IsChecked="{Binding Selected[4]}" Visibility="{Binding VisibilityEnabled[4]}" Margin="5,5,5,0"/>
+            <RadioButton GroupName="OptionSelect" Content="{Binding OptionsToSelect[5]}" IsChecked="{Binding Selected[5]}" Visibility="{Binding VisibilityEnabled[5]}" Margin="5,5,5,0"/>
+            <RadioButton GroupName="OptionSelect" Content="{Binding OptionsToSelect[6]}" IsChecked="{Binding Selected[6]}" Visibility="{Binding VisibilityEnabled[6]}" Margin="5,5,5,0"/>
+            <RadioButton GroupName="OptionSelect" Content="{Binding OptionsToSelect[7]}" IsChecked="{Binding Selected[7]}" Visibility="{Binding VisibilityEnabled[7]}" Margin="5,5,5,0"/>
+            <Button Content="OK" Command="{Binding OKExecute}" HorizontalAlignment="Center" Width="50"/>
+        </StackPanel>
+    </Grid>
+</Window>

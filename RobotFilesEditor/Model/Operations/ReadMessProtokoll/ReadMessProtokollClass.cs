@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Text.RegularExpressions;
+using RobotFilesEditor.Dialogs.OptionSelector;
 
 namespace RobotFilesEditor.Model.Operations.ReadMessProtokoll
 {
@@ -34,13 +35,21 @@ namespace RobotFilesEditor.Model.Operations.ReadMessProtokoll
         public ReadMessProtokollClass(GlobalData.RobotController robotType)
         {
             messprotokollFile = string.Empty;
+            string type = string.Empty;
+            if (robotType == GlobalData.RobotController.KUKA)
+            {
+                OptionSelectorVM vm = new OptionSelectorVM(new List<string>() { "KSS 8.3", "KSS 8.6" }, "KSS version:");
+                OptionSelectorWindow window = new OptionSelectorWindow(vm);
+                var dialog = window.ShowDialog();
+                type = vm.Result;
+            }
             List<RobotPointMessprotokoll> pointsInMessProtokoll = GetPointsInMessprotokoll();
-            CreatePaths(pointsInMessProtokoll, robotType);
+            CreatePaths(pointsInMessProtokoll, robotType, type);
         }
         #endregion
 
         #region methods
-        private void CreatePaths(List<RobotPointMessprotokoll> pointsInMessProtokoll, GlobalData.RobotController robotType)
+        private void CreatePaths(List<RobotPointMessprotokoll> pointsInMessProtokoll, GlobalData.RobotController robotType, string type)
         {
             try
             {
@@ -94,20 +103,42 @@ namespace RobotFilesEditor.Model.Operations.ReadMessProtokoll
                             }
                         case GlobalData.RobotController.KUKA:
                             {
-                                resultFile += string.Join(Environment.NewLine,
-                                    ";FOLD PTP " + point.Name + " Vel=100 % P" + point.Name + " Tool[0]:Tool0 Base[99]:ANLANGENNULL;%{PE}",
-                                    ";FOLD Parameters ;%{h}",
-                                    ";Params IlfProvider=kukaroboter.basistech.inlineforms.movement.old; Kuka.IsGlobalPoint = False; Kuka.PointName=" + point.Name + "; Kuka.BlendingEnabled=True; Kuka.MoveDataPtpName=P" + point.Name + "; Kuka.VelocityPtp=100; Kuka.CurrentCDSetIndex=0; Kuka.MovementParameterFieldEnabled=True; IlfCommand=PTP",
-                                    ";ENDFOLD",
-                                    "$BWDSTART=FALSE",
-                                    "PDAT_ACT=P" + point.Name + "",
-                                    "FDAT_ACT=F" + point.Name + "",
-                                    "BAS(#PTP_PARAMS,100)",
-                                    "SET_CD_PARAMS(0)",
-                                    "PTP X" + point.Name,
-                                    ";ENDFOLD"
-                                    ,""
-                                    );
+                                switch (type)
+                                {
+                                    case "KSS 8.6":
+                                        {
+                                            resultFile += string.Join(Environment.NewLine,
+                                            ";FOLD PTP " + point.Name + " Vel=100 % P" + point.Name + " Tool[0]:Tool0 Base[99]:ANLANGENNULL;%{PE}",
+                                            ";FOLD Parameters ;%{h}",
+                                            ";Params IlfProvider=kukaroboter.basistech.inlineforms.movement.old; Kuka.IsGlobalPoint = False; Kuka.PointName=" + point.Name + "; Kuka.BlendingEnabled=True; Kuka.MoveDataPtpName=P" + point.Name + "; Kuka.VelocityPtp=100; Kuka.CurrentCDSetIndex=0; Kuka.MovementParameterFieldEnabled=True; IlfCommand=PTP",
+                                            ";ENDFOLD",
+                                            "$BWDSTART=FALSE",
+                                            "PDAT_ACT=P" + point.Name + "",
+                                            "FDAT_ACT=F" + point.Name + "",
+                                            "BAS(#PTP_PARAMS,100)",
+                                            "SET_CD_PARAMS(0)",
+                                            "PTP X" + point.Name,
+                                            ";ENDFOLD"
+                                            , ""
+                                            );
+                                            break;
+                                        }
+                                    case "KSS 8.3":
+                                        {
+                                            resultFile += string.Join(Environment.NewLine,
+                                                ";FOLD PTP " + point.Name + " Vel=100 % P" + point.Name + " Tool[0]:Gripper1 Base[99]:ANLANGENNULL;%{PE}%R 8.3.48,%MKUKATPBASIS,%CMOVE,%VPTP,%P 1:PTP, 2:" + point.Name + ", 3:, 5:100, 7:P" + point.Name + "",
+                                                "$BWDSTART=FALSE",
+                                                "PDAT_ACT=P" + point.Name + "",
+                                                "FDAT_ACT=F" + point.Name + "",
+                                                "BAS(#PTP_PARAMS,100)",
+                                                "PTP X" + point.Name,
+                                                ";ENDFOLD"
+                                                , ""
+                                            );
+                                            break;
+                                        }
+                                }
+                                
                                 resultDatFileSoll += string.Join(Environment.NewLine,
                                     "DECL FDAT F" + point.Name + "={TOOL_NO 0,BASE_NO 99,IPO_FRAME #BASE,POINT2[] \" \"}",
                                     "DECL PDAT P" + point.Name + "={VEL 100.000,ACC 100.000,APO_DIST 0.0,GEAR_JERK 50.0000}",

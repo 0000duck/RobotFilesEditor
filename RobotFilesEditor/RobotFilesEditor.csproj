@@ -29,7 +29,7 @@
     <MinimumRequiredVersion>1.0.0.54</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>435</ApplicationRevision>
+    <ApplicationRevision>436</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -204,6 +204,10 @@
       <DependentUpon>LibrootCleanerWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dialogs\LoadingMessage\LoadingMessageVM.cs" />
+    <Compile Include="Dialogs\OptionSelector\OptionSelectorVM.cs" />
+    <Compile Include="Dialogs\OptionSelector\OptionSelectorWindow.xaml.cs">
+      <DependentUpon>OptionSelectorWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Dialogs\RenamePointDialog\RenamePointDialog.xaml.cs">
       <DependentUpon>RenamePointDialog.xaml</DependentUpon>
     </Compile>
@@ -422,6 +426,7 @@
     <Compile Include="Model\Filters\Filter.cs" />
     <Compile Include="Model\Operations\IFileDataOperations.cs" />
     <Compile Include="Model\Operations\IFileOperations.cs" />
+    <Compile Include="ViewModel\Helper\MainWindowTooltips.cs" />
     <Compile Include="ViewModel\Helper\NotifyTaskCompletion.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
@@ -458,6 +463,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Dialogs\LibrootCleaner\LibrootCleanerWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\OptionSelector\OptionSelectorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

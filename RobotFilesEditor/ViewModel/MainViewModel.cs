@@ -13,6 +13,7 @@ using RobotFilesEditor.Dialogs.CreateGripper;
 using RobotFilesEditor.Model.Operations;
 using System.Xml;
 using RobotFilesEditor.Dialogs.SOVBackupsPreparations;
+using RobotFilesEditor.ViewModel.Helper;
 
 namespace RobotFilesEditor.ViewModel
 {
@@ -255,6 +256,17 @@ namespace RobotFilesEditor.ViewModel
             get { return _continueWithoutConfirm == false; }            
         }
 
+        private MainWindowTooltips tooltips;
+        public MainWindowTooltips Tooltips
+        {
+            get { return tooltips; }
+            set
+            {
+                Set(ref tooltips,value);
+            }
+        }
+
+
         #endregion Controls
 
         #region properties
@@ -344,6 +356,7 @@ namespace RobotFilesEditor.ViewModel
         {
             if (!ViewModelBase.IsInDesignModeStatic)
             {
+                Tooltips = new MainWindowTooltips();
                 DebugVisibility = Visibility.Visible;
                 CheckOrder = false;
                 ControlerChooser = new ObservableCollection<ControlItem>();
