@@ -29,7 +29,7 @@
     <MinimumRequiredVersion>1.0.0.54</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>436</ApplicationRevision>
+    <ApplicationRevision>438</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -125,9 +125,24 @@
     <Reference Include="Microsoft.WindowsAPICodePack.ShellExtensions">
       <HintPath>..\..\..\..\..\..\VS_Projects\z alfy\original\OLP_Summarizer\KUKA_OLP_Summarizer\packages\Microsoft.WindowsAPICodePack-Shell.1.1.0.0\lib\Microsoft.WindowsAPICodePack.ShellExtensions.dll</HintPath>
     </Reference>
+    <Reference Include="MigraDoc.DocumentObjectModel, Version=1.50.5147.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp-MigraDoc.1.50.5147\lib\net20\MigraDoc.DocumentObjectModel.dll</HintPath>
+    </Reference>
+    <Reference Include="MigraDoc.Rendering, Version=1.50.5147.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp-MigraDoc.1.50.5147\lib\net20\MigraDoc.Rendering.dll</HintPath>
+    </Reference>
+    <Reference Include="MigraDoc.RtfRendering, Version=1.50.5147.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp-MigraDoc.1.50.5147\lib\net20\MigraDoc.RtfRendering.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=3.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Json120r3\Bin\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp, Version=1.50.5147.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp-MigraDoc.1.50.5147\lib\net20\PdfSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp.Charting, Version=1.50.5147.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp-MigraDoc.1.50.5147\lib\net20\PdfSharp.Charting.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -362,6 +377,7 @@
     <Compile Include="Model\Operations\DataClass\KukaCommandClass.cs" />
     <Compile Include="Model\Operations\DataClass\RenumberPointClasses.cs" />
     <Compile Include="Model\Operations\DataClass\RobotData.cs" />
+    <Compile Include="Model\Operations\DataClass\SafetyElementsClass.cs" />
     <Compile Include="Model\Operations\DataClass\SasFillerClass.cs" />
     <Compile Include="Model\Operations\DataClass\SovBackupsPreparationResult.cs" />
     <Compile Include="Model\Operations\DataClass\SpotComparerClass.cs" />
@@ -389,6 +405,7 @@
     <Compile Include="Model\Operations\ReadMessProtokoll\IRobotPoint.cs" />
     <Compile Include="Model\Operations\ReadMessProtokoll\ReadMessProtokollClass.cs" />
     <Compile Include="Model\Operations\ReadMessProtokoll\RobotPoint.cs" />
+    <Compile Include="Model\Operations\ReadSafetyXMLModel.cs" />
     <Compile Include="Model\Operations\ReadSpotsMethods.cs" />
     <Compile Include="Model\Operations\RenumberLinesFanucMethods.cs" />
     <Compile Include="Model\Operations\RenumberPointsMethods.cs" />

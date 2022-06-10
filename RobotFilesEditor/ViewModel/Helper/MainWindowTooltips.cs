@@ -44,6 +44,7 @@ namespace RobotFilesEditor.ViewModel.Helper
         public string ValidateBackupFanucToolTip { get; private set; }
         public string DividePathByCollsTooltip { get; private set; }
         public string CleanLibrootTooltip { get; private set; }
+        public string ReadSafetyXMLToolTip { get; private set; }
 
         public MainWindowTooltips()
         {
@@ -68,6 +69,7 @@ namespace RobotFilesEditor.ViewModel.Helper
             FixPTPandLINTooltip = "Function to convert downloads made in KSS 8.3 to syntax of KSS 8.6";
             ValidateBackupKUKATooltip = "Functionality to check syntax in backup (missing variable declarations, calls of non-existing procedures etc.)";
             SafetyToolsToolTip = "Open safety tools window";
+            ReadSafetyXMLToolTip = "Reads safety xml generated from Workvisual and outputs safety zones, tools etc.";
             RobKalDatPropTooltip = "Open tool to calculate bases, read RobKalDat projects etc.";
             SasFillerFromBackupTooltip = "Fill SAS data based on data contained in backup (orgs, areas, jobs etc.)";
             GetMengeTooltip = "Get data from backups necessary to fill Mengelist (amount of process points, glue bead lenths etc.)";
@@ -85,7 +87,7 @@ namespace RobotFilesEditor.ViewModel.Helper
             ValidateCommentsToolTip = "Tool to correct mistakes in comments on Fanuc robots - finds comments longer than 24 signs";
             ValidateBackupFanucToolTip = "Functionality to check syntax in backup (missing variable declarations, calls of non-existing procedures etc.)";
 
-            DividePathByCollsTooltip = "Reads robot program and splits it to smaller programs based on collision requests and releases (works only for KUKA robots)";
+            DividePathByCollsTooltip = "Reads robot program and splits it to smaller programs based on collision requests and releases (works only for KUKA and FANUC robots)";
             CleanLibrootTooltip = "Finds not used elements in psz and libroot.";
 
         }

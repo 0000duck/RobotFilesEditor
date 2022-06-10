@@ -106,6 +106,7 @@
                                                     <Button Content="Fix PTP\LIN Fold KRC4 8.6" Command="{Binding FixPTPandLIN}" Margin="3" ToolTip="{Binding Tooltips.FixPTPandLINTooltip}"/>
                                                     <Button Content="Validate backup" Command="{Binding ValidateBackupKUKA}" Margin="3" ToolTip="{Binding Tooltips.ValidateBackupKUKATooltip}"/>
                                                     <Button Content="Safety tools" Command="{Binding SafetyTools}" Margin="3"  ToolTip="{Binding Tooltips.SafetyToolsToolTip}"/>
+                                                    <Button Content="Read safety xml" Command="{Binding ReadSafetyXML}" Margin="3"  ToolTip="{Binding Tooltips.ReadSafetyXMLToolTip}"/>
                                                     <Button Content="RobKalDat" Command="{Binding RobKalDatProp}" Margin="3" Visibility="Visible" ToolTip="{Binding Tooltips.RobKalDatPropTooltip}"/>
                                                     <Button Content="Fill SAS from backup" Command="{Binding SasFillerFromBackup}" Margin="3" Visibility="Visible" ToolTip="{Binding Tooltips.SasFillerFromBackupTooltip}"/>
                                                     <Button Content="Get data for Mengelist" Command="{Binding GetMenge}" Margin="3" Visibility="Visible" ToolTip="{Binding Tooltips.GetMengeTooltip}"/>

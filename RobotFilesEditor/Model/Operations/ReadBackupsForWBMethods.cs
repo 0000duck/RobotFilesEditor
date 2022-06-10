@@ -1996,7 +1996,7 @@ namespace RobotFilesEditor.Model.Operations
 
         private static SafetyConfig GetSafetyABB(string directory)
         {
-            SafetyConfig result = new SafetyConfig() { Cellspace = new Cellspace(), SafeSpaces = new List<ISafeSpace>(), SafeTools = new List<SafeTool>() };
+            SafetyConfig result = new SafetyConfig() { Cellspace = new CommonLibrary.Cellspace(), SafeSpaces = new List<ISafeSpace>(), SafeTools = new List<SafeTool>() };
             var files = Directory.GetFiles(directory, "*.*", SearchOption.AllDirectories);
             var safetyXMLFile = files.First(x => x.ToLower().Contains("psc_user_1.sxml"));
             XElement safetyXML = XElement.Load(safetyXMLFile);
@@ -2016,10 +2016,10 @@ namespace RobotFilesEditor.Model.Operations
             foreach (var tool in safetools)
             {
                 int number = int.Parse(tool.Attribute("ToolID").Value);
-                List<Sphere> spheres = new List<Sphere>();
+                List<CommonLibrary.Sphere> spheres = new List<CommonLibrary.Sphere>();
                 foreach (var sphere in tool.Elements("Pos"))
                 {
-                    Sphere point = new Sphere();
+                    CommonLibrary.Sphere point = new CommonLibrary.Sphere();
                     point.Number = int.Parse(sphere.Attribute("PosID").Value);
                     point.Coordinates = new PointInSafety(double.Parse(sphere.Attribute("Pos_X").Value,CultureInfo.InvariantCulture), double.Parse(sphere.Attribute("Pos_Y").Value, CultureInfo.InvariantCulture), double.Parse(sphere.Attribute("Pos_Z").Value, CultureInfo.InvariantCulture));
                     point.Radius = 0;
@@ -2046,7 +2046,7 @@ namespace RobotFilesEditor.Model.Operations
             return result;
         }
 
-        private static bool IsUsedTool(List<Sphere> spheres)
+        private static bool IsUsedTool(List<CommonLibrary.Sphere> spheres)
         {
             foreach (var sphere in spheres)
             {

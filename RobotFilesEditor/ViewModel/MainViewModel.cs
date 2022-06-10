@@ -539,6 +539,7 @@ namespace RobotFilesEditor.ViewModel
         public ICommand ReadMessprotokolABB { get; set; }
         public ICommand CleanLibroot { get; set; }
         public ICommand ValidateBackupFanuc { get; set; }
+        public ICommand ReadSafetyXML { get; set; }
 
         private void SetCommands()
         {
@@ -600,6 +601,12 @@ namespace RobotFilesEditor.ViewModel
             ReadMessprotokolABB = new RelayCommand(ReadMessprotokolExecuteABB);
             CleanLibroot = new RelayCommand(CleanLibrootExecute);
             ValidateBackupFanuc = new RelayCommand(ValidateBackupFanucExecute);
+            ReadSafetyXML = new RelayCommand(ReadSafetyXMLExecute);
+        }
+
+        private void ReadSafetyXMLExecute()
+        {
+            var safetyXml = new ReadSafetyXMLModel();
         }
 
         private void CleanLibrootExecute()

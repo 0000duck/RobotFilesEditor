@@ -3432,20 +3432,23 @@ namespace RobotFilesEditor.Model.Operations
         public static List<FileLineProperties> FixMissingExternalAxis(List<FileLineProperties> listToCheck)
         {
             GlobalData.Has7thAxis = false;
+            Regex geE6AxisRegex = new Regex(@"A1\s+(-\d+.\d+|-\d+|\d+.\d+|\d+)\s*,\s*A2\s+(-\d+.\d+|-\d+|\d+.\d+|\d+)\s*,\s*A3\s+(-\d+.\d+|-\d+|\d+.\d+|\d+)\s*,\s*", RegexOptions.IgnoreCase);
             Regex getValuesRegex = new Regex(@"(?<=(A|E)\d+\s+)((-\d+\.\d+)|(\d+\.\d+)|(-\d+)|(\d+))", RegexOptions.IgnoreCase);
             List<FileLineProperties> tempList = new List<FileLineProperties>();
-            foreach (var line in listToCheck)
+            foreach (var line in listToCheck.Where(x => geE6AxisRegex.IsMatch(x.LineContent)))
             {
+                bool fixedExt = false;
                 MatchCollection matches = getValuesRegex.Matches(line.LineContent);
                 if (!line.LineContent.ToLower().Contains("e1 "))
                 {
+                    fixedExt = true;
                     string currentLine = line.LineContent.Trim();
                     currentLine = currentLine.Replace("}", ",E1 0.0, E2 0.0, E3 0.0, E4 0.0, E5 0.0, E6 0.0}");
                     line.LineContent = currentLine;
                 }
                 if (!GlobalData.Has7thAxis && line.LineContent.ToLower().Contains("e1 ") && matches.Count >= 7)
                     GlobalData.Has7thAxis = true;
-                else if (line.LineContent.ToLower().Contains("e1 ") && matches.Count < 12)
+                else if (line.LineContent.ToLower().Contains("e1 ") && matches.Count < 12 && !fixedExt)
                 {
                     int firstMissingExt = (6 - matches.Count) * (-1) + 1;
                     string tempstring = "";

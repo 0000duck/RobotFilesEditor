@@ -500,19 +500,19 @@ namespace RobotFilesEditor.Model.Operations
         private static void CleanUpExcel()
         {
           
-                if (destinationXlApp != null)
-                {
-                    int hWndDest = destinationXlApp.Application.Hwnd;
+            if (destinationXlApp != null)
+            {
+                int hWndDest = destinationXlApp.Application.Hwnd;
 
-                    uint processID;
+                uint processID;
 
-                    GetWindowThreadProcessId((IntPtr)hWndDest, out processID);
-                    Process.GetProcessById((int)processID).Kill();
-                }
-                destinationXlWorksheet = null;
-                destinationXlWorkbook = null;
-                destinationXlApp = null;
+                GetWindowThreadProcessId((IntPtr)hWndDest, out processID);
+                Process.GetProcessById((int)processID).Kill();
             }
+            destinationXlWorksheet = null;
+            destinationXlWorkbook = null;
+            destinationXlApp = null;
+        }
 
     }
 }
