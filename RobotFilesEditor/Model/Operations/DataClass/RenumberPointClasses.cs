@@ -86,6 +86,21 @@ namespace RobotFilesEditor.Model.Operations.DataClass
         }
     }
 
+    public class Point2d
+    {
+        public double XPos { get; set; }
+        public double YPos { get; set; }
+
+        public Point2d()
+        { }
+
+        public Point2d(double xpos, double ypos)
+        {
+            XPos = xpos;
+            YPos = ypos;
+        }
+    }
+
     public class LineAndParams
     {
         public string Line { get; set; }

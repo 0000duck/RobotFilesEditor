@@ -536,7 +536,7 @@ namespace RobotFilesEditor.Model.Operations
                 }
                 if (GlobalData.HasToolchager)
                     result += "CASE 9\r\nA02_tch_Maintenan_PTM ()\r\n\r\n";
-                result += "CASE 100\r\nmaintenance_Clean()\r\n\r\nDEFAULT\r\nWAIT FOR FALSE\r\nENDSWITCH\r\nEND";
+                result += "CASE 100\r\nmaintenance_Clean()\r\n\r\nDEFAULT\r\nPLC_DefaultError()\r\nENDSWITCH\r\nEND";
                 return result;
             }
             else

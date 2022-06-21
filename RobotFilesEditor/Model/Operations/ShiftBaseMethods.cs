@@ -35,8 +35,8 @@ namespace RobotFilesEditor.Model.Operations
         public int BaseNum { get; set; }
         public string FDAT { get; set; }
         public string E6Pos { get; set; }
-        public PointKUKA InitialPoint { get; private set; }
-        public PointKUKA CalculatedPoint { get; set; }
+        public CommonLibrary.PointXYZABC InitialPoint { get; private set; }
+        public CommonLibrary.PointXYZABC CalculatedPoint { get; set; }
 
         public PointBaseAndCoords(string name, string fdat, string e6pos)
         {
@@ -53,13 +53,13 @@ namespace RobotFilesEditor.Model.Operations
             return int.Parse(getbaseNumRegex.Match(fdat).ToString());
         }
 
-        private PointKUKA CalculateInitialPoint(string e6pos)
+        private CommonLibrary.PointXYZABC CalculateInitialPoint(string e6pos)
         {
             if (string.IsNullOrEmpty(e6pos) || e6pos.ToLower().Contains("e6axis"))
                 return null;
             Regex getPointCoorsRegex = new Regex(@"(?<=(X|Y|Z|A|B|C)\s+)(-\d+\.\d+|-\d+|\d+\.\d+|\d+)", RegexOptions.IgnoreCase);
             var matches = getPointCoorsRegex.Matches(e6pos);
-            return new PointKUKA(double.Parse(matches[0].ToString(), CultureInfo.InvariantCulture), double.Parse(matches[1].ToString(), CultureInfo.InvariantCulture), double.Parse(matches[2].ToString(), CultureInfo.InvariantCulture), double.Parse(matches[3].ToString(), CultureInfo.InvariantCulture), double.Parse(matches[4].ToString(), CultureInfo.InvariantCulture), double.Parse(matches[5].ToString(), CultureInfo.InvariantCulture));
+            return new CommonLibrary.PointXYZABC(double.Parse(matches[0].ToString(), CultureInfo.InvariantCulture), double.Parse(matches[1].ToString(), CultureInfo.InvariantCulture), double.Parse(matches[2].ToString(), CultureInfo.InvariantCulture), double.Parse(matches[3].ToString(), CultureInfo.InvariantCulture), double.Parse(matches[4].ToString(), CultureInfo.InvariantCulture), double.Parse(matches[5].ToString(), CultureInfo.InvariantCulture));
         }
     }
 
@@ -169,15 +169,15 @@ namespace RobotFilesEditor.Model.Operations
         {
             string result = pointToShift.E6Pos.Trim();
 
-            Matrix<double> htmInintialBase = BuildHTMMatrix(initialBase);
-            Matrix<double> htmPointToShift = BuildHTMMatrix(ConvertToBaseDataKuka(pointToShift.E6Pos));
-            Matrix<double> htmFinalBase = BuildHTMMatrix(finalBase);
+            Matrix<double> htmInintialBase = CommonLibrary.MatrixOperationsMethods.BuildHTMMatrix(initialBase);
+            Matrix<double> htmPointToShift = CommonLibrary.MatrixOperationsMethods.BuildHTMMatrix(ConvertToBaseDataKuka(pointToShift.E6Pos));
+            Matrix<double> htmFinalBase = CommonLibrary.MatrixOperationsMethods.BuildHTMMatrix(finalBase);
 
             Matrix<double> base0HTM = htmInintialBase.Multiply(htmPointToShift);
             Matrix<double> htmFinalBaseInv = htmFinalBase.Inverse();
             Matrix<double> resultPoint = htmFinalBaseInv.Multiply(base0HTM);
 
-            PointKUKA pointCalc = GetCalculatedPoint(resultPoint);
+            CommonLibrary.PointXYZABC pointCalc = GetCalculatedPoint(resultPoint);
 
             Regex regexX = new Regex(@"(?<=\{\s*X\s+)(-\d+\.\d+|-\d+|\d+\.\d+|\d+)", RegexOptions.IgnoreCase);
             Regex regexY = new Regex(@"(?<=,\s*Y\s+)(-\d+\.\d+|-\d+|\d+\.\d+|\d+)", RegexOptions.IgnoreCase);
@@ -186,9 +186,9 @@ namespace RobotFilesEditor.Model.Operations
             Regex regexB = new Regex(@"(?<=,\s*B\s+)(-\d+\.\d+|-\d+|\d+\.\d+|\d+)", RegexOptions.IgnoreCase);
             Regex regexC = new Regex(@"(?<=,\s*C\s+)(-\d+\.\d+|-\d+|\d+\.\d+|\d+)", RegexOptions.IgnoreCase);
 
-            result = regexX.Replace(result, pointCalc.Xpos.ToString("0.##", CultureInfo.InvariantCulture));
-            result = regexY.Replace(result, pointCalc.Ypos.ToString("0.##", CultureInfo.InvariantCulture));
-            result = regexZ.Replace(result, pointCalc.Zpos.ToString("0.##", CultureInfo.InvariantCulture));
+            result = regexX.Replace(result, pointCalc.X.ToString("0.##", CultureInfo.InvariantCulture));
+            result = regexY.Replace(result, pointCalc.Y.ToString("0.##", CultureInfo.InvariantCulture));
+            result = regexZ.Replace(result, pointCalc.Z.ToString("0.##", CultureInfo.InvariantCulture));
             result = regexA.Replace(result, pointCalc.A.ToString("0.###", CultureInfo.InvariantCulture));
             result = regexB.Replace(result, pointCalc.B.ToString("0.###", CultureInfo.InvariantCulture));
             result = regexC.Replace(result, pointCalc.C.ToString("0.###", CultureInfo.InvariantCulture));
@@ -204,103 +204,30 @@ namespace RobotFilesEditor.Model.Operations
             return currentData;
         }
 
-        private static PointKUKA GetCalculatedPoint(Matrix<double> resultPoint)
+        private static CommonLibrary.PointXYZABC GetCalculatedPoint(Matrix<double> resultPoint)
         {
-            PointKUKA result = new PointKUKA();
-            result.Xpos = resultPoint[0, 3];
-            result.Ypos = resultPoint[1, 3];
-            result.Zpos = resultPoint[2, 3];
+            CommonLibrary.PointXYZABC result = new CommonLibrary.PointXYZABC();
+            result.X = resultPoint[0, 3];
+            result.Y = resultPoint[1, 3];
+            result.Z = resultPoint[2, 3];
             result.C = CommonLibrary.CommonMethods.ConvertToDegrees(-0.01 < resultPoint[2, 1] && resultPoint[2, 1] < 0.01 && -0.01 < resultPoint[2, 2] && resultPoint[2, 2] < 0.01 ? 0 : Math.Atan2(resultPoint[2, 1], resultPoint[2, 2]));
             result.B = CommonLibrary.CommonMethods.ConvertToDegrees(Math.Asin(-resultPoint[2, 0]));
             result.A = CommonLibrary.CommonMethods.ConvertToDegrees(-0.01 < resultPoint[1, 0] && resultPoint[1, 0] < 0.01 && -0.01 < resultPoint[0, 0] && resultPoint[0, 0] < 0.01 ? 0 : Math.Atan2(resultPoint[1, 0], resultPoint[0, 0]));
 
             return result;
-        }
+        }        
 
-        private static Matrix<double> BuildHTMMatrix(BaseDataKUKA frame)
+        private static CommonLibrary.PointXYZABC ToPointKuka(CommonLibrary.RobKalDatCommon.Point pointCalc)
         {
-            Matrix<double> frameRotMatZ = BuildRotationMatrix("Z", frame.A);
-            Matrix<double> frameRotMatY = BuildRotationMatrix("Y", frame.B);
-            Matrix<double> frameRotMatX = BuildRotationMatrix("X", frame.C);
-            Matrix<double> frameRotMatZYX = frameRotMatZ.Multiply(frameRotMatY).Multiply(frameRotMatX);
-
-            Matrix<double> resultMatrix = Matrix<double>.Build.Dense(4, 4);
-            resultMatrix[0, 0] = frameRotMatZYX[0, 0];
-            resultMatrix[0, 1] = frameRotMatZYX[0, 1];
-            resultMatrix[0, 2] = frameRotMatZYX[0, 2];
-            resultMatrix[1, 0] = frameRotMatZYX[1, 0];
-            resultMatrix[1, 1] = frameRotMatZYX[1, 1];
-            resultMatrix[1, 2] = frameRotMatZYX[1, 2];
-            resultMatrix[2, 0] = frameRotMatZYX[2, 0];
-            resultMatrix[2, 1] = frameRotMatZYX[2, 1];
-            resultMatrix[2, 2] = frameRotMatZYX[2, 2];
-
-            resultMatrix[0, 3] = frame.Xpos;
-            resultMatrix[1, 3] = frame.Ypos;
-            resultMatrix[2, 3] = frame.Zpos;
-            resultMatrix[3, 0] = 0;
-            resultMatrix[3, 1] = 0;
-            resultMatrix[3, 2] = 0;
-            resultMatrix[3, 3] = 1;
-
-            return resultMatrix;
-
-        }
-
-        private static Matrix<double> BuildRotationMatrix(string axis, double rotationValueInDegress)
-        {
-            double rotationValueInRad = CommonLibrary.CommonMethods.ConvertToRadians(rotationValueInDegress);
-            Matrix<double> resultMatrix = Matrix<double>.Build.Dense(3, 3);
-            switch (axis)
-            {
-                case "X":
-                    resultMatrix[0, 0] = 1;
-                    resultMatrix[0, 1] = 0;
-                    resultMatrix[0, 2] = 0;
-                    resultMatrix[1, 0] = 0;
-                    resultMatrix[1, 1] = Math.Cos(rotationValueInRad);
-                    resultMatrix[1, 2] = -Math.Sin(rotationValueInRad);
-                    resultMatrix[2, 0] = 0;
-                    resultMatrix[2, 1] = Math.Sin(rotationValueInRad);
-                    resultMatrix[2, 2] = Math.Cos(rotationValueInRad);
-                    break;
-                case "Y":
-                    resultMatrix[0, 0] = Math.Cos(rotationValueInRad);
-                    resultMatrix[0, 1] = 0;
-                    resultMatrix[0, 2] = Math.Sin(rotationValueInRad);
-                    resultMatrix[1, 0] = 0;
-                    resultMatrix[1, 1] = 1;
-                    resultMatrix[1, 2] = 0;
-                    resultMatrix[2, 0] = -Math.Sin(rotationValueInRad);
-                    resultMatrix[2, 1] = 0;
-                    resultMatrix[2, 2] = Math.Cos(rotationValueInRad);
-                    break;
-                case "Z":
-                    resultMatrix[0, 0] = Math.Cos(rotationValueInRad);
-                    resultMatrix[0, 1] = -Math.Sin(rotationValueInRad);
-                    resultMatrix[0, 2] = 0;
-                    resultMatrix[1, 0] = Math.Sin(rotationValueInRad);
-                    resultMatrix[1, 1] = Math.Cos(rotationValueInRad);
-                    resultMatrix[1, 2] = 0;
-                    resultMatrix[2, 0] = 0;
-                    resultMatrix[2, 1] = 0;
-                    resultMatrix[2, 2] = 1;
-                    break;
-            }
-            return resultMatrix;
-        }
-
-        private static PointKUKA ToPointKuka(CommonLibrary.RobKalDatCommon.Point pointCalc)
-        {
-            return new PointKUKA(pointCalc.XPos, pointCalc.YPos, pointCalc.ZPos, pointCalc.RZ, pointCalc.RY, pointCalc.RX);
+            return new CommonLibrary.PointXYZABC(pointCalc.XPos, pointCalc.YPos, pointCalc.ZPos, pointCalc.RZ, pointCalc.RY, pointCalc.RX);
         }
 
         private static CommonLibrary.RobKalDatCommon.Point ToCommonPoint(dynamic initialBase)
         {
             if (initialBase is BaseDataKUKA)
-                return new CommonLibrary.RobKalDatCommon.Point((initialBase as BaseDataKUKA).Xpos, (initialBase as BaseDataKUKA).Ypos, (initialBase as BaseDataKUKA).Zpos, (initialBase as BaseDataKUKA).C, (initialBase as BaseDataKUKA).B, (initialBase as BaseDataKUKA).A);
-            if (initialBase is PointKUKA)
-                return new CommonLibrary.RobKalDatCommon.Point((initialBase as PointKUKA).Xpos, (initialBase as PointKUKA).Ypos, (initialBase as PointKUKA).Zpos, (initialBase as PointKUKA).C, (initialBase as PointKUKA).B, (initialBase as PointKUKA).A);
+                return new CommonLibrary.RobKalDatCommon.Point((initialBase as BaseDataKUKA).X, (initialBase as BaseDataKUKA).Y, (initialBase as BaseDataKUKA).Z, (initialBase as BaseDataKUKA).C, (initialBase as BaseDataKUKA).B, (initialBase as BaseDataKUKA).A);
+            if (initialBase is CommonLibrary.PointXYZABC)
+                return new CommonLibrary.RobKalDatCommon.Point((initialBase as CommonLibrary.PointXYZABC).X, (initialBase as CommonLibrary.PointXYZABC).Y, (initialBase as CommonLibrary.PointXYZABC).Z, (initialBase as CommonLibrary.PointXYZABC).C, (initialBase as CommonLibrary.PointXYZABC).B, (initialBase as CommonLibrary.PointXYZABC).A);
             return null;
         }
 

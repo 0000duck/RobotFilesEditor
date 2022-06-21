@@ -29,7 +29,7 @@
     <MinimumRequiredVersion>1.0.0.54</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>438</ApplicationRevision>
+    <ApplicationRevision>440</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -208,6 +208,10 @@
     <Compile Include="Dialogs\CreateOrgs\ManageTypes\ManageTypesVM.cs" />
     <Compile Include="Dialogs\CreateOrgs\ManageTypes\ManageTypesWindow.xaml.cs">
       <DependentUpon>ManageTypesWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\GripperXMLHelper\GripperXMLHelperVM.cs" />
+    <Compile Include="Dialogs\GripperXMLHelper\GripperXMLHelperWindow.xaml.cs">
+      <DependentUpon>GripperXMLHelperWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dialogs\LibrootCleaner\LibrootCleanerExpander.xaml.cs">
       <DependentUpon>LibrootCleanerExpander.xaml</DependentUpon>
@@ -475,6 +479,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Dialogs\GripperXMLHelper\GripperXMLHelperWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Dialogs\LibrootCleaner\LibrootCleanerExpander.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -635,6 +643,9 @@
     <None Include="Resources\FANUC_LS_TEMPLATE.txt" />
     <None Include="Resources\FANUC_LS_TEMPLATE1.txt" />
     <None Include="Resources\ABB_MOD_TEMPLATE1.txt" />
+    <None Include="Resources\coordinate_system.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <Content Include="Resources\error.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

@@ -21,10 +21,10 @@ namespace RobotFilesEditor.Model.Operations.DataClass
     public class PointsPair
     {
         public string Name { get; set; }
-        public PointKUKA Point1 { get; set; }
-        public PointKUKA Point2 { get; set; }
+        public CommonLibrary.PointXYZABC Point1 { get; set; }
+        public CommonLibrary.PointXYZABC Point2 { get; set; }
 
-        public PointsPair(string name, PointKUKA point1, PointKUKA point2)
+        public PointsPair(string name, CommonLibrary.PointXYZABC point1, CommonLibrary.PointXYZABC point2)
         {
             Name = name;
             Point1 = point1;

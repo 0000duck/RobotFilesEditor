@@ -3478,13 +3478,13 @@ namespace RobotFilesEditor.Model.Operations
             IEnumerable<IGrouping<string, FileLineProperties>> result = new List<IGrouping<string, FileLineProperties>>();
             foreach (var duplicates in duplicatesGroups.ToList())
             {
-                DataClass.PointKUKA previouspoint = null;
+                CommonLibrary.PointXYZABC previouspoint = null;
                 foreach (var duplicate in duplicates)
                 {
                     if (punktRegex.IsMatch(duplicate.LineContent))
                     {
                         MatchCollection matches = punktRegex.Matches(duplicate.LineContent);
-                        DataClass.PointKUKA point = new DataClass.PointKUKA(Math.Round(double.Parse(matches[0].ToString(), CultureInfo.InvariantCulture), 2), Math.Round(double.Parse(matches[1].ToString(), CultureInfo.InvariantCulture), 2), Math.Round(double.Parse(matches[2].ToString(), CultureInfo.InvariantCulture), 2), Math.Round(double.Parse(matches[3].ToString(), CultureInfo.InvariantCulture), 2), Math.Round(double.Parse(matches[4].ToString(), CultureInfo.InvariantCulture), 2), Math.Round(double.Parse(matches[5].ToString(), CultureInfo.InvariantCulture), 2));
+                        CommonLibrary.PointXYZABC point = new CommonLibrary.PointXYZABC(Math.Round(double.Parse(matches[0].ToString(), CultureInfo.InvariantCulture), 2), Math.Round(double.Parse(matches[1].ToString(), CultureInfo.InvariantCulture), 2), Math.Round(double.Parse(matches[2].ToString(), CultureInfo.InvariantCulture), 2), Math.Round(double.Parse(matches[3].ToString(), CultureInfo.InvariantCulture), 2), Math.Round(double.Parse(matches[4].ToString(), CultureInfo.InvariantCulture), 2), Math.Round(double.Parse(matches[5].ToString(), CultureInfo.InvariantCulture), 2));
                         if (previouspoint == null)
                             previouspoint = point;
                         else
@@ -3503,12 +3503,12 @@ namespace RobotFilesEditor.Model.Operations
             return result;
         }
 
-        private static bool NotSamePoint(DataClass.PointKUKA point, DataClass.PointKUKA previouspoint)
+        private static bool NotSamePoint(CommonLibrary.PointXYZABC point, CommonLibrary.PointXYZABC previouspoint)
         {
             double deltaPos = 2.0, deltaAngle = 0.5;
-            if (Math.Abs(point.Xpos - previouspoint.Xpos) < deltaPos)
-                if (Math.Abs(point.Ypos - previouspoint.Ypos) < deltaPos)
-                    if (Math.Abs(point.Zpos - previouspoint.Zpos) < deltaPos)
+            if (Math.Abs(point.X - previouspoint.X) < deltaPos)
+                if (Math.Abs(point.Y - previouspoint.Y) < deltaPos)
+                    if (Math.Abs(point.Z - previouspoint.Z) < deltaPos)
                         if (Math.Abs(point.A - previouspoint.A) < deltaAngle)
                             if (Math.Abs(point.B - previouspoint.B) < deltaAngle)
                                 if (Math.Abs(point.C - previouspoint.C) < deltaAngle)

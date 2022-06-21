@@ -90,7 +90,7 @@
                                                 <StackPanel>
                                                     <Button Content="Generate orgs" Command="{Binding CreateOrgsCommand}" Margin="3" ToolTip="{Binding Tooltips.CreateOrgsCommandTooltip}"/>
                                                     <Button Content="Generate grippers" Command="{Binding CreateGripperCommand}" Margin="3" ToolTip="{Binding Tooltips.CreateGripperCommandTooltip}" />
-                                                    <Button Content="Create Gripper.xml" Command="{Binding CreateGripperXML}" Margin="3" ToolTip="{Binding Tooltips.CreateGripperXMLTooltip}"/>
+                                                    <Button Content="Create Gripper.xml from a03_grp_user" Command="{Binding CreateGripperXML}" Margin="3" ToolTip="{Binding Tooltips.CreateGripperXMLTooltip}"/>
                                                     <Button Content="Create Grp SymName from config.dat" Command="{Binding ReadConfigDat}" Margin="3" ToolTip="{Binding Tooltips.ReadConfigDatTooltip}"/>
                                                     <Button Content="Mirror Path" Command="{Binding Mirror}" Margin="3" ToolTip="{Binding Tooltips.MirrorTooltip}"/>
                                                     <!--<Button Content="Stopping distances summary" Command="{Binding StoppingDistances}" Margin="3"/>-->

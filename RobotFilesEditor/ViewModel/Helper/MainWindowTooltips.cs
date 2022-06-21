@@ -56,7 +56,7 @@ namespace RobotFilesEditor.ViewModel.Helper
 
             CreateOrgsCommandTooltip = "Creates organization programms based on scanned paths for KUKA robot";
             CreateGripperCommandTooltip = "Creates .src file with gripper configuration. Function mostly useful for KRC2 robots";
-            CreateGripperXMLTooltip = "Creates Gripper.xml file necessary for gripper configuration on KRC4 robots based on .src file";
+            CreateGripperXMLTooltip = "Creates Gripper.xml file necessary for gripper configuration on KRC4 robots based on a03_grp_user.dat or .src file";
             ReadConfigDatTooltip = "Create Symname.txt file necessary to upload symbols to KRC2 robots based on $config.dat file";
             MirrorTooltip = "Create mirrored paths for KUKA robots";
             ReadSpotPointsTooltip = "Functionality that allows you to read process points from selected backup, compare it with VIP list, and prepare the report in Excel file";

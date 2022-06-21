@@ -237,7 +237,7 @@ namespace RobotFilesEditor.Model.Operations
                 {
                     foreach (var entry in archive.Entries.Where(x => x.FullName.ToLower().Contains("$config.dat") && !x.FullName.ToLower().Contains("steu")))
                     {
-                        List<DataClass.IBaseData> bases = ReadBackupsForWBMethods.GetBaseDatas(entry: entry);
+                        List<CommonLibrary.IRobotPoint> bases = ReadBackupsForWBMethods.GetBaseDatas(entry: entry);
                         List<DataClass.BaseName> baseNames = ReadBackupsForWBMethods.GetBaseNames(entry: entry);
                         List<DataClass.BaseType> baseTypes = ReadBackupsForWBMethods.GetBaseTypes(entry: entry);
                         List<BaseData> resultBaseData = CreateBaseDataFromBackup(bases, baseNames, baseTypes, robotName);
@@ -267,7 +267,7 @@ namespace RobotFilesEditor.Model.Operations
             return result;
         }
 
-        private static List<BaseData> CreateBaseDataFromBackup(List<DataClass.IBaseData> bases, List<DataClass.BaseName> baseNames, List<DataClass.BaseType> baseTypes, string robotname)
+        private static List<BaseData> CreateBaseDataFromBackup(List<CommonLibrary.IRobotPoint> bases, List<DataClass.BaseName> baseNames, List<DataClass.BaseType> baseTypes, string robotname)
         {
             List<BaseData> result = new List<BaseData>();
             int counter = 0;
@@ -279,7 +279,7 @@ namespace RobotFilesEditor.Model.Operations
                     //if (baseType.Value == false)
                     //{
                         BaseData baseData = new BaseData(baseNames[counter].Name, counter + 1, GetExtBase(baseTypes[counter]), robotname, baseNames[0].Name, new Point(), new Point());
-                        baseData.CaluculatedBase = new Point(bases[counter].Xpos, bases[counter].Ypos, bases[counter].Zpos, (bases[counter] as DataClass.BaseDataKUKA).A, (bases[counter] as DataClass.BaseDataKUKA).B, (bases[counter] as DataClass.BaseDataKUKA).C);
+                        baseData.CaluculatedBase = new Point(bases[counter].X, bases[counter].Y, bases[counter].Z, (bases[counter] as DataClass.BaseDataKUKA).A, (bases[counter] as DataClass.BaseDataKUKA).B, (bases[counter] as DataClass.BaseDataKUKA).C);
                         result.Add(baseData);
                     //}
                     //else

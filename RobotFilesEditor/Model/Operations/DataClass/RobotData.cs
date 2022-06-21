@@ -20,7 +20,7 @@ namespace RobotFilesEditor.Model.Operations.DataClass
         public List<ILoadData> LoadDatas { get; set; }
         public List<ILoadData> LoadVars { get; set; }
         public List<ToolType> ToolTypes { get; set; }
-        public List<IBaseData> BaseDatas { get; set; }
+        public List<CommonLibrary.IRobotPoint> BaseDatas { get; set; }
         public List<BaseName> BaseNames { get; set; }
         public List<BaseType> BaseTypes { get; set; }
         public List<HomePos> HomePoses { get; set; }
@@ -30,7 +30,7 @@ namespace RobotFilesEditor.Model.Operations.DataClass
         public List<CollZone> CollZones { get; set; }
         public List<CollZone> CollZonesFromCommnad { get; set; }
         public List<CollZone> CollZonesWithoutDescr { get; set; }
-        public List<IBaseData> BaseDatasInputData { get; set; }
+        public List<CommonLibrary.IRobotPoint> BaseDatasInputData { get; set; }
         public List<BaseName> BaseNamesInputData { get; set; }
         public List<int> BaseNumbersInputData { get; set; }
         public List<IUserBit> UserbitsOut { get; set; }
@@ -145,20 +145,20 @@ namespace RobotFilesEditor.Model.Operations.DataClass
         { }
     }
 
-    public class BaseDataKUKA : IBaseData
+    public class BaseDataKUKA : CommonLibrary.IRobotPoint
     {
-        public float Xpos { get; set; }
-        public float Ypos { get; set; }
-        public float Zpos { get; set; }
-        public float A { get; set; }
-        public float B { get; set; }
-        public float C { get; set; }
+        public double X { get; set; }
+        public double Y { get; set; }
+        public double Z { get; set; }
+        public double A { get; set; }
+        public double B { get; set; }
+        public double C { get; set; }
 
-        public BaseDataKUKA(float xpos, float ypos, float zpos, float a, float b, float c)
+        public BaseDataKUKA(double xpos, double ypos, double zpos, double a, double b, double c)
         {
-            Xpos = xpos;
-            Ypos = ypos;
-            Zpos = zpos;
+            X = xpos;
+            Y = ypos;
+            Z = zpos;
             A = a;
             B = b;
             C = c;
@@ -168,12 +168,12 @@ namespace RobotFilesEditor.Model.Operations.DataClass
         { }
     }
 
-    public interface IBaseData
-    {
-        float Xpos { get; set; }
-        float Ypos { get; set; }
-        float Zpos { get; set; }
-    }
+    //public interface IBaseData
+    //{
+    //    float Xpos { get; set; }
+    //    float Ypos { get; set; }
+    //    float Zpos { get; set; }
+    //}
 
     public class BaseName
     {
@@ -417,31 +417,31 @@ namespace RobotFilesEditor.Model.Operations.DataClass
         }
     }
 
-    public class WobjDataABB : IBaseData
+    public class WobjDataABB : CommonLibrary.IRobotPoint
     {
         public string Name { get; set; }
-        public float Xpos { get; set; }
-        public float Ypos { get; set; }
-        public float Zpos { get; set; }
-        public float Q1_UF { get; set; }
-        public float Q2_UF { get; set; }
-        public float Q3_UF { get; set; }
-        public float Q4_UF { get; set; }
-        public float Xpos_OF { get; set; }
-        public float Ypos_OF { get; set; }
-        public float Zpos_OF { get; set; }
-        public float Q1_OF { get; set; }
-        public float Q2_OF { get; set; }
-        public float Q3_OF { get; set; }
-        public float Q4_OF { get; set; }
+        public double X { get; set; }
+        public double Y { get; set; }
+        public double Z { get; set; }
+        public double Q1_UF { get; set; }
+        public double Q2_UF { get; set; }
+        public double Q3_UF { get; set; }
+        public double Q4_UF { get; set; }
+        public double Xpos_OF { get; set; }
+        public double Ypos_OF { get; set; }
+        public double Zpos_OF { get; set; }
+        public double Q1_OF { get; set; }
+        public double Q2_OF { get; set; }
+        public double Q3_OF { get; set; }
+        public double Q4_OF { get; set; }
         public string Robhold { get; set; }
 
-        public WobjDataABB(string name, float xpos, float ypos, float zpos, float q1_uf, float q2_uf, float q3_uf, float q4_uf, float xpos_of, float ypos_of, float zpos_of, float q1_of, float q2_of, float q3_of, float q4_of, string robhold)
+        public WobjDataABB(string name, double xpos, double ypos, double zpos, double q1_uf, double q2_uf, double q3_uf, double q4_uf, double xpos_of, double ypos_of, double zpos_of, double q1_of, double q2_of, double q3_of, double q4_of, string robhold)
         {
             Name = name;
-            Xpos = xpos;
-            Ypos = ypos;
-            Zpos = zpos;
+            X = xpos;
+            Y = ypos;
+            Z = zpos;
             Q1_UF = q1_uf;
             Q2_UF = q2_uf;
             Q3_UF = q3_uf;
@@ -458,27 +458,27 @@ namespace RobotFilesEditor.Model.Operations.DataClass
         }
     }
 
-    public class PointKUKA
-    {
-        public double Xpos { get; set; }
-        public double Ypos { get; set; }
-        public double Zpos { get; set; }
-        public double A { get; set; }
-        public double B { get; set; }
-        public double C { get; set; }
+    //public class PointKUKA : CommonLibrary.IRobotPoint
+    //{
+    //    public double X { get; set; }
+    //    public double Y { get; set; }
+    //    public double Z { get; set; }
+    //    public double A { get; set; }
+    //    public double B { get; set; }
+    //    public double C { get; set; }
 
-        public PointKUKA(double xpos, double ypos, double zpos, double a, double b, double c)
-        {
-            Xpos = xpos;
-            Ypos = ypos;
-            Zpos = zpos;
-            A = a;
-            B = b;
-            C = c;
-        }
+    //    public PointKUKA(double xpos, double ypos, double zpos, double a, double b, double c)
+    //    {
+    //        X = xpos;
+    //        Y = ypos;
+    //        Z = zpos;
+    //        A = a;
+    //        B = b;
+    //        C = c;
+    //    }
 
-        public PointKUKA()
-        { }
-    }
+    //    public PointKUKA()
+    //    { }
+    //}
 }
 

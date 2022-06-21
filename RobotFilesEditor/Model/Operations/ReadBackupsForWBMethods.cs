@@ -117,7 +117,7 @@ namespace RobotFilesEditor.Model.Operations
             List<ILoadData> toolloadDatas;
             List<ILoadData> loadDatas;
             List<ToolName> toolnames;
-            List<IBaseData> baseDatas;
+            List<CommonLibrary.IRobotPoint> baseDatas;
             List<BaseName> basenames;
             List<HomePos> homePoses;
             List<HomeNameLong> homeNamesLong;
@@ -211,7 +211,7 @@ namespace RobotFilesEditor.Model.Operations
                     System.Windows.Forms.DialogResult dialogResult = System.Windows.Forms.MessageBox.Show("InputData not found in " + file + ". Do you want to continue without offline values of bases?", "InputData not found!", System.Windows.Forms.MessageBoxButtons.YesNo, System.Windows.Forms.MessageBoxIcon.Question);
                     if (dialogResult == System.Windows.Forms.DialogResult.Yes)
                     {
-                        data.BaseDatasInputData = new List<IBaseData>();
+                        data.BaseDatasInputData = new List<CommonLibrary.IRobotPoint>();
                         data.BaseNamesInputData = new List<BaseName>();
                         data.BaseNumbersInputData = new List<int>();
                     }
@@ -572,9 +572,9 @@ namespace RobotFilesEditor.Model.Operations
             return result;
         }
 
-        public static List<IBaseData> GetBaseDatas(string file = null, ZipArchiveEntry entry = null)
+        public static List<CommonLibrary.IRobotPoint> GetBaseDatas(string file = null, ZipArchiveEntry entry = null)
         {
-            List<IBaseData> result = new List<IBaseData>();
+            List<CommonLibrary.IRobotPoint> result = new List<CommonLibrary.IRobotPoint>();
             List<string> foundValues = new List<string>();
             Regex regex = new Regex(@"((?<=X )-[0-9]*\.[0-9]*)|((?<=X )-[0-9]*)|((?<=X )[0-9]*\.[0-9]*|((?<=X )[0-9]*)|(?<=Y )-[0-9]*\.[0-9]*)|((?<=Y )-[0-9]*)|((?<=Y )[0-9]*\.[0-9]*|((?<=Y )[0-9]*)|(?<=Z )-[0-9]*\.[0-9]*)|((?<=Z )-[0-9]*)|((?<=Z )[0-9]*\.[0-9]*|((?<=Z )[0-9]*)|(?<=A )-[0-9]*\.[0-9]*)|((?<=A )-[0-9]*)|((?<=A )[0-9]*\.[0-9]*|((?<=A )[0-9]*)|(?<=B )-[0-9]*\.[0-9]*)|((?<=B )-[0-9]*)|((?<=B )[0-9]*\.[0-9]*|((?<=B )[0-9]*)|(?<=C )-[0-9]*\.[0-9]*)|((?<=C )-[0-9]*)|((?<=C )[0-9]*\.[0-9]*|((?<=C )[0-9]*))", RegexOptions.IgnoreCase);
             StreamReader reader = null;
@@ -1365,9 +1365,9 @@ namespace RobotFilesEditor.Model.Operations
                             int currentBase = existingBases[i];
                             oSheet.Cells[2 + i, 1] = existingBases[i];
                             oSheet.Cells[2 + i, 2] = data.BaseNames[currentBase - 1].Name;
-                            oSheet.Cells[2 + i, 4] = data.BaseDatas[currentBase - 1].Xpos;
-                            oSheet.Cells[2 + i, 5] = data.BaseDatas[currentBase - 1].Ypos;
-                            oSheet.Cells[2 + i, 6] = data.BaseDatas[currentBase - 1].Zpos;
+                            oSheet.Cells[2 + i, 4] = data.BaseDatas[currentBase - 1].X;
+                            oSheet.Cells[2 + i, 5] = data.BaseDatas[currentBase - 1].Y;
+                            oSheet.Cells[2 + i, 6] = data.BaseDatas[currentBase - 1].Z;
                             oSheet.Cells[2 + i, 7] = (data.BaseDatas[currentBase - 1] as BaseDataKUKA).A;
                             oSheet.Cells[2 + i, 8] = (data.BaseDatas[currentBase - 1] as BaseDataKUKA).B;
                             oSheet.Cells[2 + i, 9] = (data.BaseDatas[currentBase - 1] as BaseDataKUKA).C;
@@ -1412,9 +1412,9 @@ namespace RobotFilesEditor.Model.Operations
                         {
                             oSheet.Cells[2 + i, 1] = data.BaseNumbersInputData[i];
                             oSheet.Cells[2 + i, 2] = data.BaseNamesInputData[i].Name;
-                            oSheet.Cells[2 + i, 4] = data.BaseDatasInputData[i].Xpos;
-                            oSheet.Cells[2 + i, 5] = data.BaseDatasInputData[i].Ypos;
-                            oSheet.Cells[2 + i, 6] = data.BaseDatasInputData[i].Zpos;
+                            oSheet.Cells[2 + i, 4] = data.BaseDatasInputData[i].X;
+                            oSheet.Cells[2 + i, 5] = data.BaseDatasInputData[i].Y;
+                            oSheet.Cells[2 + i, 6] = data.BaseDatasInputData[i].Z;
                             oSheet.Cells[2 + i, 7] = (data.BaseDatasInputData[i] as BaseDataKUKA).A;
                             oSheet.Cells[2 + i, 8] = (data.BaseDatasInputData[i] as BaseDataKUKA).B;
                             oSheet.Cells[2 + i, 9] = (data.BaseDatasInputData[i] as BaseDataKUKA).C;
@@ -1465,9 +1465,9 @@ namespace RobotFilesEditor.Model.Operations
                         oSheet.Cells[counter, 3] = baseDataABB.Robhold;
                         oSheet.Cells[counter, 4] = "TRUE";
                         oSheet.Cells[counter, 5] = "";
-                        oSheet.Cells[counter, 6] = baseDataABB.Xpos;
-                        oSheet.Cells[counter, 7] = baseDataABB.Ypos;
-                        oSheet.Cells[counter, 8] = baseDataABB.Zpos;
+                        oSheet.Cells[counter, 6] = baseDataABB.X;
+                        oSheet.Cells[counter, 7] = baseDataABB.Y;
+                        oSheet.Cells[counter, 8] = baseDataABB.Z;
                         oSheet.Cells[counter, 9] = baseDataABB.Q1_UF;
                         oSheet.Cells[counter, 10] = baseDataABB.Q2_UF;
                         oSheet.Cells[counter, 11] = baseDataABB.Q3_UF;
@@ -2056,7 +2056,7 @@ namespace RobotFilesEditor.Model.Operations
             return false;
         }
 
-        private static List<IToolData> GetToolDatasABB(string directory, out List<ILoadData> toolloadDatas, out List<ILoadData> loadDatas, out List<ToolName> toolnames, out List<IBaseData> baseDatas, out List<BaseName> basenames, out List<HomePos> homeposes, out List<HomeNameLong> homenamesLong, out List<HomeNameShort> homenamesShort, out List<IUserBit> userBitsIn, out List<IUserBit> userBitsOut, out List<IUserBit> typbits, out List<IUserBit> jobEnables)
+        private static List<IToolData> GetToolDatasABB(string directory, out List<ILoadData> toolloadDatas, out List<ILoadData> loadDatas, out List<ToolName> toolnames, out List<CommonLibrary.IRobotPoint> baseDatas, out List<BaseName> basenames, out List<HomePos> homeposes, out List<HomeNameLong> homenamesLong, out List<HomeNameShort> homenamesShort, out List<IUserBit> userBitsIn, out List<IUserBit> userBitsOut, out List<IUserBit> typbits, out List<IUserBit> jobEnables)
         {
             try
             {
@@ -2080,7 +2080,7 @@ namespace RobotFilesEditor.Model.Operations
                 toolloadDatas = new List<ILoadData>();
                 toolnames = new List<ToolName>();
                 basenames = new List<BaseName>();
-                baseDatas = new List<IBaseData>();
+                baseDatas = new List<CommonLibrary.IRobotPoint>();
                 homeposes = new List<HomePos>();
                 homenamesLong = new List<HomeNameLong>();
                 homenamesShort = new List<HomeNameShort>();

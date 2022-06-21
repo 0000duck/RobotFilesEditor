@@ -25,11 +25,11 @@ namespace RobotFilesEditor.Model.Operations.DataClass
         public int Number { get; set; }
         public bool IsPermanent { get; set; }
         public string Name { get; set; }
-        public PointKUKA Origin { get; set; }
-        public PointKUKA P1 { get; set; }
-        public PointKUKA P2 { get; set; }
+        public CommonLibrary.PointXYZABC Origin { get; set; }
+        public CommonLibrary.PointXYZABC P1 { get; set; }
+        public CommonLibrary.PointXYZABC P2 { get; set; }
 
-        public SafetyZone(int number, bool ispermanent, string name, PointKUKA origin, PointKUKA p1, PointKUKA p2)
+        public SafetyZone(int number, bool ispermanent, string name, CommonLibrary.PointXYZABC origin, CommonLibrary.PointXYZABC p1, CommonLibrary.PointXYZABC p2)
         {
             Number = number;
             IsPermanent = ispermanent;
@@ -44,10 +44,10 @@ namespace RobotFilesEditor.Model.Operations.DataClass
     {
         public int Number { get; set; }
         public string Name { get; set; }
-        public PointKUKA TCP { get; set; }
+        public CommonLibrary.PointXYZABC TCP { get; set; }
         public List<Sphere> Spheres { get; set; }
 
-        public SafetyTool(int number, string name, PointKUKA tcp, List<Sphere> spheres)
+        public SafetyTool(int number, string name, CommonLibrary.PointXYZABC tcp, List<Sphere> spheres)
         {
             Number = number;
             Name = name;
@@ -60,9 +60,9 @@ namespace RobotFilesEditor.Model.Operations.DataClass
     {
         public int Number { get; set; }
         public double Radius { get; set; }
-        public PointKUKA Center { get; set; }
+        public CommonLibrary.PointXYZABC Center { get; set; }
 
-        public Sphere(int number, double radius, PointKUKA center)
+        public Sphere(int number, double radius, CommonLibrary.PointXYZABC center)
         {
             Number = number;
             Radius = radius;
@@ -74,9 +74,9 @@ namespace RobotFilesEditor.Model.Operations.DataClass
     {
         public double Min { get; set; }
         public double Max { get; set; }
-        public List<PointKUKA> Points { get; set; }
+        public List<CommonLibrary.PointXYZABC> Points { get; set; }
 
-        public Cellspace(double min, double max, List<PointKUKA> points)
+        public Cellspace(double min, double max, List<CommonLibrary.PointXYZABC> points)
         {
             Min = min;
             Max = max;

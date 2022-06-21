@@ -81,21 +81,21 @@ namespace RobotFilesEditor.Model.Operations
                     foreach (var point in robot.Value)
                     {
                         oSheet.Cells[rowcounter, 1] = point.Name;
-                        oSheet.Cells[rowcounter, 2] = point.Point1.Xpos;
-                        oSheet.Cells[rowcounter, 3] = point.Point1.Ypos;
-                        oSheet.Cells[rowcounter, 4] = point.Point1.Zpos;
+                        oSheet.Cells[rowcounter, 2] = point.Point1.X;
+                        oSheet.Cells[rowcounter, 3] = point.Point1.Y;
+                        oSheet.Cells[rowcounter, 4] = point.Point1.Z;
                         oSheet.Cells[rowcounter, 5] = point.Point1.A;
                         oSheet.Cells[rowcounter, 6] = point.Point1.B;
                         oSheet.Cells[rowcounter, 7] = point.Point1.C;
-                        oSheet.Cells[rowcounter, 8] = point.Point2.Xpos;
-                        oSheet.Cells[rowcounter, 9] = point.Point2.Ypos;
-                        oSheet.Cells[rowcounter, 10] = point.Point2.Zpos;
+                        oSheet.Cells[rowcounter, 8] = point.Point2.X;
+                        oSheet.Cells[rowcounter, 9] = point.Point2.Y;
+                        oSheet.Cells[rowcounter, 10] = point.Point2.Z;
                         oSheet.Cells[rowcounter, 11] = point.Point2.A;
                         oSheet.Cells[rowcounter, 12] = point.Point2.B;
                         oSheet.Cells[rowcounter, 13] = point.Point2.C;
-                        oSheet.Cells[rowcounter, 14] = Math.Abs(point.Point1.Xpos - point.Point2.Xpos);
-                        oSheet.Cells[rowcounter, 15] = Math.Abs(point.Point1.Ypos - point.Point2.Ypos);
-                        oSheet.Cells[rowcounter, 16] = Math.Abs(point.Point1.Zpos - point.Point2.Zpos);
+                        oSheet.Cells[rowcounter, 14] = Math.Abs(point.Point1.X - point.Point2.X);
+                        oSheet.Cells[rowcounter, 15] = Math.Abs(point.Point1.Y - point.Point2.Y);
+                        oSheet.Cells[rowcounter, 16] = Math.Abs(point.Point1.Z - point.Point2.Z);
                         oSheet.Cells[rowcounter, 17] = Math.Abs(point.Point1.A - point.Point2.A);
                         oSheet.Cells[rowcounter, 18] = Math.Abs(point.Point1.B - point.Point2.B);
                         oSheet.Cells[rowcounter, 19] = Math.Abs(point.Point1.C - point.Point2.C);
@@ -147,7 +147,7 @@ namespace RobotFilesEditor.Model.Operations
                     List<PointsPair> pointsToAdd = new List<PointsPair>();
                     foreach (var pointPair in robot.Value)
                     {
-                        if (Math.Abs(pointPair.Point1.Xpos - pointPair.Point2.Xpos) > 0.5 || Math.Abs(pointPair.Point1.Ypos - pointPair.Point2.Ypos) > 0.5 || Math.Abs(pointPair.Point1.Zpos - pointPair.Point2.Zpos) > 0.5 || Math.Abs(pointPair.Point1.A - pointPair.Point2.A) > 0.1 || Math.Abs(pointPair.Point1.B - pointPair.Point2.B) > 0.1 || Math.Abs(pointPair.Point1.C - pointPair.Point2.C) > 0.1)
+                        if (Math.Abs(pointPair.Point1.X - pointPair.Point2.X) > 0.5 || Math.Abs(pointPair.Point1.Y - pointPair.Point2.Y) > 0.5 || Math.Abs(pointPair.Point1.Z - pointPair.Point2.Z) > 0.5 || Math.Abs(pointPair.Point1.A - pointPair.Point2.A) > 0.1 || Math.Abs(pointPair.Point1.B - pointPair.Point2.B) > 0.1 || Math.Abs(pointPair.Point1.C - pointPair.Point2.C) > 0.1)
                             pointsToAdd.Add(pointPair);
 
                     }
@@ -168,7 +168,7 @@ namespace RobotFilesEditor.Model.Operations
             try
             {
                 IDictionary<string, List<PointsPair>> result = new SortedDictionary<string, List<PointsPair>>();
-                IDictionary<string, List<PointKUKA>> pointsWithoutPair = new Dictionary<string, List<PointKUKA>>();
+                IDictionary<string, List<CommonLibrary.PointXYZABC>> pointsWithoutPair = new Dictionary<string, List<CommonLibrary.PointXYZABC>>();
                 foreach (var backupPair in backupPairs)
                 {
                     List<string> backup1 = new List<string>() { backupPair.Backup1 };
@@ -193,7 +193,7 @@ namespace RobotFilesEditor.Model.Operations
                     if (resultWeldPoints1.Count > 0 || resultWeldPoints2.Count > 0)
                     {
                         result.Add(Path.GetFileName(backupPair.Backup1), new List<PointsPair>());
-                        pointsWithoutPair.Add(Path.GetFileName(backupPair.Backup1), new List<PointKUKA>());
+                        pointsWithoutPair.Add(Path.GetFileName(backupPair.Backup1), new List<CommonLibrary.PointXYZABC>());
                         IDictionary<string, IWeldpoint> copyOfWeldPoints2 = new Dictionary<string, IWeldpoint>();
                         foreach (var item in resultWeldPoints2)
                             copyOfWeldPoints2.Add(item);
@@ -203,7 +203,7 @@ namespace RobotFilesEditor.Model.Operations
                             var pointInOtherBackup = resultWeldPoints2.FirstOrDefault(x => x.Key.Replace("_LOCAL","").ToLower() == point.Key.Replace("_LOCAL", "").ToLower());
                             if (pointInOtherBackup.Key != null)
                             {
-                                result[Path.GetFileName(backupPair.Backup1)].Add(new PointsPair(pointCopy.Key, new PointKUKA(pointCopy.Value.XPos, pointCopy.Value.YPos, pointCopy.Value.ZPos, pointCopy.Value.A, pointCopy.Value.B, pointCopy.Value.C), new PointKUKA(pointInOtherBackup.Value.XPos, pointInOtherBackup.Value.YPos, pointInOtherBackup.Value.ZPos, pointInOtherBackup.Value.A, pointInOtherBackup.Value.B, pointInOtherBackup.Value.C)));
+                                result[Path.GetFileName(backupPair.Backup1)].Add(new PointsPair(pointCopy.Key, new CommonLibrary.PointXYZABC(pointCopy.Value.XPos, pointCopy.Value.YPos, pointCopy.Value.ZPos, pointCopy.Value.A, pointCopy.Value.B, pointCopy.Value.C), new CommonLibrary.PointXYZABC(pointInOtherBackup.Value.XPos, pointInOtherBackup.Value.YPos, pointInOtherBackup.Value.ZPos, pointInOtherBackup.Value.A, pointInOtherBackup.Value.B, pointInOtherBackup.Value.C)));
                                 if (copyOfWeldPoints2.Keys.Contains(pointCopy.Key))
                                     copyOfWeldPoints2.Remove(copyOfWeldPoints2.First(x => x.Key == pointCopy.Key));
                                 else
@@ -216,13 +216,13 @@ namespace RobotFilesEditor.Model.Operations
                             }
                             else
                             {
-                                pointsWithoutPair[Path.GetFileName(backupPair.Backup1)].Add(new PointKUKA(pointCopy.Value.XPos, pointCopy.Value.YPos, pointCopy.Value.ZPos, pointCopy.Value.A, pointCopy.Value.B, pointCopy.Value.C));
+                                pointsWithoutPair[Path.GetFileName(backupPair.Backup1)].Add(new CommonLibrary.PointXYZABC(pointCopy.Value.XPos, pointCopy.Value.YPos, pointCopy.Value.ZPos, pointCopy.Value.A, pointCopy.Value.B, pointCopy.Value.C));
                             }
                         }
                         foreach (var point in copyOfWeldPoints2)
                         {
                             var copyOfPoit = point;
-                            pointsWithoutPair[Path.GetFileName(backupPair.Backup1)].Add(new PointKUKA(copyOfPoit.Value.XPos, copyOfPoit.Value.YPos, copyOfPoit.Value.ZPos, copyOfPoit.Value.A, copyOfPoit.Value.B, copyOfPoit.Value.C));
+                            pointsWithoutPair[Path.GetFileName(backupPair.Backup1)].Add(new CommonLibrary.PointXYZABC(copyOfPoit.Value.XPos, copyOfPoit.Value.YPos, copyOfPoit.Value.ZPos, copyOfPoit.Value.A, copyOfPoit.Value.B, copyOfPoit.Value.C));
                         }
                     }
                 }

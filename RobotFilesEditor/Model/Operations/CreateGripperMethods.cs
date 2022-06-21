@@ -12,11 +12,18 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static RobotFilesEditor.Model.DataInformations.FileValidationData;
+using System.Xml.Linq;
+using RobotFilesEditor.Dialogs.GripperXMLHelper;
+using System.Globalization;
 
 namespace RobotFilesEditor.Model.Operations
 {
     public static class CreateGripperMethods
     {
+        private static int startAdress, inputUnitLength, outputUnitLength;
+        private static string gripperType;
+        public enum ClampType { IMPULSE, VACUUM, STATICALLY }; 
+
         internal static void CreateGripper(ObservableCollection<GripperElementsVM> gripperElements, ObservableCollection<GripperElementSensorsVM> gripperElementSensors, int nrOfInputs, int nrOfOutputs, int gripperNumber, bool hasSoftStart)
         {
             if (!SetSignalNames(gripperElements, gripperElementSensors))
@@ -284,12 +291,192 @@ namespace RobotFilesEditor.Model.Operations
         internal static void CreateGripperXMLExecute()
         {
             MessageBox.Show("Select gripper config src file", "Select", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            string file = CommonLibrary.CommonMethods.SelectDirOrFile(false, filter1Descr: "SRC file", filter1: "*.src");
+            string file = CommonLibrary.CommonMethods.SelectDirOrFile(false, filter1Descr: "Dat file", filter1: "*.dat", filter2Descr: "Src file", filter2:"*.src");
             if (!string.IsNullOrEmpty(file))
             {
-                CreateGripperViewModel vm = ReadConfigFromSRC(file);
-                CreateGripperXML(vm.GripperElements, vm.GripperElementSensors, vm.NrOfInputs, vm.NrOfOutputs, vm.SelectedGripperNumber, vm.HasSoftStart, vm.StartAddresses.First().Value, vm.OutsForClose.First().Value);
+                CreateGripperViewModel vm;
+                if (Path.GetExtension(file).ToLower() == ".src")
+                {
+                    vm = ReadConfigFromSRC(file);
+                    CreateGripperXML(vm.GripperElements, vm.GripperElementSensors, vm.NrOfInputs, vm.NrOfOutputs, vm.SelectedGripperNumber, vm.HasSoftStart, vm.StartAddresses.First().Value, vm.OutsForClose.First().Value);
+                }
+                else
+                {
+                    List<GripperFromUserFile> config = ReadConfigFromDat(file);
+                    GripperXMLHelperVM vmHelper = new GripperXMLHelperVM();
+                    var window = new GripperXMLHelperWindow(vmHelper);
+                    window.ShowDialog();
+
+                    startAdress = int.Parse(vmHelper.StartAddress);
+                    inputUnitLength = int.Parse(vmHelper.NrOfInputs);
+                    outputUnitLength = int.Parse(vmHelper.NrOfOutputs); ;
+                    gripperType = vmHelper.FGSelected ? "FG" : "FC";
+
+                    CreateGripperXMLfromDat(config);
+                }
             }
+        }
+
+        private static void CreateGripperXMLfromDat(List<GripperFromUserFile> config)
+        {
+            MessageBox.Show("Select directory to save files", "Select dir", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            string savePaths = string.Empty;
+            string savePath = CommonLibrary.CommonMethods.SelectDirOrFile(true);
+            XDocument document = new XDocument();
+            foreach (var gripper in config)
+            {
+                XElement gripperXml = new XElement("Gripper");
+                gripperXml.Add(new XElement("Num", new XAttribute("VarValue", "1"), new XAttribute("VarSelection", "1"), new XAttribute("VarInputType", "NoInput")));
+                gripperXml.Add(new XElement("Name", new XAttribute("VarValue", "Gripper_" + gripper.Number), new XAttribute("VarSelection", "Gripper_" + gripper.Number), new XAttribute("VarInputType", "Text")));
+                gripperXml.Add(new XElement("I_PrSwUsed", new XAttribute("VarValue", gripper.Sensors.SoftStartUsed ? "TRUE" : "FALSE"), new XAttribute("VarSelection" , gripper.Sensors.SoftStartUsed ? "TRUE" : "FALSE"), new XAttribute("VarInputType", "CbBool")));
+                if (gripper.Sensors.SoftStartUsed)
+                {
+                    gripperXml.Add(new XElement("I_PrSw", new XAttribute("VarValue", gripper.Sensors.InputForSoftStart), new XAttribute("VarSelection", CreateSignalName(gripper.Number, gripper.Sensors.InputForSoftStart, true)), new XAttribute("VarInputType", "CbI")));
+                    gripperXml.Add(new XElement("O_SafeValve", new XAttribute("VarValue", gripper.Sensors.OutputForSoftStart), new XAttribute("VarSelection", CreateSignalName(gripper.Number, gripper.Sensors.OutputForSoftStart, false)), new XAttribute("VarInputType", "CbO")));
+                }
+                bool isCtrlValveUsed = gripper.Sensors.OutputForCtrlValve == 0 ? false : true;
+                gripperXml.Add(new XElement("UseCtrlValve", new XAttribute("VarValue", isCtrlValveUsed ? "TRUE" : "FALSE"), new XAttribute("VarSelection", isCtrlValveUsed ? "TRUE" : "FALSE"), new XAttribute("VarInputType", "CbBool")));
+                if (isCtrlValveUsed)
+                {
+                    gripperXml.Add(new XElement("I_CtrlValve", new XAttribute("VarValue", gripper.Sensors.InputForCtrlValve), new XAttribute("VarSelection", CreateSignalName(gripper.Number,gripper.Sensors.InputForCtrlValve,true)), new XAttribute("VarInputType", "CbI")));
+                    gripperXml.Add(new XElement("O_CtrlValve", new XAttribute("VarValue", gripper.Sensors.OutputForCtrlValve), new XAttribute("VarSelection", CreateSignalName(gripper.Number, gripper.Sensors.OutputForCtrlValve, false)), new XAttribute("VarInputType", "CbO")));
+
+                }
+                int counter = 1;
+                foreach (var pp in gripper.Sensors.Inputs)
+                {
+                    gripperXml.Add(new XElement("PP" + counter, new XAttribute("VarValue", pp), new XAttribute("VarSelection", CreateSignalName(gripper.Number, pp, true)), new XAttribute("VarInputType", "CbI")));
+                    counter++;
+                }
+                gripperXml.Add(new XElement("PNetModules"));
+                gripperXml.Element("PNetModules").Add(new XElement("Module_1", new XAttribute("VarValue", gripperType + "00" + gripper.Number + "_KF70"), new XAttribute("VarSelection", gripperType + "00" + gripper.Number + "_KF70"), new XAttribute("VarInputType", "NoInput")));
+                gripperXml.Element("PNetModules").Add(new XElement("I_Address_1", new XAttribute("VarValue", startAdress), new XAttribute("VarSelection", startAdress), new XAttribute("VarInputType", "Integer")));
+                gripperXml.Element("PNetModules").Add(new XElement("O_Address_1", new XAttribute("VarValue", startAdress), new XAttribute("VarSelection", startAdress), new XAttribute("VarInputType", "Integer")));
+                gripperXml.Element("PNetModules").Add(new XElement("InUnit_1", new XAttribute("VarValue", inputUnitLength), new XAttribute("VarSelection", inputUnitLength), new XAttribute("VarInputType", "Integer")));
+                gripperXml.Element("PNetModules").Add(new XElement("OutUnit_1", new XAttribute("VarValue", outputUnitLength), new XAttribute("VarSelection", outputUnitLength), new XAttribute("VarInputType", "Integer")));
+
+                counter = 1;
+                foreach (var acturator in gripper.Actuators)
+                {
+                    XElement currentActuatorXml = new XElement("Actuator");
+                    currentActuatorXml.Add(new XElement("Num", new XAttribute("VarValue", counter), new XAttribute("VarSelection", counter), new XAttribute("VarInputType", "NoInput")));
+                    currentActuatorXml.Add(new XElement("Name", new XAttribute("VarValue", acturator.Name), new XAttribute("VarSelection", acturator.Name), new XAttribute("VarInputType", "Text")));
+                    string isUsedString = acturator.IsUsed ? "TRUE" : "FALSE";
+                    currentActuatorXml.Add(new XElement("IsUsed", new XAttribute("VarValue", isUsedString), new XAttribute("VarSelection", isUsedString), new XAttribute("VarInputType", "CbBool")));
+                    if (acturator.IsUsed)
+                    {
+                        if (acturator.Type == ClampType.IMPULSE)
+                        {
+                            currentActuatorXml.Add(new XElement("Type", new XAttribute("VarValue", GetActuatorType(acturator.Type)), new XAttribute("VarSelection", GetActuatorType(acturator.Type)), new XAttribute("VarInputType", "CbType")));
+                            string isCheckString = acturator.IsCheck ? "TRUE" : "FALSE";
+                            currentActuatorXml.Add(new XElement("Check", new XAttribute("VarValue", isCheckString), new XAttribute("VarSelection", isCheckString), new XAttribute("VarInputType", "CbBool")));
+                            for (int i = 1; i <= 4; i++)
+                            {
+                                string isClampUsed = acturator.Clamps[i - 1].IsUsed ? "TRUE" : "FALSE";
+                                currentActuatorXml.Add(new XElement("C" + i.ToString() + "Used", new XAttribute("VarValue", isClampUsed), new XAttribute("VarSelection", isClampUsed), new XAttribute("VarInputType", "CbBool")));
+                            }
+                            currentActuatorXml.Add(new XElement("O_Advanced", new XAttribute("VarValue", acturator.OutputAdvance), new XAttribute("VarSelection", CreateSignalName(gripper.Number, acturator.OutputAdvance, false)), new XAttribute("VarInputType", "CbO")));
+                            currentActuatorXml.Add(new XElement("O_Retracted", new XAttribute("VarValue", acturator.OutputRetract), new XAttribute("VarSelection", CreateSignalName(gripper.Number, acturator.OutputRetract, false)), new XAttribute("VarInputType", "CbO")));
+                            for (int i = 1; i <= 4; i++)
+                            {
+                                currentActuatorXml.Add(new XElement("I_C" + i.ToString() + "Advanced", new XAttribute("VarValue", acturator.Clamps[i - 1].InputAdvanced), new XAttribute("VarSelection", CreateSignalName(gripper.Number, acturator.Clamps[i - 1].InputAdvanced, true)), new XAttribute("VarInputType", "CbI")));
+                                currentActuatorXml.Add(new XElement("I_C" + i.ToString() + "Retracted", new XAttribute("VarValue", acturator.Clamps[i - 1].InputRetracted), new XAttribute("VarSelection", CreateSignalName(gripper.Number, acturator.Clamps[i - 1].InputRetracted, true)), new XAttribute("VarInputType", "CbI")));
+                            }
+                            currentActuatorXml.Add(new XElement("T_ErrWait", new XAttribute("VarValue", acturator.TErrWait), new XAttribute("VarSelection", acturator.TErrWait), new XAttribute("VarInputType", "Real")));
+                            currentActuatorXml.Add(new XElement("T_Advanced", new XAttribute("VarValue", acturator.T_Advanced), new XAttribute("VarSelection", acturator.T_Advanced), new XAttribute("VarInputType", "Real")));
+                            currentActuatorXml.Add(new XElement("T_Retracted", new XAttribute("VarValue", acturator.T_Retracted), new XAttribute("VarSelection", acturator.T_Retracted), new XAttribute("VarInputType", "Real")));
+                        }
+                        else if (acturator.Type == ClampType.VACUUM)
+                        {
+                            currentActuatorXml.Add(new XElement("Type", new XAttribute("VarValue", GetActuatorType(acturator.Type)), new XAttribute("VarSelection", GetActuatorType(acturator.Type)), new XAttribute("VarInputType", "CbType")));
+                            currentActuatorXml.Add(new XElement("O_Advanced", new XAttribute("VarValue", acturator.OutputAdvance), new XAttribute("VarSelection", CreateSignalName(gripper.Number, acturator.OutputAdvance, false)), new XAttribute("VarInputType", "CbO")));
+                            currentActuatorXml.Add(new XElement("O_Retracted", new XAttribute("VarValue", acturator.OutputRetract), new XAttribute("VarSelection", CreateSignalName(gripper.Number, acturator.OutputRetract, false)), new XAttribute("VarInputType", "CbO")));
+                            currentActuatorXml.Add(new XElement("T_ErrWait", new XAttribute("VarValue", acturator.TErrWait), new XAttribute("VarSelection", acturator.TErrWait), new XAttribute("VarInputType", "Real")));
+                            currentActuatorXml.Add(new XElement("I_VAChnA", new XAttribute("VarValue", acturator.VacuumReachedInput), new XAttribute("VarSelection", CreateSignalName(gripper.Number,acturator.VacuumReachedInput,true)), new XAttribute("VarInputType", "CbI")));
+                            currentActuatorXml.Add(new XElement("T_Ret_Pulse", new XAttribute("VarValue", acturator.T_Ret_Pulse), new XAttribute("VarSelection", acturator.T_Ret_Pulse), new XAttribute("VarInputType", "Real")));
+                        }
+                    }
+                    gripperXml.Add(currentActuatorXml);
+                    counter++;
+                }
+                document.Add(gripperXml);
+                document.Save(Path.Combine(savePath, "Gripper"+gripper.Number+".xml"));
+                savePath += Path.Combine(savePath, "Gripper" + gripper.Number + ".xml");
+            }
+            MessageBox.Show("Files saved successfully!\r\n" + savePath, "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private static object GetActuatorType(ClampType type)
+        {
+            switch (type)
+            {
+                case ClampType.IMPULSE:
+                    return "#IMPULSE";
+                case ClampType.STATICALLY:
+                    return "#STATICALLY";
+                case ClampType.VACUUM:
+                    return "#VACUUM";
+                default:
+                    return "ERROR";
+            }
+        }
+
+        private static string CreateSignalName(int gripperNumber, int signalNumber, bool isInput)
+        {
+            if (signalNumber == 0)
+                return "Not configured";
+            int signalNum = signalNumber - startAdress;
+            string signalNumString = string.Empty;
+            if (signalNum.ToString().Length == 2)
+                signalNumString = signalNum.ToString();
+            else
+                signalNumString = "0" + signalNum.ToString();
+            return gripperType + "00" + gripperNumber + "_KF70_d" + (isInput ? "i" : "o") + "_" + signalNumString; 
+        }
+
+        private static List<GripperFromUserFile> ReadConfigFromDat(string file)
+        {
+            Regex isActRegex = new Regex(@"^\s*Act\s*\[\s*\d+\s*,\s*\d+\s*\]", RegexOptions.IgnoreCase);
+            Regex isGripperRegex = new Regex(@"^\s*Gripper\s*\[\s*\d+\s*\]", RegexOptions.IgnoreCase);
+            List<GripperFromUserFile> grippers = new List<GripperFromUserFile>();
+            StreamReader reader = new StreamReader(file);
+            while (!reader.EndOfStream)
+            {
+                string line = reader.ReadLine();
+                if (isActRegex.IsMatch(line))
+                {
+                    Actuator currentActuator = new Actuator(line);
+                    if (!grippers.Any(x => x.Number == currentActuator.GripperNumber))
+                        grippers.Add(new GripperFromUserFile(currentActuator.GripperNumber));
+                    grippers.Single(x => x.Number == currentActuator.GripperNumber).Actuators.Add(currentActuator);
+                }
+                
+                if (isGripperRegex.IsMatch(line))
+                {
+                    Sensors sensors = new Sensors(line);
+                    if (sensors.GripperNumber > 0)
+                    {
+                        if (!grippers.Any(x => x.Number == sensors.GripperNumber))
+                            grippers.Add(new GripperFromUserFile(sensors.GripperNumber));
+                        grippers.Single(x => x.Number == sensors.GripperNumber).Sensors = sensors;
+                    }
+                }
+            }
+            reader.Close();
+            grippers = FilterGrippers(grippers);
+
+            return grippers;
+        }
+
+        private static List<GripperFromUserFile> FilterGrippers(List<GripperFromUserFile> grippers)
+        {
+            List<GripperFromUserFile> result = new List<GripperFromUserFile>();
+            foreach (var gripper in grippers)
+            {
+                if (gripper.Actuators.Any(x=>x.IsUsed == true) || gripper.Sensors != null)
+                    result.Add(gripper);
+            }
+            return result;
         }
 
         private static CreateGripperViewModel ReadConfigFromSRC(string file)
@@ -875,6 +1062,147 @@ namespace RobotFilesEditor.Model.Operations
             }
 
             return result;
+        }
+    }
+
+    public class GripperFromUserFile
+    {
+        public int Number { get; set; }
+        public List<Actuator> Actuators { get; set; }
+        public Sensors Sensors { get; set; }
+
+        public GripperFromUserFile(int number)
+        {
+            Number = number;
+            Actuators = new List<Actuator>();
+        }
+    }
+
+    public class Actuator
+    {
+        public int GripperNumber { get; set; }
+        public string Name { get; set; }
+        public CreateGripperMethods.ClampType Type { get; set; }
+        public bool IsUsed { get; set; }
+        public bool IsCheck { get; set; }
+        public List<Clamp> Clamps { get; set; }
+        public int VacuumReachedInput { get; set; }
+        public int OutputRetract { get; set; }
+        public int OutputAdvance { get; set; }
+        public double TErrWait { get; set; }
+        public double T_Retracted { get; set; }
+        public double T_Advanced { get; set; }
+        public double T_Ret_Pulse { get; set; }
+        
+        public Actuator(string line)
+        {
+            Regex gripperNumberRegex = new Regex(@"(?<=^\s*Act\s*\[\s*)\d+", RegexOptions.IgnoreCase);
+            Regex nameRegex = new Regex("(?<=Name\\s*\\[\\s*\\]\\s+\"\\s*)[a-zA-Z0-9_\\-\\s]*", RegexOptions.IgnoreCase);
+            Regex typeRegex = new Regex(@"(?<=Type\s+#)\w+", RegexOptions.IgnoreCase);
+            Regex isUsedRegex = new Regex(@"(?<=IsUsed\s+)\w+", RegexOptions.IgnoreCase);
+            Regex isCheckRegex = new Regex(@"(?<=Check\s+)\w+", RegexOptions.IgnoreCase);
+            Regex vacuumReachedInputRegex = new Regex(@"(?<=I_VAChnA\s+)\d+", RegexOptions.IgnoreCase);
+            Regex outputRetractRegex = new Regex(@"(?<=O_Retracted\s+)\d+", RegexOptions.IgnoreCase);
+            Regex outputAdvanceRegex = new Regex(@"(?<=O_Advanced\s+)\d+", RegexOptions.IgnoreCase);
+            Regex tErrWaitRegex = new Regex(@"(?<=T_ErrWait\s+)\d+", RegexOptions.IgnoreCase);
+            Regex t_RetractedRegex = new Regex(@"(?<=T_Retracted\s+)\d+\.\d+", RegexOptions.IgnoreCase);
+            Regex t_AdvancedRegex = new Regex(@"(?<=T_Advanced\s+)\d+\.\d+", RegexOptions.IgnoreCase);
+            Regex t_Ret_PulseRegex = new Regex(@"(?<=T_Ret_Pulse\s+)\d+\.\d+", RegexOptions.IgnoreCase);
+
+
+            GripperNumber = int.Parse(gripperNumberRegex.Match(line).ToString());
+            Name = nameRegex.Match(line).ToString();
+            switch (typeRegex.Match(line).ToString().ToLower())
+            {
+                case "impulse":
+                    {
+                        Type = CreateGripperMethods.ClampType.IMPULSE;
+                        break;
+                    }
+                case "vacuum":
+                    {
+                        Type = CreateGripperMethods.ClampType.VACUUM;
+                        break;
+                    }
+                case "statically":
+                    {
+                        Type = CreateGripperMethods.ClampType.STATICALLY;
+                        break;
+                    }
+            }
+            IsUsed = isUsedRegex.Match(line).ToString().ToLower() == "true" ? true : false;
+            IsCheck = isCheckRegex.Match(line).ToString().ToLower() == "true" ? true : false;
+            VacuumReachedInput = int.Parse(vacuumReachedInputRegex.Match(line).ToString());
+            OutputRetract = int.Parse(outputRetractRegex.Match(line).ToString());
+            OutputAdvance = int.Parse(outputAdvanceRegex.Match(line).ToString());
+            TErrWait = double.Parse(tErrWaitRegex.Match(line).ToString()) / 1000;
+            T_Retracted = double.Parse(t_RetractedRegex.Match(line).ToString(),CultureInfo.InvariantCulture);
+            T_Advanced = double.Parse(t_AdvancedRegex.Match(line).ToString(), CultureInfo.InvariantCulture);
+            T_Ret_Pulse = double.Parse(t_Ret_PulseRegex.Match(line).ToString(), CultureInfo.InvariantCulture);
+
+            List<Clamp> clamps = new List<Clamp>();
+            for (int i=1;i<=4;i++)
+            {
+                Regex usedRegex = new Regex(@"(?<=C" + i.ToString() + @"Used\s+)\w+", RegexOptions.IgnoreCase);
+                Regex inputRetractedRegex = new Regex(@"(?<=I_C" + i.ToString() + @"Retracted\s+)\d+", RegexOptions.IgnoreCase);
+                Regex inputAdvancedRegex = new Regex(@"(?<=I_C" + i.ToString() + @"Advanced\s+)\d+", RegexOptions.IgnoreCase);
+                clamps.Add(new Clamp(i, usedRegex.Match(line).ToString().ToLower() == "true" ? true : false, int.Parse(inputRetractedRegex.Match(line).ToString()), int.Parse(inputAdvancedRegex.Match(line).ToString())));
+            }
+            Clamps = clamps;
+        }
+    }
+
+    public class Clamp
+    {
+        public int Number { get; set; }
+        public bool IsUsed { get; set; }
+        public int InputRetracted { get; set; }
+        public int InputAdvanced { get; set; }
+
+        public Clamp(int number, bool isUsed, int inputRetracted, int inputAdvanced)
+        {
+            Number = number;
+            IsUsed = isUsed;
+            InputRetracted = inputRetracted;
+            InputAdvanced = inputAdvanced;
+        }
+    }
+
+    public class Sensors
+    {
+        public string Name { get; set; }
+        public int GripperNumber { get; set; }
+        public List<int> Inputs { get; set; }
+        public bool SoftStartUsed { get; set; }
+        public int InputForSoftStart { get; set; }
+        public int OutputForSoftStart { get; set; }
+        public int InputForCtrlValve { get; set; }
+        public int OutputForCtrlValve { get; set; }
+
+        public Sensors(string line)
+        {
+            Regex nameRegex = new Regex("(?<=Name\\s*\\[\\s*\\]\\s+\"\\s*)[a-zA-Z0-9_\\-\\s]*", RegexOptions.IgnoreCase);
+            Regex grpNumberRegex = new Regex(@"(?<=Num\s+)\d+", RegexOptions.IgnoreCase);
+            Regex softStartUsedRegex = new Regex(@"(?<=I_PrSwUsed\s+)\w+", RegexOptions.IgnoreCase);
+            Regex inputForSoftStartRegex = new Regex(@"(?<=I_PrSw\s+)\d+", RegexOptions.IgnoreCase);
+            Regex outputForSoftStartRegex = new Regex(@"(?<=O_SafeValve\s+)\d+", RegexOptions.IgnoreCase);
+            Regex inputForCtrlValveRegex = new Regex(@"(?<=I_CtrlValve\s+)\d+", RegexOptions.IgnoreCase);
+            Regex outputForCtrlValveRegex = new Regex(@"(?<=O_CtrlValve\s+)\d+", RegexOptions.IgnoreCase);
+
+            Name = nameRegex.Match(line).ToString();
+            GripperNumber = int.Parse(grpNumberRegex.Match(line).ToString());
+            SoftStartUsed = softStartUsedRegex.Match(line).ToString().ToLower() == "true" ? true : false;
+            InputForSoftStart = int.Parse(inputForSoftStartRegex.Match(line).ToString());
+            OutputForSoftStart = int.Parse(outputForSoftStartRegex.Match(line).ToString());
+            InputForCtrlValve = int.Parse(inputForCtrlValveRegex.Match(line).ToString());
+            OutputForCtrlValve = int.Parse(outputForCtrlValveRegex.Match(line).ToString());
+            List<int> inputs = new List<int>();
+            for (int i = 1; i <= 16; i++)
+            {
+                Regex ppInputRegex = new Regex(@"(?<=PP" +i + @"\s+)\d+", RegexOptions.IgnoreCase);
+                inputs.Add(int.Parse(ppInputRegex.Match(line).ToString()));
+            }
+            Inputs = inputs;
         }
     }
 }

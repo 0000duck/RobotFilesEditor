@@ -22,7 +22,7 @@ DEFDAT  UserVariables Public
 ;* Variable added by User: {USER_NAME}
 ;* Company               : AIUT              
 ;* Date                  : {DATE}
-========================================
+;========================================
 GLOBAL INT MyTypNum
 
 ;================================================
