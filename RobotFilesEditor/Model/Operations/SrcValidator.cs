@@ -27,6 +27,7 @@ using RobotFilesEditor.Model.DataOrganization;
 using System.Diagnostics;
 using CommonLibrary;
 using System.Collections.ObjectModel;
+//using RobotFilesEditor.Model.Operations.DataClass;
 
 namespace RobotFilesEditor.Model.Operations
 {
@@ -125,7 +126,7 @@ namespace RobotFilesEditor.Model.Operations
                 //CommonLibrary.CommonMethods.CreateLogFile(logFileContent, "\\log.txt");
                 if (GlobalData.ControllerType == "KRC4" && resultSrcFiles.Any(x => Path.GetFileNameWithoutExtension(x.Key).ToLower() == "a01_braketest"))
                     resultSrcFiles = AddnAnswerToBrakeTest(resultSrcFiles);
-                Result = AddSpaces(resultSrcFiles);
+                Result = KukaAddSpaces.AddSpaces(resultSrcFiles);
             }
             else
             {
@@ -587,45 +588,71 @@ namespace RobotFilesEditor.Model.Operations
 
         public static IDictionary<string, List<string>> DivideToFolds(IDictionary<string, string> filesAndContent)
         {
+            Regex foldRegex = new Regex(@"^\s*;\s*FOLD\s+", RegexOptions.IgnoreCase);
+            Regex endfoldRegex = new Regex(@"^\s*;\s*ENDFOLD", RegexOptions.IgnoreCase);
             IDictionary<string, List<string>> result = new Dictionary<string, List<string>>();
             foreach (var file in filesAndContent.Where(item => item.Key.Contains(".src")))
             {
-                bool isHFold = false;
-                bool isPartOfFold = false;
-                String[] lines = file.Value.ToString().Split('\n');
-                string resultString = "";
-                List<string> resultFolds = new List<string>();
-                foreach (string line in lines.Where(x => x != "\n" && !string.IsNullOrEmpty(x)))
+                List<string> folds = new List<string>();
+                StringReader reader = new StringReader(file.Value);
+                int foldlevel = 0;
+                string currentFold = string.Empty;
+                while (true)
                 {
-                    if (line.ToLower().Contains(";fold"))
-                        isPartOfFold = true;
-                    if (line.ToLower().Replace(" ", "").Contains(";fold;%{h}") || line.ToLower().Replace(" ", "").Contains(";foldparameters;%{h}"))
-                        isHFold = true;
-                    if (isPartOfFold)
-                        resultString = resultString + line + "\n";
-                    else
+                    string line = reader.ReadLine();
+                    if (line == null)
+                        break;
+                    if (!string.IsNullOrEmpty(line.Trim()))
                     {
-                        if (!line.ToLower().Trim().Replace(" ", "").Contains(";company:") && !line.ToLower().Trim().Replace(" ", "").Contains(";programmer:") && !line.ToLower().Trim().Replace(" ", "").Contains(";date:") && !line.ToLower().Trim().Replace(" ", "").Contains(";changes:"))
+                        if (foldRegex.IsMatch(line))
+                            foldlevel++;
+                        if (endfoldRegex.IsMatch(line))
+                            foldlevel--;
+                        currentFold += line + "\r\n";
+                        if (foldlevel == 0)
                         {
-                            resultFolds.Add(line + "\n");
-                            resultString = "";
+                            folds.Add(currentFold);
+                            currentFold = string.Empty;
                         }
                     }
-
-                    if (line.ToLower().Contains(";endfold"))
-                    {
-                        if (!isHFold)
-                        {
-                            resultFolds.Add(resultString);
-                            resultString = "";
-                            isPartOfFold = false;
-                        }
-                        isHFold = false;
-
-                    }
-
                 }
-                result.Add(file.Key, resultFolds);
+                result.Add(file.Key, folds);
+                //bool isHFold = false;
+                //bool isPartOfFold = false;
+                //String[] lines = file.Value.ToString().Split('\n');
+                //string resultString = "";
+                //List<string> resultFolds = new List<string>();
+                //foreach (string line in lines.Where(x => x != "\n" && !string.IsNullOrEmpty(x)))
+                //{
+                //    if (line.ToLower().Contains(";fold"))
+                //        isPartOfFold = true;
+                //    if (line.ToLower().Replace(" ", "").Contains(";fold;%{h}") || line.ToLower().Replace(" ", "").Contains(";foldparameters;%{h}"))
+                //        isHFold = true;
+                //    if (isPartOfFold)
+                //        resultString = resultString + line + "\n";
+                //    else
+                //    {
+                //        if (!line.ToLower().Trim().Replace(" ", "").Contains(";company:") && !line.ToLower().Trim().Replace(" ", "").Contains(";programmer:") && !line.ToLower().Trim().Replace(" ", "").Contains(";date:") && !line.ToLower().Trim().Replace(" ", "").Contains(";changes:"))
+                //        {
+                //            resultFolds.Add(line + "\n");
+                //            resultString = "";
+                //        }
+                //    }
+
+                    //    if (line.ToLower().Contains(";endfold"))
+                    //    {
+                    //        if (!isHFold)
+                    //        {
+                    //            resultFolds.Add(resultString);
+                    //            resultString = "";
+                    //            isPartOfFold = false;
+                    //        }
+                    //        isHFold = false;
+
+                    //    }
+
+                    //}
+                    //result.Add(file.Key, resultFolds);
             }
             return result;
         }
@@ -1719,50 +1746,6 @@ namespace RobotFilesEditor.Model.Operations
             return result;
         }
 
-        public static IDictionary<string, string> AddSpaces(IDictionary<string, List<string>> filesAndContent)
-        {
-            IDictionary<string, string> result = new Dictionary<string, string>();
-            foreach (var file in filesAndContent)
-            {
-                string resultString = string.Empty;
-                DataClass.KukaCommandClass previousCommand = null;
-                foreach (var command in file.Value)
-                {
-                    DataClass.KukaCommandClass currentItem = new DataClass.KukaCommandClass(command);
-               
-                    if (CheckAddSpaceBeforeCurrentKuka(currentItem,previousCommand))
-                        resultString += "\r\n" + currentItem.Content;
-                    else
-                        resultString += currentItem.Content;
-                    previousCommand = currentItem;
-                }
-                result.Add(file.Key, resultString);
-            }
-
-            return result;
-        }
-
-        private static bool CheckAddSpaceBeforeCurrentKuka(DataClass.KukaCommandClass currentItem, DataClass.KukaCommandClass previousCommand)
-        {
-            bool addSpaceBeforeCurrent = false;
-            if (previousCommand != null)
-            {
-                if (currentItem.IsComment && previousCommand.IsMeaningfulFold)
-                    addSpaceBeforeCurrent = true;
-                if ((previousCommand.IsSingleInstruction || previousCommand.IsMeaningfulFold) && !previousCommand.IsTriggeredAction && !previousCommand.IsMotionFoldFold && currentItem.IsMotionFoldFold)
-                    addSpaceBeforeCurrent = true;
-                if (currentItem.IsCollisionReqRel && !previousCommand.IsCollisionReqRel)
-                    addSpaceBeforeCurrent = true;
-                if (currentItem.IsEnd)
-                    addSpaceBeforeCurrent = true;
-                if (currentItem.IsMeaningfulFold && !currentItem.IsCollisionReqRel && previousCommand.IsCollisionReqRel)
-                    addSpaceBeforeCurrent = true;
-                if (currentItem.IsMotionFoldFold && previousCommand.IsTriggeredAction)
-                    addSpaceBeforeCurrent = true;
-            }
-            return addSpaceBeforeCurrent;
-        }
-
         private static bool DetectAreaGroupL6(string fileContent, string previousItem)
         {
             bool fileContentContainsArea = false;
@@ -2477,7 +2460,6 @@ namespace RobotFilesEditor.Model.Operations
                                     result.Add(new CollisionWithoutDescr(number, "Release"));
                             }
                         }
-
                 }
             }
             return result;

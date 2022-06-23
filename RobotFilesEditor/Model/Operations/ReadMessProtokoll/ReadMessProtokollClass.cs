@@ -165,9 +165,9 @@ namespace RobotFilesEditor.Model.Operations.ReadMessProtokoll
 
         private void SaveFiles(string resultFile, string resultDatFileSoll, string resultDatFileIst, GlobalData.RobotController robotType)
         {
-            if (messprotokollFile.Length > 18)
+            if (messprotokollFile.Length > 18 || new Regex("[\\?\\,\\.\\$\\#\\!\\@\\%\\~\\^\\&\\*\\=\\+\\(\\)\\[\\]\\{\\}\"\\'\\:\\;\\|\\<\\>\\`\\-]").IsMatch(messprotokollFile))
             {
-                Dialogs.RenamePointDialog.RenamePointDialogVM vm = new Dialogs.RenamePointDialog.RenamePointDialogVM(messprotokollFile, 18, GlobalData.RenameWindowType.Path, new List<string>());
+                Dialogs.RenamePointDialog.RenamePointDialogVM vm = new Dialogs.RenamePointDialog.RenamePointDialogVM(messprotokollFile, 18, GlobalData.RenameWindowType.Path, new List<string>(),false);
                 Dialogs.RenamePointDialog.RenamePointDialog dialog = new Dialogs.RenamePointDialog.RenamePointDialog(vm);
                 dialog.ShowDialog();
                 if (dialog.DialogResult == true)
@@ -243,7 +243,7 @@ namespace RobotFilesEditor.Model.Operations.ReadMessProtokoll
                         currentMeas.Name = "P" + currentMeas.Name;
                     if (currentMeas.Name.Length > 23)
                     {
-                        Dialogs.RenamePointDialog.RenamePointDialogVM vm = new Dialogs.RenamePointDialog.RenamePointDialogVM(currentMeas.Name,23, GlobalData.RenameWindowType.Point, alreadyAdded);
+                        Dialogs.RenamePointDialog.RenamePointDialogVM vm = new Dialogs.RenamePointDialog.RenamePointDialogVM(currentMeas.Name,23, GlobalData.RenameWindowType.Point, alreadyAdded,true);
                         Dialogs.RenamePointDialog.RenamePointDialog dialog = new Dialogs.RenamePointDialog.RenamePointDialog(vm);
                         dialog.ShowDialog();
                         if (dialog.DialogResult == true)
@@ -251,29 +251,29 @@ namespace RobotFilesEditor.Model.Operations.ReadMessProtokoll
                     }
                     alreadyAdded.Add(currentMeas.Name);
 
-                    if (double.TryParse(messprotokollxlRange.Cells[rowCounter, startColumn + 1].FormulaLocal, out XSoll))
+                    if (double.TryParse((messprotokollxlRange.Cells[rowCounter, startColumn + 1].FormulaLocal as string).Replace(".",","), out XSoll))
                         currentMeas.XSoll = XSoll;
-                    if (double.TryParse(messprotokollxlRange.Cells[rowCounter, startColumn + 2].FormulaLocal, out YSoll))
+                    if (double.TryParse((messprotokollxlRange.Cells[rowCounter, startColumn + 2].FormulaLocal as string).Replace(".", ","), out YSoll))
                         currentMeas.YSoll = YSoll;
-                    if (double.TryParse(messprotokollxlRange.Cells[rowCounter, startColumn + 3].FormulaLocal, out ZSoll))
+                    if (double.TryParse((messprotokollxlRange.Cells[rowCounter, startColumn + 3].FormulaLocal as string).Replace(".", ","), out ZSoll))
                         currentMeas.ZSoll = ZSoll;
-                    if (double.TryParse(messprotokollxlRange.Cells[rowCounter, startColumn + 4].FormulaLocal, out RXSoll))
+                    if (double.TryParse((messprotokollxlRange.Cells[rowCounter, startColumn + 4].FormulaLocal as string).Replace(".", ","), out RXSoll))
                         currentMeas.CSoll = RXSoll;
-                    if (double.TryParse(messprotokollxlRange.Cells[rowCounter, startColumn + 5].FormulaLocal, out RYSoll))
+                    if (double.TryParse((messprotokollxlRange.Cells[rowCounter, startColumn + 5].FormulaLocal as string).Replace(".", ","), out RYSoll))
                         currentMeas.BSoll = RYSoll;
-                    if (double.TryParse(messprotokollxlRange.Cells[rowCounter, startColumn + 6].FormulaLocal, out RZSoll))
+                    if (double.TryParse((messprotokollxlRange.Cells[rowCounter, startColumn + 6].FormulaLocal as string).Replace(".", ","), out RZSoll))
                         currentMeas.ASoll = RZSoll;
-                    if (double.TryParse(messprotokollxlRange.Cells[rowCounter, startColumn + 7].FormulaLocal, out XIst))
+                    if (double.TryParse((messprotokollxlRange.Cells[rowCounter, startColumn + 7].FormulaLocal as string).Replace(".", ","), out XIst))
                         currentMeas.XIst = XIst;
-                    if (double.TryParse(messprotokollxlRange.Cells[rowCounter, startColumn + 8].FormulaLocal, out YIst))
+                    if (double.TryParse((messprotokollxlRange.Cells[rowCounter, startColumn + 8].FormulaLocal as string).Replace(".", ","), out YIst))
                         currentMeas.YIst = YIst;
-                    if (double.TryParse(messprotokollxlRange.Cells[rowCounter, startColumn + 9].FormulaLocal, out ZIst))
+                    if (double.TryParse((messprotokollxlRange.Cells[rowCounter, startColumn + 9].FormulaLocal as string).Replace(".", ","), out ZIst))
                         currentMeas.ZIst = ZIst;
-                    if (double.TryParse(messprotokollxlRange.Cells[rowCounter, startColumn + 10].FormulaLocal, out RXIst))
+                    if (double.TryParse((messprotokollxlRange.Cells[rowCounter, startColumn + 10].FormulaLocal as string).Replace(".", ","), out RXIst))
                         currentMeas.CIst = RXIst;
-                    if (double.TryParse(messprotokollxlRange.Cells[rowCounter, startColumn + 11].FormulaLocal, out RYIst))
+                    if (double.TryParse((messprotokollxlRange.Cells[rowCounter, startColumn + 11].FormulaLocal as string).Replace(".", ","), out RYIst))
                         currentMeas.BIst = RYIst;
-                    if (double.TryParse(messprotokollxlRange.Cells[rowCounter, startColumn + 12].FormulaLocal, out RZIst))
+                    if (double.TryParse((messprotokollxlRange.Cells[rowCounter, startColumn + 12].FormulaLocal as string).Replace(".", ","), out RZIst))
                         currentMeas.AIst = RZIst;
                     result.Add(currentMeas);
                     rowCounter++;

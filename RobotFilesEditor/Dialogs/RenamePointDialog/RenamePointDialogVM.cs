@@ -15,8 +15,9 @@ namespace RobotFilesEditor.Dialogs.RenamePointDialog
     public class RenamePointDialogVM : ViewModelBase
     {
         #region ctor
-        public RenamePointDialogVM(string name, int maxLength, GlobalData.RenameWindowType type, List<string> alreadyAdded)
+        public RenamePointDialogVM(string name, int maxLength, GlobalData.RenameWindowType type, List<string> alreadyAdded, bool canContainDash)
         {
+            _canContainDash = canContainDash;
             maxLengthField = maxLength;
             alreadyAddedField = alreadyAdded;
             InputName = name;
@@ -29,7 +30,10 @@ namespace RobotFilesEditor.Dialogs.RenamePointDialog
         #region fields
         int maxLengthField;
         List<string> alreadyAddedField;
+        bool _canContainDash;
         Regex startWithLetterRegex = new Regex(@"^\s*[a-zA-Z]", RegexOptions.IgnoreCase);
+        Regex containsSpecialsigns = new Regex("[\\?\\,\\.\\$\\#\\!\\@\\%\\~\\^\\&\\*\\=\\+\\(\\)\\[\\]\\{\\}\"\\'\\:\\;\\|\\<\\>\\`\\]");
+        Regex containsDash = new Regex(@"-");
         #endregion
 
         #region properties
@@ -54,6 +58,10 @@ namespace RobotFilesEditor.Dialogs.RenamePointDialog
                     templist.Add(new RenamePointModel("Name is too long. Type new name shorter than " + maxLengthField.ToString() + " signs.",true));
                 if (!startWithLetterRegex.IsMatch(value))
                     templist.Add(new RenamePointModel("Position name must start with letter!",true));
+                if (containsSpecialsigns.IsMatch(value))
+                    templist.Add(new RenamePointModel("Name must not contain special signs!", true));
+                if (containsDash.IsMatch(value) && !_canContainDash)
+                    templist.Add(new RenamePointModel("Name must not contain dash sing!", true));
                 if (alreadyAddedField.Any(x => x.ToLower() == value.ToLower()))
                     templist.Add(new RenamePointModel("Position name was already added.",true));
                 if (templist.Count == 0)

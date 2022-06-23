@@ -29,7 +29,7 @@
     <MinimumRequiredVersion>1.0.0.54</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>440</ApplicationRevision>
+    <ApplicationRevision>442</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -380,6 +380,7 @@
     <Compile Include="Model\Operations\DataClass\FillTypIDData.cs" />
     <Compile Include="Model\Operations\DataClass\KukaCommandClass.cs" />
     <Compile Include="Model\Operations\DataClass\RenumberPointClasses.cs" />
+    <Compile Include="Model\Operations\DataClass\RobotCommand.cs" />
     <Compile Include="Model\Operations\DataClass\RobotData.cs" />
     <Compile Include="Model\Operations\DataClass\SafetyElementsClass.cs" />
     <Compile Include="Model\Operations\DataClass\SasFillerClass.cs" />
@@ -402,6 +403,7 @@
     <Compile Include="Model\Operations\GetGripperFromConfigDatMethods.cs" />
     <Compile Include="Model\Operations\GetMengeMethods.cs" />
     <Compile Include="Model\Operations\IOperation.cs" />
+    <Compile Include="Model\Operations\KukaAddSpaces.cs" />
     <Compile Include="Model\Operations\OLPTools\DividePathByCollsMethods.cs" />
     <Compile Include="Model\Operations\OrgCreatorOperations.cs" />
     <Compile Include="Model\Operations\PrepareSOVBackupMethods.cs" />

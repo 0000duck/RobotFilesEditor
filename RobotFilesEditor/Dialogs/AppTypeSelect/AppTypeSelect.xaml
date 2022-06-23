@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="Select app type" SizeToContent="WidthAndHeight"
         WindowStartupLocation="CenterScreen" Loaded="Window_Loaded">
-    <Grid>
+    <Grid Margin="10,10,10,10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -21,6 +21,6 @@
         <RadioButton Grid.Row="2" GroupName="toolchanger" HorizontalAlignment="Center" IsChecked="{Binding VariantB}">
             <TextBlock Text="{Binding TextB}"/>
         </RadioButton>
-        <Button Grid.Row="3" Content="OK" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="72,0,72.2,0.2" Click="Button_Click" IsDefault="True"/>
+        <Button Grid.Row="3" Content="OK" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="72,0,72.2,0.2" Width="50" Click="Button_Click" IsDefault="True"/>
     </Grid>
 </Window>
