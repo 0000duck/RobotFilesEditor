@@ -27,6 +27,7 @@ namespace RobotFilesEditor.ViewModel
         private string _sourcePath;
         private string _destinationPath;
         private bool _continueWithoutConfirm;
+        public static RoutedCommand MyCommand;
         #endregion
 
         #region Controls         
@@ -356,6 +357,8 @@ namespace RobotFilesEditor.ViewModel
         {
             if (!ViewModelBase.IsInDesignModeStatic)
             {
+                MyCommand = new RoutedCommand();
+                MyCommand.InputGestures.Add(new KeyGesture(Key.S, ModifierKeys.Control));
                 Tooltips = new MainWindowTooltips();
                 DebugVisibility = Visibility.Visible;
                 CheckOrder = false;
@@ -540,6 +543,8 @@ namespace RobotFilesEditor.ViewModel
         public ICommand CleanLibroot { get; set; }
         public ICommand ValidateBackupFanuc { get; set; }
         public ICommand ReadSafetyXML { get; set; }
+        public ICommand FixSASCollisionsFanuc { get; set; }
+        public ICommand PayloadsFanuc { get; set; }
 
         private void SetCommands()
         {
@@ -602,6 +607,18 @@ namespace RobotFilesEditor.ViewModel
             CleanLibroot = new RelayCommand(CleanLibrootExecute);
             ValidateBackupFanuc = new RelayCommand(ValidateBackupFanucExecute);
             ReadSafetyXML = new RelayCommand(ReadSafetyXMLExecute);
+            FixSASCollisionsFanuc = new RelayCommand(FixSASCollisionsFanucExecute);
+            PayloadsFanuc = new RelayCommand(PayloadsFanucExecute);
+        }
+
+        private void PayloadsFanucExecute()
+        {
+            var payloadGenerator = new Model.Operations.FANUC.FanucPayloads.FanucPayloadDigramGenerator();
+        }
+
+        private void FixSASCollisionsFanucExecute()
+        {
+            var fixSAS = new FixSasCollisionsFanuc();
         }
 
         private void ReadSafetyXMLExecute()

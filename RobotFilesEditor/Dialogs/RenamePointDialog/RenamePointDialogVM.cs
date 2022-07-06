@@ -32,7 +32,7 @@ namespace RobotFilesEditor.Dialogs.RenamePointDialog
         List<string> alreadyAddedField;
         bool _canContainDash;
         Regex startWithLetterRegex = new Regex(@"^\s*[a-zA-Z]", RegexOptions.IgnoreCase);
-        Regex containsSpecialsigns = new Regex("[\\?\\,\\.\\$\\#\\!\\@\\%\\~\\^\\&\\*\\=\\+\\(\\)\\[\\]\\{\\}\"\\'\\:\\;\\|\\<\\>\\`\\]");
+        //Regex containsSpecialsigns = new Regex("[\\?\\,\\.\\$\\#\\!\\@\\%\\~\\^\\&\\*\\=\\+\\(\\)\\[\\]\\{\\}\"\\'\\:\\;\\|\\<\\>\\`\\]");
         Regex containsDash = new Regex(@"-");
         #endregion
 
@@ -58,7 +58,7 @@ namespace RobotFilesEditor.Dialogs.RenamePointDialog
                     templist.Add(new RenamePointModel("Name is too long. Type new name shorter than " + maxLengthField.ToString() + " signs.",true));
                 if (!startWithLetterRegex.IsMatch(value))
                     templist.Add(new RenamePointModel("Position name must start with letter!",true));
-                if (containsSpecialsigns.IsMatch(value))
+                if (CommonLibrary.CommonMethods.HasSpecialChars(value))
                     templist.Add(new RenamePointModel("Name must not contain special signs!", true));
                 if (containsDash.IsMatch(value) && !_canContainDash)
                     templist.Add(new RenamePointModel("Name must not contain dash sing!", true));

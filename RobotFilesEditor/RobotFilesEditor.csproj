@@ -29,7 +29,7 @@
     <MinimumRequiredVersion>1.0.0.54</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>442</ApplicationRevision>
+    <ApplicationRevision>450</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -391,6 +391,8 @@
     <Compile Include="Model\Operations\FANUC\FanucHelpers.cs" />
     <Compile Include="Model\Operations\FANUC\FanucMethods.cs" />
     <Compile Include="Model\Operations\FANUC\FanucOrgs.cs" />
+    <Compile Include="Model\Operations\FANUC\FanucPayloads\FanucPayload.cs" />
+    <Compile Include="Model\Operations\FANUC\FanucPayloads\FanucPayloadDigramGenerator.cs" />
     <Compile Include="Model\Operations\FANUC\FanucRobot.cs" />
     <Compile Include="Model\Operations\FANUC\FanucValidateCommentsMethods.cs" />
     <Compile Include="Model\Operations\FilesMenager.cs" />
@@ -400,6 +402,7 @@
     <Compile Include="Model\Operations\FillTypIDMethods.cs" />
     <Compile Include="Model\Operations\FixOfflineMethods.cs" />
     <Compile Include="Model\Operations\FixPtpAndLinMethods.cs" />
+    <Compile Include="Model\Operations\FixSasCollisionsFanuc.cs" />
     <Compile Include="Model\Operations\GetGripperFromConfigDatMethods.cs" />
     <Compile Include="Model\Operations\GetMengeMethods.cs" />
     <Compile Include="Model\Operations\IOperation.cs" />
@@ -640,6 +643,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Content Include="Resources\Fanuc_payload_excel.xlsx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="Resources\utils.txt" />
     <None Include="Resources\BACKDATE.DT" />
     <None Include="Resources\FANUC_LS_TEMPLATE.txt" />

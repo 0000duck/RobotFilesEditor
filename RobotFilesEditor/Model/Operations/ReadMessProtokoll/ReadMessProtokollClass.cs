@@ -165,7 +165,7 @@ namespace RobotFilesEditor.Model.Operations.ReadMessProtokoll
 
         private void SaveFiles(string resultFile, string resultDatFileSoll, string resultDatFileIst, GlobalData.RobotController robotType)
         {
-            if (messprotokollFile.Length > 18 || new Regex("[\\?\\,\\.\\$\\#\\!\\@\\%\\~\\^\\&\\*\\=\\+\\(\\)\\[\\]\\{\\}\"\\'\\:\\;\\|\\<\\>\\`\\-]").IsMatch(messprotokollFile))
+            if (messprotokollFile.Length > 18 || CommonLibrary.CommonMethods.HasSpecialChars(messprotokollFile))
             {
                 Dialogs.RenamePointDialog.RenamePointDialogVM vm = new Dialogs.RenamePointDialog.RenamePointDialogVM(messprotokollFile, 18, GlobalData.RenameWindowType.Path, new List<string>(),false);
                 Dialogs.RenamePointDialog.RenamePointDialog dialog = new Dialogs.RenamePointDialog.RenamePointDialog(vm);
@@ -215,7 +215,7 @@ namespace RobotFilesEditor.Model.Operations.ReadMessProtokoll
                 Regex isNumber = new Regex(@"^\s*\d", RegexOptions.IgnoreCase);
                 Regex replaceRegex = new Regex(@"[^\w_]", RegexOptions.IgnoreCase);
                 MessageBox.Show("Select messprotokoll file.", "Select file", MessageBoxButton.OK, MessageBoxImage.Information);
-                string excelFile = CommonLibrary.CommonMethods.SelectDirOrFile(false, filter1: "*.xls", filter2: "*.xlsx", filter1Descr: "Excel File .xls", filter2Descr: "Excel File .xlsx");
+                string excelFile = CommonLibrary.CommonMethods.SelectDirOrFile(false, filter2: "*.xls", filter1: "*.xlsx", filter2Descr: "Excel File .xls", filter1Descr: "Excel File .xlsx");
                 if (string.IsNullOrEmpty(excelFile))
                     return null;
                 messprotokollFile = Path.GetFileNameWithoutExtension(excelFile);

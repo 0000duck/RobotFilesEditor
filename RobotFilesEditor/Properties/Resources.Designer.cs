@@ -153,6 +153,16 @@ namespace RobotFilesEditor.Properties {
         }
         
         /// <summary>
+        ///   Wyszukuje zlokalizowany zasób typu System.Byte[].
+        /// </summary>
+        internal static byte[] Fanuc_payload_excel {
+            get {
+                object obj = ResourceManager.GetObject("Fanuc_payload_excel", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Wyszukuje zlokalizowany zasób typu System.Drawing.Icon podobny do zasobu (Ikona).
         /// </summary>
         internal static System.Drawing.Icon Harvester {

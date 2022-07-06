@@ -77,7 +77,6 @@ namespace RobotFilesEditor.Model.Operations
                 GlobalData.WeldingType = DetectApp(srcFiles.Keys, "a04", "a05", new string[3] { "spot", "notUsed", "_swx_" }, "welding");
                 //GlobalData.RivetingType = DetectApp(srcFiles.Keys, "a13", "c13", new string[3] { "rivet", "notUsed", "notUsed" }, "riveting");
                 IDictionary<string, List<string>> resultSrcFiles = DivideToFolds(srcFiles);
-                //TEMP
                 List<string> GlobalFDATs = GetGlobalFDATs(GlobalData.AllFiles);
                 //if (GlobalFDATs.Count > 0)
 
@@ -91,7 +90,7 @@ namespace RobotFilesEditor.Model.Operations
                     collisions = GetCollisions(srcFiles);
                     collisionsWithDescription = GetCollisionsWithDescription(srcFiles);
                     jobsWithDescription = GetJobsWithDescr(resultSrcFiles);
-                }//TEMP
+                }
                 FindDatFiles(srcFiles, datFiles);
                 FindUnusedDataInDatFiles(resultSrcFiles, datFiles);
                 CheckToolsAndBases(resultSrcFiles, datFiles);
@@ -139,7 +138,6 @@ namespace RobotFilesEditor.Model.Operations
                     Result.Add(file.Key, FANUC.FanucFilesValidator.GetFileContenetFANUC(file.Value));
                     logFileContent = log;
                 }
-                //files = FANUC.FanucMethods.CheckCollsOpe
             }
 
             return true;
@@ -617,42 +615,6 @@ namespace RobotFilesEditor.Model.Operations
                     }
                 }
                 result.Add(file.Key, folds);
-                //bool isHFold = false;
-                //bool isPartOfFold = false;
-                //String[] lines = file.Value.ToString().Split('\n');
-                //string resultString = "";
-                //List<string> resultFolds = new List<string>();
-                //foreach (string line in lines.Where(x => x != "\n" && !string.IsNullOrEmpty(x)))
-                //{
-                //    if (line.ToLower().Contains(";fold"))
-                //        isPartOfFold = true;
-                //    if (line.ToLower().Replace(" ", "").Contains(";fold;%{h}") || line.ToLower().Replace(" ", "").Contains(";foldparameters;%{h}"))
-                //        isHFold = true;
-                //    if (isPartOfFold)
-                //        resultString = resultString + line + "\n";
-                //    else
-                //    {
-                //        if (!line.ToLower().Trim().Replace(" ", "").Contains(";company:") && !line.ToLower().Trim().Replace(" ", "").Contains(";programmer:") && !line.ToLower().Trim().Replace(" ", "").Contains(";date:") && !line.ToLower().Trim().Replace(" ", "").Contains(";changes:"))
-                //        {
-                //            resultFolds.Add(line + "\n");
-                //            resultString = "";
-                //        }
-                //    }
-
-                    //    if (line.ToLower().Contains(";endfold"))
-                    //    {
-                    //        if (!isHFold)
-                    //        {
-                    //            resultFolds.Add(resultString);
-                    //            resultString = "";
-                    //            isPartOfFold = false;
-                    //        }
-                    //        isHFold = false;
-
-                    //    }
-
-                    //}
-                    //result.Add(file.Key, resultFolds);
             }
             return result;
         }
@@ -1643,7 +1605,8 @@ namespace RobotFilesEditor.Model.Operations
                 {
                     // Char.ConvertFromUtf32(160) = twarda spacja
                     //header = header + Char.ConvertFromUtf32(160) + "\r\n" + Char.ConvertFromUtf32(160) + "\r\n" + ";# --------- START PATH : " + Path.GetFileNameWithoutExtension(file.Key) + " ---------\r\n" + Char.ConvertFromUtf32(160);
-                    header = header + Char.ConvertFromUtf32(160) + "\r\n" + Char.ConvertFromUtf32(160) + "\r\n" + ";# --------- START PATH : " + Path.GetFileNameWithoutExtension(file.Key) + " ---------\r\n\r\n";
+                    //header = header + Char.ConvertFromUtf32(160) + "\r\n" + Char.ConvertFromUtf32(160) + "\r\n" + ";# --------- START PATH : " + Path.GetFileNameWithoutExtension(file.Key) + " ---------\r\n\r\n";
+                    header = header + "\r\n" + "\r\n" + ";# --------- START PATH : " + Path.GetFileNameWithoutExtension(file.Key) + " ---------\r\n\r\n";
                 }
                 List<string> resultStrings = new List<string>();
                 Regex isFoldStart = new Regex(@"^\s*;\s*FOLD\s+", RegexOptions.IgnoreCase);

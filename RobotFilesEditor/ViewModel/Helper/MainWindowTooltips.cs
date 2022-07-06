@@ -45,6 +45,8 @@ namespace RobotFilesEditor.ViewModel.Helper
         public string DividePathByCollsTooltip { get; private set; }
         public string CleanLibrootTooltip { get; private set; }
         public string ReadSafetyXMLToolTip { get; private set; }
+        public string FixSASCollisionsFanucToolTip { get; private set; }
+        public string PayloadsFanucToolTip { get; private set; }
 
         public MainWindowTooltips()
         {
@@ -90,6 +92,8 @@ namespace RobotFilesEditor.ViewModel.Helper
             DividePathByCollsTooltip = "Reads robot program and splits it to smaller programs based on collision requests and releases (works only for KUKA and FANUC robots)";
             CleanLibrootTooltip = "Finds not used elements in psz and libroot.";
 
+            FixSASCollisionsFanucToolTip = "Fixes SAS file to display collision matrix for Fanuc robots";
+            PayloadsFanucToolTip = "Get payload values from backup and fill payload diagram excel file.";
         }
     }
 }

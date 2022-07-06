@@ -16,6 +16,9 @@
             <cmd:EventToCommand Command="{Binding Path=ClosingCommand}" PassEventArgsToCommand="True" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
+    <!--<Window.CommandBindings>
+        <CommandBinding Command="{x:Static local:App.Current}" Executed="MyCommandExecuted"/>
+    </Window.CommandBindings>-->
     <Grid Background="#FFFBFBFB">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -144,6 +147,8 @@
                                                 <Button Content="Validate backup" Command="{Binding ValidateBackupFanuc}" Visibility="Visible" Margin="3" ToolTip="{Binding Tooltips.ValidateBackupFanucToolTip}"/>
                                                 <Button Content="Shift base" Command="{Binding ShiftBaseFanuc}" Margin="3" Visibility="{Binding DebugVisibility}"/>
                                                 <Button Content="Read Messprotokol and create PS Path" Command="{Binding ReadMessprotokolFANUC}" Margin="3" Visibility="Visible" ToolTip="{Binding Tooltips.ReadMessprotokolTooltip}"/>
+                                                <Button Content="Fix missing collisions in SAS 2.10.0.3" Command="{Binding FixSASCollisionsFanuc}" Visibility="Collapsed" Margin="3" ToolTip="{Binding Tooltips.FixSASCollisionsFanucToolTip}"/>
+                                                <Button Content="Generate Load diagrams" Command="{Binding PayloadsFanuc}" Visibility="Visible" Margin="3" ToolTip="{Binding Tooltips.PayloadsFanucToolTip}"/>
                                             </StackPanel>
                                         </GroupItem>
                                     </Expander>

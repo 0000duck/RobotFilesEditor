@@ -35,6 +35,7 @@ namespace RobotFilesEditor.Model.Operations
             foreach (var file in filesAndContent)
             {
                 List<DataClass.RobotCommand> commands = new List<DataClass.RobotCommand>();
+                //file.Value.ForEach(x => commands.Add(new DataClass.RobotCommand(x.TrimEnd().Replace(Char.ConvertFromUtf32(160),"\r\n") + "\r\n")));
                 file.Value.ForEach(x => commands.Add(new DataClass.RobotCommand(x.TrimEnd() + "\r\n")));
                 result.Add(file.Key, commands);
             }
@@ -87,25 +88,25 @@ namespace RobotFilesEditor.Model.Operations
                                     }
                                 case CheckCriterion.GripperGroup:
                                     {
-                                        if (command.CommandType.IsGripperGroup && !previousCommand.CommandType.IsGripperGroup && (!previousCommand.CommandType.IsMotionFoldFold || previousCommand.CommandType.IsTriggeredAction))
+                                        if (command.CommandType.IsGripperGroup && !previousCommand.CommandType.IsGripperGroup && (!previousCommand.CommandType.IsMotionFold || previousCommand.CommandType.IsTriggeredAction))
                                             result[file.Key][i].AddSpaceBefore = true;
                                         break;
                                     }
                                 case CheckCriterion.MotionGroup:
                                     {
-                                        if ((previousCommand.CommandType.IsSingleInstruction || previousCommand.CommandType.IsMeaningfulFold) && (!previousCommand.CommandType.IsMotionFoldFold || previousCommand.CommandType.IsTriggeredAction) && command.CommandType.IsMotionFoldFold)
+                                        if ((previousCommand.CommandType.IsSingleInstruction || previousCommand.CommandType.IsMeaningfulFold) && (!previousCommand.CommandType.IsMotionFold || previousCommand.CommandType.IsTriggeredAction) && command.CommandType.IsMotionFold)
                                             result[file.Key][i].AddSpaceBefore = true;
                                         break;
                                     }
                                 case CheckCriterion.HomeOrCentralSection:
                                     {
-                                        if (command.CommandType.IsHomeSection && !previousCommand.CommandType.IsHomeSection || command.CommandType.IsCentralPosSection && !previousCommand.CommandType.IsCentralPosSection)
+                                        if ((command.CommandType.IsHomeSection && !previousCommand.CommandType.IsHomeSection || command.CommandType.IsCentralPosSection && !previousCommand.CommandType.IsCentralPosSection) && !previousCommand.CommandType.IsMotionFold)
                                             result[file.Key][i].AddSpaceBefore = true;
                                         break;
                                     }
                                 case CheckCriterion.MovementBeforeGripper:
                                     {
-                                        if (command.CommandType.IsMotionFoldFold && nextCommand !=null && nextCommand.CommandType.IsGripperGroup)
+                                        if (command.CommandType.IsMotionFold && nextCommand !=null && nextCommand.CommandType.IsGripperGroup)
                                             result[file.Key][i].AddSpaceBefore = true;
                                         break;
                                     }

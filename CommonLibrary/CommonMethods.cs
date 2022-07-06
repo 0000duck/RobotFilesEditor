@@ -667,6 +667,11 @@ namespace CommonLibrary
                 result.Add(item);
             return result;
         }
+
+        public static bool HasSpecialChars(string inputString)
+        {
+            return inputString.Replace("_", "").Replace("-", "").Any(ch => !Char.IsLetterOrDigit(ch));
+        }
     }
 }
 

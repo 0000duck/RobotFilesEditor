@@ -16,7 +16,7 @@ namespace RobotFilesEditor.Model.Operations.DataClass
         public bool IsSingleInstruction { get; private set; }
         public bool IsComment { get; private set; }
         public bool IsMeaningfulFold { get; private set; }
-        public bool IsMotionFoldFold { get; private set; }
+        public bool IsMotionFold { get; private set; }
         public bool IsTriggeredAction { get; private set; }
         public bool IsEnd { get; private set; }
         public bool IsCollisionReqRel { get; private set; }
@@ -43,7 +43,7 @@ namespace RobotFilesEditor.Model.Operations.DataClass
         private void AnalyzeContent()
         {
             IsMeaningfulFold = new Regex(@"^\s*[\&\$\w]+", RegexOptions.IgnoreCase|RegexOptions.Multiline).IsMatch(Content) && new Regex(@"^\s*;\s*fold", RegexOptions.IgnoreCase | RegexOptions.Multiline).IsMatch(Content);
-            IsMotionFoldFold = IsMeaningfulFold && new Regex(@"^\s*(PTP|LIN|CIRC)\s+.*", RegexOptions.IgnoreCase | RegexOptions.Multiline).IsMatch(Content);
+            IsMotionFold = IsMeaningfulFold && new Regex(@"^\s*(PTP|LIN|CIRC)\s+.*", RegexOptions.IgnoreCase | RegexOptions.Multiline).IsMatch(Content);
             IsTriggeredAction = IsMeaningfulFold && new Regex(@"^\s*(TRIGGER)\s+.*\(.*\)", RegexOptions.IgnoreCase | RegexOptions.Multiline).IsMatch(Content);
             IsSpecialComment = new Regex(@"^\s*;\s*\*", RegexOptions.IgnoreCase | RegexOptions.Multiline).IsMatch(Content);
             IsComment = !IsSpecialComment && !IsMeaningfulFold && new Regex(@"^\s*;", RegexOptions.IgnoreCase|RegexOptions.Multiline).IsMatch(Content);
@@ -54,7 +54,7 @@ namespace RobotFilesEditor.Model.Operations.DataClass
             IsHomeSection = (IsMeaningfulFold || IsSingleInstruction) && new Regex(@"^\s*(PTP\s+XHOME\d+|WAIT\s+FOR\s+\$IN_HOME\d+|Plc_CheckHome)", RegexOptions.IgnoreCase | RegexOptions.Multiline).IsMatch(Content);
             IsCentralPosSection = (IsMeaningfulFold || IsSingleInstruction) && new Regex(@"^\s*(PTP\s+XCentral[\w_]+|WAIT\s+FOR\s+CHK_AXIS_POS\s*\()", RegexOptions.IgnoreCase | RegexOptions.Multiline).IsMatch(Content);
             if (IsHomeSection || IsCentralPosSection)
-                IsMotionFoldFold = false;
+                IsMotionFold = false;
             IsGripperGroup = (IsMeaningfulFold && !IsSingleInstruction) && new Regex(@"^\s*Grp_(Grp|Chk)[\w_]+\s*\(", RegexOptions.IgnoreCase | RegexOptions.Multiline).IsMatch(Content);
             IsAreaReq = (IsMeaningfulFold && !IsSingleInstruction) && new Regex(@"^\s*(|TRIGGER.*)(Plc_Area(Req|Release))", RegexOptions.IgnoreCase | RegexOptions.Multiline).IsMatch(Content);
             IsJob = (IsMeaningfulFold && !IsSingleInstruction) && new Regex(@"^\s*(|TRIGGER.*)Plc_Job\s*\(\s*\d+", RegexOptions.IgnoreCase | RegexOptions.Multiline).IsMatch(Content);
