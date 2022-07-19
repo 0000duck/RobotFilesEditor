@@ -55,7 +55,7 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>E4A24048A6B2C5B01E5EE67673C2FB847DCB984E</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>4F3BA50BFB61B0B865920C65EAAD27682117F40B</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>RobKalDat_TemporaryKey.pfx</ManifestKeyFile>

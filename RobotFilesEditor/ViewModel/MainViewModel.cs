@@ -14,6 +14,8 @@ using RobotFilesEditor.Model.Operations;
 using System.Xml;
 using RobotFilesEditor.Dialogs.SOVBackupsPreparations;
 using RobotFilesEditor.ViewModel.Helper;
+using KukaLoadGenerator = Load_Generator;
+using RobotFilesEditor.Model.DataOrganization;
 
 namespace RobotFilesEditor.ViewModel
 {
@@ -31,6 +33,18 @@ namespace RobotFilesEditor.ViewModel
         #endregion
 
         #region Controls         
+
+        private ObservableCollection<ExternalProgram> externalApplications;
+        public ObservableCollection<ExternalProgram> ExternalApplications
+        {
+            get
+            {
+                return ExternalProgramMethods.GetExternalPrograms();
+            }
+            set { externalApplications = value; }
+        }
+
+
         public ObservableCollection<ControlItem> ControlerChooser
         {
             get;
@@ -545,6 +559,8 @@ namespace RobotFilesEditor.ViewModel
         public ICommand ReadSafetyXML { get; set; }
         public ICommand FixSASCollisionsFanuc { get; set; }
         public ICommand PayloadsFanuc { get; set; }
+        public ICommand KukaLoadGenerator { get; set; }
+        public ICommand ClearLocalExtFiles { get; set; }
 
         private void SetCommands()
         {
@@ -609,6 +625,29 @@ namespace RobotFilesEditor.ViewModel
             ReadSafetyXML = new RelayCommand(ReadSafetyXMLExecute);
             FixSASCollisionsFanuc = new RelayCommand(FixSASCollisionsFanucExecute);
             PayloadsFanuc = new RelayCommand(PayloadsFanucExecute);
+            KukaLoadGenerator = new RelayCommand(KukaLoadGeneratorExecute);
+            ClearLocalExtFiles = new RelayCommand(ClearLocalExtFilesExecute);
+        }
+
+        private void ClearLocalExtFilesExecute()
+        {
+            string mainDir = Path.Combine(Path.GetDirectoryName(GlobalData.PathFile), "ExternalFiles");
+            if (Directory.Exists(mainDir))
+            {
+                List<string> files = Directory.GetFiles(mainDir, "*.exe").ToList();
+                foreach (var file in files)
+                    File.Delete(file);
+                RaisePropertyChanged(() => ExternalApplications);
+            }
+        }
+
+        private void KukaLoadGeneratorExecute()
+        {
+            KukaLoadGenerator.MainWindow window = new KukaLoadGenerator.MainWindow();
+            window.Owner = Application.Current.Windows
+            .Cast<Window>()
+            .Single(w => w.DataContext == this);
+            window.ShowDialog();
         }
 
         private void PayloadsFanucExecute()

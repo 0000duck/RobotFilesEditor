@@ -83,7 +83,9 @@
                                                 <Button Content="Open destination folder" Command="{Binding OpenDest}" Margin="3" ToolTip="{Binding Tooltips.OpenDestTooltip}"/>
                                                 <Button Content="Convert Trello Report" Command="{Binding ConvertTrello}" Margin="3" ToolTip="{Binding Tooltips.ConvertTrelloTooltip}"/>
                                                 <Button Content="Fill IBN checklist" Command="{Binding FillExcel}" Margin="3" ToolTip="{Binding Tooltips.FillExcelTooltip}"/>
-                                                <Button Content="Temp" Command="{Binding TempExec}" Margin="3" Visibility="Collapsed"/>
+
+                                                <Button Content="Clear local ext. files" Command="{Binding ClearLocalExtFiles}" Margin="3" ToolTip="{Binding Tooltips.ClearLocalExtFilesTooltip}"/>
+                                                <Button Content="Temp" Command="{Binding TempExec}" Margin="3" Visibility="{Binding DebugVisibility}"/>
                                             </StackPanel>
                                         </GroupItem>
                                     </Expander>
@@ -114,6 +116,7 @@
                                                     <Button Content="Fill SAS from backup" Command="{Binding SasFillerFromBackup}" Margin="3" Visibility="Visible" ToolTip="{Binding Tooltips.SasFillerFromBackupTooltip}"/>
                                                     <Button Content="Get data for Mengelist" Command="{Binding GetMenge}" Margin="3" Visibility="Visible" ToolTip="{Binding Tooltips.GetMengeTooltip}"/>
                                                     <Button Content="Compare spot points between backups" Command="{Binding CompareSpots}" Margin="3" Visibility="Visible" ToolTip="{Binding Tooltips.CompareSpotsTooltip}"/>
+                                                    <Button Content="KUKA Load 5,0 Generator" Command="{Binding KukaLoadGenerator}" Margin="3" Visibility="Visible" ToolTip="{Binding Tooltips.KukaLoadGeneratorTooltip}"/>
                                                     <Button Content="Collisions for PS" Command="{Binding CollisionsForPS}" Margin="3" Visibility="Collapsed"/>
                                                     <Button Content="Modify E1" Command="{Binding ModifyE1}" Margin="3" Visibility="Collapsed"/>
                                                     <Button Content="Shift base" Command="{Binding ShiftBaseKuka}" Margin="3" Visibility="{Binding DebugVisibility}"/>
@@ -160,7 +163,18 @@
                                             </StackPanel>
                                         </GroupItem>
                                     </Expander>
-                            </StackPanel>
+                                    <Expander IsExpanded="False" Header="External Programs" UseLayoutRounding="False" Visibility="Visible" ToolTip="{Binding Tooltips.ExternalProgramsTooltips}">
+                                        <GroupItem x:Name="ExternalPrograms">
+                                            <ItemsControl ItemsSource="{Binding ExternalApplications}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Button Content="{Binding Name}" Margin="3" Command="{Binding ExecuteCommand}"/>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </GroupItem>
+                                    </Expander>
+                                </StackPanel>
                             </ScrollViewer>
                         </StackPanel>
                     </StackPanel>

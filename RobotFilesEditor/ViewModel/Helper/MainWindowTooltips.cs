@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -47,6 +48,9 @@ namespace RobotFilesEditor.ViewModel.Helper
         public string ReadSafetyXMLToolTip { get; private set; }
         public string FixSASCollisionsFanucToolTip { get; private set; }
         public string PayloadsFanucToolTip { get; private set; }
+        public string KukaLoadGeneratorTooltip { get; private set; }
+        public string ExternalProgramsTooltips { get; private set; }
+        public string ClearLocalExtFilesTooltip { get; private set; }
 
         public MainWindowTooltips()
         {
@@ -94,6 +98,10 @@ namespace RobotFilesEditor.ViewModel.Helper
 
             FixSASCollisionsFanucToolTip = "Fixes SAS file to display collision matrix for Fanuc robots";
             PayloadsFanucToolTip = "Get payload values from backup and fill payload diagram excel file.";
+
+            KukaLoadGeneratorTooltip = "Open Kuka Load 5.0 Generator";
+            ExternalProgramsTooltips = @"Opens external *.exe from applications located at \\alfa\RoboBMW\RobotFilesHarvester_ExtPrograms";
+            ClearLocalExtFilesTooltip = "Clears content of directory: " + Path.Combine(Path.GetDirectoryName(GlobalData.PathFile), "ExternalFiles");
         }
     }
 }

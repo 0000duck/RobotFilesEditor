@@ -1907,7 +1907,7 @@ namespace RobotFilesEditor.Model.Operations
                                         result += "CASE " + counter + "\r\n" + path.Key + "() ; " + (SrcValidator.language == "DE" ? "Programmaufruf" : "Program call") + "\r\n";
                                         counter++;
                                     }
-                                    result += "DEFAULT\r\nWAIT FOR FALSE()\r\nENDSWITCH\r\n\r\n";
+                                    result += "DEFAULT\r\nWAIT FOR FALSE\r\nENDSWITCH\r\n\r\n";
                                 }
                                 else
                                 {

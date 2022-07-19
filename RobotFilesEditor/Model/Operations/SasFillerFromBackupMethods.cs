@@ -89,7 +89,7 @@ namespace RobotFilesEditor.Model.Operations
                     if (counter > 1)
                         oWB.Worksheets.Add(oSheet);
                     oSheet = oWB.ActiveSheet;
-                    oSheet.Name = backup.Key;
+                    oSheet.Name = backup.Key.Length <= 32 ? backup.Key : backup.Key.Substring(0, 31);
                     oSheet.Cells[1, 1] = "Area number";
                     oSheet.Cells[1, 2] = "Descriptions";
                     oSheet.Cells[1, 3] = "Used in paths";
@@ -456,12 +456,14 @@ namespace RobotFilesEditor.Model.Operations
         {
             var typesInSas = sasXml.Element("Anlage").Element("SW").Element("Types").Elements("Type");
             IDictionary<int, string> result = new Dictionary<int, string>();
-            foreach(var typ in typesInSas)
+            foreach (var typ in typesInSas)
             {
                 int typNum = int.Parse(typ.Attribute("Number").Value.ToString());
-                string guid = typ.Attribute("GUID").Value.ToString();
-                if (typNum>0)
+                if (typNum > 0)
+                {
+                    string guid = typ.Attribute("GUID").Value.ToString();
                     result.Add(typNum, guid);
+                }
             }
             return result;
         }

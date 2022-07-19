@@ -9,12 +9,13 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>RobotFilesEditor</RootNamespace>
     <AssemblyName>RobotFilesEditor</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <IsWebBootstrapper>false</IsWebBootstrapper>
+    <TargetFrameworkProfile />
     <PublishUrl>\\alfa\Dzialy\automatyka\Robotyka\BMW\02_Tools\RobotFilesHarvester\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Unc</InstallFrom>
@@ -29,7 +30,7 @@
     <MinimumRequiredVersion>1.0.0.54</MinimumRequiredVersion>
     <CreateWebPageOnPublish>true</CreateWebPageOnPublish>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>450</ApplicationRevision>
+    <ApplicationRevision>453</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -70,7 +71,7 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>35A1B248F21CCA308655421ED6F05C8309DCCAD0</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>414B6449612483C40909F951FFD67A83FCEFE2E3</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>RobotFilesEditor_TemporaryKey.pfx</ManifestKeyFile>
@@ -327,6 +328,7 @@
     </Compile>
     <Compile Include="Dialogs\TypeCollisionComment\TypeCollisionCommentViewModel.cs" />
     <Compile Include="Model\Converters\SOVMsgTypeToIconConverter.cs" />
+    <Compile Include="Model\DataOrganization\ExternalProgram.cs" />
     <Compile Include="Model\DataOrganization\TypId.cs" />
     <Compile Include="Dialogs\TypIdChanger\TypIDBySameIDWindow.xaml.cs">
       <DependentUpon>TypIDBySameIDWindow.xaml</DependentUpon>
@@ -646,14 +648,21 @@
     <Content Include="Resources\Fanuc_payload_excel.xlsx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="Resources\utils.txt" />
-    <None Include="Resources\BACKDATE.DT" />
-    <None Include="Resources\FANUC_LS_TEMPLATE.txt" />
-    <None Include="Resources\FANUC_LS_TEMPLATE1.txt" />
-    <None Include="Resources\ABB_MOD_TEMPLATE1.txt" />
-    <None Include="Resources\coordinate_system.png">
+    <Content Include="Resources\utils.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
+    <Content Include="Resources\BACKDATE.DT">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\FANUC_LS_TEMPLATE.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\ABB_MOD_TEMPLATE1.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\coordinate_system.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\error.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -663,18 +672,30 @@
     <Content Include="Resources\GlobalFiles\KRC4\C13_global.dat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="Resources\KUKA_DAT_TEMPLATE.txt" />
-    <None Include="Resources\KUKA_SRC_TEMPLATE.txt" />
+    <Content Include="Resources\KUKA_DAT_TEMPLATE.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\KUKA_SRC_TEMPLATE.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\info.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\tick.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Resources\UserVariables.txt" />
-    <None Include="Resources\PROG251.txt" />
-    <Resource Include="Resources\ProgHeaderFanucEN.txt" />
-    <None Include="Resources\ProgHeaderFanucDE.txt" />
+    <Content Include="Resources\UserVariables.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\PROG251.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\ProgHeaderFanucEN.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\ProgHeaderFanucDE.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -698,7 +719,9 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-    <None Include="Resources\BACKDATE.txt" />
+    <Content Include="Resources\BACKDATE.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\GlobalFiles\KRC4\B02_tch_global.dat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -834,9 +857,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">
+    <BootstrapperPackage Include=".NETFramework,Version=v4.8">
       <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.5.2 %28x86 i x64%29</ProductName>
+      <ProductName>Microsoft .NET Framework 4.8 %28x86 i x64%29</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
@@ -874,6 +897,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\VS_Projects\KUKA.Load 5.0 Generator\KUKA.Load_5.0_Generator\KUKA.Load_5.0_Generator.vbproj">
+      <Project>{2a7a6c99-8afd-4f77-a553-7cfd9f392a90}</Project>
+      <Name>KUKA.Load_5.0_Generator</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ABB add spaces\ABB add spaces.csproj">
       <Project>{271ae5d0-8ce5-479c-974a-0789f7f09718}</Project>
       <Name>ABB add spaces</Name>
