@@ -1,0 +1,33 @@
+﻿<Window x:Class="WindowAbout"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="About KUKA.Load_5.0_Generator" Height="245" Width="420" ResizeMode="CanMinimize">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="50*"/>
+            <ColumnDefinition Width="157*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Label Content="Description:" HorizontalAlignment="Right"  Grid.Row="0" Grid.Column="0" VerticalAlignment="Top"/>
+        <TextBlock Grid.Row="0" Grid.Column="1" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top">
+            KUKA_Load 5.0 Generator helps you to generate images for load cases for 
+            Kuka robots.
+        </TextBlock>
+        <Label Content="Author:" HorizontalAlignment="Right"  Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" />
+        <TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top">
+            Łukasz Holetzke
+        </TextBlock>
+        <Label Content="Company:" HorizontalAlignment="Right"  Grid.Row="2" Grid.Column="0" VerticalAlignment="Top"/>
+        <TextBlock Grid.Row="2" Grid.Column="1" HorizontalAlignment="Left" TextWrapping="Wrap" VerticalAlignment="Top">
+          <Hyperlink Click="OnClick">
+            <Run Text="AIUT Sp. z o.o."/>
+          </Hyperlink>
+        </TextBlock>
+        <Button Content="Close" Grid.Column="1" HorizontalAlignment="Right" Margin="5" Grid.Row="3" VerticalAlignment="Bottom" Width="75" IsCancel="True" IsDefault="True"/>
+    </Grid>
+</Window>

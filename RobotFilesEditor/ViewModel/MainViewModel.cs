@@ -561,6 +561,7 @@ namespace RobotFilesEditor.ViewModel
         public ICommand PayloadsFanuc { get; set; }
         public ICommand KukaLoadGenerator { get; set; }
         public ICommand ClearLocalExtFiles { get; set; }
+        public ICommand ChecksumsFanuc { get; set; }
 
         private void SetCommands()
         {
@@ -627,6 +628,12 @@ namespace RobotFilesEditor.ViewModel
             PayloadsFanuc = new RelayCommand(PayloadsFanucExecute);
             KukaLoadGenerator = new RelayCommand(KukaLoadGeneratorExecute);
             ClearLocalExtFiles = new RelayCommand(ClearLocalExtFilesExecute);
+            ChecksumsFanuc = new RelayCommand(ChecksumsFanucExecute);
+        }
+
+        private void ChecksumsFanucExecute()
+        {
+            Model.Operations.FANUC.GetFanucCheckSums item = new Model.Operations.FANUC.GetFanucCheckSums();
         }
 
         private void ClearLocalExtFilesExecute()

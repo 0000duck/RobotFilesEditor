@@ -1,0 +1,393 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #><#@
+ output extension="/" #><#@
+ include file="MultipleOutputHelper.ttinclude"#><#@
+ assembly name="System.Core" #><#@
+ import namespace="System.Linq" #><#@
+ import namespace="System.Text" #><#@
+ import namespace="System.Collections.Generic" #><#@
+ import namespace="System.IO" #><#@
+ import namespace="System.Globalization" #><#
+	Dictionary<string,string> SavedSTRUCTS = new Dictionary<string,string>();
+	List<string> ENUMS = new List<string>();
+	var manager = Manager.Create(Host, GenerationEnvironment);
+    string absolutePath = Host.ResolvePath("BMW_Structs.txt");
+    string contents = File.ReadAllText(absolutePath);
+
+    // process file contents here, we'll simply dump it to the output here
+	foreach (string line in File.ReadLines(absolutePath))
+	{
+	  if (line.StartsWith("ENUM"))
+	  {
+	    string[] data = line.Split(new char[] {' '}, 3, StringSplitOptions.None);
+	    ENUMS.Add(data[1]);
+	    manager.StartNewFile("Enum." + data[1] + ".generated.cs");
+		GenerateEnum(data[1],data[2]);
+  	    manager.EndBlock();
+	  }
+	  else if (line.StartsWith("STRUC"))
+	  {
+	    string[] data = line.Split(new char[] {' '}, 3, StringSplitOptions.None);
+	    manager.StartNewFile("Struct." + data[1] + ".generated.cs");
+		SavedSTRUCTS.Add(data[1],data[2]);
+		GenerateStruct(data[1],data[2],SavedSTRUCTS.Keys.ToList(),ENUMS);
+  	    manager.EndBlock();
+	  }
+	}
+	manager.StartNewFile("StructuresGen.generated.cs");
+	GenerateBasis(SavedSTRUCTS, ENUMS);
+	manager.EndBlock();
+	manager.Process(true); 
+#><#+
+  void GenerateBasis(Dictionary<string,string> items, List<string> enums)
+  {
+     this.WriteLine("namespace ParseModuleFile.KUKA.DataTypes");
+	 this.WriteLine("{");
+	 this.WriteLine("\tpublic partial class MemorySelector");
+	 this.WriteLine("\t{");
+	 this.WriteLine("\t\tpublic static Variable Get(string type, ANTLR.DataItems dataItems)");
+	 this.WriteLine("\t\t{");
+	 this.WriteLine("\t\t\tswitch(type)");
+	 this.WriteLine("\t\t\t{");
+	 foreach (string key in enums)
+	 {
+	   this.WriteLine("\t\t\t\tcase \"" + key + "\":");
+	   this.WriteLine("\t\t\t\t\treturn new EnumDataType<Enums." + key + ">(\"" + key + "\", dataItems);");
+	 }
+	 foreach (string key in items.Keys)
+	 {
+	   this.WriteLine("\t\t\t\tcase \"" + key + "\":");
+	   this.WriteLine("\t\t\t\t\treturn new " + key + "(dataItems);");
+	 }
+	 this.WriteLine("\t\t\t\tdefault:");
+	 //this.WriteLine("\t\t\t\t\tthrow new System.NotImplementedException(type);");
+	 this.WriteLine("\t\t\t\t\treturn null;");
+	 this.WriteLine("\t\t\t}");
+	 this.WriteLine("\t\t}");
+	 this.WriteLine("");
+
+	 this.WriteLine("\t}");
+	 this.WriteLine("}");
+  }
+
+  void GenerateStruct(string name, string values, List<string> structs, List<string> enums)
+  {
+	 List<Tuple<string,string>> items = ParseStruct(values);
+
+	 WriteUsings(new string[] {"System.Collections.Generic", "System.Globalization", "ParseModuleFile.KUKA.Enums", "System.Collections.ObjectModel"});
+	 WriteNamespace("ParseModuleFile.KUKA.DataTypes");
+	 WriteClass(name, "Variable");
+
+	 this.WriteLine("\t#region fields");
+	 WriteFields(items);
+	 this.WriteLine("\t#endregion //fields");
+	 this.WriteLine("");
+
+	 this.WriteLine("\t#region properties");
+	 WriteProperties(name, items);
+	 this.WriteLine("\t#endregion //properties");
+	 this.WriteLine("");
+
+	 this.WriteLine("\t#region constructors");
+	 WriteConstrWithDataItems(name, items, structs, enums);
+	 WriteConstrWithArgs(name, items);
+	 WriteConstrWithDynamicMemory(name, items, structs);
+	 this.WriteLine("\t#endregion //constructors");
+	 this.WriteLine("");
+
+	 this.WriteLine("\t#region methods");
+	 ToDefString(name);	 
+	 ToList(items);
+	 if (name == "BOOL")
+		ToSimpleString("BtoStr(value)");
+	 else if (name == "INT" || name == "REAL")
+		ToSimpleString("value.ToString(CultureInfo.InvariantCulture)");
+	 else if (name == "CHAR")
+	    ToSimpleString("\"\\\"\" + value + \"\\\"\"");
+	 else
+		ToString(items, enums);
+	 this.WriteLine("\t#endregion //methods");
+
+	 EndClassAndNamespace();
+  }
+
+  void ToSimpleString(string name)
+  {
+	 this.WriteLine("\t\tpublic override string ToString()");
+     this.WriteLine("\t\t{");
+	 this.WriteLine("\t\t\treturn " + name + ";");
+     this.WriteLine("\t\t}");
+	 this.WriteLine("");
+  }
+
+  void ToString(List<Tuple<string,string>> items, List<string> enums)
+  {
+	 List<string> args = new List<string>();
+	 this.WriteLine("\t\tpublic override string ToString()");
+     this.WriteLine("\t\t{");
+     this.WriteLine("\t\t\treturn string.Format(CultureInfo.InvariantCulture,");
+
+	 int i = 0;
+	 foreach (var item in items)
+	 {
+	   if (item.Item1 == "CHAR")
+		args.Add(item.Item2 + "[] \\\"{" + i.ToString() + "}\\\"");
+	   else
+		args.Add(item.Item2 + " {" + i.ToString() + "}");
+	   i++;
+	 }
+	 this.Write("\t\t\t\t\"{{");
+	 this.Write(String.Join(",",args));
+	 this.WriteLine("}}\",");
+	 args = new List<string>();
+	 foreach (var item in items)
+	 {
+		if(ItemType(item.Item1)=="bool")
+			args.Add("BtoStr(" + LowercaseFirst(item.Item2) + ")");
+		else if(enums.Contains(item.Item1))
+			args.Add("\"#\" + " + LowercaseFirst(item.Item2) + ".ToString()");
+		else
+			args.Add(LowercaseFirst(item.Item2));
+	 }
+	 this.WriteLine("\t\t\t\t" + String.Join(", ",args));
+
+     this.WriteLine("\t\t\t\t);");
+     this.WriteLine("\t\t}");
+	 this.WriteLine("");
+  }
+
+  void EndClassAndNamespace()
+  {
+	 this.WriteLine("");
+	 this.WriteLine("\t}");
+	 this.WriteLine("}");
+  }
+
+  void WriteNamespace(string name)
+  {
+     this.WriteLine("namespace " + name);
+	 this.WriteLine("{");
+  }
+
+  void WriteClass(string name, string baseclass = null)
+  {
+     this.WriteLine("\tpublic partial class " + name + (baseclass!=null ? " : " + baseclass : ""));
+	 this.WriteLine("\t{");
+  }
+
+  void WriteUsings(string[] usings)
+  {
+     foreach(string str in usings)
+	    this.WriteLine("using " + str + ";");
+	 this.WriteLine("");
+  }
+
+  void WriteConstrWithDynamicMemory(string name, List<Tuple<string,string>> items, List<string> structs)
+  {
+	 this.WriteLine("\t\tpublic " + name + "(DynamicMemory mem, string ValName=\"\")");
+	 this.WriteLine("\t\t{");
+	 this.WriteLine("\t\t\tvalName = ValName;");
+	 this.WriteLine("\t\t\tif(mem==null) return;");
+	 foreach (var item in items)
+		if (structs.Contains(ItemType(item.Item1)))
+			this.WriteLine("\t\t\t" + LowercaseFirst(item.Item2) + " = new " + ItemType(item.Item1) + "((DynamicMemory)mem[\"" + item.Item2 + "\"]);");
+		else
+			this.WriteLine("\t\t\tif (mem[\"" + item.Item2 + "\"] != null) " + LowercaseFirst(item.Item2) + " = (" + ItemType(item.Item1) + ")mem[\"" + item.Item2 + "\"];");
+	 this.WriteLine("\t\t}");
+  }
+
+  void WriteConstrWithArgs(string name, List<Tuple<string,string>> items)
+  {
+	 List<string> args = new List<string>();
+	 foreach (var item in items)
+	 {
+	   args.Add(ItemType(item.Item1) + " " + UppercaseFirst(item.Item2));
+	 }
+     args.Add("string valName=\"\"");
+	 this.Write("\t\tpublic " + name + "(");
+	 this.Write(String.Join(", ", args));
+	 this.WriteLine(")");
+	 this.WriteLine("\t\t{");
+	 foreach (var item in items)
+		this.WriteLine("\t\t\t" + LowercaseFirst(item.Item2) + " = " + UppercaseFirst(item.Item2) + ";");
+	 this.WriteLine("\t\t\tvalName = ValName;");
+	 this.WriteLine("\t\t}");
+	 this.WriteLine("");
+  }
+
+  void WriteConstrWithDataItems(string name, List<Tuple<string,string>> items, List<string> structs, List<string> enums)
+  {
+	 this.WriteLine("\t\tpublic " + name + "(ANTLR.DataItems dataItems)");
+	 this.WriteLine("\t\t{");
+	 this.WriteLine("\t\t\tif (dataItems == null) return;");
+	 foreach (var item in items)
+	 {
+	   string field = LowercaseFirst(item.Item2);
+	   string type = ItemType(item.Item1);
+	   this.Write("\t\t\tif (dataItems.ContainsKey(\"" + item.Item2 + "\")) " + field + " = ");
+	   if (item.Item1 == "CHAR")
+	   { 
+	     this.WriteLine("dataItems[\"" + item.Item2 + "\"].ToString().Trim('\"');");
+	   }
+	   else if (item.Item1 == "INT" || item.Item1 == "REAL")
+	   {
+	     this.WriteLine(type + ".Parse(dataItems[\"" + item.Item2 + "\"].ToString(), CultureInfo.InvariantCulture);");
+	   }
+	   else if (item.Item1 == "BOOL")
+	   {
+	     this.WriteLine(type + ".Parse(dataItems[\"" + item.Item2 + "\"].ToString());");
+	   }
+	   else if (enums.Contains(item.Item1))
+	   {
+	     this.WriteLine("(" + type + ")System.Enum.Parse(typeof(" + type + "), dataItems[\"" + item.Item2 + "\"].ToString().TrimStart('#'), true);");
+	   }
+	   else if (structs.Contains(item.Item1))
+	   {
+	     this.WriteLine("new " + type + "(dataItems[\"" + item.Item2 + "\"]);");
+	   }
+	   else {
+	     this.WriteLine(type + ".Parse(dataItems[\"" + item.Item2 + "\"].ToString());");
+	   }
+	 }
+	 this.WriteLine("\t\t}");
+	 this.WriteLine("");
+  }
+
+  void WriteFields(List<Tuple<string,string>> items)
+  {
+	 foreach (var item in items)
+	 {
+	   string field = LowercaseFirst(item.Item2);
+	   string property = UppercaseFirst(item.Item2);
+	   string type = ItemType(item.Item1);
+	   this.WriteLine("\t\tprivate " + type + " " + field + ";");
+	   //this.WriteLine("\t\t// field: " + field + ", property: " + property + ", type: " + type);
+	 }
+  }
+
+  void WriteProperties(string name, List<Tuple<string,string>> items)
+  {
+	 this.WriteLine("\t\tpublic override string DataTypeName { get { return \"" + name + "\";} }");
+	 foreach (var item in items)
+	 {
+	   string field = LowercaseFirst(item.Item2);
+	   string property = UppercaseFirst(item.Item2);
+	   if (property == name) property += "_";
+	   string type = ItemType(item.Item1);
+	   this.WriteLine(
+		string.Format(
+			CultureInfo.InvariantCulture,
+			"\t\tpublic {0} {2} {{ get {{ return {1}; }} set {{ Set(ref {1}, value); }} }}",
+            type, field, property
+		)
+	   );
+	 }
+  }
+
+  void ToDefString(string name)
+  {
+	 this.WriteLine("\t\tpublic string ToDefString()");
+     this.WriteLine("\t\t{");
+     this.WriteLine("\t\t\treturn \"DECL " + name + " \" + ToString();");
+     this.WriteLine("\t\t}");
+	 this.WriteLine("");
+  }
+
+  void ToList(List<Tuple<string,string>> items)
+  {
+	 this.WriteLine("\t\tpublic List<string> ToList()");
+     this.WriteLine("\t\t{");
+     this.WriteLine("\t\t\treturn new List<string>() {");
+	 this.WriteLine("\t\t\t\tvalName,");
+	 foreach (var item in items)
+	 {
+		string mytype = ItemType(item.Item1);
+		if (mytype == "string")
+			this.WriteLine("\t\t\t\t" + LowercaseFirst(item.Item2) + ",");
+		else if ((mytype == "int") || (mytype == "double") || (mytype == "bool"))
+			this.WriteLine("\t\t\t\t" + LowercaseFirst(item.Item2) + ".ToString(CultureInfo.InvariantCulture),");
+		else
+			this.WriteLine("\t\t\t\t" + LowercaseFirst(item.Item2) + ".ToString(),");
+	 }
+     this.WriteLine("\t\t\t};");
+     this.WriteLine("\t\t}");
+	 this.WriteLine("");
+  }
+
+  void GenerateEnum(string name, string values)
+  {
+     this.WriteLine("namespace ParseModuleFile.KUKA.Enums");
+	 this.WriteLine("{");
+     this.WriteLine("\tpublic enum " + name);
+	 this.WriteLine("\t{");
+	 this.WriteLine("\t\tUNKNOWN = 0,");
+	 int i = 1;
+     string[] items = values.Split(new char[] {','}, StringSplitOptions.None);
+	 foreach (string item in items)
+	 {
+	   this.WriteLine("\t\t" + item + " = " + i.ToString() + ",");
+	   i++;
+	 }
+	 this.WriteLine("\t}");
+	 this.WriteLine("}");
+  }
+
+  string ItemType(string type)
+  {
+    string item = type.Trim().ToUpperInvariant();
+	if (item == "REAL") return "double";
+	if (item == "INT") return "int";
+	if (item == "CHAR") return "string";
+	if (item == "BOOL") return "bool";
+	string outtype = type.Replace("%comma%",",");
+	return outtype;
+  }
+
+	List<Tuple<string,string>> ParseStruct(string values)
+	{
+	 List<Tuple<string,string>> aout = new List<Tuple<string,string>>();
+	 string type="";
+	 string valname="";
+     string[] items = values.Split(new char[] {','}, StringSplitOptions.None);
+	 foreach (string item in items)
+	 {
+		string[] typeAndName;
+		if (item.Trim().Contains(" "))
+		{
+		  typeAndName = item.Trim().Split(new char[] {' '}, 2, StringSplitOptions.None);
+		  type = typeAndName[0];
+		  valname = typeAndName[1];
+		}
+		else
+		{
+		  valname = item.Trim();
+		}
+		int index = valname.IndexOf("[");
+		if (index > 0)
+			valname = valname.Substring(0, index);
+		aout.Add(new Tuple<string,string>(type, valname));
+	 }
+	 return aout;
+	}
+
+	string UppercaseFirst(string s)
+	{
+		// Check for empty string.
+		if (string.IsNullOrEmpty(s))
+		{
+			return string.Empty;
+		}
+		// Return char and concat substring.
+		return char.ToUpper(s[0]) + s.Substring(1);
+	}
+
+	string LowercaseFirst(string s)
+	{
+		// Check for empty string.
+		if (string.IsNullOrEmpty(s))
+		{
+			return string.Empty;
+		}
+		// Return char and concat substring.
+		return char.ToLower(s[0]) + s.Substring(1);
+	}
+#>

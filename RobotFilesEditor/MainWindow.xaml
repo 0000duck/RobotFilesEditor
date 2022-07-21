@@ -116,7 +116,7 @@
                                                     <Button Content="Fill SAS from backup" Command="{Binding SasFillerFromBackup}" Margin="3" Visibility="Visible" ToolTip="{Binding Tooltips.SasFillerFromBackupTooltip}"/>
                                                     <Button Content="Get data for Mengelist" Command="{Binding GetMenge}" Margin="3" Visibility="Visible" ToolTip="{Binding Tooltips.GetMengeTooltip}"/>
                                                     <Button Content="Compare spot points between backups" Command="{Binding CompareSpots}" Margin="3" Visibility="Visible" ToolTip="{Binding Tooltips.CompareSpotsTooltip}"/>
-                                                    <Button Content="KUKA Load 5,0 Generator" Command="{Binding KukaLoadGenerator}" Margin="3" Visibility="Visible" ToolTip="{Binding Tooltips.KukaLoadGeneratorTooltip}"/>
+                                                    <Button Content="KUKA Load 5.0 Generator" Command="{Binding KukaLoadGenerator}" Margin="3" Visibility="Visible" ToolTip="{Binding Tooltips.KukaLoadGeneratorTooltip}"/>
                                                     <Button Content="Collisions for PS" Command="{Binding CollisionsForPS}" Margin="3" Visibility="Collapsed"/>
                                                     <Button Content="Modify E1" Command="{Binding ModifyE1}" Margin="3" Visibility="Collapsed"/>
                                                     <Button Content="Shift base" Command="{Binding ShiftBaseKuka}" Margin="3" Visibility="{Binding DebugVisibility}"/>
@@ -152,6 +152,7 @@
                                                 <Button Content="Read Messprotokol and create PS Path" Command="{Binding ReadMessprotokolFANUC}" Margin="3" Visibility="Visible" ToolTip="{Binding Tooltips.ReadMessprotokolTooltip}"/>
                                                 <Button Content="Fix missing collisions in SAS 2.10.0.3" Command="{Binding FixSASCollisionsFanuc}" Visibility="Collapsed" Margin="3" ToolTip="{Binding Tooltips.FixSASCollisionsFanucToolTip}"/>
                                                 <Button Content="Generate Load diagrams" Command="{Binding PayloadsFanuc}" Visibility="Visible" Margin="3" ToolTip="{Binding Tooltips.PayloadsFanucToolTip}"/>
+                                                <Button Content="Read DCS Checksums" Command="{Binding ChecksumsFanuc}" Visibility="Visible" Margin="3" ToolTip="{Binding Tooltips.FanucChecksumsToolTip}"/>
                                             </StackPanel>
                                         </GroupItem>
                                     </Expander>

@@ -1,0 +1,639 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Antlr4.4.5-alpha002\build\Antlr4.props" Condition="Exists('..\packages\Antlr4.4.5-alpha002\build\Antlr4.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E4F5B6DA-8DCD-4054-B75B-63B6C8FC19E5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>dll_ParseModuleFile</RootNamespace>
+    <AssemblyName>dll_ParseModuleFile</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr4.Runtime, Version=4.5.0.0, Culture=neutral, PublicKeyToken=e9931a4108ef2354, processorArchitecture=MSIL">
+      <HintPath>..\packages\Antlr4.Runtime.4.5-alpha002\lib\net45\Antlr4.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Build.Framework, Version=15.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Build.Framework.17.2.0\lib\net472\Microsoft.Build.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ANTLR\DataItems.cs" />
+    <Compile Include="ANTLR\ErrorListener.cs" />
+    <Compile Include="ANTLR\kuka.g4.lexer.cs" />
+    <Compile Include="ANTLR\kuka.g4.parser.cs" />
+    <Compile Include="ANTLR\kukaSrc.g4.lexer.cs">
+      <DependentUpon>kukaSrc.g4</DependentUpon>
+    </Compile>
+    <Compile Include="ANTLR\kukaSrc.g4.parser.cs">
+      <DependentUpon>kukaSrc.g4</DependentUpon>
+    </Compile>
+    <Compile Include="ANTLR\kukaSrcVisitor.cs" />
+    <Compile Include="ANTLR\kukaVisitor.cs" />
+    <Compile Include="ANTLR\SrcParser\Expressions\ArrayVariableSuffix.cs" />
+    <Compile Include="ANTLR\SrcParser\Expressions\BaseLiterals.cs" />
+    <Compile Include="ANTLR\SrcParser\Expressions\UnaryOpetatorExpression.cs" />
+    <Compile Include="ANTLR\SrcParser\Expressions\ExpressionList.cs" />
+    <Compile Include="ANTLR\SrcParser\Expressions\IAssigmentExpression.cs" />
+    <Compile Include="ANTLR\SrcParser\Expressions\IExpression.cs" />
+    <Compile Include="ANTLR\SrcParser\Expressions\IGeometricExpression.cs" />
+    <Compile Include="ANTLR\SrcParser\Expressions\ILiteral.cs" />
+    <Compile Include="ANTLR\SrcParser\Expressions\IPrimary.cs" />
+    <Compile Include="ANTLR\SrcParser\Expressions\Operator.cs" />
+    <Compile Include="ANTLR\SrcParser\Expressions\OpetatorExpression.cs" />
+    <Compile Include="ANTLR\SrcParser\Expressions\ParExpression.cs" />
+    <Compile Include="ANTLR\SrcParser\Expressions\StructElement.cs" />
+    <Compile Include="ANTLR\SrcParser\Expressions\StructElementList.cs" />
+    <Compile Include="ANTLR\SrcParser\Expressions\StructLiteral.cs" />
+    <Compile Include="ANTLR\SrcParser\Expressions\UnaryPlusMinusExpression.cs" />
+    <Compile Include="ANTLR\SrcParser\Expressions\VariableName.cs" />
+    <Compile Include="ANTLR\SrcParser\Expressions\VariableNameList.cs" />
+    <Compile Include="ANTLR\SrcParser\ISrcItemBlock.cs" />
+    <Compile Include="ANTLR\SrcParser\SrcItemBlock.cs" />
+    <Compile Include="ANTLR\SrcParser\Expressions\AssigmentExpression.cs" />
+    <Compile Include="ANTLR\SrcParser\Expressions\EnumElement.cs" />
+    <Compile Include="ANTLR\SrcParser\Expressions\Expression.cs" />
+    <Compile Include="ANTLR\SrcParser\Expressions\GeometricExpression.cs" />
+    <Compile Include="ANTLR\SrcParser\Expressions\Literal.cs" />
+    <Compile Include="ANTLR\SrcParser\Expressions\LiteralType.cs" />
+    <Compile Include="ANTLR\SrcParser\Movements\Approximation.cs" />
+    <Compile Include="ANTLR\SrcParser\Movements\CIRC.cs" />
+    <Compile Include="ANTLR\SrcParser\Movements\CIRC_REL.cs" />
+    <Compile Include="ANTLR\SrcParser\Movements\LIN_REL.cs" />
+    <Compile Include="ANTLR\SrcParser\Movements\LIN.cs" />
+    <Compile Include="ANTLR\SrcParser\Movements\PTP_REL.cs" />
+    <Compile Include="ANTLR\SrcParser\Movements\PTP.cs" />
+    <Compile Include="ANTLR\SrcParser\Statements\AnalogInput.cs" />
+    <Compile Include="ANTLR\SrcParser\Statements\Brake.cs" />
+    <Compile Include="ANTLR\SrcParser\Statements\AnalogOutput.cs" />
+    <Compile Include="ANTLR\SrcParser\Statements\StatementBlock.cs" />
+    <Compile Include="ANTLR\SrcParser\Statements\Trigger.cs" />
+    <Compile Include="ANTLR\SrcParser\Statements\Interrupt.cs" />
+    <Compile Include="ANTLR\SrcParser\Statements\InterruptDecl.cs" />
+    <Compile Include="ANTLR\SrcParser\Statements\WaitSec.cs" />
+    <Compile Include="ANTLR\SrcParser\Statements\WaitFor.cs" />
+    <Compile Include="ANTLR\SrcParser\Statements\Label.cs" />
+    <Compile Include="ANTLR\SrcParser\Statements\Return.cs" />
+    <Compile Include="ANTLR\SrcParser\Statements\Switch.cs" />
+    <Compile Include="ANTLR\SrcParser\Statements\SwitchBlockStatementGroup.cs" />
+    <Compile Include="ANTLR\SrcParser\Statements\SwitchBlockStatementGroups.cs" />
+    <Compile Include="ANTLR\SrcParser\Statements\While.cs" />
+    <Compile Include="ANTLR\SrcParser\Statements\Repeat.cs" />
+    <Compile Include="ANTLR\SrcParser\Statements\For.cs" />
+    <Compile Include="ANTLR\SrcParser\FormalParameters.cs" />
+    <Compile Include="ANTLR\SrcParser\ISrcItem.cs" />
+    <Compile Include="ANTLR\SrcParser\ISrcList.cs" />
+    <Compile Include="ANTLR\SrcParser\Statements\Goto.cs" />
+    <Compile Include="ANTLR\SrcParser\Statements\If.cs" />
+    <Compile Include="ANTLR\SrcParser\Statements\Loop.cs" />
+    <Compile Include="ANTLR\SrcParser\Parameter.cs" />
+    <Compile Include="ANTLR\SrcParser\ProcedureDefinition.cs" />
+    <Compile Include="ANTLR\SrcParser\Routine.cs" />
+    <Compile Include="ANTLR\SrcParser\SrcItem.cs" />
+    <Compile Include="ANTLR\SrcParser\SrcList.cs" />
+    <Compile Include="ANTLR\SrcParser\Statements\Statement.cs" />
+    <Compile Include="ANTLR\SrcParser\Statements\StatementList.cs" />
+    <Compile Include="ANTLR\SrcParser\Statements\StatementType.cs" />
+    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="KUKA\CustomStructVariable.cs" />
+    <Compile Include="KUKA\DataTypesContainer.cs" />
+    <Compile Include="KUKA\DataTypes\CustomEnum.cs" />
+    <Compile Include="KUKA\DataArray.cs" />
+    <Compile Include="KUKA\DataTypes\CustomEnums.cs" />
+    <Compile Include="KUKA\DataTypes\CustomStruct.cs" />
+    <Compile Include="KUKA\DataTypes\CustomStructElement.cs" />
+    <Compile Include="KUKA\DataTypes\CustomStructures.cs" />
+    <Compile Include="KUKA\DataTypes\LOAD.cs" />
+    <Compile Include="KUKA\EnumDataType.cs" />
+    <Compile Include="KUKA\DataTypes\MemorySelector.cs" />
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.ADAP_ACC.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.APO_MODE_T.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.Approximate_Positioning.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.AXIS_OF_COORDINATES.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.CAUSE_T.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.CIRC_MODE_args.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.CIRC_TYPE.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.CONTROL_PARAMETER.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.COOP_UPDATE_T.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.CP_STATMON.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.CP_VEL_TYPE.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.EAttrType.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.EKO_MODE.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.ESYS.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.ET_AX_E.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.EX_KIN_E.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.GrpAction.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.GrpACT_Type.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.Grp_PP_STATE.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.Grp_STATE.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.INDIVIDUAL_MAMES.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.IPO_MODE.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.IPO_M_T.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.JobType.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.KINCLASS.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.KRLMSGPARTYPE_T.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.LOADREACTION.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.MAIN_AXIS.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.MECH_TYPE.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.MODE.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.MODEL_TYPE.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.OLPType.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.OPTION_CTL.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.ORI_TYPE.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.OUT_MODETYPE.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.Pal_Check.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.Pal_Func.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.PARITY.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.PlcComAction.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.ProgramBaseInfoItemType.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.ProgramType.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.REFERENCE.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.SPLINE_PARA_VARIANT.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.SSE_Cmd.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.SSE_Mode.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.SUPPLY_VOLTAGE.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.SwpAction.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.swp_GUN_MOUNTING.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.TARGET_STATUS.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.tch_enum_pnio.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.tch_enum_tchTool.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.VAR_STATE.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Enum.WRIST_AXIS.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.ACC_CAR.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.ADAT.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.AXBOX.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.Base.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.BASIS_SUGG_T.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.BIN_TYPE.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.BOOL.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.BOX.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.CHAR.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.CIRC_MODE.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.CIRC_MODE_items.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.CONDSTOP_PARA.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.CONSTVEL_PARA.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.COOP_KRC.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.CP.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.CYLINDER.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.DATE.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.DHART.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.E6AXIS.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.E6POS.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.EMSTOP_PATH.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.ERR_MESS.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.ET_AX.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.EXT_MOD_T.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.EX_KIN.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.FDAT.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.FRA.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.FRAME.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.GripStruc.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.GrpActuator.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.GrpOutFlags.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.Gun.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.Home.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.INERTIA.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.INT.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.JERK_STRUC.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.KrlInputStruct.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.KRLMSGOPT_T.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.KRLMSGPAR_T.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.LDAT.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.LDC_REACTION.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.LOAD.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.LoadDataPLC.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.MACHINE_DEF_T.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.MACHINE_FRAME_T.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.MACHINE_TOOL_T.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.MAXTOOL.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.MODULEPARAM_T.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.monitoring.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.ODAT.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.Palletizing_Struc.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.PDAT.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.POS.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.PRESET.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.PRO_IO_T.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.REAL.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.SER.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.SPIN.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.SpotProcess.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.SPS_PROG_TYPE.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.SSE_Struc.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.STOPMESS.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.swp_limits.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.TchData.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.TchStation.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.TchTool.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.TchTool_OptStation.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.TchTool_PNDevNo.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.TIPDRESS.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.Tool.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.TQM_TQDAT_T.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.TRIGGER_PARA.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.TRPSPIN.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct.WS_CONFIG.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\Struct._calEqPressure.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\GeneratedEnumsAndStructures\StructuresGen.generated.cs">
+      <DependentUpon>StructuresGen.tt</DependentUpon>
+    </Compile>
+    <Compile Include="KUKA\V8_Information.cs" />
+    <Compile Include="lib\NotifyPropertyChanged.cs" />
+    <Compile Include="MultiArchive.cs" />
+    <Compile Include="RegexHelper.cs" />
+    <Compile Include="KUKA\Variables.cs" />
+    <Compile Include="KUKA\VariablesContainer.cs" />
+    <Compile Include="KUKA\DataTypes\CIRC_MODE.cs" />
+    <Compile Include="KUKA\oldFolds.cs" />
+    <Compile Include="Archive.cs" />
+    <Compile Include="Parser.cs" />
+    <Compile Include="SortableObservableCollection.cs" />
+    <Compile Include="Variable.cs" />
+    <Compile Include="File\CFile.cs" />
+    <Compile Include="File\Dat.cs" />
+    <Compile Include="File\Olp.cs" />
+    <Compile Include="File\Src.cs" />
+    <Compile Include="KUKA\Application.cs" />
+    <Compile Include="KUKA\Applications\Grp.cs" />
+    <Compile Include="KUKA\Applications\PlcCom.cs" />
+    <Compile Include="KUKA\Applications\Tch.cs" />
+    <Compile Include="KUKA\ArchiveInfo\ArchiveInfo.cs" />
+    <Compile Include="KUKA\ArchiveInfo\OptionInformation.cs" />
+    <Compile Include="KUKA\ArchiveInfo\Version.cs" />
+    <Compile Include="KUKA\DataTypes\Base.cs" />
+    <Compile Include="KUKA\DataTypes\LDAT.cs" />
+    <Compile Include="KUKA\DataTypes\FDAT.cs" />
+    <Compile Include="KUKA\DataTypes\PDAT.cs" />
+    <Compile Include="KUKA\DataTypes\SpotProcess.cs" />
+    <Compile Include="KUKA\DataTypes\TchData.cs" />
+    <Compile Include="KUKA\DataTypes\TchTool_PNDevNo.cs" />
+    <Compile Include="KUKA\DataTypes\TchTool.cs" />
+    <Compile Include="KUKA\DataTypes\TchTool_OptStation.cs" />
+    <Compile Include="KUKA\DataTypes\TchStation.cs" />
+    <Compile Include="KUKA\DataTypes\TIPDRESS.cs" />
+    <Compile Include="KUKA\DataTypes\Tool.cs" />
+    <Compile Include="KUKA\DataTypes\Grippers.cs" />
+    <Compile Include="KUKA\DataTypes\Gun.cs" />
+    <Compile Include="KUKA\DataTypes\NumOfHomes.cs" />
+    <Compile Include="KUKA\DataTypes\E6POS.cs" />
+    <Compile Include="KUKA\DataTypes\FRAME.cs" />
+    <Compile Include="KUKA\Applications\Area.cs" />
+    <Compile Include="KUKA\Applications\CollZone.cs" />
+    <Compile Include="KUKA\Applications\Job.cs" />
+    <Compile Include="KUKA\Applications\Swp.cs" />
+    <Compile Include="KUKA\CAttrField.cs" />
+    <Compile Include="DynamicMemory.cs" />
+    <Compile Include="KUKA\Variable.cs" />
+    <Compile Include="KUKA\oldFold.cs" />
+    <Compile Include="KUKA\Movement.cs" />
+    <Compile Include="KUKA\Movements\LIN.cs" />
+    <Compile Include="KUKA\Movements\PTP.cs" />
+    <Compile Include="KUKA\Program.cs" />
+    <Compile Include="KUKA\ProgramBaseInfo.cs" />
+    <Compile Include="KUKA\ProgramBaseInfoItem.cs" />
+    <Compile Include="KUKA\Programs.cs" />
+    <Compile Include="KUKA\Robot.cs" />
+    <Compile Include="lib\ObservableDictionary.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ViewModel\RobotWarningListModel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="KUKA\GeneratedEnumsAndStructures\BMW_Structs.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Antlr4 Include="ANTLR\kuka.g4">
+      <Generator>MSBuild:Compile</Generator>
+      <CustomToolNamespace>ParseModuleFile.ANTLR</CustomToolNamespace>
+    </Antlr4>
+    <Antlr4 Include="ANTLR\kukaSrc.g4">
+      <Generator>MSBuild:Compile</Generator>
+      <CustomToolNamespace>ParseModuleFile.ANTLR</CustomToolNamespace>
+    </Antlr4>
+    <None Include="KUKA\GeneratedEnumsAndStructures\MultipleOutputHelper.ttinclude" />
+    <None Include="KUKA\GeneratedEnumsAndStructures\StructuresGen.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
+    <None Include="packages.config" />
+    <None Include="ParseModuleFile.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\..\VS_Projects\KUKA.Load 5.0 Generator\WarningHelperCSharp\WarningHelper\WarningHelper.csproj">
+      <Project>{f9c0788f-117a-438b-8688-5b912efb2287}</Project>
+      <Name>WarningHelper</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Antlr4.4.5-alpha002\build\Antlr4.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Antlr4.4.5-alpha002\build\Antlr4.props'))" />
+    <Error Condition="!Exists('..\packages\Antlr4.4.5-alpha002\build\Antlr4.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Antlr4.4.5-alpha002\build\Antlr4.targets'))" />
+  </Target>
+  <Import Project="..\packages\Antlr4.4.5-alpha002\build\Antlr4.targets" Condition="Exists('..\packages\Antlr4.4.5-alpha002\build\Antlr4.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

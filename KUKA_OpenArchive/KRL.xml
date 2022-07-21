@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<ScintillaNET>
+
+  <Language Name="default">
+    <Styles>
+      <Style Name="Default" FontName="Consolas"/>
+    </Styles>
+  </Language>
+
+  <!-- Set up the language, style, and lexer for batch -->
+  <Language Name="KRL">
+
+    
+    <!-- Lexer -->
+    <Lexer LineCommentPrefix=";">
+      <Keywords List="0">var</Keywords>
+      <Keywords List="1">string</Keywords>
+    </Lexer>
+
+    <!-- Style -->
+    <Styles>
+      <Sytle Name="CHARACTER" ForeColor="Black" BackColor="Red"/>
+    </Styles>
+
+    <!-- Other Settings -->
+    <Indentation TabWidth="2" UseTabs="false"/>
+
+  </Language>
+
+</ScintillaNET>

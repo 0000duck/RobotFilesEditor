@@ -51,6 +51,7 @@ namespace RobotFilesEditor.ViewModel.Helper
         public string KukaLoadGeneratorTooltip { get; private set; }
         public string ExternalProgramsTooltips { get; private set; }
         public string ClearLocalExtFilesTooltip { get; private set; }
+        public string FanucChecksumsToolTip { get; private set; }
 
         public MainWindowTooltips()
         {
@@ -102,6 +103,8 @@ namespace RobotFilesEditor.ViewModel.Helper
             KukaLoadGeneratorTooltip = "Open Kuka Load 5.0 Generator";
             ExternalProgramsTooltips = @"Opens external *.exe from applications located at \\alfa\RoboBMW\RobotFilesHarvester_ExtPrograms";
             ClearLocalExtFilesTooltip = "Clears content of directory: " + Path.Combine(Path.GetDirectoryName(GlobalData.PathFile), "ExternalFiles");
+
+            FanucChecksumsToolTip = "Prepare document containing DCS checksums";
         }
     }
 }
