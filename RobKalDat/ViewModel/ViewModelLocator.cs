@@ -28,7 +28,7 @@ namespace RobKalDat.ViewModel
     {
         static ViewModelLocator()
         {
-            ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
+            //ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
 
             if (ViewModelBase.IsInDesignModeStatic)
             {
@@ -57,7 +57,7 @@ namespace RobKalDat.ViewModel
         {
             get
             {
-                return ServiceLocator.Current.GetInstance<MainViewModel>();
+                return SimpleIoc.Default.GetInstance<MainViewModel>();
             }
         }
 
@@ -65,7 +65,7 @@ namespace RobKalDat.ViewModel
         {
             get
             {
-                return ServiceLocator.Current.GetInstance<MeasurementsViewModel>();
+                return SimpleIoc.Default.GetInstance<MeasurementsViewModel>();
             }
         }
 
@@ -73,7 +73,7 @@ namespace RobKalDat.ViewModel
         {
             get
             {
-                return ServiceLocator.Current.GetInstance<MeasurementWindowViewModel>();
+                return SimpleIoc.Default.GetInstance<MeasurementWindowViewModel>();
             }
         }
 
@@ -81,7 +81,7 @@ namespace RobKalDat.ViewModel
         {
             get
             {
-                return ServiceLocator.Current.GetInstance<EditMeasurementViewModel>();
+                return SimpleIoc.Default.GetInstance<EditMeasurementViewModel>();
             }
         }
 
@@ -89,7 +89,7 @@ namespace RobKalDat.ViewModel
         {
             get
             {
-                return ServiceLocator.Current.GetInstance<BasesViewModel>();
+                return SimpleIoc.Default.GetInstance<BasesViewModel>();
             }
         }
 
@@ -97,7 +97,7 @@ namespace RobKalDat.ViewModel
         {
             get
             {
-                return ServiceLocator.Current.GetInstance<SafetyViewModel>();
+                return SimpleIoc.Default.GetInstance<SafetyViewModel>();
             }
         }
 

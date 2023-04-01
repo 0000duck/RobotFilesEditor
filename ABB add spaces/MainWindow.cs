@@ -39,7 +39,7 @@ namespace ABB_add_spaces
                 if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
                 {
                     textBox_dir.Text = dialog.FileName;
-                    Properties.Settings.Default.LastFolder = textBox_dir.Text;
+                    //Properties.Settings.Default.LastFolder = textBox_dir.Text;
                     Properties.Settings.Default.Save();
                 }
                 this.TopMost = true;

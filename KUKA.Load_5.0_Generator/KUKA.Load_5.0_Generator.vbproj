@@ -90,7 +90,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>20A74C0082B8A9339E16AD6A47C999C1577DEB78</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>83D81C897B871AB34D46C3A0EA482BCE35696D89</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>KUKA.Load_5.0_Generator_TemporaryKey.pfx</ManifestKeyFile>
@@ -113,11 +113,11 @@
   <ItemGroup>
     <Reference Include="dll_KUKA_OpenArchive, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\dll_KUKA_OpenArchive.dll</HintPath>
+      <HintPath>G:\AIUT\RobotFilesEditor_220729\RobotFilesEditor\KUKA.Load_5.0_Generator\bin\Debug\dll_KUKA_OpenArchive.dll</HintPath>
     </Reference>
     <Reference Include="dll_KUKA_ParseModuleFile, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\dll_KUKA_ParseModuleFile.dll</HintPath>
+      <HintPath>G:\AIUT\RobotFilesEditor_220729\RobotFilesEditor\KUKA.Load_5.0_Generator\bin\Debug\dll_KUKA_ParseModuleFile.dll</HintPath>
     </Reference>
     <Reference Include="INIFileParser, Version=2.5.2.0, Culture=neutral, PublicKeyToken=79af7b307b65cf3c, processorArchitecture=MSIL">
       <HintPath>..\packages\ini-parser.2.5.2\lib\net20\INIFileParser.dll</HintPath>
@@ -129,7 +129,7 @@
     </Reference>
     <Reference Include="InjectLib, Version=1.0.7942.16781, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\Debug\InjectLib.dll</HintPath>
+      <HintPath>G:\AIUT\RobotFilesEditor_220729\RobotFilesEditor\KUKA.Load_5.0_Generator\bin\Debug\InjectLib.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />

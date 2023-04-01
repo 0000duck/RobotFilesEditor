@@ -73,7 +73,7 @@ namespace CommonLibrary
         public static string GetApplicationConfig()
         {
             string userName = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
-            if (userName.Length >= 4 && userName.ToLower().Substring(0, 4) == "aiut" || userName.Length >= 6 && userName.ToLower().Substring(0, 6) == "233-ws")
+            if (userName.Length >= 4 && userName.ToLower().Substring(0, 4) == "aiut" || userName.Length >= 6 && userName.ToLower().Substring(0, 6) == "233-ws" || userName.ToLower().Contains("trojniar"))
                 CommonGlobalData.IsAIUTUser = true;
             else
                 CommonGlobalData.IsAIUTUser = false;

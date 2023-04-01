@@ -29,7 +29,7 @@ namespace RobotFilesEditor.ViewModel
             if (!ViewModelBase.IsInDesignModeStatic)
             {
 
-                ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
+                //ServiceLocator.SetLocatorProvider(() => SimpleIoc.Default);
 
                 Serializer.FilesSerialization filesSerialization;
                 List<Controler> controlers = new List<Controler>();
@@ -78,7 +78,7 @@ namespace RobotFilesEditor.ViewModel
         {
             get
             {
-                return ServiceLocator.Current.GetInstance<MainViewModel>();
+                return SimpleIoc.Default.GetInstance<MainViewModel>();
             }
         }
         
