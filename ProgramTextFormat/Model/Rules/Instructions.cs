@@ -12,6 +12,6 @@ namespace ProgramTextFormat.Model.Rules
     public class Instructions
     {
         [XmlElement(ElementName = "KukaInstruction")]
-        public List<KukaInstruction> KukaInstruction { get; set; }
+        public List<KukaInstruction> KukaInstructions { get; set; }
     }
 }

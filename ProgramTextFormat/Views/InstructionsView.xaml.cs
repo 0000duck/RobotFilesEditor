@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ProgramTextFormat
+namespace ProgramTextFormat.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for InstructionsView.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class InstructionsView : Page
     {
-        public MainWindow()
+        public InstructionsView()
         {
             InitializeComponent();
         }

@@ -21,5 +21,17 @@ namespace ProgramTextFormat.Model.RobotInstructions
 
         [XmlIgnore]
         public override string FoldEnd => ";endfold";
+
+        [XmlIgnore]
+        public override string RobotType => "KUKA";
+
+        public override object Clone()
+        {
+            KukaInstruction result = new KukaInstruction();
+            this.FillBasicInfos(result);
+            return result;
+        }
+
+        
     }
 }

@@ -15,5 +15,16 @@ namespace ProgramTextFormat.Model.Rules
         public Rules Rules { get; set; }
         [XmlElement(ElementName = "Instructions")]
         public Instructions Instructions { get; set; }
+
+        internal void Initialize()
+        {
+            foreach (var rule in Rules.ProgramFormatRule)
+            {
+                if (Instructions.KukaInstructions.Any(x => x.Name.Equals(rule.Instruction, StringComparison.OrdinalIgnoreCase)))
+                {
+                    rule.SelectedInstruction = Instructions.KukaInstructions.FirstOrDefault(x => x.Name.Equals(rule.Instruction));
+                }
+            }
+        }
     }
 }

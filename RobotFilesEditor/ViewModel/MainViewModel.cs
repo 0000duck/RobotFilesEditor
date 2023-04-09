@@ -563,6 +563,7 @@ namespace RobotFilesEditor.ViewModel
         public ICommand ClearLocalExtFiles { get; set; }
         public ICommand ChecksumsFanuc { get; set; }
 
+        public ICommand ProgramFormatter { get; set; }
         private void SetCommands()
         {
             ChangeName = new RelayCommand(ChangeNameExecute);
@@ -629,6 +630,13 @@ namespace RobotFilesEditor.ViewModel
             KukaLoadGenerator = new RelayCommand(KukaLoadGeneratorExecute);
             ClearLocalExtFiles = new RelayCommand(ClearLocalExtFilesExecute);
             ChecksumsFanuc = new RelayCommand(ChecksumsFanucExecute);
+            ProgramFormatter = new RelayCommand(ProgramFormatterExecute);
+        }
+
+        private void ProgramFormatterExecute()
+        {
+            ProgramTextFormat.MainWindow window= new ProgramTextFormat.MainWindow();
+            window.ShowDialog();
         }
 
         private void ChecksumsFanucExecute()

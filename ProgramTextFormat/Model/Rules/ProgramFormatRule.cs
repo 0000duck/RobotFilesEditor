@@ -12,32 +12,35 @@ using System.Xml.Serialization;
 namespace ProgramTextFormat.Model.Rules
 {
     [XmlRoot(ElementName = "ProgramFormatRule")]
-    public class ProgramFormatRule : ObservableObject, ICloneable
+    public class ProgramFormatRule : DataGridElementBase, ICloneable
     {
 
         #region properties
         [XmlAttribute(AttributeName = "Number")]
-        public string? Number { get; set; }
+        public string Number { get { return m_Number; } set { SetProperty(ref m_Number, value); SendEditValidMsg(); } }
+        private string m_Number;
 
         [XmlAttribute(AttributeName = "Instruction")]
-        public string? Instruction { get; set; }
+        public string Instruction { get { return m_Instruction; } set { SetProperty(ref m_Instruction, value); SendEditValidMsg(); } }
+        private string m_Instruction;
 
         [XmlAttribute(AttributeName = "SelectedAction")]
         public string? SelectedAction { get; set; }
 
         [XmlAttribute(AttributeName = "GroupItems")]
-        public bool GroupItems { get; set; }
+        public bool GroupItems { get { return m_GroupItems; } set { SetProperty(ref m_GroupItems, value); } }
+        private bool m_GroupItems;
 
         [XmlIgnore]
-        public bool Editable { get { return m_Editable; } set { SetProperty(ref m_Editable, value); } }
-        private bool m_Editable;
+        public RobotInstructionBase SelectedInstruction { get { return m_SelectedInstruction; } set { Instruction = value?.Name; SetProperty(ref m_SelectedInstruction, value); } }
+        private RobotInstructionBase m_SelectedInstruction;
 
         #endregion properties
 
         #region constructor
         public ProgramFormatRule()
         {
-            Editable = false;
+            //Editable = false;
         }
 
         public ProgramFormatRule(string? number, string? instruction, string? selectedAction, bool groupItems)
@@ -46,17 +49,13 @@ namespace ProgramTextFormat.Model.Rules
             Instruction = instruction;
             SelectedAction = selectedAction;
             GroupItems = groupItems;
-            Editable = false;
+            //Editable = false;
         }
 
 
         #endregion constructor
 
         #region methods
-        public void SetEditability(bool enable)
-        {
-            Editable = enable;
-        }
 
         public object Clone()
         {
@@ -65,6 +64,7 @@ namespace ProgramTextFormat.Model.Rules
             result.Instruction = this.Instruction;
             result.SelectedAction = this.SelectedAction;
             result.GroupItems = this.GroupItems;
+            result.SelectedInstruction = this.SelectedInstruction;
             return result;
         }
         #endregion methods

@@ -1,0 +1,71 @@
+﻿<Window x:Class="ProgramTextFormat.MainWindow"
+        x:Name="MainProgramWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ProgramTextFormat"
+        xmlns:viewModel="clr-namespace:ProgramTextFormat.ViewModel"
+        xmlns:converters="clr-namespace:ProgramTextFormat.Converters"
+        mc:Ignorable="d"
+        Title="Robot program code formatter" MinHeight="500" SizeToContent="WidthAndHeight">
+    <Window.DataContext>
+        <viewModel:MainViewModel/>
+    </Window.DataContext>
+    <Window.Resources>
+        <ResourceDictionary>
+            <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
+            <converters:EnumToStringConverter x:Key="enumToStringConverter"/>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="500"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="500"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Column="0" Grid.Row="0" Margin="5,5,5,5">
+            <Border BorderThickness="2" BorderBrush="Black" Margin="5,5,5,5">
+                <StackPanel>
+                    <Button Content="Rules" Click="Rules_Click" Command="{Binding SetRulesCommand}" Margin="5,5,5,5">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=RulesActive}" Value="True">
+                                        <Setter Property="Background" Value="Aquamarine"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Path=RulesActive}" Value="False">
+                                        <Setter Property="Background" Value="LightGray"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                    <Button Content="Instructions" Click="Instructions_Click" Command="{Binding SetInstructionsCommand}" Margin="5,5,5,5">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=InstructionsActive}" Value="True">
+                                        <Setter Property="Background" Value="Aquamarine"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding Path=InstructionsActive}" Value="False">
+                                        <Setter Property="Background" Value="LightGray"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+        <Frame x:Name="Main" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" NavigationUIVisibility="Hidden"/>
+       
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Content="OK" Margin="5,5,5,5" Command="{Binding OKCommand}" IsEnabled="{Binding OkEnabled}" CommandParameter="{Binding ElementName=MainProgramWindow}" Height="20" Width="50"/>
+            <Button Content="Cancel" Margin="5,5,5,5" Command="{Binding CancelCommand}"  CommandParameter="{Binding ElementName=MainProgramWindow}" Height="20" Width="50"/>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -83,8 +83,9 @@
                                                 <Button Content="Open destination folder" Command="{Binding OpenDest}" Margin="3" ToolTip="{Binding Tooltips.OpenDestTooltip}"/>
                                                 <Button Content="Convert Trello Report" Command="{Binding ConvertTrello}" Margin="3" ToolTip="{Binding Tooltips.ConvertTrelloTooltip}"/>
                                                 <Button Content="Fill IBN checklist" Command="{Binding FillExcel}" Margin="3" ToolTip="{Binding Tooltips.FillExcelTooltip}"/>
-
+                                                <Button Content="Program formatting rules" Command="{Binding ProgramFormatter}" Margin="3" ToolTip="{Binding Tooltips.ProgramFormatterTooltip}"/>
                                                 <Button Content="Clear local ext. files" Command="{Binding ClearLocalExtFiles}" Margin="3" ToolTip="{Binding Tooltips.ClearLocalExtFilesTooltip}"/>
+                                                
                                                 <Button Content="Temp" Command="{Binding TempExec}" Margin="3" Visibility="{Binding DebugVisibility}"/>
                                             </StackPanel>
                                         </GroupItem>
