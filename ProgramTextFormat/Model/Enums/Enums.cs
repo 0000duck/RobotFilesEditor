@@ -1,1 +1,1 @@
-﻿public enum Actions {EnterBefore, EnterAfter, RemoveCommand }
+﻿public enum Actions {EnterBefore, EnterAfter, EnterBeforeAfter, RemoveCommand }

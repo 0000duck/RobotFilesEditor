@@ -29,7 +29,7 @@
                     <Button Content="Cancel edit" Command="{Binding CancelEditCommand}" Margin="0,0,0,5"/>
                 </StackPanel>
             </StackPanel>
-            <DataGrid Grid.Column="1" Grid.Row="0" MinWidth="500" ItemsSource="{Binding InstructionsCollection}" AutoGenerateColumns="False" SelectedIndex="{Binding SelectedInstruction}"
+            <DataGrid Grid.Column="1" Grid.Row="0" MinWidth="600" ItemsSource="{Binding InstructionsCollection}" AutoGenerateColumns="False" SelectedIndex="{Binding SelectedInstruction}"
                 CanUserAddRows="True" CanUserDeleteRows="True"                 
                 SelectionMode="Single" SelectionUnit="FullRow">
                 <DataGrid.Columns>

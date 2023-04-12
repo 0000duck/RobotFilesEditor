@@ -31,9 +31,21 @@ namespace ProgramTextFormat.Model.Rules
         public bool GroupItems { get { return m_GroupItems; } set { SetProperty(ref m_GroupItems, value); } }
         private bool m_GroupItems;
 
+        [XmlAttribute(AttributeName = "GroupWithOther")]
+        public bool GroupWithOther { get { return m_GroupWithOther; } set { SetProperty(ref m_GroupWithOther, value); } }
+        private bool m_GroupWithOther;
+
+        [XmlAttribute(AttributeName = "GroupWithInstruction")]
+        public string GroupWithInstruction { get { return m_GroupWithInstruction; } set { SetProperty(ref m_GroupWithInstruction, value); SendEditValidMsg(); } }
+        private string m_GroupWithInstruction;
+
         [XmlIgnore]
         public RobotInstructionBase SelectedInstruction { get { return m_SelectedInstruction; } set { Instruction = value?.Name; SetProperty(ref m_SelectedInstruction, value); } }
         private RobotInstructionBase m_SelectedInstruction;
+
+        [XmlIgnore]
+        public RobotInstructionBase SelectedInstructionToGroup { get { return m_SelectedInstructionToGroup; } set { GroupWithInstruction = value?.Name; SetProperty(ref m_SelectedInstructionToGroup, value); } }
+        private RobotInstructionBase m_SelectedInstructionToGroup;
 
         #endregion properties
 
@@ -65,6 +77,9 @@ namespace ProgramTextFormat.Model.Rules
             result.SelectedAction = this.SelectedAction;
             result.GroupItems = this.GroupItems;
             result.SelectedInstruction = this.SelectedInstruction;
+            result.SelectedInstructionToGroup = this.SelectedInstructionToGroup;
+            result.GroupWithInstruction = this.GroupWithInstruction;
+            result.GroupWithOther= this.GroupWithOther;
             return result;
         }
         #endregion methods

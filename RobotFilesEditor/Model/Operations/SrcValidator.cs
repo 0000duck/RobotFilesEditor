@@ -125,7 +125,8 @@ namespace RobotFilesEditor.Model.Operations
                 //CommonLibrary.CommonMethods.CreateLogFile(logFileContent, "\\log.txt");
                 if (GlobalData.ControllerType == "KRC4" && resultSrcFiles.Any(x => Path.GetFileNameWithoutExtension(x.Key).ToLower() == "a01_braketest"))
                     resultSrcFiles = AddnAnswerToBrakeTest(resultSrcFiles);
-                Result = KukaAddSpaces.AddSpaces(resultSrcFiles);
+                //Result = KukaAddSpaces.AddSpaces(resultSrcFiles);
+                Result = KukaAddSpaces_v2.AddSpaces(resultSrcFiles);
             }
             else
             {
@@ -978,6 +979,7 @@ namespace RobotFilesEditor.Model.Operations
                 foreach (var item in file.Value)
                 {
                     string collWithDescription = "";
+                    string commentDescription = string.Empty;
                     int number = 0;
                     bool addItem = true, correctedCollision = false;
                     if (isCollDescrRegex.IsMatch(item) && !collzoneCallRegex.IsMatch(item))
@@ -993,7 +995,9 @@ namespace RobotFilesEditor.Model.Operations
                             string descr = (item.ToLower().Replace(" ", "").Contains(ConfigurationManager.AppSettings["Collreq" + GlobalData.ControllerType.Replace(" ", "_")])) ? collisionsWithDescription[number][0].ToString() : collisionsWithDescription[number][1].ToString();
                             if (number > 0)
                             {
-                                collWithDescription = "; " + ConfigurationManager.AppSettings["CollisionDescription" + GlobalData.ControllerType.Replace(" ", "_") + language] + " " + number.ToString() + " - " + descr + "\r\n" + item;
+                                commentDescription = "; " + ConfigurationManager.AppSettings["CollisionDescription" + GlobalData.ControllerType.Replace(" ", "_") + language] + " " + number.ToString() + " - " + descr + "\r\n";
+                                //collWithDescription = "; " + ConfigurationManager.AppSettings["CollisionDescription" + GlobalData.ControllerType.Replace(" ", "_") + language] + " " + number.ToString() + " - " + descr + "\r\n" + item;
+                                collWithDescription = item;
                                 if (GlobalData.ControllerType == "KRC4")
                                 {
                                     if (fillDescrs)
@@ -1022,7 +1026,10 @@ namespace RobotFilesEditor.Model.Operations
                     if (addItem && !correctedCollision)
                         commands.Add(item);
                     if (addItem && correctedCollision)
+                    {
+                        commands.Add(commentDescription);
                         commands.Add(collWithDescription);
+                    }
                 }
                 result.Add(file.Key, commands);
             }

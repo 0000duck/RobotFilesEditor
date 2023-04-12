@@ -20,6 +20,7 @@ namespace ProgramTextFormat.ViewModel
         #region fields    
         int currentlyEditedRow;
         ProgramFormatRule lastRule;
+        bool addRuleActive;
         #endregion fields
 
 
@@ -51,13 +52,17 @@ namespace ProgramTextFormat.ViewModel
         [RelayCommand]
         private void DeleteRule()
         {
-            if (SelectedRule > 0 && SelectedRule <= RulesCollection?.Count)
+            if (SelectedRule >= 0 && SelectedRule <= RulesCollection?.Count - 1)
+            {
+                WeakReferenceMessenger.Default.Send<RemoveRuleMessage>(new RemoveRuleMessage(RulesCollection[SelectedRule]));
                 RulesCollection?.Remove(RulesCollection[SelectedRule]);
+            }
         }
 
         [RelayCommand]
         private void AddRule()
         {
+            addRuleActive = true;
             int number = Statics.GetHighest(RulesCollection) + 1;
             var rule = new ProgramFormatRule(number.ToString(), "UnknownInstruction", Actions.FirstOrDefault().ToString(), false);
             RulesCollection.Add(rule);
@@ -86,6 +91,9 @@ namespace ProgramTextFormat.ViewModel
             EditVisibility = false;
             ButtonsEnabled = true;
             RulesCollection[currentlyEditedRow].SetEditability(false);
+            if (addRuleActive)
+                WeakReferenceMessenger.Default.Send<AddRuleMessage>(new AddRuleMessage(RulesCollection[currentlyEditedRow]));
+            addRuleActive = false;
         }
 
         [RelayCommand]
@@ -96,6 +104,7 @@ namespace ProgramTextFormat.ViewModel
             ButtonsEnabled = true;
             RulesCollection[currentlyEditedRow] = lastRule;
             RulesCollection[currentlyEditedRow].SetEditability(false);
+            addRuleActive= false;
         }
         #endregion commands
 
@@ -109,6 +118,7 @@ namespace ProgramTextFormat.ViewModel
             SelectedRule = -1;
             ButtonsEnabled = true;
             EditVisibility = false;
+            addRuleActive = false;
         }
         #endregion constuctor
 
@@ -125,7 +135,7 @@ namespace ProgramTextFormat.ViewModel
         {
             if (RulesCollection is null)
                 return false;
-            if (SelectedRule >= 0)
+            if (SelectedRule >= 0 && SelectedRule < RulesCollection.Count)
             {
                 var rule = RulesCollection[SelectedRule];
                 if (rule != null)

@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -19,6 +20,7 @@ namespace ProgramTextFormat.ViewModel
         #region fields    
         int currentlyEditedRow;
         RobotInstructionBase lastInstruction;
+        bool addInstructionActive;
         #endregion fields
 
         #region properties
@@ -48,6 +50,7 @@ namespace ProgramTextFormat.ViewModel
             InstructionsCollection?.Add(instruction);
             SelectedInstruction = InstructionsCollection.Count - 1;
             EditInstruction();
+            addInstructionActive = true;
         }
 
         [RelayCommand]
@@ -68,7 +71,11 @@ namespace ProgramTextFormat.ViewModel
         [RelayCommand]
         private void RemoveInstruction()
         {
-            InstructionsCollection.RemoveAt(SelectedInstruction);
+            if (SelectedInstruction >= 0 && SelectedInstruction < InstructionsCollection.Count - 1)
+            {
+                WeakReferenceMessenger.Default.Send<RemoveInstructionMessage>(new RemoveInstructionMessage(InstructionsCollection[SelectedInstruction]));
+                InstructionsCollection.RemoveAt(SelectedInstruction);
+            } 
         }
 
         [RelayCommand]
@@ -78,8 +85,11 @@ namespace ProgramTextFormat.ViewModel
             EditVisibility = false;
             ButtonsEnabled = true;
             InstructionsCollection[currentlyEditedRow].SetEditability(false);
-            if (!InstructionsCollection[currentlyEditedRow].Name.Equals(lastInstruction.Name))
+            if (!addInstructionActive && !InstructionsCollection[currentlyEditedRow].Name.Equals(lastInstruction.Name))
                 WeakReferenceMessenger.Default.Send<UpdateInstructionMessage>(new UpdateInstructionMessage(new KeyValuePair<string, string>(lastInstruction.Name, InstructionsCollection[currentlyEditedRow].Name)));
+            if (addInstructionActive)
+                WeakReferenceMessenger.Default.Send<AddInstructionMessage>(new AddInstructionMessage(InstructionsCollection[currentlyEditedRow]));
+            addInstructionActive = false;
         }
 
         [RelayCommand]
@@ -90,6 +100,7 @@ namespace ProgramTextFormat.ViewModel
             ButtonsEnabled = true;
             InstructionsCollection[currentlyEditedRow] = lastInstruction;
             InstructionsCollection[currentlyEditedRow].SetEditability(false);
+            addInstructionActive = false;
         }
         #endregion commands
 
@@ -103,6 +114,7 @@ namespace ProgramTextFormat.ViewModel
             SelectedInstruction = -1;
             ButtonsEnabled = true;
             EditVisibility = false;
+            addInstructionActive = false;
         }
         #region methods
         public void Receive(InstructionsMessage message)
