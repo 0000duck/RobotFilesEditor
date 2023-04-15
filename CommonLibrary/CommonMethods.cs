@@ -359,23 +359,23 @@ namespace CommonLibrary
             File.Copy(Path.Combine(path, pathElements[0], pathElements[1], pathElements[2]), Path.Combine(workingfolder, pathElements[2]));
         }
 
-        public static void CreateLogFile(string filecontent, string path)
-        {
-            string directory = Path.GetDirectoryName(CommonGlobalData.ConfigurationFileName);
-            if (filecontent != "")
-            {
-                File.Delete(directory + path);
-                using (StreamWriter sw = File.AppendText(directory + path))
-                {
-                    sw.Write(filecontent);
-                    sw.Close();
-                    MessageBox.Show("Log file has been created at " + directory + path);
-                    System.Diagnostics.Process.Start(directory + path);
+        //public static void CreateLogFile(string filecontent, string path)
+        //{
+        //    string directory = Path.GetDirectoryName(CommonGlobalData.ConfigurationFileName);
+        //    if (filecontent != "")
+        //    {
+        //        File.Delete(directory + path);
+        //        using (StreamWriter sw = File.AppendText(directory + path))
+        //        {
+        //            sw.Write(filecontent);
+        //            sw.Close();
+        //            MessageBox.Show("Log file has been created at " + directory + path);
+        //            System.Diagnostics.Process.Start(directory + path);
 
-                }
+        //        }
 
-            }
-        }
+        //    }
+        //}
 
         public static string ToExcelCoordinates(string coordinates)
         {

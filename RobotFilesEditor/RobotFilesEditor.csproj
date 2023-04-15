@@ -509,6 +509,9 @@
     <Compile Include="Model\Operations\BackupSyntaxValidation\KUKASynataxValidator.cs" />
     <Compile Include="Model\Operations\BackupSyntaxValidation\SyntaxValidationData.cs" />
     <Compile Include="Model\Operations\CheckBasesMethods.cs" />
+    <Compile Include="Model\Operations\CheckGrpperXML\CheckGripperXML.cs" />
+    <Compile Include="Model\Operations\CheckGrpperXML\GripperXMLSerializer.cs" />
+    <Compile Include="Model\Operations\CheckGrpperXML\InitInHomeContent.cs" />
     <Compile Include="Model\Operations\CollisionsForPSMethods.cs" />
     <Compile Include="Model\Operations\CompareBoschMethods.cs" />
     <Compile Include="Model\Operations\CompareSpotsExecute.cs" />

@@ -23,6 +23,9 @@ using RobotFilesEditor.Dialogs.MPLListParams;
 using System.Configuration;
 using System.Globalization;
 using System.Threading;
+using CommonLibrary.DataClasses;
+using GalaSoft.MvvmLight.Messaging;
+using System.Xml.Linq;
 
 namespace RobotFilesEditor.Model.Operations
 {
@@ -236,6 +239,7 @@ namespace RobotFilesEditor.Model.Operations
                                 result.Add(pointName, currentPoint);
                             else
                             {
+                                Messenger.Default.Send<LogResult>(new LogResult("Multiple declaration of point :" + pointName, LogResultTypes.Warning), "AddLog");
                                 message += pointName + ", ";
                                 while (result.Keys.Contains(pointName))
                                 {
@@ -248,8 +252,6 @@ namespace RobotFilesEditor.Model.Operations
                 }
                 reader.Close();
             }
-            if (!string.IsNullOrEmpty(message))
-                CommonMethods.CreateLogFile("Multiple declaration of points: \r\n" + message, "\\logReadSpots.txt");
             isVWBool = isVW.Value;
             if (isVWBool)
             {
@@ -908,9 +910,10 @@ namespace RobotFilesEditor.Model.Operations
             if (dobuleSpots.Count > 0)
             {
                 string mess = string.Empty;
-                dobuleSpots.Keys.ToList().ForEach(x => mess += x + ",\r\n");
-                MessageBox.Show("Double points declarations for points:\r\n" + mess, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
-                CommonLibrary.CommonMethods.CreateLogFile("Double points declarations for points:\r\n" + mess, "\\logMultiDeclaration.txt");
+                //dobuleSpots.Keys.ToList().ForEach(x => mess += x + ",\r\n");
+                dobuleSpots.Keys.ToList().ForEach(x => Messenger.Default.Send<LogResult>(new LogResult("Double points declarations for point: " + x, LogResultTypes.Warning), "AddLog"));
+                //MessageBox.Show("Double points declarations for points:\r\n" + mess, "Warning", MessageBoxButton.OK, MessageBoxImage.Warning);
+                //CommonLibrary.CommonMethods.CreateLogFile("Double points declarations for points:\r\n" + mess, "\\logMultiDeclaration.txt");
 
             }
             return result;

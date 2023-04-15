@@ -1,4 +1,6 @@
-﻿using RobotFilesEditor.Model.Operations;
+﻿using CommonLibrary.DataClasses;
+using GalaSoft.MvvmLight.Messaging;
+using RobotFilesEditor.Model.Operations;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -304,11 +306,9 @@ namespace RobotFilesEditor
                 string message = "";
                 foreach (var error in errorList)
                 {
-                    message += error.LineContent + "\r\n";
+                    message += error.LineContent;
+                    Messenger.Default.Send<LogResult>(new LogResult(message, LogResultTypes.Error), "AddLog");
                 }
-                SrcValidator.logFileContent += ("Errors found in files for InputData. Please verify records:\r\n" + message + "\r\n");
-                MessageBox.Show("Errors found in files for InputData. Please verify records:\r\n" + message, "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                //FileLineProperties selectedItem = new FileLineProperties();
                 List<FileLineProperties> selectedItems = GetRecordToRemain(errorList);
                 //selectedItem = errorList[0];
                 foreach (var error in errorList)

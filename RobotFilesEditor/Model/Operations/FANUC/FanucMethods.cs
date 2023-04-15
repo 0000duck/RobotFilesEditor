@@ -18,6 +18,9 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 using static RobotFilesEditor.Model.Operations.FANUC.FanucRobotPath;
 using RobotFilesEditor.Dialogs.SOVBackupsPreparations;
+using CommonLibrary.DataClasses;
+using GalaSoft.MvvmLight.Messaging;
+using MigraDoc.Rendering;
 
 namespace RobotFilesEditor.Model.Operations.FANUC
 {
@@ -38,13 +41,12 @@ namespace RobotFilesEditor.Model.Operations.FANUC
         Regex isCommentRegex = new Regex(@"(?<=^\s*\d+\s*:\s*!).*", RegexOptions.IgnoreCase);
         Regex isSeparatorLine = new Regex(@"^\s*\d+\s*:\s*!\s*\*+\s*;", RegexOptions.IgnoreCase);
         Regex isCollComment = new Regex(@"^\s*\d+\s*:\s*!\s*Coll\s+\d+", RegexOptions.IgnoreCase);
-        string logContent;
+        //string logContent;
         #endregion
 
         #region ctor
         public FanucFilesValidator(List<string> filesList, out string logContentOut)
         {
-            logContent = string.Empty;
             FilesList = filesList;
             GetRobotName();
             FilesAndContent = ReadFiles();
@@ -57,12 +59,11 @@ namespace RobotFilesEditor.Model.Operations.FANUC
             DivideToLines();
             FilesAndContent = AddSpaces();
             FilesAndContent = RenumberLines();
-            logContentOut = logContent;
+            logContentOut = string.Empty;
         }
 
         public FanucFilesValidator(List<string> filesList)
         {
-            logContent = string.Empty;
             FilesList = filesList;
             FilesAndContent = ReadFiles();
             FilesAndContent = CheckJobsAndCollisions(true);
@@ -454,7 +455,6 @@ namespace RobotFilesEditor.Model.Operations.FANUC
 
         private void CheckOpenAndCloseCommands()
         {
-            string log = string.Empty;
             Regex collZoneRegex = new Regex(@"(?<=^\s*\d+\s*\:.*PR_CALL.*CollZone.*ZoneNo\s*.\s*\=\s*)\d+", RegexOptions.IgnoreCase);
             Regex areaRegex = new Regex(@"(?<=^\s*\d+\s*\:.*PR_CALL.*Area.*AreaNo\s*.\s*\=\s*)\d+", RegexOptions.IgnoreCase);
             Regex jobRegex = new Regex(@"(?<=^\s*\d+\s*\:.*PR_CALL.*Job.*JobNo\s*.\s*\=\s*)\d+", RegexOptions.IgnoreCase);
@@ -497,23 +497,22 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                     }
                 }
                 foreach (var coll in collCounter.Where(x => x.Value > 0))
-                    log += "Collision " + coll.Key + " in file " + Path.GetFileNameWithoutExtension(file.Key) + " is requested but not released.\r\n";
+                    Messenger.Default.Send<LogResult>(new LogResult("Collision " + coll.Key + " in file " + Path.GetFileNameWithoutExtension(file.Key) + " is requested but not released.", LogResultTypes.Warning), "AddLog");
                 foreach (var coll in collCounter.Where(x => x.Value < 0))
-                    log += "Collision " + coll.Key + " in file " + Path.GetFileNameWithoutExtension(file.Key) + " is released but not requested.\r\n";
+                    Messenger.Default.Send<LogResult>(new LogResult("Collision " + coll.Key + " in file " + Path.GetFileNameWithoutExtension(file.Key) + " is released but not requested.", LogResultTypes.Warning), "AddLog");
                 foreach (var area in areaCounter.Where(x => x.Value > 0))
-                    log += "Area " + area.Key + " in file " + Path.GetFileNameWithoutExtension(file.Key) + " is requested but not released.\r\n";
+                    Messenger.Default.Send<LogResult>(new LogResult("Area " + area.Key + " in file " + Path.GetFileNameWithoutExtension(file.Key) + " is requested but not released.", LogResultTypes.Warning), "AddLog");
                 foreach (var area in areaCounter.Where(x => x.Value < 0))
-                    log += "Area " + area.Key + " in file " + Path.GetFileNameWithoutExtension(file.Key) + " is released but not requested.\r\n";
+                    Messenger.Default.Send<LogResult>(new LogResult("Area " + area.Key + " in file " + Path.GetFileNameWithoutExtension(file.Key) + " is released but not requested.", LogResultTypes.Warning), "AddLog");
                 foreach (var job in jobCounter.Where(x => x.Value > 0))
-                    log += "Job " + job.Key + " in file " + Path.GetFileNameWithoutExtension(file.Key) + " is started but not done.\r\n";
+                    Messenger.Default.Send<LogResult>(new LogResult("Job " + job.Key + " in file " + Path.GetFileNameWithoutExtension(file.Key) + " is started but not done.", LogResultTypes.Warning), "AddLog");
                 foreach (var job in jobCounter.Where(x => x.Value < 0))
-                    log += "Job " + job.Key + " in file " + Path.GetFileNameWithoutExtension(file.Key) + " is done but not started.\r\n";
+                    Messenger.Default.Send<LogResult>(new LogResult("Job " + job.Key + " in file " + Path.GetFileNameWithoutExtension(file.Key) + " is done but not started", LogResultTypes.Warning), "AddLog");
             }
-            if (!string.IsNullOrEmpty(log))
-            {
-                MessageBox.Show("Area and collision count for some files are not equal. See log for details.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                logContent += log;
-            }
+            //if (!string.IsNullOrEmpty(log))
+            // {
+            //    MessageBox.Show("Area and collision count for some files are not equal. See log for details.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //}
         }
 
         private void FillGlobalData()
@@ -566,7 +565,6 @@ namespace RobotFilesEditor.Model.Operations.FANUC
         private void CheckSemicolons()
         {
             bool areFilesOK = true;
-            string logContentLocal = string.Empty;
             Regex isSemicolonOk = new Regex(@"^.*;\s*$");
             foreach (var file in FilesAndContent)
             {
@@ -574,14 +572,13 @@ namespace RobotFilesEditor.Model.Operations.FANUC
                 {
                     areFilesOK = false;
                     var faulLines = file.Value.ProgramSection.Where(x => !isSemicolonOk.IsMatch(x) && !string.IsNullOrEmpty(x));
-                    faulLines.ToList().ForEach(x => logContentLocal += "Missing semicolon! Path: " + Path.GetFileNameWithoutExtension(file.Key) + ", Line: " + x + "\r\n");
+                    faulLines.ToList().ForEach(x => Messenger.Default.Send<LogResult>(new LogResult("Missing semicolon! Path: " + Path.GetFileNameWithoutExtension(file.Key) + ", Line: " + x, LogResultTypes.Information), "AddLog"));
                 }
             }
-            if (!areFilesOK)
-            {
-                MessageBox.Show("Missing semicolons found. See log for details.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                logContent += logContentLocal;
-            }
+            //if (!areFilesOK)
+            //{
+            //    MessageBox.Show("Missing semicolons found. See log for details.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //}
         }
         #endregion
     }

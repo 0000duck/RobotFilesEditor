@@ -16,6 +16,8 @@ using RobotFilesEditor.Dialogs.SOVBackupsPreparations;
 using RobotFilesEditor.ViewModel.Helper;
 using KukaLoadGenerator = Load_Generator;
 using RobotFilesEditor.Model.DataOrganization;
+using CommonLibrary.DataClasses;
+using GalaSoft.MvvmLight.Messaging;
 
 namespace RobotFilesEditor.ViewModel
 {
@@ -364,7 +366,14 @@ namespace RobotFilesEditor.ViewModel
                 RaisePropertyChanged(() => DebugVisibility);
             }
         }
+
+
         #endregion
+
+        #region logbook properties
+        public LogCollection LogCollection { get { return m_LogCollection; } set { Set(ref m_LogCollection, value); } }
+        private LogCollection m_LogCollection;
+        #endregion logbook properties
 
         #region ctor
         public MainViewModel(List<Controler> controlers)
@@ -374,6 +383,11 @@ namespace RobotFilesEditor.ViewModel
                 MyCommand = new RoutedCommand();
                 MyCommand.InputGestures.Add(new KeyGesture(Key.S, ModifierKeys.Control));
                 Tooltips = new MainWindowTooltips();
+                LogCollection = new LogCollection();
+                LogCollection.AddEntry(new LogResult("Application started", LogResultTypes.Information));
+
+                Messenger.Default.Register<LogResult>(this, "AddLog", message => LogCollection.AddEntry(message));
+
                 DebugVisibility = Visibility.Visible;
                 CheckOrder = false;
                 ControlerChooser = new ObservableCollection<ControlItem>();
@@ -562,8 +576,9 @@ namespace RobotFilesEditor.ViewModel
         public ICommand KukaLoadGenerator { get; set; }
         public ICommand ClearLocalExtFiles { get; set; }
         public ICommand ChecksumsFanuc { get; set; }
-
         public ICommand ProgramFormatter { get; set; }
+        public ICommand CheckGripperXML { get; set; }
+
         private void SetCommands()
         {
             ChangeName = new RelayCommand(ChangeNameExecute);
@@ -631,6 +646,13 @@ namespace RobotFilesEditor.ViewModel
             ClearLocalExtFiles = new RelayCommand(ClearLocalExtFilesExecute);
             ChecksumsFanuc = new RelayCommand(ChecksumsFanucExecute);
             ProgramFormatter = new RelayCommand(ProgramFormatterExecute);
+            CheckGripperXML = new RelayCommand(CheckGripperXMLExecute);
+        }
+
+        private void CheckGripperXMLExecute()
+        {
+            var checker = new Model.Operations.CheckGripperXML();
+            checker.Execute();
         }
 
         private void ProgramFormatterExecute()
@@ -1132,7 +1154,7 @@ namespace RobotFilesEditor.ViewModel
             {
                 operation.PreviewOperationCommandExecute();
             }
-            CommonLibrary.CommonMethods.CreateLogFile(SrcValidator.logFileContent, "\\log.txt");
+            //CommonLibrary.CommonMethods.CreateLogFile(SrcValidator.logFileContent, "\\log.txt");
         }
 
         private void OnOpenInNotepadCommandExecute()

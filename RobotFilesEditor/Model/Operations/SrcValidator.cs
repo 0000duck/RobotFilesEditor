@@ -27,6 +27,8 @@ using RobotFilesEditor.Model.DataOrganization;
 using System.Diagnostics;
 using CommonLibrary;
 using System.Collections.ObjectModel;
+using GalaSoft.MvvmLight.Messaging;
+using CommonLibrary.DataClasses;
 //using RobotFilesEditor.Model.Operations.DataClass;
 
 namespace RobotFilesEditor.Model.Operations
@@ -39,7 +41,7 @@ namespace RobotFilesEditor.Model.Operations
         public static List<string> AlreadyContain { get; set; }
         public static List<ResultInfo> GlobalFiles { get; set; }
         public static bool CopiedFiles { get; set; }
-        public static string logFileContent;
+        //public static string logFileContent;
         static IDictionary<int, List<string>> collisionsWithDescription;
         static IDictionary<int, string> jobsWithDescription;
         static List<CollisionWithoutDescr> collisions;
@@ -53,6 +55,7 @@ namespace RobotFilesEditor.Model.Operations
 
         internal static bool ValidateFile(IDictionary<string, string> files)
         {
+            Messenger.Default.Send<LogResult>(new LogResult("Validation started", LogResultTypes.Information), "AddLog");
             if (GlobalData.ControllerType != "FANUC")
             {
                 GlobalData.loadVars = new Dictionary<int, string>();
@@ -70,7 +73,6 @@ namespace RobotFilesEditor.Model.Operations
                 string opereationName = DataToProcess.OpereationName;
                 List<string> datFiles = DataToProcess.DatFiles;
                 GlobalData.Roboter = roboter;
-                logFileContent = "";
                 if (srcFiles == null | datFiles == null | !DetectDuplicates(srcFiles))
                     return false;
                 GlobalData.ToolchangerType = DetectApp(srcFiles.Keys, "a02", "b02", new string[3] { "dock", "dockdresser", "_tch_" }, "toolchanger");
@@ -137,7 +139,7 @@ namespace RobotFilesEditor.Model.Operations
                 foreach (var file in fanucFiles.FilesAndContent)
                 {
                     Result.Add(file.Key, FANUC.FanucFilesValidator.GetFileContenetFANUC(file.Value));
-                    logFileContent = log;
+                    //logFileContent = log;
                 }
             }
 
@@ -147,9 +149,9 @@ namespace RobotFilesEditor.Model.Operations
 
         private static void CheckChkAxisPos(IDictionary<string, List<string>> resultSrcFiles)
         {
+            bool warningsFound = false;
             Regex findCentralPosRegex = new Regex(@"(?<=^\s*((WAIT\s+FOR)|(IF))\s+CHK_AXIS_POS\s*\(\s*).*(?=\))", RegexOptions.IgnoreCase | RegexOptions.Multiline);
             Regex findMovePointRegex = new Regex(@"(?<=^\s*(PTP|LIN)\s+)[\w_-]+", RegexOptions.IgnoreCase | RegexOptions.Multiline);
-            string currentLogFileContent = string.Empty;
             foreach (var file in resultSrcFiles)
             {
                 bool firstPointFound = false, chkAxisPosFound = false;
@@ -170,22 +172,23 @@ namespace RobotFilesEditor.Model.Operations
                     }
                     if (firstPointFound && !chkAxisPosFound)
                     {
-                        currentLogFileContent += "Motion to central pos without CHK_AXIS_POS in path: " + Path.GetFileNameWithoutExtension(file.Key) + "\r\n";
+                        warningsFound = true;
+                        Messenger.Default.Send<LogResult>(new LogResult("Motion to central pos without CHK_AXIS_POS in path: " + Path.GetFileNameWithoutExtension(file.Key), LogResultTypes.Warning), "AddLog");
                         break;
                     }
                     if (firstPointFound && chkAxisPosFound)
                     {
                         if (chkAxisPointName.ToLower().Trim() != firstPointName.ToLower().Trim())
-                            currentLogFileContent += "Central pos name is different than CHK_AXIS_POS argument in path: " + Path.GetFileNameWithoutExtension(file.Key) + "\r\n";
+                        {
+                            warningsFound = true;
+                            Messenger.Default.Send<LogResult>(new LogResult("Central pos name is different than CHK_AXIS_POS argument in path: " + Path.GetFileNameWithoutExtension(file.Key), LogResultTypes.Warning), "AddLog");
+                        }
                         break;
                     }
                 }
             }
-            if (!string.IsNullOrEmpty(currentLogFileContent))
-            {
+            if (warningsFound)
                 MessageBox.Show("Inconsistency in CHK_AXIS_POS for central positions found.\r\nSee log file for details", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                logFileContent += currentLogFileContent;
-            }
         }
 
         private static IDictionary<int, string> FindLoadVars(IDictionary<string, List<string>> inputFiles)
@@ -332,7 +335,7 @@ namespace RobotFilesEditor.Model.Operations
                 }
                 string ender = "Download paths again with correct template!";
                 MessageBox.Show(starter + proc + ender, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                logFileContent += starter + proc + ender + "\r\n\r\n";
+                Messenger.Default.Send<LogResult>(new LogResult(starter + proc + ender, LogResultTypes.Error), "AddLog");
             }
         }
 
@@ -466,8 +469,7 @@ namespace RobotFilesEditor.Model.Operations
             if (foundErrors != "")
             {
                 string message = "RETR CLO commands found in files:\r\n" + foundErrors + "Make sure gun position in PS is not set in via and home positions!";
-                MessageBox.Show(message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                logFileContent += message + "\r\n\r\n";
+                Messenger.Default.Send<LogResult>(new LogResult(message, LogResultTypes.Error), "AddLog");
             }
         }
 
@@ -1592,9 +1594,7 @@ namespace RobotFilesEditor.Model.Operations
                     }
                     if (!flag)
                     {
-                        string message = "Operation " + Path.GetFileName(file.Key) + " is of unknown type. Check if operation name is correct";
-                        logFileContent = logFileContent + message + "\r\n";
-                        //MessageBox.Show(message, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        Messenger.Default.Send<LogResult>(new LogResult("Operation " + Path.GetFileName(file.Key) + " is of unknown type. Check if operation name is correct", LogResultTypes.Warning), "AddLog");
                     }
                 }
                 header = "";
@@ -1773,8 +1773,6 @@ namespace RobotFilesEditor.Model.Operations
                     {
                         bool isStart = false;
                         string name = "";
-                        //if (command.Contains((ConfigurationManager.AppSettings[filterPair[0] + GlobalData.ControllerType.Replace(" ", "_")]).Replace("USERBITNR",(33-1).ToString())) | command.Contains((ConfigurationManager.AppSettings[filterPair[1] + GlobalData.ControllerType.Replace(" ", "_")]).Replace("USERBITNR", (33 - 1).ToString())))
-                        //POPRAWIC JAK NAJSZYBCIEJ!!!!!
                         if (command.ToLower().Replace(" ", "").Contains((ConfigurationManager.AppSettings[filterPair[0] + GlobalData.ControllerType.Replace(" ", "_")]).Replace("USERBITNR", (33 - 1).ToString())) | command.ToLower().Replace(" ", "").Contains((ConfigurationManager.AppSettings[filterPair[1] + GlobalData.ControllerType.Replace(" ", "_")]).Replace("USERBITNR", (33 - 1).ToString())))
                         {
                             if (command.ToLower().Replace(" ", "").Contains((ConfigurationManager.AppSettings[filterPair[0] + GlobalData.ControllerType.Replace(" ", "_")]).Replace("USERBITNR", (33 - 1).ToString())))
@@ -1851,15 +1849,13 @@ namespace RobotFilesEditor.Model.Operations
                         if (item.Value.StartLines.Count > item.Value.EndLines.Count)
                         {
                             message = "Path: " + file.Key.ToString() + ": " + item.Value.Type + " number: " + item.Value.Number.ToString() + " is requested but not relesed";
-                            //MessageBox.Show(message, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            logFileContent = logFileContent + message + "\r\n";
+                            Messenger.Default.Send<LogResult>(new LogResult(message, LogResultTypes.Warning), "AddLog");
                         }
 
                         if (item.Value.StartLines.Count < item.Value.EndLines.Count)
                         {
                             message = "Path: " + file.Key.ToString() + ": " + item.Value.Type + " number: " + item.Value.Number.ToString() + " is released but not requested";
-                            //MessageBox.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            logFileContent = logFileContent + message + "\r\n";
+                            Messenger.Default.Send<LogResult>(new LogResult(message, LogResultTypes.Warning), "AddLog");
                         }
                         if (item.Value.StartLines.Count == item.Value.EndLines.Count)
                         {
@@ -1869,8 +1865,7 @@ namespace RobotFilesEditor.Model.Operations
                                 if (item.Value.StartLines[counter] > item.Value.EndLines[counter])
                                 {
                                     message = "Path: " + file.Key.ToString() + ": \r\n" + item.Value.Type + " number: " + item.Value.Number.ToString() + " is released before it is requested!";
-                                    //MessageBox.Show(message, "", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    logFileContent = logFileContent + " " + message + "\r\n";
+                                    Messenger.Default.Send<LogResult>(new LogResult(message, LogResultTypes.Warning), "AddLog");
                                 }
                                 counter++;
                             }
@@ -2010,8 +2005,7 @@ namespace RobotFilesEditor.Model.Operations
                 if (!datFiles.Contains(srcFile.Replace(".src", ".dat")))
                 {
                     message = "Path: " + Path.GetFileName(srcFile) + ": \nNo Dat file found!";
-                    logFileContent = logFileContent + " " + message + "\r\n";
-                    MessageBox.Show("Path: " + Path.GetFileName(srcFile) + " \nNo .dat file found!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    Messenger.Default.Send<LogResult>(new LogResult(message, LogResultTypes.Warning), "AddLog");
                 }
             }
         }
@@ -2071,7 +2065,7 @@ namespace RobotFilesEditor.Model.Operations
                 toolOrBase = new string[] { "tools", "tool" };
             else
                 toolOrBase = new string[] { "bases", "base" };
-            string currentString = "Mutiple " + toolOrBase[0] + " found in file " + (Path.GetFileName(file)).Replace(".dat", "") + ". Points with " + toolOrBase[1] + " number:\r\n";
+            string currentString = "Mutiple " + toolOrBase[0] + " found in file " + (Path.GetFileName(file)).Replace(".dat", "") + ". Points with " + toolOrBase[1] + " number: ";
             foreach (var toolorbase in toolOrBaseAndPoint)
             {
 
@@ -2083,9 +2077,9 @@ namespace RobotFilesEditor.Model.Operations
                     }
                 }
                 currentToolOrBase = currentToolOrBase.Substring(0, currentToolOrBase.Length - 2);
-                currentString += currentToolOrBase + "\r\n";
+                currentString += currentToolOrBase;
             }
-            logFileContent = logFileContent + currentString + "\r\n";
+            Messenger.Default.Send<LogResult>(new LogResult(currentString, LogResultTypes.Warning), "AddLog");
         }
 
         public static void FindUnusedDataInDatFiles(IDictionary<string, List<string>> srcFiles, List<string> datFiles)
@@ -2344,49 +2338,53 @@ namespace RobotFilesEditor.Model.Operations
         {
             string unusedDatsString = "";
             UnusedDataPresent = false;
-
+            
             foreach (var unusedElement in unusedDats.Where(x => ((x.Value.E6AXIS.Count + x.Value.E6POS.Count + x.Value.FDAT.Count + x.Value.LDAT.Count + x.Value.PDAT.Count) > 0)))
             {
-                unusedDatsString += "File: " + Path.GetFileName(unusedElement.Key) + "\r\n";
                 foreach (string element in unusedElement.Value.E6AXIS)
                 {
-                    unusedDatsString += "Not used E6AXIS: " + element + "\r\n";
-                    UnusedDataPresent = true;
+                    unusedDatsString = "File: " + Path.GetFileName(unusedElement.Key) + ": ";
+                    unusedDatsString += "Not used E6AXIS: " + element;
+                    Messenger.Default.Send<LogResult>(new LogResult(unusedDatsString, LogResultTypes.Information), "AddLog");
                 }
                 foreach (string element in unusedElement.Value.E6POS)
                 {
-                    unusedDatsString += "Not used E6POS: " + element + "\r\n";
-                    UnusedDataPresent = true;
+                    unusedDatsString = "File: " + Path.GetFileName(unusedElement.Key) + ": ";
+                    unusedDatsString += "Not used E6POS: " + element;
+                    Messenger.Default.Send<LogResult>(new LogResult(unusedDatsString, LogResultTypes.Information), "AddLog");
                 }
                 foreach (string element in unusedElement.Value.FDAT)
                 {
-                    unusedDatsString += "Not used FDAT: " + element + "\r\n";
-                    UnusedDataPresent = true;
+                    unusedDatsString = "File: " + Path.GetFileName(unusedElement.Key) + ": ";
+                    unusedDatsString += "Not used FDAT: " + element;
+                    Messenger.Default.Send<LogResult>(new LogResult(unusedDatsString, LogResultTypes.Information), "AddLog");
                 }
                 foreach (string element in unusedElement.Value.PDAT)
                 {
-                    unusedDatsString += "Not used PDAT: " + element + "\r\n";
-                    UnusedDataPresent = true;
+                    unusedDatsString = "File: " + Path.GetFileName(unusedElement.Key) + ": ";
+                    unusedDatsString += "Not used PDAT: " + element;
+                    Messenger.Default.Send<LogResult>(new LogResult(unusedDatsString, LogResultTypes.Information), "AddLog");
                 }
                 foreach (string element in unusedElement.Value.LDAT)
                 {
-                    unusedDatsString += "Not used LDAT: " + element + "\r\n";
-                    UnusedDataPresent = true;
+                    unusedDatsString = "File: " + Path.GetFileName(unusedElement.Key) + ": ";
+                    unusedDatsString += "Not used LDAT: " + element;
+                    Messenger.Default.Send<LogResult>(new LogResult(unusedDatsString, LogResultTypes.Information), "AddLog");
                 }
             }
 
-            if (!string.IsNullOrEmpty(unusedDatsString))
-            {
-                string directory = Path.GetDirectoryName(CommonLibrary.CommonGlobalData.ConfigurationFileName);
-                File.Delete(directory + "\\unusedDats.txt");
-                using (StreamWriter sw = File.AppendText(directory + "\\unusedDats.txt"))
-                {
-                    sw.Write(unusedDatsString);
-                    sw.Close();
-                    MessageBox.Show("Log with not used data has been created at " + directory + "\\unusedDats.txt");
-                    System.Diagnostics.Process.Start(directory + "\\unusedDats.txt");
-                }
-            }
+            //if (!string.IsNullOrEmpty(unusedDatsString))
+            //{
+            //    string directory = Path.GetDirectoryName(CommonLibrary.CommonGlobalData.ConfigurationFileName);
+            //    File.Delete(directory + "\\unusedDats.txt");
+            //    using (StreamWriter sw = File.AppendText(directory + "\\unusedDats.txt"))
+            //    {
+            //        sw.Write(unusedDatsString);
+            //        sw.Close();
+            //        MessageBox.Show("Log with not used data has been created at " + directory + "\\unusedDats.txt");
+            //        System.Diagnostics.Process.Start(directory + "\\unusedDats.txt");
+            //    }
+            //}
         }
 
         private static void WriteUnusedDataToLogFile(KeyValuePair<string, Dats> dat, string v)
@@ -2399,7 +2397,7 @@ namespace RobotFilesEditor.Model.Operations
             foreach (string item in dat.Value.E6AXIS)
                 foundFiles += item + " ";
             string message = "Not used E6AXIS definitions found in file " + Path.GetFileName(dat.Key) + ". Points found: " + foundFiles;
-            logFileContent = logFileContent + DateTime.Now.ToString() + " " + message + "\r\n";
+            Messenger.Default.Send<LogResult>(new LogResult(message, LogResultTypes.Warning), "AddLog");
         }
 
         public static List<CollisionWithoutDescr> GetCollisions(IDictionary<string, string> srcFiles)
@@ -2967,9 +2965,8 @@ namespace RobotFilesEditor.Model.Operations
                                 {
                                     if (!command.ContainsAny(excludedStrings))
                                     {
-                                        string message = "Continous movement before command that requires stop detected.\r\nPlease correct the path!\r\nPath: " + Path.GetFileName(file.Key) + "\r\nCommands:\r\n\r\n" + previousCommand + "\r\n" + command;
-                                        logFileContent = logFileContent + message + "\r\n";
-                                        MessageBox.Show("\r\n" + message, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                        string message = "Continous movement before command that requires stop detected. Path: " + Path.GetFileName(file.Key) + "Commands:" + previousCommand + "\r\n" + command;
+                                        Messenger.Default.Send<LogResult>(new LogResult(message, LogResultTypes.Warning), "AddLog");
                                     }
                                 }
                             }
@@ -3058,7 +3055,7 @@ namespace RobotFilesEditor.Model.Operations
                             }
                             if (!maintenanceContain)
                             {
-                                message += "Missing maintenance operation: " + maintenanceOp + "\r\n";
+                                Messenger.Default.Send<LogResult>(new LogResult("Missing maintenance operation: " + maintenanceOp, LogResultTypes.Warning), "AddLog");
                             }
                         }
                     }
@@ -3066,7 +3063,7 @@ namespace RobotFilesEditor.Model.Operations
                 else
                     MessageBox.Show("Maintenances for \"" + foundOp + "\" operation not found!", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-            logFileContent += message;
+            
             //if (!string.IsNullOrEmpty(message))
             //    MessageBox.Show("Missing maintenance operations found!\r\n\r\n" + message, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }

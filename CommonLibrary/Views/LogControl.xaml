@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="CommonLibrary.Views.LogControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:CommonLibrary.Views"
+             xmlns:Converter="clr-namespace:CommonLibrary.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <Converter:MsgToImgConverter x:Key="msgToImgConverter"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <TextBlock Text="Filters: " VerticalAlignment="Center" HorizontalAlignment="Left" Margin="5,5,5,5"/>
+                <CheckBox Content="{Binding LogCollection.OkContent}" VerticalAlignment="Center" IsChecked="{Binding LogCollection.OKsFilterChecked}" Margin="5,5,5,5"/>
+                <CheckBox Content="{Binding LogCollection.WarningContent}" VerticalAlignment="Center" IsChecked="{Binding LogCollection.WarningsFilterChecked}" Margin="5,5,5,5"/>
+                <CheckBox Content="{Binding LogCollection.ErrorContent}" VerticalAlignment="Center" IsChecked="{Binding LogCollection.ErrorsFilterChecked}" Margin="5,5,5,5"/>
+                <CheckBox Content="{Binding LogCollection.InfoContent}" VerticalAlignment="Center" IsChecked="{Binding LogCollection.InfoFilterChecked}" Margin="5,5,5,5"/>
+                <Button Content="Clear" Width="50" Margin="5" Command="{Binding LogCollection.ClearLogCommand}"/>
+                <Button Content="Export" Width="50" Margin="5" Command="{Binding LogCollection.ExportLogCommand}"/>
+            </StackPanel>
+            <DataGrid MaxHeight="200" ItemsSource="{Binding LogCollection.Entries}" AutoGenerateColumns="False">
+                <DataGrid.RowStyle>
+                    <Style TargetType="{x:Type DataGridRow}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Visible}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Visible}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn x:Name="IconHeader"  Header="Result" CanUserResize="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Image Width="15" Source="{Binding Path=InfoType,Converter={StaticResource msgToImgConverter}}"/>
+                                <!--<Image Width="15" Source="pack://application:,,,/Resources/tick.png"/>-->
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Date"
+                        MinWidth="20"
+                        Binding="{Binding Path=DateTimeString}"  
+                        IsReadOnly="True"                    
+                   />
+                    <DataGridTextColumn Header="Message"
+                        Width="*"
+                        Binding="{Binding Path=ContentToDisplay}"  
+                        IsReadOnly="True"                    
+                   />
+
+                </DataGrid.Columns>
+            </DataGrid>
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
-        xmlns:local="clr-namespace:RobotFilesEditor"           
+        xmlns:local="clr-namespace:RobotFilesEditor"        
+        xmlns:logcontrol="clr-namespace:CommonLibrary.Views;assembly=CommonLibrary"
         DataContext="{Binding MainVM, Source={StaticResource Locator}}"
         mc:Ignorable="d"
         Title="Robot File Harvester" Name="window" WindowState="Maximized"
@@ -46,7 +47,7 @@
             </Border>
         </StackPanel>
         <Grid Grid.Row="1">
-            <DockPanel ScrollViewer.HorizontalScrollBarVisibility="Auto" >
+            <DockPanel>
                 <Border BorderBrush="Black" BorderThickness="2" Margin="3" DockPanel.Dock="Left">
                     <StackPanel  Margin="2" Background="White">
                         <StackPanel Margin="5">
@@ -72,7 +73,7 @@
                                     </StackPanel>
                                 </GroupItem>
                             </Expander>
-                            
+
                             <ScrollViewer MaxHeight="600" VerticalScrollBarVisibility="Auto">
                                 <StackPanel>
                                     <Expander IsExpanded="False" Header="General" UseLayoutRounding="False">
@@ -85,7 +86,7 @@
                                                 <Button Content="Fill IBN checklist" Command="{Binding FillExcel}" Margin="3" ToolTip="{Binding Tooltips.FillExcelTooltip}"/>
                                                 <Button Content="Program formatting rules" Command="{Binding ProgramFormatter}" Margin="3" ToolTip="{Binding Tooltips.ProgramFormatterTooltip}"/>
                                                 <Button Content="Clear local ext. files" Command="{Binding ClearLocalExtFiles}" Margin="3" ToolTip="{Binding Tooltips.ClearLocalExtFilesTooltip}"/>
-                                                
+
                                                 <Button Content="Temp" Command="{Binding TempExec}" Margin="3" Visibility="{Binding DebugVisibility}"/>
                                             </StackPanel>
                                         </GroupItem>
@@ -98,6 +99,7 @@
                                                     <Button Content="Generate grippers" Command="{Binding CreateGripperCommand}" Margin="3" ToolTip="{Binding Tooltips.CreateGripperCommandTooltip}" />
                                                     <Button Content="Create Gripper.xml from a03_grp_user" Command="{Binding CreateGripperXML}" Margin="3" ToolTip="{Binding Tooltips.CreateGripperXMLTooltip}"/>
                                                     <Button Content="Create Grp SymName from config.dat" Command="{Binding ReadConfigDat}" Margin="3" ToolTip="{Binding Tooltips.ReadConfigDatTooltip}"/>
+                                                    <Button Content="Check Gripper.xml with InitInHome" Command="{Binding CheckGripperXML}" Margin="3" ToolTip="{Binding Tooltips.CheckGripperXMLTooltip}"/>
                                                     <Button Content="Mirror Path" Command="{Binding Mirror}" Margin="3" ToolTip="{Binding Tooltips.MirrorTooltip}"/>
                                                     <!--<Button Content="Stopping distances summary" Command="{Binding StoppingDistances}" Margin="3"/>-->
                                                     <Button Content="Read process points and compare with MPL" Command="{Binding ReadSpotPoints}" Margin="3" ToolTip="{Binding Tooltips.ReadSpotPointsTooltip}"/>
@@ -181,43 +183,49 @@
                         </StackPanel>
                     </StackPanel>
                 </Border>
-                <Border BorderBrush="Black" BorderThickness="2" Margin="3" DockPanel.Dock="Bottom" >  
-                    <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto">
-                        <StackPanel ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto">
-                            <Button Content="Execute all" Command="{Binding ExecuteAllOperationsCommand}" Margin="3"/>
-                            <StackPanel Margin="3" Background="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}">                               
-                                <Border BorderBrush="Black" BorderThickness="1" Visibility="{Binding MoveFilesOperationsVisibility}" Margin="5" Background="White">
-                                    <StackPanel Margin="3">
-                                        <Expander  IsExpanded="True" Header="Move files">
-                                            <GroupItem x:Name="MoveFilesOperationsGroupBox">
-                                                <ItemsControl Name="MoveFilesOperations" VerticalAlignment="Top" ItemsSource="{Binding MoveFilesOperations, NotifyOnSourceUpdated=True}">
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <local:OperationControl/>
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-                                                </ItemsControl>
-                                            </GroupItem>
-                                        </Expander>
-                                    </StackPanel>
-                                </Border>
-                                <Border BorderBrush="Black" BorderThickness="1" Visibility="{Binding CopyFilesOperationsVisibility}" Margin="5" Background="White" >
-                                    <StackPanel Margin="3">
-                                        <Expander IsExpanded="True" Header="Copy files">
-                                            <GroupItem x:Name="Copy">
-                                                <ItemsControl Name="CopyFilesOperationsGroupBox" VerticalAlignment="Top" ItemsSource="{Binding CopyFilesOperations}">
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <local:OperationControl/>
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-                                                </ItemsControl>
-                                            </GroupItem>
-                                        </Expander>
-                                    </StackPanel>
-                                </Border>
-                                <Border BorderBrush="Black" BorderThickness="1" Visibility="{Binding RemoveFilesOperationsVisibility}" Margin="5" Background="White">
-                                    <!--<StackPanel Margin="3">
+                <Grid DockPanel.Dock="Top">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Border BorderBrush="Black" BorderThickness="2" Margin="3" Grid.Row="0">
+                        <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto" MaxHeight="670">
+                            <StackPanel>
+                                <StackPanel ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto">
+                                    <Button Content="Execute all" Command="{Binding ExecuteAllOperationsCommand}" Margin="3"/>
+                                    <StackPanel Margin="3" Background="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}">
+                                        <Border BorderBrush="Black" BorderThickness="1" Visibility="{Binding MoveFilesOperationsVisibility}" Margin="5" Background="White">
+                                            <StackPanel Margin="3">
+                                                <Expander  IsExpanded="True" Header="Move files">
+                                                    <GroupItem x:Name="MoveFilesOperationsGroupBox">
+                                                        <ItemsControl Name="MoveFilesOperations" VerticalAlignment="Top" ItemsSource="{Binding MoveFilesOperations, NotifyOnSourceUpdated=True}">
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <local:OperationControl/>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                    </GroupItem>
+                                                </Expander>
+                                            </StackPanel>
+                                        </Border>
+                                        <Border BorderBrush="Black" BorderThickness="1" Visibility="{Binding CopyFilesOperationsVisibility}" Margin="5" Background="White" >
+                                            <StackPanel Margin="3">
+                                                <Expander IsExpanded="True" Header="Copy files">
+                                                    <GroupItem x:Name="Copy">
+                                                        <ItemsControl Name="CopyFilesOperationsGroupBox" VerticalAlignment="Top" ItemsSource="{Binding CopyFilesOperations}">
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <local:OperationControl/>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                    </GroupItem>
+                                                </Expander>
+                                            </StackPanel>
+                                        </Border>
+                                        <Border BorderBrush="Black" BorderThickness="1" Visibility="{Binding RemoveFilesOperationsVisibility}" Margin="5" Background="White">
+                                            <!--<StackPanel Margin="3">
                                         <Expander IsExpanded="True" Header="Remove files">
                                             <GroupItem x:Name="RemoveFilesOperationsGroupBox">
                                                 <ItemsControl x:Name="RemoveFilesOperations" VerticalAlignment="Top" ItemsSource="{Binding RemoveFilesOperations}">
@@ -230,26 +238,26 @@
                                             </GroupItem>
                                         </Expander>
                                     </StackPanel>-->
-                                </Border>
-                            </StackPanel>
-                            <StackPanel Margin="3" Background="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}">
-                                <Border BorderBrush="Black" BorderThickness="1" Visibility="{Binding CopyTextFromFilesOperationsVisibility}" Background="White" Margin="5">
-                                    <StackPanel Margin="3">
-                                        <Expander IsExpanded="True" Header="Copy text from files" >
-                                            <GroupItem x:Name="CopyTextFromFilesOperationsGroupBox">
-                                                <ItemsControl Name="CopyTextFromFilesOperations" VerticalAlignment="Top" ItemsSource="{Binding CopyTextFromFilesOperations}">
-                                                    <ItemsControl.ItemTemplate>
-                                                        <DataTemplate>
-                                                            <local:OperationControl/>
-                                                        </DataTemplate>
-                                                    </ItemsControl.ItemTemplate>
-                                                </ItemsControl>
-                                            </GroupItem>
-                                        </Expander>
-                                    </StackPanel >
-                                </Border>
-                                <Border BorderBrush="Black" BorderThickness="1" Visibility="{Binding CutTextFromFilesOperationsVisibility}" Background="White" Margin="5">
-                                    <!--<StackPanel Margin="3">
+                                        </Border>
+                                    </StackPanel>
+                                    <StackPanel Margin="3" Background="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}">
+                                        <Border BorderBrush="Black" BorderThickness="1" Visibility="{Binding CopyTextFromFilesOperationsVisibility}" Background="White" Margin="5">
+                                            <StackPanel Margin="3">
+                                                <Expander IsExpanded="True" Header="Copy text from files" >
+                                                    <GroupItem x:Name="CopyTextFromFilesOperationsGroupBox">
+                                                        <ItemsControl Name="CopyTextFromFilesOperations" VerticalAlignment="Top" ItemsSource="{Binding CopyTextFromFilesOperations}">
+                                                            <ItemsControl.ItemTemplate>
+                                                                <DataTemplate>
+                                                                    <local:OperationControl/>
+                                                                </DataTemplate>
+                                                            </ItemsControl.ItemTemplate>
+                                                        </ItemsControl>
+                                                    </GroupItem>
+                                                </Expander>
+                                            </StackPanel >
+                                        </Border>
+                                        <Border BorderBrush="Black" BorderThickness="1" Visibility="{Binding CutTextFromFilesOperationsVisibility}" Background="White" Margin="5">
+                                            <!--<StackPanel Margin="3">
                                         <Expander IsExpanded="True" Header="Cut text from files" >
                                             <GroupItem x:Name="CutTextFromFilesOperationsGroupBox">
                                                 <ItemsControl Name="CutTextFromFilesOperations" VerticalAlignment="Top" ItemsSource="{Binding CutTextFromFilesOperations}">
@@ -262,11 +270,21 @@
                                             </GroupItem>
                                         </Expander>
                                     </StackPanel >-->
-                                </Border>
+                                        </Border>
+                                    </StackPanel>
+                                </StackPanel>
+
                             </StackPanel>
-                        </StackPanel>
-                    </ScrollViewer>
-                </Border>
+                        </ScrollViewer>
+                    </Border>
+                    <StackPanel Grid.Row="1" Margin="3" VerticalAlignment="Bottom" Background="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}">
+                        <Border BorderBrush="Black" BorderThickness="1" Background="White" Margin="5" Height="240">
+                            <StackPanel Margin="3">
+                                <logcontrol:LogControl/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Grid>
             </DockPanel>
         </Grid>
         <Grid Margin="0,-18,0,18"/>

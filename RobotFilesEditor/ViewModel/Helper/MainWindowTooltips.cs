@@ -53,6 +53,8 @@ namespace RobotFilesEditor.ViewModel.Helper
         public string ClearLocalExtFilesTooltip { get; private set; }
         public string FanucChecksumsToolTip { get; private set; }
         public string ProgramFormatterTooltip { get; private set; }
+
+        public string CheckGripperXMLTooltip { get; private set; }
         public MainWindowTooltips()
         {
             ChangeNameTooltip = "Change your user name. Your name will be visible in program headers";
@@ -64,6 +66,7 @@ namespace RobotFilesEditor.ViewModel.Helper
             CreateOrgsCommandTooltip = "Creates organization programms based on scanned paths for KUKA robot";
             CreateGripperCommandTooltip = "Creates .src file with gripper configuration. Function mostly useful for KRC2 robots";
             CreateGripperXMLTooltip = "Creates Gripper.xml file necessary for gripper configuration on KRC4 robots based on a03_grp_user.dat or .src file";
+            CheckGripperXMLTooltip = "Checks if all clamps and sensors defined in gripper.xml are checked in init in home";
             ReadConfigDatTooltip = "Create Symname.txt file necessary to upload symbols to KRC2 robots based on $config.dat file";
             MirrorTooltip = "Create mirrored paths for KUKA robots";
             ReadSpotPointsTooltip = "Functionality that allows you to read process points from selected backup, compare it with VIP list, and prepare the report in Excel file";

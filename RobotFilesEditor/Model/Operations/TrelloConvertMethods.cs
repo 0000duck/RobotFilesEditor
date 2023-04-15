@@ -124,7 +124,7 @@ namespace RobotFilesEditor.Model.Operations
                 if (!string.IsNullOrEmpty(logbook))
                 {
                     System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
-                    CommonLibrary.CommonMethods.CreateLogFile(logbook, "\\logTrello.txt");
+                    //CommonLibrary.CommonMethods.CreateLogFile(logbook, "\\logTrello.txt");
                     System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
                 }
                 WriteExcel(dataCleared);
