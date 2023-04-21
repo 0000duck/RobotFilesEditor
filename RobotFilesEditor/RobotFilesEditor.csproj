@@ -71,7 +71,7 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>C57087C22CF8BC50CACA6CE45AC87A82F87C2A12</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>4F4DB60B33DC46DAA037CBA882A21B96C7A9DE11</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>RobotFilesEditor_TemporaryKey.pfx</ManifestKeyFile>
