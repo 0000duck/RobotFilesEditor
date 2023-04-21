@@ -22,7 +22,7 @@ namespace ProgramTextFormat.ViewModel
 {
     public partial class MainViewModel : MessagingBase
     {
-
+         
         #region fields
         ProgramFormatter xmlDeserialized;
         string path = @"C:\Projekty\inne\Harvester\ProgramFormatter.xml";
