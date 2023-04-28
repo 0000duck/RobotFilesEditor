@@ -90,7 +90,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>83D81C897B871AB34D46C3A0EA482BCE35696D89</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>E76054B46DAFC297AE3E4327BD039D024471CC62</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>KUKA.Load_5.0_Generator_TemporaryKey.pfx</ManifestKeyFile>

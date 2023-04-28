@@ -50,7 +50,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>0AFCE51D50E5EBAB7ED318AD629CFF9BD64D52BD</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>BAA768E98C4A0C0C02E90687C36ECF941CEA2A95</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>Fanuc mirro_TemporaryKey.pfx</ManifestKeyFile>
