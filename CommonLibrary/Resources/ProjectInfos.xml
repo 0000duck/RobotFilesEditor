@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<ProjectInfos xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Project Name="G7x" RobotType="KUKA">
+    <TypNumbers>
+      <TypNumber Number="1" Name="werwerewrw" />
+      <TypNumber Number="10" Name="G70" />
+      <TypNumber Number="11" Name="G71" />
+    </TypNumbers>
+    <TypIDMain Value="41" />
+    <TypIDCommunal Value="42" />
+	<ApplicationTypes>
+		<SpotType A04="true" A05="false"/>
+		<GlueType A08="true" B08="false"/>
+		<TchType A02="true" B02="false"/>
+		<LaserType A15="true" B15="false"/>
+	</ApplicationTypes>
+  </Project>
+  <Project Name="G2x" RobotType="FANUC">
+    <TypNumbers>
+      <TypNumber Number="21" Name="G28" />
+      <TypNumber Number="22" Name="G29" />
+    </TypNumbers>
+    <TypIDMain Value="101" />
+    <TypIDCommunal Value="102" />
+	  <ApplicationTypes>
+		  <SpotType A04="true" A05="false"/>
+		  <GlueType A08="true" B08="false"/>
+		  <TchType A02="true" B02="false"/>
+		  <LaserType A15="true" B15="false"/>
+	  </ApplicationTypes>
+  </Project>
+	<SelectedProject Name="G7x"/>
+</ProjectInfos>

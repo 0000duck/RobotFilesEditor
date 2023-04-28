@@ -15,11 +15,14 @@ namespace CommonLibrary.Converters
         {
             switch (value)
             {
+                case BaseCheckState.OK:
                 case LogResultTypes.OK:
                     return "pack://application:,,,/Resources/tick.png";
                 case LogResultTypes.Warning:
+                case BaseCheckState.Warning:
                     return "pack://application:,,,/Resources/alert.png";
                 case LogResultTypes.Error:
+                case BaseCheckState.Error:
                     return "pack://application:,,,/Resources/error.png";
                 case LogResultTypes.Information:
                     return "pack://application:,,,/Resources/info.png";

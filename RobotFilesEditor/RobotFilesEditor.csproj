@@ -467,6 +467,7 @@
       <DependentUpon>TypeCollisionComment.xaml</DependentUpon>
     </Compile>
     <Compile Include="Dialogs\TypeCollisionComment\TypeCollisionCommentViewModel.cs" />
+    <Compile Include="Model\Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Model\Converters\SOVMsgTypeToIconConverter.cs" />
     <Compile Include="Model\DataOrganization\ExternalProgram.cs" />
     <Compile Include="Model\DataOrganization\TypId.cs" />
@@ -1051,6 +1052,10 @@
       <Project>{271ae5d0-8ce5-479c-974a-0789f7f09718}</Project>
       <Name>ABB add spaces</Name>
     </ProjectReference>
+    <ProjectReference Include="..\BaseManager\BaseManager.csproj">
+      <Project>{facfa6dc-9210-43f8-a1f9-5365bb8797b0}</Project>
+      <Name>BaseManager</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Fanuc mirror\Fanuc mirro.csproj">
       <Project>{aab7b8f1-4bc0-4dd8-855b-eae129016af9}</Project>
       <Name>Fanuc mirro</Name>
@@ -1066,6 +1071,10 @@
     <ProjectReference Include="..\ProgramTextFormat\ProgramTextFormat.csproj">
       <Project>{24262e72-d214-4f3a-a110-d14b32879aa9}</Project>
       <Name>ProgramTextFormat</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ProjectInformations\ProjectInformations.csproj">
+      <Project>{fdbe3a0b-0448-43e9-b45a-39ad74e022b5}</Project>
+      <Name>ProjectInformations</Name>
     </ProjectReference>
     <ProjectReference Include="..\RobKalDat\RobKalDat.csproj">
       <Project>{ae8be09a-048a-4e9c-95f4-30d6c1f29f9a}</Project>

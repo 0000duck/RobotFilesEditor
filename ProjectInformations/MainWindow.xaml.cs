@@ -14,14 +14,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ProgramTextFormat.Views
+namespace ProjectInformations
 {
     /// <summary>
-    /// Interaction logic for RulesView.xaml
+    /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class RulesView : Page
+    public partial class MainWindow : Window
     {
-        public RulesView()
+        public MainWindow()
         {
             InitializeComponent();
         }

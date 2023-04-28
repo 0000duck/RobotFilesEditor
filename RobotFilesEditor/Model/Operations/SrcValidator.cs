@@ -29,12 +29,18 @@ using CommonLibrary;
 using System.Collections.ObjectModel;
 using GalaSoft.MvvmLight.Messaging;
 using CommonLibrary.DataClasses;
+using BaseManager.Model;
+using ProjectInformations.Model;
+using System.Xml.Serialization;
+using ProgramTextFormat.Messaging;
 //using RobotFilesEditor.Model.Operations.DataClass;
 
 namespace RobotFilesEditor.Model.Operations
 {
     public static class SrcValidator
     {
+        private static ProjectInfos projectsDeserialized;
+
         public static string language;
         public static IDictionary<string, Dats> UnusedDats { get; set; }
         public static IDictionary<string, Dats> UsedDats { get; set; }
@@ -52,12 +58,14 @@ namespace RobotFilesEditor.Model.Operations
         private static bool UnusedDataPresent { get; set; }
         private static string matchRoboter;
         private static bool fillDescrs;
+        private static Project selectedProject;
 
         internal static bool ValidateFile(IDictionary<string, string> files)
         {
             Messenger.Default.Send<LogResult>(new LogResult("Validation started", LogResultTypes.Information), "AddLog");
             if (GlobalData.ControllerType != "FANUC")
             {
+                DeserializeProjects();
                 GlobalData.loadVars = new Dictionary<int, string>();
                 GlobalData.LocalHomesFound = false;
                 matchRoboter = string.Empty;
@@ -75,9 +83,8 @@ namespace RobotFilesEditor.Model.Operations
                 GlobalData.Roboter = roboter;
                 if (srcFiles == null | datFiles == null | !DetectDuplicates(srcFiles))
                     return false;
-                GlobalData.ToolchangerType = DetectApp(srcFiles.Keys, "a02", "b02", new string[3] { "dock", "dockdresser", "_tch_" }, "toolchanger");
-                GlobalData.WeldingType = DetectApp(srcFiles.Keys, "a04", "a05", new string[3] { "spot", "notUsed", "_swx_" }, "welding");
-                //GlobalData.RivetingType = DetectApp(srcFiles.Keys, "a13", "c13", new string[3] { "rivet", "notUsed", "notUsed" }, "riveting");
+                GlobalData.ToolchangerType = DetectAppNew(srcFiles.Keys, selectedProject.ApplicationTypes.TchType, new string[3] { "dock", "dockdresser", "_tch_" }, "toolchanger");
+                GlobalData.WeldingType = DetectAppNew(srcFiles.Keys, selectedProject.ApplicationTypes.SpotType, new string[3] { "spot", "notUsed", "_swx_" }, "welding");
                 IDictionary<string, List<string>> resultSrcFiles = DivideToFolds(srcFiles);
                 List<string> GlobalFDATs = GetGlobalFDATs(GlobalData.AllFiles);
                 //if (GlobalFDATs.Count > 0)
@@ -146,7 +153,20 @@ namespace RobotFilesEditor.Model.Operations
             return true;
 
         }
-
+        private static void DeserializeProjects()
+        {
+            var path = CommonMethods.GetFilePath("ProjectInfos.xml");
+            var projName = string.Empty;
+            var serializer = new XmlSerializer(typeof(ProjectInfos));
+            var projects = new List<Project>();
+            using (Stream reader = new FileStream(path, FileMode.Open))
+            {
+                projectsDeserialized = (ProjectInfos)serializer.Deserialize(reader);
+                projectsDeserialized.Project.ForEach(x => projects.Add(x));
+                projName = projectsDeserialized.SelectedProject.Name;
+            }
+            selectedProject = projects.FirstOrDefault(x => x.Name == projName);
+        }
         private static void CheckChkAxisPos(IDictionary<string, List<string>> resultSrcFiles)
         {
             bool warningsFound = false;
@@ -268,6 +288,23 @@ namespace RobotFilesEditor.Model.Operations
                     var dialogResult = sW.ShowDialog();
                     return vm.ResultType;
                 }
+            }
+            else
+                return string.Empty;
+
+        }
+
+        private static string DetectAppNew(ICollection<string> keys, ApplicationBase variants, string[] type, string label)
+        {
+            if (keys.Any(x => x.ToLower().Contains(type[0]) && !x.ToLower().Contains(type[1])) || keys.Any(x => x.ToLower().Contains(type[2].Replace("x", "p"))) || keys.Any(x => x.ToLower().Contains(type[2].Replace("x", "i"))))
+            {
+                var props = variants.GetType().GetProperties();
+                foreach (var prop in props)
+                {
+                   if ((prop.GetValue(variants) as string) == "true")
+                        return prop.Name;
+                }
+                return string.Empty;
             }
             else
                 return string.Empty;
@@ -960,13 +997,7 @@ namespace RobotFilesEditor.Model.Operations
 
         private static void SetFillDescr()
         {
-            fillDescrs = false;
-            if (GlobalData.ControllerType == "KRC4")
-            {
-                DialogResult dialogResult = MessageBox.Show("Would you like to fill the description in Collzone statement?\r\nYes - Fill Colldescr\r\nNo - leave it blank", "Fill descriptions", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                if (dialogResult == DialogResult.Yes)
-                    fillDescrs = true;
-            }
+            fillDescrs = selectedProject.UseCollDescr.Value.Equals("true", StringComparison.InvariantCultureIgnoreCase) ? true : false;
         }
          
         private static IDictionary<string, List<string>> CorrectCollisionComments(IDictionary<string, List<string>> filteredFiles)
@@ -2065,11 +2096,11 @@ namespace RobotFilesEditor.Model.Operations
                 toolOrBase = new string[] { "tools", "tool" };
             else
                 toolOrBase = new string[] { "bases", "base" };
-            string currentString = "Mutiple " + toolOrBase[0] + " found in file " + (Path.GetFileName(file)).Replace(".dat", "") + ". Points with " + toolOrBase[1] + " number: ";
+            string currentString = "Mutiple " + toolOrBase[0] + " found in file " + (Path.GetFileName(file)).Replace(".dat", "") + ". Points with " + toolOrBase[1] + " number:";
             foreach (var toolorbase in toolOrBaseAndPoint)
             {
 
-                string currentToolOrBase = toolorbase.Key + " - points: ";
+                string currentToolOrBase = " " + toolorbase.Key + " - points: ";
                 {
                     foreach (string point in toolorbase.Value)
                     {
@@ -2878,20 +2909,20 @@ namespace RobotFilesEditor.Model.Operations
                     {
                         int baseNr = int.Parse(regexBaseNr.Match(command).ToString());
                         Regex regexBaseName = new Regex(@"(?<=Base\s*\[\d+\s*\]\s*:\s*)[a-zA-Z0-9_\-\+]*", RegexOptions.IgnoreCase);
-                        if (!foundBases.Keys.Contains(baseNr))
+                        if (!foundBases.Keys.Contains(baseNr) && baseNr > 0)
                             foundBases.Add(baseNr, new List<string>());
 
                         string toolName = regexBaseName.Match(command).ToString();
-                        if (!foundBases[baseNr].Contains(toolName) && toolName != "")
+                        if (baseNr > 0 && !foundBases[baseNr].Contains(toolName) && toolName != "")
                             foundBases[baseNr].Add(regexBaseName.Match(command).ToString());
                     }
                 }
             }
 
             IDictionary<int, string> correctedBases = new Dictionary<int, string>();
+            bool errorFound = false;
             foreach (var basee in foundBases)
             {
-                bool errorFound = false;
                 if ((basee.Key > 0 && basee.Key < 21 || basee.Key > 52 && basee.Key < 57) && basee.Value.Count > 0)
                 {
                     Regex regexBaseName = new Regex(baseNamesFromStandard[basee.Key], RegexOptions.IgnoreCase);
@@ -2905,18 +2936,26 @@ namespace RobotFilesEditor.Model.Operations
                         errorFound = true;
                 }
 
-                if (errorFound && GlobalData.ControllerType != "KRC4 Not BMW")
-                {
-                    var vm = new RenameBaseViewModel(basee);
-                    RenameBase sW = new RenameBase(vm);
-                    var dialogResult = sW.ShowDialog();
-                    correctedBases.Add(basee.Key, vm.CorrectedName);
-                }
-                else
-                    if (basee.Value.Count > 0)
-                    correctedBases.Add(basee.Key, basee.Value[0]);
-                else
-                    correctedBases.Add(basee.Key, "");
+                //if (errorFound && GlobalData.ControllerType != "KRC4 Not BMW")
+                //{
+                //    var vm = new RenameBaseViewModel(basee);
+                //    RenameBase sW = new RenameBase(vm);
+                //    var dialogResult = sW.ShowDialog();
+                //    correctedBases.Add(basee.Key, vm.CorrectedName);
+                //}
+                //else
+                //    if (basee.Value.Count > 0)
+                //    correctedBases.Add(basee.Key, basee.Value[0]);
+                //else
+                //    correctedBases.Add(basee.Key, "");
+            }
+            if (errorFound)
+            {
+                List<RobotBase> robotBases = new List<RobotBase>();
+                foundBases.ToList().ForEach(x => robotBases.Add(new RobotBase(x.Key, x.Value , baseNamesFromStandard)));
+                BaseManager.ViewModel.MainViewModel vm= new BaseManager.ViewModel.MainViewModel(robotBases);
+                BaseManager.MainWindow window = new BaseManager.MainWindow(vm);
+                window.ShowDialog();
             }
 
             foreach (var srcFile in resultSrcFiles.Where(x => x.Key.Contains(".src")))

@@ -91,6 +91,43 @@ namespace CommonLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+        ///&lt;ProgramFormatter xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;
+        ///  &lt;Rules&gt;
+        ///    &lt;ProgramFormatRule Number=&quot;1&quot; Instruction=&quot;CollisionReqKrc2&quot; SelectedAction=&quot;RemoveCommand&quot; GroupItems=&quot;false&quot; /&gt;
+        ///    &lt;ProgramFormatRule Number=&quot;2&quot; Instruction=&quot;PLC_COM&quot; SelectedAction=&quot;EnterBefore&quot; GroupItems=&quot;true&quot; /&gt;
+        ///  &lt;/Rules&gt;
+        ///  &lt;Instructions&gt;
+        ///    &lt;KukaInstruction Name=&quot;CollisionReqKrc2&quot; IsComment=&quot;true&quot; IsFold=&quot;true&quot; KeyWordsSt [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ProgramFormatter {
+            get {
+                return ResourceManager.GetString("ProgramFormatter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot;?&gt;
+        ///&lt;ProjectInfos xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&gt;
+        ///  &lt;Project Name=&quot;G7x&quot; RobotType=&quot;KUKA&quot;&gt;
+        ///    &lt;TypNumbers&gt;
+        ///      &lt;TypNumber Number=&quot;1&quot; Name=&quot;werwerewrw&quot; /&gt;
+        ///      &lt;TypNumber Number=&quot;10&quot; Name=&quot;G70&quot; /&gt;
+        ///      &lt;TypNumber Number=&quot;11&quot; Name=&quot;G71&quot; /&gt;
+        ///    &lt;/TypNumbers&gt;
+        ///    &lt;TypIDMain Value=&quot;41&quot; /&gt;
+        ///    &lt;TypIDCommunal Value=&quot;42&quot; /&gt;
+        ///	&lt;ApplicationTypes&gt;
+        ///		&lt;SpotType A04=&quot;true&quot; A05=&quot;false&quot;/&gt;
+        ///		&lt;GlueType A08=&quot;true&quot; B08=&quot;false&quot;/ [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ProjectInfos {
+            get {
+                return ResourceManager.GetString("ProjectInfos", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap tick {

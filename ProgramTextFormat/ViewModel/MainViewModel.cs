@@ -25,7 +25,7 @@ namespace ProgramTextFormat.ViewModel
 
         #region fields
         ProgramFormatter xmlDeserialized;
-        string path = @"C:\Projekty\inne\Harvester\ProgramFormatter.xml";
+        string path;
         #endregion fields
 
         #region properties
@@ -82,7 +82,7 @@ namespace ProgramTextFormat.ViewModel
         public MainViewModel()
         {
             RegisterMessages();
-            path = GetFilePath();
+            path = CommonMethods.GetFilePath("ProgramFormatter.xml");
             RulesActive = true; InstructionsActive = false; OkEnabled = true;
             XmlSerializer serializer = new XmlSerializer(typeof(ProgramFormatter));   
             
@@ -94,16 +94,6 @@ namespace ProgramTextFormat.ViewModel
 
 
         #region private methods
-        private string GetFilePath()
-        {
-            var dir = Path.GetDirectoryName(CommonLibrary.CommonMethods.GetApplicationConfig());
-            var result = Path.Combine(dir, "ProgramFormatter.xml");
-            if (!File.Exists(result))
-            {
-                File.WriteAllText(result, Properties.Resources.ProgramFormatter);                  
-            }
-            return result;
-        }
         private void RegisterMessages()
         {
             WeakReferenceMessenger.Default.Register<RulesLoaded>(this);

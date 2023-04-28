@@ -104,17 +104,17 @@ namespace CommonLibrary
             return result;
         }
 
-        public static string[] GetArrayBasedOnInt(int arrayLength,int number)
+        public static string[] GetArrayBasedOnInt(int arrayLength, int number)
         {
             List<string> tempList = new List<string>();
-            for (int i = 1; i <=arrayLength;i++)
+            for (int i = 1; i <= arrayLength; i++)
             {
                 if (number - i >= 0)
                 {
                     tempList.Add("TRUE");
                 }
                 else
-                    tempList.Add("FALSE");                
+                    tempList.Add("FALSE");
             }
             return tempList.ToArray();
         }
@@ -416,9 +416,9 @@ namespace CommonLibrary
 
         public static Point CalculateBases(Point robot, Point meas, Point isTCP = null, bool isSafety = false)
         {
-            double[,] rotationByZ = null, rotationByY= null, rotationByX = null;
+            double[,] rotationByZ = null, rotationByY = null, rotationByX = null;
             //wspolrzedne basy po przesunieciu robota do wspolrzednych 0,0,0,0,0,0
-            
+
             if (isTCP == null)
             {
                 Point robotMovedTo0Point = new Point(meas.XPos - robot.XPos, meas.YPos - robot.YPos, meas.ZPos - robot.ZPos, ConvertToRadians(robot.RX * -1), ConvertToRadians(robot.RY * -1), ConvertToRadians(robot.RZ * -1));
@@ -429,14 +429,14 @@ namespace CommonLibrary
             }
             else
             {
-                Point measToRadians = new Point(meas.XPos, meas.YPos, meas.ZPos, ConvertToRadians(meas.RX ), ConvertToRadians(meas.RY), ConvertToRadians(meas.RZ));
+                Point measToRadians = new Point(meas.XPos, meas.YPos, meas.ZPos, ConvertToRadians(meas.RX), ConvertToRadians(meas.RY), ConvertToRadians(meas.RZ));
                 Point tcpToRadians = new Point(isTCP.XPos, isTCP.YPos, isTCP.ZPos, ConvertToRadians(isTCP.RX), ConvertToRadians(isTCP.RY), ConvertToRadians(isTCP.RZ));
                 rotationByX = MatrixOperations.MultiplyMatrix(new double[,] { { 1, 0, 0 }, { 0, Math.Cos(tcpToRadians.RX + measToRadians.RX), -Math.Sin(tcpToRadians.RX + measToRadians.RX) }, { 0, Math.Sin(tcpToRadians.RX + measToRadians.RX), Math.Cos(tcpToRadians.RX + measToRadians.RX) } }, new double[,] { { tcpToRadians.XPos }, { tcpToRadians.YPos }, { tcpToRadians.ZPos } });
                 rotationByY = MatrixOperations.MultiplyMatrix(new double[,] { { Math.Cos(tcpToRadians.RY + measToRadians.RY), 0, Math.Sin(tcpToRadians.RY + measToRadians.RY) }, { 0, 1, 0 }, { -Math.Sin(tcpToRadians.RY + measToRadians.RY), 0, Math.Cos(tcpToRadians.RY + measToRadians.RY) } }, new double[,] { { rotationByX[0, 0] }, { rotationByX[1, 0] }, { rotationByX[2, 0] } });
                 rotationByZ = MatrixOperations.MultiplyMatrix(new double[,] { { Math.Cos(tcpToRadians.RZ + measToRadians.RZ), -Math.Sin(tcpToRadians.RZ + measToRadians.RZ), 0 }, { Math.Sin(tcpToRadians.RZ + measToRadians.RZ), Math.Cos(tcpToRadians.RZ + measToRadians.RZ), 0 }, { 0, 0, 1 } }, new double[,] { { rotationByY[0, 0] }, { rotationByY[1, 0] }, { rotationByY[2, 0] } });
                 Point tempresult = new Point(measToRadians.XPos + rotationByZ[0, 0], measToRadians.YPos + rotationByZ[1, 0], measToRadians.ZPos + rotationByZ[2, 0], GetRobKalDatAngle(meas.RZ, robot.RZ), GetRobKalDatAngle(meas.RY, robot.RY), GetRobKalDatAngle(meas.RX, robot.RX));
             }
-            
+
             if (!isSafety)
                 return new Point(rotationByX[0, 0], rotationByX[1, 0], rotationByX[2, 0], GetRobKalDatAngle(meas.RZ, robot.RZ), GetRobKalDatAngle(meas.RY, robot.RY), GetRobKalDatAngle(meas.RX, robot.RX));
             else
@@ -464,7 +464,7 @@ namespace CommonLibrary
 
         public static double ConvertToDegrees(double angle)
         {
-            return 180/ Math.PI * angle;
+            return 180 / Math.PI * angle;
         }
 
         public static List<string> FindBackupsInDirectory(string selectedDir, bool onlyWelding = true, bool includeSafeRobot = true)
@@ -474,8 +474,8 @@ namespace CommonLibrary
             List<string> allfiles = Directory.GetFiles(selectedDir, "*.zip", SearchOption.AllDirectories).ToList();
             if (!includeSafeRobot)
             {
-                var saferobots = allfiles.Where(x => x.ToLower().Contains("_saferobot.zip"));               
-                saferobots.ToList().ForEach(x=>allfiles.Remove(x));
+                var saferobots = allfiles.Where(x => x.ToLower().Contains("_saferobot.zip"));
+                saferobots.ToList().ForEach(x => allfiles.Remove(x));
             }
             foreach (string file in allfiles)
             {
@@ -493,7 +493,7 @@ namespace CommonLibrary
                         //                  FileAccess.Read,
                         //                  FileShare.Read) as ZipPackage;
                         // list = zp.GetFileList();
-                        archive.Entries.ToList().ForEach(x=>list.Add(x.FullName));
+                        archive.Entries.ToList().ForEach(x => list.Add(x.FullName));
                         if (onlyWelding)
                         {
                             if (CheckIfBackupAndWelding(list))
@@ -672,6 +672,30 @@ namespace CommonLibrary
         {
             return inputString.Replace("_", "").Replace("-", "").Any(ch => !Char.IsLetterOrDigit(ch));
         }
+
+        public static string GetFilePath(string filename)
+        {
+            var dir = Path.GetDirectoryName(CommonLibrary.CommonMethods.GetApplicationConfig());
+            var result = Path.Combine(dir, filename);
+            if (!File.Exists(result) || CheckFileEmpty(result))
+            {
+                if (filename.Contains("ProjectInfos"))
+                    File.WriteAllText(result, Properties.Resources.ProjectInfos);
+                if (filename.Contains("ProgramFormatter"))
+                    File.WriteAllText(result, Properties.Resources.ProgramFormatter);
+            }
+            return result;
+        }
+
+        private static bool CheckFileEmpty(string result)
+        {
+            using (StreamReader reader = new StreamReader(result))
+            {
+                var readText = reader.ReadToEnd();
+                if (string.IsNullOrEmpty(readText))
+                    return true;
+            }
+            return false;
+        }
     }
 }
-

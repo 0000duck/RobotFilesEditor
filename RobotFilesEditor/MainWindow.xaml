@@ -7,6 +7,7 @@
         xmlns:cmd="clr-namespace:GalaSoft.MvvmLight.Command;assembly=GalaSoft.MvvmLight.Platform"
         xmlns:local="clr-namespace:RobotFilesEditor"        
         xmlns:logcontrol="clr-namespace:CommonLibrary.Views;assembly=CommonLibrary"
+        xmlns:converters ="clr-namespace:RobotFilesEditor.Model.Converters"
         DataContext="{Binding MainVM, Source={StaticResource Locator}}"
         mc:Ignorable="d"
         Title="Robot File Harvester" Name="window" WindowState="Maximized"
@@ -20,12 +21,105 @@
     <!--<Window.CommandBindings>
         <CommandBinding Command="{x:Static local:App.Current}" Executed="MyCommandExecuted"/>
     </Window.CommandBindings>-->
+    <Window.Resources>
+        <ResourceDictionary>
+            <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
+        </ResourceDictionary>
+    </Window.Resources>
     <Grid Background="#FFFBFBFB">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="0">
+        <DockPanel Grid.Row="0">
+            <ToolBarTray DockPanel.Dock="Top" Visibility="{Binding ToolBarVisibility,Converter={StaticResource boolToVisibilityConverter}}">
+                <ToolBar>
+                    <Menu>
+                        <MenuItem Header="General">
+                            <MenuItem Header="Change user name" Command="{Binding ChangeName}" ToolTip="{Binding Tooltips.ChangeNameTooltip}"/>
+                            <MenuItem Header="Projects definitions" Command="{Binding OpenProjectConfig}" ToolTip="{Binding Tooltips.OpenProjectConfigTooltip}"/>
+                            <!--<Button Content="Open Log" Command="{Binding OpenLog}" Margin="3"  ToolTip="{Binding Tooltips.OpenLogTooltip}"/>-->
+                            <MenuItem Header="Open destination folder" Command="{Binding OpenDest}"  ToolTip="{Binding Tooltips.OpenDestTooltip}"/>
+                            <MenuItem Header="Convert Trello Report" Command="{Binding ConvertTrello}" ToolTip="{Binding Tooltips.ConvertTrelloTooltip}"/>
+                            <MenuItem Header="Fill IBN checklist" Command="{Binding FillExcel}" ToolTip="{Binding Tooltips.FillExcelTooltip}"/>
+                            <MenuItem Header="Program formatting rules" Command="{Binding ProgramFormatter}" ToolTip="{Binding Tooltips.ProgramFormatterTooltip}"/>
+                            <MenuItem Header="Clear local ext. files" Command="{Binding ClearLocalExtFiles}" ToolTip="{Binding Tooltips.ClearLocalExtFilesTooltip}"/>
+                        </MenuItem>
+                        <MenuItem Header="KUKA">
+                            <MenuItem Header="Generate orgs" Command="{Binding CreateOrgsCommand}" ToolTip="{Binding Tooltips.CreateOrgsCommandTooltip}"/>
+                            <MenuItem Header="Generate grippers" Command="{Binding CreateGripperCommand}" ToolTip="{Binding Tooltips.CreateGripperCommandTooltip}" />
+                            <MenuItem Header="Create Gripper.xml from a03_grp_user" Command="{Binding CreateGripperXML}" ToolTip="{Binding Tooltips.CreateGripperXMLTooltip}"/>
+                            <MenuItem Header="Create Grp SymName from config.dat" Command="{Binding ReadConfigDat}" ToolTip="{Binding Tooltips.ReadConfigDatTooltip}"/>
+                            <MenuItem Header="Check Gripper.xml with InitInHome" Command="{Binding CheckGripperXML}" ToolTip="{Binding Tooltips.CheckGripperXMLTooltip}"/>
+                            <MenuItem Header="Mirror Path" Command="{Binding Mirror}" ToolTip="{Binding Tooltips.MirrorTooltip}"/>
+                            <!--<MenuItem Header="Stopping distances summary" Command="{Binding StoppingDistances}" Margin="3"/>-->
+                            <MenuItem Header="Read process points and compare with MPL" Command="{Binding ReadSpotPoints}" ToolTip="{Binding Tooltips.ReadSpotPointsTooltip}"/>
+                            <MenuItem Header="Read backup for WorkBook" Command="{Binding ReadBackupForWB}" ToolTip="{Binding Tooltips.ReadBackupForWBTooltip}"/>
+                            <MenuItem Header="Renumber Points in paths" Command="{Binding RenumberPoints}"  ToolTip="{Binding Tooltips.RenumberPointsTooltip}"/>
+                            <MenuItem Header="Change TypIDs in backup" Command="{Binding TypIdChange}" ToolTip="{Binding Tooltips.TypIdChangeTooltip}"/>
+                            <MenuItem Header="Check bases with RobKalDat project" Command="{Binding CheckBases}" ToolTip="{Binding Tooltips.CheckBasesTooltip}"/>
+                            <!--<MenuItem Header="Fill TypID with MPL" Command="{Binding FillTypID}" Margin="3"/>-->
+                            <!--<MenuItem Header="Compare bosch with TypID list" Command="{Binding CompareBosch}" Margin="3"/>-->
+                            <MenuItem Header="Copy backups to one folder" Command="{Binding RetrieveBackups}"  ToolTip="{Binding Tooltips.RetrieveBackupsTooltip}"/>
+                            <MenuItem Header="Prepare SOV backup" Command="{Binding PrepareSOVBackup}" ToolTip="{Binding Tooltips.PrepareSOVBackupTooltip}"/>
+                            <MenuItem Header="Fix PTP\LIN Fold KRC4 8.6" Command="{Binding FixPTPandLIN}" ToolTip="{Binding Tooltips.FixPTPandLINTooltip}"/>
+                            <MenuItem Header="Validate backup" Command="{Binding ValidateBackupKUKA}" ToolTip="{Binding Tooltips.ValidateBackupKUKATooltip}"/>
+                            <MenuItem Header="Safety tools" Command="{Binding SafetyTools}"  ToolTip="{Binding Tooltips.SafetyToolsToolTip}"/>
+                            <MenuItem Header="Read safety xml" Command="{Binding ReadSafetyXML}"  ToolTip="{Binding Tooltips.ReadSafetyXMLToolTip}"/>
+                            <MenuItem Header="RobKalDat" Command="{Binding RobKalDatProp}" Visibility="Visible" ToolTip="{Binding Tooltips.RobKalDatPropTooltip}"/>
+                            <MenuItem Header="Fill SAS from backup" Command="{Binding SasFillerFromBackup}" Visibility="Visible" ToolTip="{Binding Tooltips.SasFillerFromBackupTooltip}"/>
+                            <MenuItem Header="Get data for Mengelist" Command="{Binding GetMenge}" Visibility="Visible" ToolTip="{Binding Tooltips.GetMengeTooltip}"/>
+                            <MenuItem Header="Compare spot points between backups" Command="{Binding CompareSpots}" Visibility="Visible" ToolTip="{Binding Tooltips.CompareSpotsTooltip}"/>
+                            <MenuItem Header="KUKA Load 5.0 Generator" Command="{Binding KukaLoadGenerator}" Visibility="Visible" ToolTip="{Binding Tooltips.KukaLoadGeneratorTooltip}"/>
+                            <MenuItem Header="Collisions for PS" Command="{Binding CollisionsForPS}" Visibility="Collapsed"/>
+                            <MenuItem Header="Modify E1" Command="{Binding ModifyE1}" Visibility="Collapsed"/>
+                            <MenuItem Header="Shift base" Command="{Binding ShiftBaseKuka}" Visibility="{Binding DebugVisibility}"/>
+                            <MenuItem Header="Read Messprotokol and create PS Path" Command="{Binding ReadMessprotokolKUKA}" Visibility="Visible" ToolTip="{Binding Tooltips.ReadMessprotokolTooltip}"/>
+                        </MenuItem>
+                        <MenuItem Header="ABB">
+                            <MenuItem Header="ABB Helper" Command="{Binding ABBHelper}" ToolTip="{Binding Tooltips.ABBHelperTooltip}"/>
+                            <MenuItem Header="Rename points" Command="{Binding RenamePointsABB}" ToolTip="{Binding Tooltips.RenamePointsABBTooltip}"/>
+                            <MenuItem Header="Read process points and compare with MPL" Command="{Binding ReadSpotPointsABB}" ToolTip="{Binding Tooltips.ReadSpotPointsABBTooltip}"/>
+                            <MenuItem Header="Safety tools" Command="{Binding SafetyTools}" ToolTip="{Binding Tooltips.SafetyToolsToolTip}"/>
+                            <MenuItem Header="Read backup for WorkBook" Command="{Binding ReadBackupForWBABB}" ToolTip="{Binding Tooltips.ReadSpotPointsTooltip}"/>
+                            <MenuItem Header="Read Messprotokol and create PS Path" Command="{Binding ReadMessprotokolABB}" Visibility="Visible" ToolTip="{Binding Tooltips.ReadMessprotokolTooltip}"/>
+                        </MenuItem>
+                        <MenuItem Header="FANUC">
+                            <MenuItem Header="Generate orgs" Command="{Binding GenerateOrgsFanuc}" ToolTip="{Binding Tooltips.GenerateOrgsFanucTooltip}"/>
+                            <MenuItem Header="Mirror" Command="{Binding FanucMirror}" ToolTip="{Binding Tooltips.FanucMirrorTooltip}"/>
+                            <MenuItem Header="Safety tools" Command="{Binding SafetyTools}" ToolTip="{Binding Tooltips.SafetyToolsToolTip}"/>
+                            <MenuItem Header="Renumber Lines" Command="{Binding RenumberLinesFanuc}" ToolTip="{Binding Tooltips.RenumberLinesFanucToolTip}"/>
+                            <MenuItem Header="Compare OLP and SOV backup" Command="{Binding CompareSOVAndOLP}" Visibility="Visible" ToolTip="{Binding Tooltips.CompareSOVAndOLPToolTip}"/>
+                            <MenuItem Header="Validate comments" Command="{Binding ValidateComments}" Visibility="Visible"  ToolTip="{Binding Tooltips.ValidateCommentsToolTip}"/>
+                            <MenuItem Header="Validate backup" Command="{Binding ValidateBackupFanuc}" Visibility="Visible" ToolTip="{Binding Tooltips.ValidateBackupFanucToolTip}"/>
+                            <MenuItem Header="Shift base" Command="{Binding ShiftBaseFanuc}" Visibility="{Binding DebugVisibility}"/>
+                            <MenuItem Header="Read Messprotokol and create PS Path" Command="{Binding ReadMessprotokolFANUC}" Visibility="Visible" ToolTip="{Binding Tooltips.ReadMessprotokolTooltip}"/>
+                            <MenuItem Header="Fix missing collisions in SAS 2.10.0.3" Command="{Binding FixSASCollisionsFanuc}" Visibility="Collapsed" ToolTip="{Binding Tooltips.FixSASCollisionsFanucToolTip}"/>
+                            <MenuItem Header="Generate Load diagrams" Command="{Binding PayloadsFanuc}" Visibility="Visible" ToolTip="{Binding Tooltips.PayloadsFanucToolTip}"/>
+                            <MenuItem Header="Read DCS Checksums" Command="{Binding ChecksumsFanuc}" Visibility="Visible" ToolTip="{Binding Tooltips.FanucChecksumsToolTip}"/>
+                        </MenuItem>
+                        <MenuItem Header="OLP Tools">
+                            <MenuItem Header="Divide path by collisions" Command="{Binding DividePathByColls}" ToolTip="{Binding Tooltips.DividePathByCollsTooltip}"/>
+                            <MenuItem Header="Clean libroot" Command="{Binding CleanLibroot}" ToolTip="{Binding Tooltips.CleanLibrootTooltip}"/>
+                        </MenuItem>
+                        <MenuItem Header="External tools">
+                            <GroupItem>
+                                <ItemsControl ItemsSource="{Binding ExternalApplications}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <MenuItem Header="{Binding Name}" Command="{Binding ExecuteCommand}"/>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </GroupItem>
+                        </MenuItem>
+                                  
+                    </Menu>
+                </ToolBar>
+            </ToolBarTray>
+        </DockPanel>
+        <StackPanel Grid.Row="1">
             <Border BorderBrush="Black" BorderThickness="2" Margin="3">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -46,7 +140,7 @@
                 </Grid>
             </Border>
         </StackPanel>
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="2">
             <DockPanel>
                 <Border BorderBrush="Black" BorderThickness="2" Margin="3" DockPanel.Dock="Left">
                     <StackPanel  Margin="2" Background="White">
@@ -70,17 +164,20 @@
                                                 <RadioButton Content="English" GroupName="Language" IsChecked="{Binding EnglishSelected}" Margin="5"/>
                                             </StackPanel>
                                         </GroupBox>
+                                        <CheckBox Height="20" Content="Use old view" Margin="5" IsChecked="{Binding SideMenuVisibility}"/>
+                                        <ComboBox ItemsSource="{Binding ProjectInfos}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedProject}" Margin="3"/>
                                     </StackPanel>
                                 </GroupItem>
                             </Expander>
 
-                            <ScrollViewer MaxHeight="600" VerticalScrollBarVisibility="Auto">
+                            <ScrollViewer MaxHeight="600" VerticalScrollBarVisibility="Auto" Visibility="{Binding SideMenuVisibility,Converter={StaticResource boolToVisibilityConverter}}">
                                 <StackPanel>
                                     <Expander IsExpanded="False" Header="General" UseLayoutRounding="False">
                                         <GroupItem x:Name="GeneralGroupBox">
                                             <StackPanel>
                                                 <Button Content="Change user name" Command="{Binding ChangeName}" Margin="3" ToolTip="{Binding Tooltips.ChangeNameTooltip}"/>
-                                                <Button Content="Open Log" Command="{Binding OpenLog}" Margin="3"  ToolTip="{Binding Tooltips.OpenLogTooltip}"/>
+                                                <Button Content="Projects definitions" Command="{Binding OpenProjectConfig}" Margin="3" ToolTip="{Binding Tooltips.OpenProjectConfigTooltip}"/>
+                                                <!--<Button Content="Open Log" Command="{Binding OpenLog}" Margin="3"  ToolTip="{Binding Tooltips.OpenLogTooltip}"/>-->
                                                 <Button Content="Open destination folder" Command="{Binding OpenDest}" Margin="3" ToolTip="{Binding Tooltips.OpenDestTooltip}"/>
                                                 <Button Content="Convert Trello Report" Command="{Binding ConvertTrello}" Margin="3" ToolTip="{Binding Tooltips.ConvertTrelloTooltip}"/>
                                                 <Button Content="Fill IBN checklist" Command="{Binding FillExcel}" Margin="3" ToolTip="{Binding Tooltips.FillExcelTooltip}"/>
@@ -168,7 +265,7 @@
                                         </GroupItem>
                                     </Expander>
                                     <Expander IsExpanded="False" Header="External Programs" UseLayoutRounding="False" Visibility="Visible" ToolTip="{Binding Tooltips.ExternalProgramsTooltips}">
-                                        <GroupItem x:Name="ExternalPrograms">
+                                        <GroupItem>
                                             <ItemsControl ItemsSource="{Binding ExternalApplications}">
                                                 <ItemsControl.ItemTemplate>
                                                     <DataTemplate>
@@ -189,7 +286,7 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <Border BorderBrush="Black" BorderThickness="2" Margin="3" Grid.Row="0">
-                        <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto" MaxHeight="670">
+                        <ScrollViewer ScrollViewer.VerticalScrollBarVisibility="Auto" MaxHeight="645">
                             <StackPanel>
                                 <StackPanel ScrollViewer.CanContentScroll="True" ScrollViewer.VerticalScrollBarVisibility="Auto">
                                     <Button Content="Execute all" Command="{Binding ExecuteAllOperationsCommand}" Margin="3"/>

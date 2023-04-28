@@ -38,7 +38,7 @@
                     <DataGridTemplateColumn Header="Number">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Path=Number}">
+                                <TextBlock Text="{Binding Path=Number}" PreviewTextInput="NumberValidationTextBox">
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">
                                             <Style.Triggers>

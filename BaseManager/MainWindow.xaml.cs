@@ -1,8 +1,8 @@
-﻿using System;
+﻿using BaseManager.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -14,22 +14,17 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ProgramTextFormat.Views
+namespace BaseManager
 {
     /// <summary>
-    /// Interaction logic for RulesView.xaml
+    /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class RulesView : Page
+    public partial class MainWindow : Window
     {
-        public RulesView()
+        public MainWindow(MainViewModel model)
         {
+            DataContext =  model;
             InitializeComponent();
-        }
-
-        private void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
-        {
-            Regex regex = new Regex("[^0-9]+");
-            e.Handled = regex.IsMatch(e.Text);
         }
     }
 }

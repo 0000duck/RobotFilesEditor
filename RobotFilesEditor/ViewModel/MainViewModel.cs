@@ -18,6 +18,9 @@ using KukaLoadGenerator = Load_Generator;
 using RobotFilesEditor.Model.DataOrganization;
 using CommonLibrary.DataClasses;
 using GalaSoft.MvvmLight.Messaging;
+using ProjectInformations.Model;
+using System.Xml.Serialization;
+//using System.Windows.Forms;
 
 namespace RobotFilesEditor.ViewModel
 {
@@ -32,6 +35,7 @@ namespace RobotFilesEditor.ViewModel
         private string _destinationPath;
         private bool _continueWithoutConfirm;
         public static RoutedCommand MyCommand;
+        ProjectInfos xmlDeserialized;
         #endregion
 
         #region Controls         
@@ -367,6 +371,17 @@ namespace RobotFilesEditor.ViewModel
             }
         }
 
+        public ObservableCollection<Project> ProjectInfos { get { return m_ProjectInfos; } set { Set(ref m_ProjectInfos, value); } }
+        private ObservableCollection<Project> m_ProjectInfos;
+
+        public Project SelectedProject { get { return m_SelectedProject; } set { Set(ref m_SelectedProject, value); UpdateSelectedProject(); } }
+        private Project m_SelectedProject;
+
+        public bool ToolBarVisibility { get { return m_ToolBarVisibility; } set { Set(ref m_ToolBarVisibility, value); } }
+        private bool m_ToolBarVisibility;
+
+        public bool SideMenuVisibility { get { ToolBarVisibility = !m_SideMenuVisibility; return m_SideMenuVisibility; } set { Set(ref m_SideMenuVisibility, value); } }
+        private bool m_SideMenuVisibility;
 
         #endregion
 
@@ -387,7 +402,8 @@ namespace RobotFilesEditor.ViewModel
                 LogCollection.AddEntry(new LogResult("Application started", LogResultTypes.Information));
 
                 Messenger.Default.Register<LogResult>(this, "AddLog", message => LogCollection.AddEntry(message));
-
+                
+                DeserializeProjects();
                 DebugVisibility = Visibility.Visible;
                 CheckOrder = false;
                 ControlerChooser = new ObservableCollection<ControlItem>();
@@ -579,6 +595,8 @@ namespace RobotFilesEditor.ViewModel
         public ICommand ProgramFormatter { get; set; }
         public ICommand CheckGripperXML { get; set; }
 
+        public ICommand OpenProjectConfig { get; set; }
+
         private void SetCommands()
         {
             ChangeName = new RelayCommand(ChangeNameExecute);
@@ -647,6 +665,14 @@ namespace RobotFilesEditor.ViewModel
             ChecksumsFanuc = new RelayCommand(ChecksumsFanucExecute);
             ProgramFormatter = new RelayCommand(ProgramFormatterExecute);
             CheckGripperXML = new RelayCommand(CheckGripperXMLExecute);
+            OpenProjectConfig = new RelayCommand(OpenProjectConfigExecute);
+        }
+
+        private void OpenProjectConfigExecute()
+        {
+            ProjectInformations.MainWindow window = new ProjectInformations.MainWindow();
+            window.ShowDialog();
+            DeserializeProjects();
         }
 
         private void CheckGripperXMLExecute()
@@ -1204,30 +1230,34 @@ namespace RobotFilesEditor.ViewModel
                 myNode.InnerText = SourcePath;
             }
             doc.Save(GlobalData.PathFile);
+        }
 
+        private void DeserializeProjects()
+        {
+            if (ProjectInfos is null)
+              ProjectInfos = new ObservableCollection<Project>();
 
-            //string[] readLines = File.ReadAllLines(GlobalData.ConfigurationFileName);
+            var path = CommonLibrary.CommonMethods.GetFilePath("ProjectInfos.xml");
+            var projName = string.Empty;
+            var serializer = new XmlSerializer(typeof(ProjectInfos));
+            using (Stream reader = new FileStream(path, FileMode.Open))
+            {
+                xmlDeserialized = (ProjectInfos)serializer.Deserialize(reader);
+                xmlDeserialized.Project.ForEach(x => ProjectInfos.Add(x));
+                projName = xmlDeserialized.SelectedProject.Name;               
+            }
+            SelectedProject = ProjectInfos.FirstOrDefault(x => x.Name == projName);
+        }
 
-            //var listOfStrings = new List<string>();
-            //if (File.Exists(GlobalData.ConfigurationFileName))
-            //{
-            //    foreach (string line in readLines)
-            //    {
-            //        if (line.Contains("DestinationPath") & isDestination)
-            //        {
-            //            listOfStrings.Add("DestinationPath=\"" + DestinationPath + "\"");
-            //        }
-            //        else if (line.Contains("SourcePath") & !isDestination)
-            //        {
-            //            listOfStrings.Add("SourcePath=\"" + SourcePath + "\"");
-            //        }
-
-            //        else
-            //            listOfStrings.Add(line);
-            //    }
-            //    string[] linesToWrite = listOfStrings.ToArray();
-            //    File.WriteAllLines(GlobalData.ConfigurationFileName, linesToWrite);
-            //}
+        private bool CheckFileEmpty(string result)
+        {
+            using (StreamReader reader = new StreamReader(result))
+            {
+                var readText = reader.ReadToEnd();
+                if (string.IsNullOrEmpty(readText))
+                    return true;
+            }
+            return false;
         }
 
         private void OnOpenLogExecute()
@@ -1245,6 +1275,18 @@ namespace RobotFilesEditor.ViewModel
                 System.Diagnostics.Process.Start(GlobalData.DestinationPath.Trim());
             else
                 MessageBox.Show("Destination folder does not exist", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+        private void UpdateSelectedProject()
+        {
+            var path = CommonLibrary.CommonMethods.GetFilePath("ProjectInfos.xml");
+            System.IO.File.WriteAllText(path, string.Empty);
+            var serializer = new XmlSerializer(typeof(ProjectInfos));
+            using (Stream fs = new FileStream(path, FileMode.Open))
+            {   
+                if (!string.IsNullOrEmpty(SelectedProject?.Name))
+                    xmlDeserialized.SelectedProject.Name = SelectedProject?.Name;
+                serializer.Serialize(fs, xmlDeserialized);
+            }
         }
         #endregion
     }

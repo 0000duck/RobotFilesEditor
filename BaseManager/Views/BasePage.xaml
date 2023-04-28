@@ -1,0 +1,85 @@
+﻿<Page x:Class="BaseManager.Views.BasePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:BaseManager.Views"
+      xmlns:conv="clr-namespace:CommonLibrary.Converters;assembly=CommonLibrary"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="BasePage">
+    <Page.Resources>
+        <ResourceDictionary>
+            <conv:MsgToImgConverter x:Key="msgToImgConverter"/>
+        </ResourceDictionary>
+    </Page.Resources>
+    <Grid>
+        <Grid>
+            <DockPanel>
+                <DataGrid MinWidth="400" ItemsSource="{Binding BaseCollection}" AutoGenerateColumns="False" SelectedItem="{Binding SelectedBase}"
+                CanUserAddRows="True" CanUserDeleteRows="True"                 
+                SelectionMode="Single" SelectionUnit="FullRow">
+                    <DataGrid.Columns>
+
+                        <!--**********************************************************************-->
+
+                        <DataGridTemplateColumn Header="Number">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource Findancestor, AncestorType={x:Type Window}}, Path=DataContext.AvailableBases}"
+                                      SelectedItem="{Binding Number, UpdateSourceTrigger=PropertyChanged}"
+                                      MinWidth="20"
+                                      >
+                                    </ComboBox>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <!--**********************************************************************-->
+
+                        <DataGridTemplateColumn Header="Found Names">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox ItemsSource="{Binding Path=FoundNames}"
+                                      SelectedItem="{Binding SelectedName, UpdateSourceTrigger=PropertyChanged}"
+                                      MinWidth="20"
+                                      >
+                                    </ComboBox>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <!--**********************************************************************-->
+
+                        <DataGridTemplateColumn Header="Name">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=BaseName}">
+                                    </TextBlock>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                            <DataGridTemplateColumn.CellEditingTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding Path=BaseName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellEditingTemplate>
+                        </DataGridTemplateColumn>
+
+                        <!--**********************************************************************-->
+
+                        <DataGridTemplateColumn Header="Result">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <DockPanel>
+                                        <Image Width="15" Source="{Binding Path=CheckState,Converter={StaticResource msgToImgConverter}}"/>
+                                        <TextBlock Text="{Binding Path=Message}" Margin="2"/>
+                                    </DockPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </Grid>
+    </Grid>
+</Page>

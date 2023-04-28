@@ -53,8 +53,10 @@ namespace RobotFilesEditor.ViewModel.Helper
         public string ClearLocalExtFilesTooltip { get; private set; }
         public string FanucChecksumsToolTip { get; private set; }
         public string ProgramFormatterTooltip { get; private set; }
-
         public string CheckGripperXMLTooltip { get; private set; }
+        public string OpenProjectConfigTooltip { get; private set; }
+
+        
         public MainWindowTooltips()
         {
             ChangeNameTooltip = "Change your user name. Your name will be visible in program headers";
@@ -110,6 +112,7 @@ namespace RobotFilesEditor.ViewModel.Helper
             FanucChecksumsToolTip = "Prepare document containing DCS checksums";
 
             ProgramFormatterTooltip = "Tool for defining robot program formatting rules";
+            OpenProjectConfigTooltip = "Opens window where all project relevant informations can be edited";
         }
     }
 }
