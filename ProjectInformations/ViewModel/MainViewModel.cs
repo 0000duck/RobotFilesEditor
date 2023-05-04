@@ -18,6 +18,7 @@ namespace ProjectInformations.ViewModel
     {
 
         #region fields
+        const string xmlFileName = "ProjectInfos.xml";
         TypNumber copyOfTyp;
         ProjectInfos xmlDeserialized;
         string tempProjectName;
@@ -28,17 +29,15 @@ namespace ProjectInformations.ViewModel
         #region ctor
         public MainViewModel()
         {
+            ExportOnClose = false;
             EditProjectNameVisible = false;
             TypeOptionsVisible = true;
-            path = CommonMethods.GetFilePath("ProjectInfos.xml");
+            path = CommonMethods.GetFilePath(xmlFileName);
             Deserialize();
             if (Projects?.Count > 0)
             {
                 SelectedProject = Projects[0];
                 UpdateGUI();
-                //ApplicationTypes = SelectedProject.ApplicationTypes;
-                //UseDescrInCollZone = BoolParser(SelectedProject.UseCollDescr.Value);
-                //NotUseDescrInCollZone = !BoolParser(SelectedProject.UseCollDescr.Value);
             }
         }
         #endregion ctor
@@ -58,6 +57,9 @@ namespace ProjectInformations.ViewModel
 
         [ObservableProperty]
         ApplicationTypes applicationTypes;
+
+        [ObservableProperty]
+        bool exportOnClose;
 
         public bool EditProjectNameVisible { get { return m_EditProjectNameVisible; } set { SetProperty(ref m_EditProjectNameVisible, value); EditProjectNameDisabled = !value; } }
         private bool m_EditProjectNameVisible;
@@ -84,10 +86,10 @@ namespace ProjectInformations.ViewModel
         public List<int> TypNumbersList { get => CreteTypList(); }
 
 
-        public bool UseDescrInCollZone { get { return m_UseDescrInCollZone; } set { SetProperty(ref m_UseDescrInCollZone, value); SelectedProject.UseCollDescr.Value = value.ToString(); } }
+        public bool UseDescrInCollZone { get { return m_UseDescrInCollZone; } set { SetProperty(ref m_UseDescrInCollZone, value); if (SelectedProject?.UseCollDescr != null) SelectedProject.UseCollDescr.Value = value.ToString(); } }
         private bool m_UseDescrInCollZone;
 
-        public bool NotUseDescrInCollZone { get { return m_notUseDescrInCollZone; } set { SetProperty(ref m_notUseDescrInCollZone,value); SelectedProject.UseCollDescr.Value = (!value).ToString(); } }
+        public bool NotUseDescrInCollZone { get { return m_notUseDescrInCollZone; } set { SetProperty(ref m_notUseDescrInCollZone,value); if (SelectedProject?.UseCollDescr != null) SelectedProject.UseCollDescr.Value = (!value).ToString(); } }
         private bool m_notUseDescrInCollZone;
       
         #endregion properties
@@ -159,7 +161,10 @@ namespace ProjectInformations.ViewModel
             {
                 serializer.Serialize(fs, xmlDeserialized);
             }
-
+            if (ExportOnClose)
+            {
+                TryWriteFileToServer(xmlFileName);
+            }
             if (window != null)
                 window.Close();
         }
@@ -242,8 +247,8 @@ namespace ProjectInformations.ViewModel
             MainTypID = SelectedProject == null ? 0 : SelectedProject.TypIDMain.Value;
             CommunalTypID = SelectedProject == null ? 0 : SelectedProject.TypIDCommunal.Value;
             ApplicationTypes = SelectedProject?.ApplicationTypes;
-            UseDescrInCollZone = BoolParser(SelectedProject.UseCollDescr.Value);
-            NotUseDescrInCollZone = !BoolParser(SelectedProject.UseCollDescr.Value);
+            UseDescrInCollZone = BoolParser(SelectedProject?.UseCollDescr?.Value);
+            NotUseDescrInCollZone = !BoolParser(SelectedProject?.UseCollDescr?.Value);
         }
 
         private List<int> CreteTypList()
@@ -256,9 +261,27 @@ namespace ProjectInformations.ViewModel
 
         private bool BoolParser(string str)
         {
-            if (str.Equals("true", StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrEmpty(str) && str.Equals("true", StringComparison.OrdinalIgnoreCase))
                 return true;
             return false;
+        }
+
+        private void TryWriteFileToServer(string fileName)
+        {
+            var fileNameComplete = Path.Combine(CommonGlobalData.serverPath, fileName);
+            if (!Directory.Exists(CommonGlobalData.serverPath))
+            {
+                return;
+            }
+            if (File.Exists(fileNameComplete))
+            {
+                var dialog = MessageBox.Show($"File {fileNameComplete} exists. Overwrite?", "Overwrite?", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (dialog == MessageBoxResult.No)
+                    return;
+                File.Delete(fileNameComplete);
+            }
+            File.Copy(path, fileNameComplete);
+
         }
         #endregion private methods
     }

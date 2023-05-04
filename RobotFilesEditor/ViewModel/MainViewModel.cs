@@ -1257,7 +1257,7 @@ namespace RobotFilesEditor.ViewModel
             {
                 xmlDeserialized = (ProjectInfos)serializer.Deserialize(reader);
                 xmlDeserialized.Project.ForEach(x => ProjectInfos.Add(x));
-                projName = xmlDeserialized.SelectedProject.Name;               
+                projName = xmlDeserialized?.SelectedProject?.Name;               
             }
             SelectedProject = ProjectInfos.FirstOrDefault(x => x.Name == projName);
         }

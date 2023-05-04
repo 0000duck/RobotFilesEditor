@@ -8,7 +8,7 @@
         xmlns:vm="clr-namespace:ProjectInformations.ViewModel"
         xmlns:converter="clr-namespace:ProjectInformations.Converters"
         mc:Ignorable="d"
-        Title="Project cofigurator" MaxHeight="600" Width="800">
+        Title="Project configurator" MaxHeight="600" Width="800">
     <Window.Resources>
         <ResourceDictionary>
             <converter:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
@@ -37,6 +37,7 @@
                     <Button Content="Add project" Command="{Binding AddProjectCommand}" Margin="5" IsEnabled="{Binding EditProjectNameDisabled}"/>
                     <Button Content="Delete project" Command="{Binding DeleteProjectCommand}" Margin="5" IsEnabled="{Binding EditProjectNameDisabled}"/>
                     <Button Content="Rename project" Command="{Binding RenameProjectCommand}" Margin="5" IsEnabled="{Binding EditProjectNameDisabled}"/>
+                    <CheckBox IsChecked="{Binding ExportOnClose}" Content="Export after close" Margin="5"/>
                 </StackPanel>
             </DockPanel>
         </Border>
@@ -171,7 +172,7 @@
                 </Border>
             </Border>
             <StackPanel Height="30" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Center">
-                <Button Content="OK" DockPanel.Dock="Top"  VerticalAlignment="Bottom" Command="{Binding OKCommand}" CommandParameter="{Binding ElementName=MainProgramWindow}" Margin="5" Width="50"/>
+                <Button Content="OK" DockPanel.Dock="Top" IsEnabled="{Binding EditProjectNameDisabled}"  VerticalAlignment="Bottom" Command="{Binding OKCommand}" CommandParameter="{Binding ElementName=MainProgramWindow}" Margin="5" Width="50"/>
                 <Button Content="Cancel" Command="{Binding CancelCommand}" CommandParameter="{Binding ElementName=MainProgramWindow}" Margin="5" Width="50"/>
             </StackPanel>
         </DockPanel>

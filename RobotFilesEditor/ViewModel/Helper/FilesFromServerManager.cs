@@ -11,13 +11,12 @@ namespace RobotFilesEditor.ViewModel.Helper
 {
     public static class FilesFromServerManager
     {
-        private const string serverPath = @"\\alfa\Dzialy\automatyka\Robotyka\BMW\02_Tools\RobotFilesHarvester\"; 
         public static void CopyProjectFile(string file)
         {
             if (CheckServerConnection())
             {
                 var destpath = CommonMethods.GetFilePath(file);
-                var sourcePath = Path.Combine(serverPath, file);
+                var sourcePath = Path.Combine(CommonLibrary.CommonGlobalData.serverPath, file);
 
                 if (File.Exists(sourcePath))
                 {
@@ -49,7 +48,7 @@ namespace RobotFilesEditor.ViewModel.Helper
 
         private static bool CheckServerConnection()
         {
-            if (Directory.Exists(serverPath))
+            if (Directory.Exists(CommonGlobalData.serverPath))
                 return true;
             return false;
         }
