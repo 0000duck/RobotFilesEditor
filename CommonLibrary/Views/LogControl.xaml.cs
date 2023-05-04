@@ -41,7 +41,7 @@ namespace CommonLibrary.Views
         }
 
         public static readonly DependencyProperty LogCollectionProperty =
-            DependencyProperty.Register("LogCollection", typeof(LogCollection), typeof(LogControl), new PropertyMetadata(new LogCollection()));
+            DependencyProperty.Register("LogCollection", typeof(LogCollection), typeof(LogControl), new PropertyMetadata(new LogCollection(false)));
 
         //public string OkContent
         //{

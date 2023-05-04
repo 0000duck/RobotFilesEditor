@@ -15,7 +15,9 @@
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using Microsoft.Practices.ServiceLocation;
+using PdfSharp.Pdf.Content;
 using RobotFilesEditor.Model.Operations;
+using RobotFilesEditor.ViewModel.Helper;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -36,6 +38,9 @@ namespace RobotFilesEditor.ViewModel
 
                 try
                 {
+                    FilesFromServerManager.CopyProjectFile("ProjectInfos.xml");
+                    FilesFromServerManager.CopyProjectFile("ProgramFormatter.xml");
+
                     filesSerialization = new Serializer.FilesSerialization();
                     controlers = filesSerialization.GetControlersConfigurations();
 

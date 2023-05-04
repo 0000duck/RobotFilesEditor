@@ -15,7 +15,6 @@ using RobotFilesEditor.Dialogs.ChangeName;
 using RobotFilesEditor.Dialogs.TypeCollisionComment;
 using RobotFilesEditor.Dialogs.SelectCollision;
 using RobotFilesEditor.Dialogs.AppTypeSelect;
-using RobotFilesEditor.Dialogs.RenameBase;
 using RobotFilesEditor.Dialogs.RenameTool;
 using RobotFilesEditor.Dialogs.SelectLoadVar;
 using RobotFilesEditor.Dialogs.NameRobot;
@@ -29,21 +28,31 @@ using CommonLibrary;
 using System.Collections.ObjectModel;
 using GalaSoft.MvvmLight.Messaging;
 using CommonLibrary.DataClasses;
-using BaseManager.Model;
+using RobotSoftwareManager.Model;
 using ProjectInformations.Model;
 using System.Xml.Serialization;
 using ProgramTextFormat.Messaging;
-//using RobotFilesEditor.Model.Operations.DataClass;
+using System.Diagnostics.PerformanceData;
 
 namespace RobotFilesEditor.Model.Operations
 {
     public static class SrcValidator
     {
+        //ZOSTAJE:
+        public static string roboter;
+        public static IDictionary<string, string> Result { get; set; }
+        public static IDictionary<string, Dats> UnusedDats { get; set; }
+        public static IDictionary<string, Dats> UsedDats { get; set; }
+
+
+
+
+
+
+
         private static ProjectInfos projectsDeserialized;
 
         public static string language;
-        public static IDictionary<string, Dats> UnusedDats { get; set; }
-        public static IDictionary<string, Dats> UsedDats { get; set; }
         public static List<string> AlreadyContain { get; set; }
         public static List<ResultInfo> GlobalFiles { get; set; }
         public static bool CopiedFiles { get; set; }
@@ -51,10 +60,8 @@ namespace RobotFilesEditor.Model.Operations
         static IDictionary<int, List<string>> collisionsWithDescription;
         static IDictionary<int, string> jobsWithDescription;
         static List<CollisionWithoutDescr> collisions;
-        static string roboter;
         public static List<string> UnclassifiedPaths { get; set; }
         public static ValidationData DataToProcess { get; set; }
-        public static IDictionary<string, string> Result { get; set; }
         private static bool UnusedDataPresent { get; set; }
         private static string matchRoboter;
         private static bool fillDescrs;
@@ -67,7 +74,6 @@ namespace RobotFilesEditor.Model.Operations
             {
                 DeserializeProjects();
                 GlobalData.loadVars = new Dictionary<int, string>();
-                GlobalData.LocalHomesFound = false;
                 matchRoboter = string.Empty;
                 GlobalData.HasToolchager = false;
                 if (DataToProcess.SrcFiles.Count == 0)
@@ -96,9 +102,16 @@ namespace RobotFilesEditor.Model.Operations
                 SetFillDescr();
                 if (GlobalData.ControllerType != "KRC4 Not BMW")
                 {
-                    collisions = GetCollisions(srcFiles);
-                    collisionsWithDescription = GetCollisionsWithDescription(srcFiles);
-                    jobsWithDescription = GetJobsWithDescr(resultSrcFiles);
+                    if (GlobalData.ControllerType == "KRC4")
+                    {
+                        List<RobotCollision> robotCollisions = GetRobotCollisions(resultSrcFiles);
+                    }
+                    else
+                    {
+                        collisions = GetCollisions(srcFiles);
+                        collisionsWithDescription = GetCollisionsWithDescription(srcFiles);
+                        jobsWithDescription = GetJobsWithDescr(resultSrcFiles);
+                    }
                 }
                 FindDatFiles(srcFiles, datFiles);
                 FindUnusedDataInDatFiles(resultSrcFiles, datFiles);
@@ -153,6 +166,7 @@ namespace RobotFilesEditor.Model.Operations
             return true;
 
         }
+
         private static void DeserializeProjects()
         {
             var path = CommonMethods.GetFilePath("ProjectInfos.xml");
@@ -363,7 +377,7 @@ namespace RobotFilesEditor.Model.Operations
             }
             if (proceduresWithLocalHomes.Count > 0)
             {
-                GlobalData.LocalHomesFound = true;
+                //GlobalData.LocalHomesFound = true;
                 string starter = "Local Home definitions found in procedures:\r\n";
                 string proc = string.Empty;
                 foreach (string procedure in proceduresWithLocalHomes)
@@ -371,7 +385,6 @@ namespace RobotFilesEditor.Model.Operations
                     proc += procedure + "\r\n";
                 }
                 string ender = "Download paths again with correct template!";
-                MessageBox.Show(starter + proc + ender, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 Messenger.Default.Send<LogResult>(new LogResult(starter + proc + ender, LogResultTypes.Error), "AddLog");
             }
         }
@@ -812,6 +825,64 @@ namespace RobotFilesEditor.Model.Operations
             GlobalData.InputDataList = inputDataList;
         }
 
+        private static List<RobotCollision> GetRobotCollisions(IDictionary<string, List<string>> srcFiles)
+        {
+            Regex isCollReq = new Regex(@"(?<=^\s*Plc_CollSafetyReq1\s*\()\d+", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+            Regex isCollClr = new Regex(@"(?<=^\s*Plc_CollSafetyClear1\s*\()\d+", RegexOptions.IgnoreCase | RegexOptions.Multiline);
+            List<RobotCollision> robotCollisions = new List<RobotCollision>();
+            string[] colldescrs = ConfigurationManager.AppSettings["CollisionDescriptions" + GlobalData.ControllerType].Split(',').Select(s => s.Trim()).ToArray();
+            Regex getCollZoneCommentKRC4 = new Regex(@"(?<=Desc\s*\:\s*)[\d\w\s-_,\(\)]*", RegexOptions.IgnoreCase);
+            foreach (var file in srcFiles)
+            {
+                string previousLine = string.Empty;
+                foreach (var line in file.Value)
+                {
+                    GetCollisionDescriptions(isCollReq, robotCollisions, line, previousLine, true);
+                    GetCollisionDescriptions(isCollClr, robotCollisions, line, previousLine, false);
+                    previousLine = line;
+                }
+            }
+
+            return robotCollisions;
+        }
+
+        private static void GetCollisionDescriptions(Regex collRegex, List<RobotCollision> robotCollisions, string line, string previousLine, bool isReq)
+        {
+            string[] colldescrs = ConfigurationManager.AppSettings["CollisionDescriptions" + GlobalData.ControllerType].Split(',').Select(s => s.Trim()).ToArray();
+            Regex getCollZoneCommentKRC4 = new Regex(@"(?<=Desc\s*\:\s*)[\d\w\s-_,\(\)]*", RegexOptions.IgnoreCase);
+            if (collRegex.IsMatch(line))
+            {
+                int number = int.Parse(collRegex.Match(line).ToString());
+                RobotCollision robotCollision;
+                
+                if (!robotCollisions.Any(x => x.Number == number))
+                {
+                    robotCollision = new RobotCollision(number);
+                    robotCollisions.Add(robotCollision);
+                }
+                else
+                    robotCollision = robotCollisions.FirstOrDefault(x => x.Number == number);
+                var sectionToAdd = isReq ? robotCollision.FoundNames : robotCollision.FoundNamesRel;
+
+                if (getCollZoneCommentKRC4.IsMatch(line) && !robotCollision.FoundNames.Contains(getCollZoneCommentKRC4.Match(line).ToString().Trim()))
+                    sectionToAdd.Add(getCollZoneCommentKRC4?.Match(line)?.ToString().Trim());
+
+                foreach (var descr in colldescrs)
+                {
+                    Regex isCollRegex = new Regex(descr, RegexOptions.IgnoreCase | RegexOptions.Multiline);
+                    if (isCollRegex.IsMatch(previousLine))
+                    {
+                        Regex getCollDescr = new Regex(@"(?<=" + descr + ".*" + number.ToString() + @"\s*-*-s*).*", RegexOptions.IgnoreCase);
+                        if (getCollDescr.IsMatch(previousLine))
+                        {
+                            var currDescr = getCollDescr?.Match(previousLine)?.ToString().Trim();
+                            if (!sectionToAdd.Contains(currDescr))
+                                sectionToAdd.Add(currDescr);
+                        }
+                    }
+                }
+            }
+        }
         public static IDictionary<int, List<string>> GetCollisionsWithDescription(IDictionary<string, string> srcFiles, string contrType = "")
         {
             bool isConrtTypePreset = contrType == "" ? false : true;
@@ -2537,12 +2608,12 @@ namespace RobotFilesEditor.Model.Operations
 
                 result.Add(file.Key, lines);
             }
-            //TEMP
-            if (GlobalData.ControllerType != "KRC4 Not BMW")
-            {
-                result = ClearHeader(result);
-                result = AddHeader(result, true);
-            }
+            ////TEMP
+            //if (GlobalData.ControllerType != "KRC4 Not BMW")
+            //{
+            //    result = ClearHeader(result);
+            //    result = AddHeader(result, true);
+            //}
             return result;
         }
 
@@ -2951,11 +3022,11 @@ namespace RobotFilesEditor.Model.Operations
             }
             if (errorFound)
             {
-                List<RobotBase> robotBases = new List<RobotBase>();
-                foundBases.ToList().ForEach(x => robotBases.Add(new RobotBase(x.Key, x.Value , baseNamesFromStandard)));
-                BaseManager.ViewModel.MainViewModel vm= new BaseManager.ViewModel.MainViewModel(robotBases);
-                BaseManager.MainWindow window = new BaseManager.MainWindow(vm);
-                window.ShowDialog();
+                //List<RobotBase> robotBases = new List<RobotBase>();
+                //foundBases.ToList().ForEach(x => robotBases.Add(new RobotBase(x.Key, x.Value , baseNamesFromStandard)));
+                //RobotSoftwareManager.ViewModel.MainViewModel vm= new RobotSoftwareManager.ViewModel.MainViewModel(robotBases);
+                //RobotSoftwareManager.MainWindow window = new RobotSoftwareManager.MainWindow(vm);
+                //window.ShowDialog();
             }
 
             foreach (var srcFile in resultSrcFiles.Where(x => x.Key.Contains(".src")))
@@ -3456,7 +3527,8 @@ namespace RobotFilesEditor.Model.Operations
 
         public static void GetExceptionLine(Exception ex, string line = "")
         {
-            MessageBox.Show(ex.Message + "\r\n" + ex.StackTrace,"Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
+            Messenger.Default.Send<LogResult>(new LogResult(ex.Message + "\r\n" + ex.StackTrace, LogResultTypes.Error), "AddLog");
+            //MessageBox.Show(ex.Message + "\r\n" + ex.StackTrace,"Error",MessageBoxButtons.OK,MessageBoxIcon.Error);
             Trace.TraceError(ex.StackTrace);
         }
 

@@ -1,0 +1,36 @@
+﻿<Window x:Class="RobotSoftwareManager.MainWindow"
+        x:Name="MainProgramWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Views="clr-namespace:RobotSoftwareManager.Views"
+        xmlns:logControl="clr-namespace:CommonLibrary.Views;assembly=CommonLibrary"
+        mc:Ignorable="d"
+        Title="Robot software manager" Height="600" Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="350"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <TabControl Grid.Row="0">
+            <TabItem Header="Bases">
+                <Views:BaseUserControl DataContext="{Binding BaseViewModel}" x:Name="BaseUserControl"/>
+            </TabItem>
+            <TabItem Header="Jobs">
+                <Views:JobsUserControl DataContext="{Binding JobsViewModel}" x:Name="JobsUserControl"/>
+            </TabItem>
+            <TabItem Header="Collisions">
+                <Views:CollisionsUserControl DataContext="{Binding CollisionsViewModel}" x:Name="CollisionsUserControl"/>
+            </TabItem>
+        </TabControl>
+        <Grid Grid.Row="1" Margin="5">
+            <logControl:LogControl />
+        </Grid>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Content="OK" IsEnabled="{Binding OkEnabled}" Command="{Binding OkCommand}" CommandParameter="{Binding ElementName=MainProgramWindow}" Width="75" Height="20" Margin="5"/>
+            <Button Content="Cancel" Command="{Binding CancelCommand}" CommandParameter="{Binding ElementName=MainProgramWindow}" Width="75" Height="20" Margin="5"/>
+        </StackPanel>
+    </Grid>
+</Window>

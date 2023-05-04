@@ -20,6 +20,9 @@ using CommonLibrary.DataClasses;
 using GalaSoft.MvvmLight.Messaging;
 using ProjectInformations.Model;
 using System.Xml.Serialization;
+using RobotFilesEditor.Model.RobotConrollers.Helpers;
+using System.Threading.Tasks;
+using System.Threading;
 //using System.Windows.Forms;
 
 namespace RobotFilesEditor.ViewModel
@@ -199,7 +202,10 @@ namespace RobotFilesEditor.ViewModel
             {
                 Set( ref _englishSelected, value);
                 if (value == true)
+                {
+                    GlobalData.Language = "EN";
                     SrcValidator.language = "EN";
+                }
                 CanScanContent = true;
             }
         }
@@ -212,7 +218,10 @@ namespace RobotFilesEditor.ViewModel
             {
                 Set(ref _deutschSelected, value);
                 if (value == true)
+                {
+                    GlobalData.Language = "DE";
                     SrcValidator.language = "DE";
+                }
                 CanScanContent = true;
             }
         }
@@ -383,6 +392,8 @@ namespace RobotFilesEditor.ViewModel
         public bool SideMenuVisibility { get { ToolBarVisibility = !m_SideMenuVisibility; return m_SideMenuVisibility; } set { Set(ref m_SideMenuVisibility, value); } }
         private bool m_SideMenuVisibility;
 
+        public bool UseOldFormatting { get { return m_UseOldFormatting; } set { Set(ref m_UseOldFormatting, value); GlobalData.UseOldFormatting = value; } }
+        private bool m_UseOldFormatting;
         #endregion
 
         #region logbook properties
@@ -398,7 +409,7 @@ namespace RobotFilesEditor.ViewModel
                 MyCommand = new RoutedCommand();
                 MyCommand.InputGestures.Add(new KeyGesture(Key.S, ModifierKeys.Control));
                 Tooltips = new MainWindowTooltips();
-                LogCollection = new LogCollection();
+                LogCollection = new LogCollection(false);
                 LogCollection.AddEntry(new LogResult("Application started", LogResultTypes.Information));
 
                 Messenger.Default.Register<LogResult>(this, "AddLog", message => LogCollection.AddEntry(message));
@@ -1152,29 +1163,31 @@ namespace RobotFilesEditor.ViewModel
             }
         }
 
-        private void ExecuteAllOperationsCommandExecute()
+        private void  ExecuteAllOperationsCommandExecute()
         {
             if ((AllOperations?.Count > 0) == false)
             {
                 MessageBoxResult ExeptionMessage = MessageBox.Show("No selected controler", "Error!", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
-            string fullMsg = string.Empty;
+            //List<string> messages = new List<string>();
             foreach (var operation in AllOperations)
             {
                 operation.ClearMsg();
                 operation.ExecuteOperationCommandExecute();
-                fullMsg += operation.Msg + "\r\n";
+                Messenger.Default.Send<LogResult>(new LogResult(operation.Msg, LogResultTypes.OK), "AddLog");
+                Thread.Sleep(100);
             }
             if (GlobalData.ControllerType == "FANUC")
             { 
                 Model.Operations.FANUC.FanucCreateSOVBackup fanucBackup = new Model.Operations.FANUC.FanucCreateSOVBackup(true);
             }
-            MessageBox.Show(fullMsg, "Operations result", MessageBoxButton.OK, MessageBoxImage.Information);
+            //messages.ForEach(x => LogCollection.AddEntry(new LogResult(x, LogResultTypes.OK)));
+            //MessageBox.Show(fullMsg, "Operations result", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void ShowAllOperationsResults()
         {
+            OperationContainer.Init();
             SrcValidator.GetCopyOperationsCount(AllOperations);
             foreach (var operation in AllOperations)
             {

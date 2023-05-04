@@ -165,6 +165,7 @@
                                             </StackPanel>
                                         </GroupBox>
                                         <CheckBox Height="20" Content="Use old view" Margin="5" IsChecked="{Binding SideMenuVisibility}"/>
+                                        <CheckBox Height="20" Content="Use old formatting" Margin="5" IsChecked="{Binding UseOldFormatting}"/>
                                         <ComboBox ItemsSource="{Binding ProjectInfos}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedProject}" Margin="3"/>
                                     </StackPanel>
                                 </GroupItem>

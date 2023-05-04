@@ -54,7 +54,7 @@ namespace RobotFilesEditor
         public static string WeldingType { get; set; }
         public static string LaserType { get; set; }
         //public static string RivetingType { get; set; }
-        public static bool LocalHomesFound { get; set; }
+       public static bool LocalHomesFound { get; set; }
         public static IDictionary<int, string> loadVars { get; set; }
         private static string[] _viewerPrograms = { "notepad++.exe"};
         internal static FileValidationData.Userbits SignalNames { get; set; }
@@ -64,7 +64,8 @@ namespace RobotFilesEditor
         public enum RenameWindowType { Point, Path };
         public enum SovLogContentInfoTypes { OK, Warning, Error, Information};
 
-
+        public static bool UseOldFormatting { get; set; }
+        public static string Language { get; set; }
 
 
         public static void SetViewProgram()

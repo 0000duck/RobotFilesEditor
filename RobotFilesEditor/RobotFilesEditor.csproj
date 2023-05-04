@@ -16,6 +16,8 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
     <PublishUrl>\\alfa\Dzialy\automatyka\Robotyka\BMW\02_Tools\RobotFilesHarvester\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Unc</InstallFrom>
@@ -35,8 +37,6 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -71,10 +71,11 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>4F4DB60B33DC46DAA037CBA882A21B96C7A9DE11</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>0AFCE51D50E5EBAB7ED318AD629CFF9BD64D52BD</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>RobotFilesEditor_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>
+    </ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -575,6 +576,11 @@
     <Compile Include="Model\Operations\TempScripts\ModifyE1Value.cs" />
     <Compile Include="Model\Operations\TrelloConvertMethods.cs" />
     <Compile Include="Model\Operations\TypIdChangeMethods.cs" />
+    <Compile Include="Model\RobotConrollers\Helpers\CheckOrderMethods.cs" />
+    <Compile Include="Model\RobotConrollers\Helpers\OperationContainer.cs" />
+    <Compile Include="Model\RobotConrollers\Helpers\UnusedDatsMethods.cs" />
+    <Compile Include="Model\RobotConrollers\KUKAValidator.cs" />
+    <Compile Include="Model\RobotConrollers\RobotControllerBase.cs" />
     <Compile Include="Model\Serialization\Objects\XmlFilePaths.cs" />
     <Compile Include="Model\Serialization\Operations\FileDeseralization.cs" />
     <Compile Include="Model\Serialization\Operations\Serialization.cs" />
@@ -600,6 +606,7 @@
     <Compile Include="Model\Filters\Filter.cs" />
     <Compile Include="Model\Operations\IFileDataOperations.cs" />
     <Compile Include="Model\Operations\IFileOperations.cs" />
+    <Compile Include="ViewModel\Helper\FilesFromServerManager.cs" />
     <Compile Include="ViewModel\Helper\MainWindowTooltips.cs" />
     <Compile Include="ViewModel\Helper\NotifyTaskCompletion.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
@@ -891,7 +898,6 @@
     <Content Include="Resources\GlobalFiles\KRC4\A47_global.dat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="RobotFilesEditor_TemporaryKey.pfx" />
     <Resource Include="FilePaths.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
@@ -1010,7 +1016,7 @@
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.8">
       <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.8 %28x86 i x64%29</ProductName>
+      <ProductName>Microsoft .NET Framework 4.8 %28x86 and x64%29</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
@@ -1052,9 +1058,9 @@
       <Project>{271ae5d0-8ce5-479c-974a-0789f7f09718}</Project>
       <Name>ABB add spaces</Name>
     </ProjectReference>
-    <ProjectReference Include="..\BaseManager\BaseManager.csproj">
+    <ProjectReference Include="..\RobotSoftwareManager\RobotSoftwareManager.csproj">
       <Project>{facfa6dc-9210-43f8-a1f9-5365bb8797b0}</Project>
-      <Name>BaseManager</Name>
+      <Name>RobotSoftwareManager</Name>
     </ProjectReference>
     <ProjectReference Include="..\Fanuc mirror\Fanuc mirro.csproj">
       <Project>{aab7b8f1-4bc0-4dd8-855b-eae129016af9}</Project>

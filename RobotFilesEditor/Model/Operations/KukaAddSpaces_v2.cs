@@ -23,33 +23,56 @@ namespace RobotFilesEditor.Model.Operations
             foreach (var file in inputSrcs)
             {
                 tempresult.Add(file.Key, new List<string>());
+                RobotInstructionBase prepreviousInstruction = null;
                 RobotInstructionBase previousInstruction = null;
+                bool groupActive = false;
                 foreach (var command in file.Value)
                 {
                     RobotInstructionBase instruction = TryMatchInstruction(command);
                     if (instruction != null)
                     {
+
                         var currentRule = rules.Rules.ProgramFormatRule.FirstOrDefault(x => x.SelectedInstruction == instruction);
+                        bool skipSwitch = false;
+                        if (groupActive)
+                        {
+                            if (currentRule != null && ((previousInstruction?.Name == instruction?.Name) || (currentRule.GroupWithOther && (currentRule.GroupWithInstruction.Equals(previousInstruction?.Name)))))
+                            {
+                                skipSwitch = true;
+                            }
+                            else
+                                groupActive = false;
+                        }
                         if (currentRule != null)
                         {
-                            switch (currentRule.SelectedAction)
+                            if (!skipSwitch)
                             {
-                                case "EnterBeforeAfter":
-                                case "EnterBefore":
-                                    string addAfter = currentRule.SelectedAction.Equals("EnterBeforeAfter") ? "\r\n" : "";
-                                    if (currentRule.GroupWithOther && previousInstruction != null && previousInstruction.Name.Equals(currentRule.GroupWithInstruction, StringComparison.OrdinalIgnoreCase))
-                                    {
-                                        tempresult[file.Key][tempresult[file.Key].Count - 1] = "\r\n" + tempresult[file.Key][tempresult[file.Key].Count - 1];
-                                        tempresult[file.Key].Add(command + addAfter);
-                                    }
-                                    else
-                                        tempresult[file.Key].Add("\r\n" + command + addAfter);
-                                    break;
-                                case "EnterAfter":
-                                    tempresult[file.Key].Add(command + "\r\n");
-                                    break;
-                                case "RemoveCommand":
-                                    break;
+                                switch (currentRule.SelectedAction)
+                                {
+                                    case "EnterBeforeAfter":
+                                    case "EnterBefore":
+                                        string addAfter = currentRule.SelectedAction.Equals("EnterBeforeAfter") ? "\r\n" : "";
+                                        if (currentRule.GroupWithOther && previousInstruction != null && previousInstruction.Name.Equals(currentRule.GroupWithInstruction, StringComparison.OrdinalIgnoreCase))
+                                        {
+                                            tempresult[file.Key][tempresult[file.Key].Count - 1] = "\r\n" + tempresult[file.Key][tempresult[file.Key].Count - 1];
+                                            tempresult[file.Key].Add(command + addAfter);
+                                        }
+                                        else
+                                            tempresult[file.Key].Add("\r\n" + command + addAfter);
+                                        break;
+                                    case "EnterAfter":
+                                        tempresult[file.Key].Add(command + "\r\n");
+                                        break;
+                                    case "RemoveCommand":
+                                        break;
+                                }
+                            }
+                            if (currentRule.GroupItems)
+                            {
+                                if ((previousInstruction?.Name == instruction?.Name) || (currentRule.GroupWithOther && (currentRule.GroupWithInstruction.Equals(previousInstruction?.Name))))
+                                {
+                                    groupActive = true;
+                                }
                             }
                         }
                         else
@@ -57,6 +80,7 @@ namespace RobotFilesEditor.Model.Operations
                     }
                     else
                         tempresult[file.Key].Add(command);
+                    prepreviousInstruction = previousInstruction;
                     previousInstruction = instruction;
                 }
             }

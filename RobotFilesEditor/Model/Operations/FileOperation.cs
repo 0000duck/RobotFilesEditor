@@ -1,5 +1,6 @@
 ﻿using RobotFilesEditor.Model.DataInformations;
 using RobotFilesEditor.Model.Operations;
+using RobotFilesEditor.Model.RobotConrollers;
 using RobotFilesEditor.Serializer;
 using RobotFilesEditor.ViewModel;
 using System;
@@ -11,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows;
+using RobotFilesEditor.Model.RobotConrollers.Helpers;
 
 namespace RobotFilesEditor
 {
@@ -190,6 +192,7 @@ namespace RobotFilesEditor
                 }
             }
         }
+
         #endregion Public
 
         #region Private
@@ -285,6 +288,8 @@ namespace RobotFilesEditor
 
             if (srcFiles.Count > 0)
             {
+                srcFiles.ToList().ForEach(x => OperationContainer.SrcFilesAll.Add(x));
+                OperationContainer.DatFilesAll.AddRange(DatFiles);
                 SrcValidator.FilterDataFromBackup(true,srcFiles);
                 SrcValidator.FilterDataFromBackup(false, null, DatFiles);
             }
@@ -305,10 +310,18 @@ namespace RobotFilesEditor
                 GlobalData.CurrentOpNum = 0;
                 GlobalData.CurrentOpNumFanuc++;
 
-                if (!SrcValidator.ValidateFile(filteredFilesIterator))
-                    return;
-                SrcValidator.UnclassifiedPaths = new List<string>();
-                SrcValidator.AlreadyContain = new List<string>();
+                if (GlobalData.ControllerType == "KRC4")
+                {
+                    KUKAValidator kUKAValidator = new KUKAValidator();
+                    kUKAValidator.ValidateFiles(OperationContainer.SrcFilesAll, OperationContainer.DatFilesAll);
+                }
+                else
+                {
+                    if (!SrcValidator.ValidateFile(filteredFilesIterator))
+                        return;
+                    SrcValidator.UnclassifiedPaths = new List<string>();
+                    SrcValidator.AlreadyContain = new List<string>();
+                }
             }
 
             foreach (var file in filteredFilesIterator)
@@ -392,21 +405,12 @@ namespace RobotFilesEditor
                 if (GlobalData.ControllerType != "FANUC")
                 {
                     IDictionary<string, List<string>> datFilesToCopy = SrcValidator.PrepareDatFiles(FilteredFiles);
-                    //FilteredFiles = SrcValidator.RemoveNotUsedFilesFromFilteredFiles(FilteredFiles);
                     filesToCopy = SrcValidator.ReplaceDataContent(FilteredFiles, datFilesToCopy);
-                }//FilteredFiles = ReplaceDataContent(FilteredFiles, datFilesToCopy);
+                }
                 else
                 {
                     filesToCopy = SrcValidator.Result;
                 }
-                //foreach (var datFile in datFilesToCopy)
-                //{
-                //    filesToCopy.Remove(datFile.Key);
-                //    string currentString = "";
-                //    foreach (string line in datFile.Value)
-                //        currentString += line + "\r\n";                     
-                //    filesToCopy.Add(datFile.Key,currentString);
-                //}
                 if (this.OperationName == "Copy init_out")
                 {
                     string destination = FilesMenager.CreateDestinationFolderPath(DestinationPath, DestinationFolder);

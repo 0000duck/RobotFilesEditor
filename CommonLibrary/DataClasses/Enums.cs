@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace CommonLibrary.DataClasses
 {
-    public enum BaseCheckState { OK, Warning, Error }
+    public enum RobotSoftCheckState { OK, Warning, Error }
 }

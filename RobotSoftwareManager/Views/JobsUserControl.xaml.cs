@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace BaseManager.Views
+namespace RobotSoftwareManager.Views
 {
     /// <summary>
-    /// Interaction logic for BasePage.xaml
+    /// Interaction logic for JobsUserControl.xaml
     /// </summary>
-    public partial class BasePage : Page
+    public partial class JobsUserControl : UserControl
     {
-        public BasePage()
+        public JobsUserControl()
         {
             InitializeComponent();
         }

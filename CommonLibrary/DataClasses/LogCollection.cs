@@ -1,4 +1,7 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using CommonLibrary.Messaging;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,18 +16,22 @@ using System.Windows.Input;
 
 namespace CommonLibrary.DataClasses
 {
-    public class LogCollection : INotifyPropertyChanged
+    public class LogCollection : ObservableObject, IRecipient<AddLogMessage>, IRecipient<ClearLogMessage>, INotifyPropertyChanged
     {
 
         #region constructor
-        public LogCollection()
+        public LogCollection(bool registerMessages)
         {
             Entries = new ObservableCollection<LogResult>();
             OKsFilterChecked = true;
             WarningsFilterChecked = true;
             ErrorsFilterChecked = true;
             InfoFilterChecked = true;
-          
+            if (registerMessages)
+            {
+                WeakReferenceMessenger.Default.Register<AddLogMessage>(this);
+                WeakReferenceMessenger.Default.Register<ClearLogMessage>(this);
+            }
         }
         #endregion constructor
 
@@ -149,6 +156,16 @@ namespace CommonLibrary.DataClasses
             }
             File.WriteAllText(file, output);
             Process.Start(file);
+        }
+
+        public void Receive(AddLogMessage message)
+        {
+            AddEntry(message.Value);
+        }
+
+        public void Receive(ClearLogMessage message)
+        {
+            OnClearLogCommand();
         }
         #endregion private methods
 

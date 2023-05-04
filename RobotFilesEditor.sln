@@ -42,7 +42,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProgramTextFormat", "Progra
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProjectInformations", "ProjectInformations\ProjectInformations.csproj", "{FDBE3A0B-0448-43E9-B45A-39AD74E022B5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaseManager", "BaseManager\BaseManager.csproj", "{FACFA6DC-9210-43F8-A1F9-5365BB8797B0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RobotSoftwareManager", "RobotSoftwareManager\RobotSoftwareManager.csproj", "{FACFA6DC-9210-43F8-A1F9-5365BB8797B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

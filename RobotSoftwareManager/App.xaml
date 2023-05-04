@@ -1,7 +1,7 @@
-﻿<Application x:Class="BaseManager.App"
+﻿<Application x:Class="RobotSoftwareManager.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:BaseManager"
+             xmlns:local="clr-namespace:RobotSoftwareManager"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
          

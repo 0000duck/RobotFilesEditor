@@ -1,4 +1,5 @@
-﻿using BaseManager.Model;
+﻿using RobotSoftwareManager.Model;
+using CommonLibrary.DataClasses;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
@@ -6,34 +7,33 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CommonLibrary.DataClasses;
+using System.Xml.Linq;
 
-namespace BaseManager.ViewModel
+namespace RobotSoftwareManager.ViewModel
 {
-    public partial class MainViewModel : ObservableRecipient
+    public partial class BaseViewModel : ViewModelBase
     {
-
         #region properties
-        [ObservableProperty]
-        ObservableCollection<RobotBase> baseCollection;
+        public ObservableCollection<RobotBase> BaseCollection { get { var collection = Sort(m_BaseCollection.ToList().ConvertAll(x=>(RobotSoftwareBase)x)); var resultList = collection.ConvertAll(x => (RobotBase)x); return CommonLibrary.CommonMethods.ToObservableCollection<RobotBase>(resultList) ; } set { SetProperty(ref m_BaseCollection, value); } }
+        private ObservableCollection<RobotBase> m_BaseCollection;
 
         [ObservableProperty]
         RobotBase selectedBase;
-        #endregion properties
-
+       
         [ObservableProperty]
         ObservableCollection<int> availableBases;
 
         [ObservableProperty]
-        BaseCheckState checkState;
+        RobotSoftCheckState checkState;
+        #endregion properties
 
         #region constructor
-        public MainViewModel(List<RobotBase> robotBases)
+        public BaseViewModel(List<RobotBase> robotBases)
         {
             BaseCollection = CommonLibrary.CommonMethods.ToObservableCollection(robotBases);
             GetAvailableBases();
             BaseCollection.ToList().ForEach(x => x.UpdateSelectedValue(AvailableBases));
-            SelectedBase = BaseCollection.FirstOrDefault();            
+            SelectedBase = BaseCollection.FirstOrDefault();
         }
 
         #endregion constructor
@@ -45,9 +45,9 @@ namespace BaseManager.ViewModel
                 AvailableBases = new ObservableCollection<int>();
             else
                 AvailableBases.Clear();
-            for (int i = 1;i <= 128;i++)
+            for (int i = 1; i <= 128; i++)
             {
-              AvailableBases.Add(i);  
+                AvailableBases.Add(i);
             }
         }
         #endregion private methods
