@@ -117,6 +117,7 @@ namespace RobotFilesEditor.Model.Operations
                         groupRule = null;
                     }
                     result.Add(new SpaceItem(command,null));
+                    previousInstruction = null;
                 }
             }
             return result;
