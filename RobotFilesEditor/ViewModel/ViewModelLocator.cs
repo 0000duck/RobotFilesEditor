@@ -38,8 +38,8 @@ namespace RobotFilesEditor.ViewModel
 
                 try
                 {
-                    FilesFromServerManager.CopyProjectFile("ProjectInfos.xml");
-                    FilesFromServerManager.CopyProjectFile("ProgramFormatter.xml");
+                    CommonLibrary.FilesFromServerManager.CopyProjectFile("ProjectInfos.xml");
+                    CommonLibrary.FilesFromServerManager.CopyProjectFile("ProgramFormatter.xml");
 
                     filesSerialization = new Serializer.FilesSerialization();
                     controlers = filesSerialization.GetControlersConfigurations();

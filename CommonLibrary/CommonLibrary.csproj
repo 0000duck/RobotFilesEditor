@@ -164,6 +164,7 @@
     <Compile Include="DataClasses\Enums.cs" />
     <Compile Include="DataClasses\LogCollection.cs" />
     <Compile Include="DataClasses\LogResult.cs" />
+    <Compile Include="FilesFromServerManager.cs" />
     <Compile Include="MatrixOperationsMethods.cs" />
     <Compile Include="Messaging\AddLogMessage.cs" />
     <Compile Include="Messaging\ClearLogMessage.cs" />

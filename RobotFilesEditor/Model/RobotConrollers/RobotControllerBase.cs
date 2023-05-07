@@ -205,7 +205,8 @@ namespace RobotFilesEditor.Model.RobotConrollers
         #region internal methods
         internal void SetFillDescr()
         {
-            fillDescrs = selectedProject.UseCollDescr.Value.Equals("true", StringComparison.InvariantCultureIgnoreCase) ? true : false;
+            if (selectedProject?.UseCollDescr != null)
+                fillDescrs = selectedProject.UseCollDescr.Value.Equals("true", StringComparison.InvariantCultureIgnoreCase) ? true : false;
         }
         #endregion internal methods
     }

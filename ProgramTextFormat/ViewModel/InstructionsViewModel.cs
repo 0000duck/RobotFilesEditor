@@ -71,7 +71,7 @@ namespace ProgramTextFormat.ViewModel
         [RelayCommand]
         private void RemoveInstruction()
         {
-            if (SelectedInstruction >= 0 && SelectedInstruction < InstructionsCollection.Count - 1)
+            if (SelectedInstruction >= 0 && SelectedInstruction <= InstructionsCollection.Count - 1)
             {
                 WeakReferenceMessenger.Default.Send<RemoveInstructionMessage>(new RemoveInstructionMessage(InstructionsCollection[SelectedInstruction]));
                 InstructionsCollection.RemoveAt(SelectedInstruction);

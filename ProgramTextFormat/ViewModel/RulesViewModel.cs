@@ -63,8 +63,8 @@ namespace ProgramTextFormat.ViewModel
         private void AddRule()
         {
             addRuleActive = true;
-            int number = Statics.GetHighest(RulesCollection) + 1;
-            var rule = new ProgramFormatRule(number.ToString(), "UnknownInstruction", Actions.FirstOrDefault().ToString(), false);
+            //int number = Statics.GetHighest(RulesCollection) + 1;
+            var rule = new ProgramFormatRule("UnknownInstruction", Actions.FirstOrDefault().ToString(), false);
             RulesCollection.Add(rule);
             SelectedRule = RulesCollection.Count - 1;
             EditRule();
@@ -139,9 +139,8 @@ namespace ProgramTextFormat.ViewModel
             {
                 var rule = RulesCollection[SelectedRule];
                 if (rule != null)
-                    if (!string.IsNullOrEmpty(rule.Number))
-                        if (!string.IsNullOrEmpty(rule.Instruction) && !rule.Instruction.Equals("UnknownInstruction"))
-                            return true;
+                    if (!string.IsNullOrEmpty(rule.Instruction) && !rule.Instruction.Equals("UnknownInstruction"))
+                        return true;
             }
             return false;
         }
@@ -152,6 +151,7 @@ namespace ProgramTextFormat.ViewModel
         {
             RulesCollection = CommonLibrary.CommonMethods.ToObservableCollection(message.Value.Rules.ProgramFormatRule.ToList());
             InstructionBases = new ObservableCollection<RobotInstructionBase>();
+            InstructionBases.Add(new EmptyInstuction());
             message.Value.Instructions.KukaInstructions.ForEach(x => InstructionBases.Add(x));           
         }
 

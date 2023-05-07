@@ -6,8 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Shapes;
 
-namespace RobotFilesEditor.ViewModel.Helper
+namespace CommonLibrary
 {
     public static class FilesFromServerManager
     {
@@ -16,7 +17,7 @@ namespace RobotFilesEditor.ViewModel.Helper
             if (CheckServerConnection())
             {
                 var destpath = CommonMethods.GetFilePath(file);
-                var sourcePath = Path.Combine(CommonLibrary.CommonGlobalData.serverPath, file);
+                var sourcePath = System.IO.Path.Combine(CommonGlobalData.serverPath, file);
 
                 if (File.Exists(sourcePath))
                 {
@@ -51,6 +52,23 @@ namespace RobotFilesEditor.ViewModel.Helper
             if (Directory.Exists(CommonGlobalData.serverPath))
                 return true;
             return false;
+        }
+
+        public static void TryWriteFileToServer(string localPath, string fileName)
+        {
+            var fileNameComplete = System.IO.Path.Combine(CommonGlobalData.serverPath, fileName);
+            if (!Directory.Exists(CommonGlobalData.serverPath))
+            {
+                return;
+            }
+            if (File.Exists(fileNameComplete))
+            {
+                var dialog = MessageBox.Show($"File {fileNameComplete} exists. Overwrite?", "Overwrite?", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                if (dialog == MessageBoxResult.No)
+                    return;
+                File.Delete(fileNameComplete);
+            }
+            File.Copy(localPath, fileNameComplete);
         }
     }
 }

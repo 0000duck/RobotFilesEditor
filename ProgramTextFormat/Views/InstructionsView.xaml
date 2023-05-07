@@ -30,7 +30,7 @@
                 </StackPanel>
             </StackPanel>
             <DataGrid Grid.Column="1" Grid.Row="0" MinWidth="600" ItemsSource="{Binding InstructionsCollection}" AutoGenerateColumns="False" SelectedIndex="{Binding SelectedInstruction}"
-                CanUserAddRows="True" CanUserDeleteRows="True"                 
+                CanUserAddRows="False" CanUserDeleteRows="False"                 
                 SelectionMode="Single" SelectionUnit="FullRow">
                 <DataGrid.Columns>
 

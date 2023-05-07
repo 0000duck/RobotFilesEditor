@@ -29,37 +29,12 @@
                     <Button Content="Cancel edit" Command="{Binding CancelEditCommand}" Margin="0,0,0,5"/>
                 </StackPanel>
             </StackPanel>
-            <DataGrid Grid.Column="1" Grid.Row="0" MinWidth="500" ItemsSource="{Binding RulesCollection}" AutoGenerateColumns="False" SelectedIndex="{Binding SelectedRule}"
-                CanUserAddRows="True" CanUserDeleteRows="True"                 
+            <DataGrid Grid.Column="1" Grid.Row="0" Width="600" ItemsSource="{Binding RulesCollection}" AutoGenerateColumns="False" SelectedIndex="{Binding SelectedRule}"
+                CanUserAddRows="False" CanUserDeleteRows="False"
+                ScrollViewer.CanContentScroll="True" ScrollViewer.HorizontalScrollBarVisibility="Visible" ScrollViewer.VerticalScrollBarVisibility="Auto"
                 SelectionMode="Single" SelectionUnit="FullRow">
                 <DataGrid.Columns>
 
-                    <!--**********************************************************************-->
-                    <DataGridTemplateColumn Header="Number">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Path=Number}" PreviewTextInput="NumberValidationTextBox">
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Path=Editable}" Value="True">
-                                                    <Setter Property="Foreground" Value="Black"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Path=Editable}" Value="False">
-                                                    <Setter Property="Foreground" Value="Gray"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                        <DataGridTemplateColumn.CellEditingTemplate>
-                            <DataTemplate>
-                                <TextBox IsEnabled="{Binding Path=Editable}" Text="{Binding Path=Number, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellEditingTemplate>
-                    </DataGridTemplateColumn>
                     <!--**********************************************************************-->
                     <DataGridTemplateColumn Header="Instruction">
                         <DataGridTemplateColumn.CellTemplate>
@@ -163,6 +138,134 @@
                                 <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource Findancestor, AncestorType={x:Type Page}}, Path=DataContext.InstructionBases}"
                                       DisplayMemberPath="Name"
                                       SelectedItem="{Binding SelectedInstructionToGroup, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                                      MinWidth="20"
+                                      IsEnabled="{Binding Editable}"
+                                      >
+                                    <ComboBox.Style>
+                                        <Style TargetType="ComboBox">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Path=Editable}" Value="True">
+                                                    <Setter Property="Foreground" Value="Black"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Path=Editable}" Value="False">
+                                                    <Setter Property="Foreground" Value="Gray"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Path=GroupWithOther}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Path=GroupWithOther}" Value="False">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ComboBox.Style>
+                                </ComboBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <!--**********************************************************************-->
+                    <DataGridTemplateColumn Header="Group With 2">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource Findancestor, AncestorType={x:Type Page}}, Path=DataContext.InstructionBases}"
+                                      DisplayMemberPath="Name"
+                                      SelectedItem="{Binding SelectedInstructionToGroup2, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                                      MinWidth="20"
+                                      IsEnabled="{Binding Editable}"
+                                      >
+                                    <ComboBox.Style>
+                                        <Style TargetType="ComboBox">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Path=Editable}" Value="True">
+                                                    <Setter Property="Foreground" Value="Black"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Path=Editable}" Value="False">
+                                                    <Setter Property="Foreground" Value="Gray"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Path=GroupWithOther}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Path=GroupWithOther}" Value="False">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ComboBox.Style>
+                                </ComboBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <!--**********************************************************************-->
+                    <DataGridTemplateColumn Header="Group With 3">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource Findancestor, AncestorType={x:Type Page}}, Path=DataContext.InstructionBases}"
+                                      DisplayMemberPath="Name"
+                                      SelectedItem="{Binding SelectedInstructionToGroup3, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                                      MinWidth="20"
+                                      IsEnabled="{Binding Editable}"
+                                      >
+                                    <ComboBox.Style>
+                                        <Style TargetType="ComboBox">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Path=Editable}" Value="True">
+                                                    <Setter Property="Foreground" Value="Black"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Path=Editable}" Value="False">
+                                                    <Setter Property="Foreground" Value="Gray"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Path=GroupWithOther}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Path=GroupWithOther}" Value="False">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ComboBox.Style>
+                                </ComboBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <!--**********************************************************************-->
+                    <DataGridTemplateColumn Header="Group With 4">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource Findancestor, AncestorType={x:Type Page}}, Path=DataContext.InstructionBases}"
+                                      DisplayMemberPath="Name"
+                                      SelectedItem="{Binding SelectedInstructionToGroup4, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
+                                      MinWidth="20"
+                                      IsEnabled="{Binding Editable}"
+                                      >
+                                    <ComboBox.Style>
+                                        <Style TargetType="ComboBox">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Path=Editable}" Value="True">
+                                                    <Setter Property="Foreground" Value="Black"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Path=Editable}" Value="False">
+                                                    <Setter Property="Foreground" Value="Gray"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Path=GroupWithOther}" Value="True">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Path=GroupWithOther}" Value="False">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </ComboBox.Style>
+                                </ComboBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <!--**********************************************************************-->
+                    <DataGridTemplateColumn Header="Group With 5">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource Findancestor, AncestorType={x:Type Page}}, Path=DataContext.InstructionBases}"
+                                      DisplayMemberPath="Name"
+                                      SelectedItem="{Binding SelectedInstructionToGroup5, UpdateSourceTrigger=PropertyChanged,Mode=TwoWay}"
                                       MinWidth="20"
                                       IsEnabled="{Binding Editable}"
                                       >

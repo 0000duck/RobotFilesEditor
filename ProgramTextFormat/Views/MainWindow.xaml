@@ -59,8 +59,10 @@
                         </Button.Style>
                     </Button>
                 </StackPanel>
+                
             </Border>
         </StackPanel>
+        <CheckBox Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding ExportOnClose}" Content="Export after close" Margin="5"/>
         <Frame x:Name="Main" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" NavigationUIVisibility="Hidden"/>
        
         <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">

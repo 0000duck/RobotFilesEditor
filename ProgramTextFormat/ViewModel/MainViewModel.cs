@@ -22,8 +22,9 @@ namespace ProgramTextFormat.ViewModel
 {
     public partial class MainViewModel : MessagingBase
     {
-         
+
         #region fields
+        const string xmlFileName = "ProgramFormatter.xml";
         ProgramFormatter xmlDeserialized;
         string path;
         #endregion fields
@@ -39,6 +40,9 @@ namespace ProgramTextFormat.ViewModel
         bool okEnabled;
         #endregion properties
 
+        [ObservableProperty]
+        bool exportOnClose;
+
         #region commands
 
         [RelayCommand]
@@ -49,6 +53,10 @@ namespace ProgramTextFormat.ViewModel
             using (Stream fs = new FileStream(path, FileMode.Open))
             {
                 serializer.Serialize(fs, xmlDeserialized);
+            }
+            if (ExportOnClose)
+            {
+                FilesFromServerManager.TryWriteFileToServer(path, xmlFileName);
             }
             if (window != null)
                 window.Close();
@@ -82,7 +90,7 @@ namespace ProgramTextFormat.ViewModel
         public MainViewModel()
         {
             RegisterMessages();
-            path = CommonMethods.GetFilePath("ProgramFormatter.xml");
+            path = CommonMethods.GetFilePath(xmlFileName);
             RulesActive = true; InstructionsActive = false; OkEnabled = true;
             XmlSerializer serializer = new XmlSerializer(typeof(ProgramFormatter));   
             

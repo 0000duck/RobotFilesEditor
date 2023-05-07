@@ -163,7 +163,7 @@ namespace ProjectInformations.ViewModel
             }
             if (ExportOnClose)
             {
-                TryWriteFileToServer(xmlFileName);
+                CommonLibrary.FilesFromServerManager.TryWriteFileToServer(path,xmlFileName);
             }
             if (window != null)
                 window.Close();
@@ -266,23 +266,6 @@ namespace ProjectInformations.ViewModel
             return false;
         }
 
-        private void TryWriteFileToServer(string fileName)
-        {
-            var fileNameComplete = Path.Combine(CommonGlobalData.serverPath, fileName);
-            if (!Directory.Exists(CommonGlobalData.serverPath))
-            {
-                return;
-            }
-            if (File.Exists(fileNameComplete))
-            {
-                var dialog = MessageBox.Show($"File {fileNameComplete} exists. Overwrite?", "Overwrite?", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (dialog == MessageBoxResult.No)
-                    return;
-                File.Delete(fileNameComplete);
-            }
-            File.Copy(path, fileNameComplete);
-
-        }
         #endregion private methods
     }
 }

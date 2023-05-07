@@ -1,11 +1,20 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0"?>
 <ProgramFormatter xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <Rules>
-    <ProgramFormatRule Number="1" Instruction="CollisionReqKrc2" SelectedAction="RemoveCommand" GroupItems="false" />
-    <ProgramFormatRule Number="2" Instruction="PLC_COM" SelectedAction="EnterBefore" GroupItems="true" />
-  </Rules>
-  <Instructions>
-    <KukaInstruction Name="CollisionReqKrc2" IsComment="true" IsFold="true" KeyWordsString="COLLISION_ZONE,REQUEST,COLL_SAFETY_REQ" />
-    <KukaInstruction Name="PLC_COM" IsComment="false" IsFold="true" KeyWordsString="PLC_COM,PLC_PLCCOM" />
-  </Instructions>
+	<Rules>
+		<ProgramFormatRule Instruction="CollReqKRC4" SelectedAction="EnterBeforeAfter" GroupItems="true" GroupWithOther="true" GroupWithInstruction="CollComment" GroupWithInstruction2="JobStarted" />
+		<ProgramFormatRule Instruction="CollClrKRC4" SelectedAction="EnterBeforeAfter" GroupItems="true" GroupWithOther="true" GroupWithInstruction="CollComment" />
+		<ProgramFormatRule Instruction="JobStarted" SelectedAction="EnterBeforeAfter" GroupItems="false" GroupWithOther="true" GroupWithInstruction="CollReqKRC4" />
+		<ProgramFormatRule Instruction="AreaReqKrc4" SelectedAction="EnterBeforeAfter" GroupItems="false" GroupWithOther="true" GroupWithInstruction="JobStarted" GroupWithInstruction2="CollReqKRC4" />
+		<ProgramFormatRule Instruction="CHK_AXIS_POS" SelectedAction="EnterAfter" GroupItems="false" GroupWithOther="false" />
+		<ProgramFormatRule Instruction="JobDone" SelectedAction="EnterAfter" GroupItems="false" GroupWithOther="false" />
+	</Rules>
+	<Instructions>
+		<KukaInstruction Name="CollReqKRC4" IsComment="false" IsFold="true" KeyWordsString="CollZone,Plc_CollSafetyReq1" />
+		<KukaInstruction Name="CollClrKRC4" IsComment="false" IsFold="true" KeyWordsString="CollZone,Plc_CollSafetyClear1" />
+		<KukaInstruction Name="CollComment" IsComment="true" IsFold="false" KeyWordsString="Kollisionsbereich" />
+		<KukaInstruction Name="JobStarted" IsComment="false" IsFold="true" KeyWordsString="Job,Started,Plc_Job" />
+		<KukaInstruction Name="AreaReqKrc4" IsComment="false" IsFold="true" KeyWordsString="Plc_AreaPreReq,Plc_AreaReq" />
+		<KukaInstruction Name="CHK_AXIS_POS" IsComment="false" IsFold="false" KeyWordsString="CHK_AXIS_POS" />
+		<KukaInstruction Name="JobDone" IsComment="false" IsFold="true" KeyWordsString="Plc_Job,Job,Done" />
+	</Instructions>
 </ProgramFormatter>
