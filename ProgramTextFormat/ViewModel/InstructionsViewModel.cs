@@ -51,6 +51,8 @@ namespace ProgramTextFormat.ViewModel
             SelectedInstruction = InstructionsCollection.Count - 1;
             EditInstruction();
             addInstructionActive = true;
+            foreach (var instr in InstructionsCollection)
+                instr.SetEditability(false);
         }
 
         [RelayCommand]
@@ -98,8 +100,9 @@ namespace ProgramTextFormat.ViewModel
             WeakReferenceMessenger.Default.Send<OKEnablerMessage>(new OKEnablerMessage(true));
             EditVisibility = false;
             ButtonsEnabled = true;
-            InstructionsCollection[currentlyEditedRow] = lastInstruction;
-            InstructionsCollection[currentlyEditedRow].SetEditability(false);
+            InstructionsCollection[currentlyEditedRow]?.SetEditability(false);
+            if (lastInstruction != null)
+                InstructionsCollection[currentlyEditedRow] = lastInstruction;  
             addInstructionActive = false;
         }
         #endregion commands
@@ -142,6 +145,7 @@ namespace ProgramTextFormat.ViewModel
         {
             EditValid = EditValidCheck();
         }
+
         #endregion methods
 
     }

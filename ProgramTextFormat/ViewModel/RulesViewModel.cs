@@ -23,7 +23,6 @@ namespace ProgramTextFormat.ViewModel
         bool addRuleActive;
         #endregion fields
 
-
         #region properties
         public RulesMessage ReceivedRules { get; set; }
 
@@ -46,7 +45,6 @@ namespace ProgramTextFormat.ViewModel
         bool editValid;
         public List<string> Actions { get => FillActions(); }
         #endregion properties
-
 
         #region commands
         [RelayCommand]
@@ -102,12 +100,12 @@ namespace ProgramTextFormat.ViewModel
             WeakReferenceMessenger.Default.Send<OKEnablerMessage>(new OKEnablerMessage(true));
             EditVisibility = false;
             ButtonsEnabled = true;
-            RulesCollection[currentlyEditedRow] = lastRule;
-            RulesCollection[currentlyEditedRow].SetEditability(false);
+            RulesCollection[currentlyEditedRow]?.SetEditability(false);
+            if (lastRule != null)
+                RulesCollection[currentlyEditedRow] = lastRule;
             addRuleActive= false;
         }
         #endregion commands
-
 
         #region constuctor
         public RulesViewModel()

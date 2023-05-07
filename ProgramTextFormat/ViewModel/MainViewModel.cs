@@ -147,6 +147,9 @@ namespace ProgramTextFormat.ViewModel
         {
             if (message.Value is KukaInstruction kukaInstruction)
                 xmlDeserialized.Instructions.KukaInstructions.Remove(kukaInstruction);
+            var rule = xmlDeserialized.Rules.ProgramFormatRule.ToList().FirstOrDefault(x => x.Instruction.Equals(message.Value.Name));
+            if (rule != null)
+                xmlDeserialized.Rules.ProgramFormatRule?.Remove(rule);
         }
 
         public override void Receive(RemoveRuleMessage message)

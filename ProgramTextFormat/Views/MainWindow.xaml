@@ -30,7 +30,7 @@
         <StackPanel Grid.Column="0" Grid.Row="0" Margin="5,5,5,5">
             <Border BorderThickness="2" BorderBrush="Black" Margin="5,5,5,5">
                 <StackPanel>
-                    <Button Content="Rules" Click="Rules_Click" Command="{Binding SetRulesCommand}" Margin="5,5,5,5">
+                    <Button Content="Rules" Click="Rules_Click" IsEnabled="{Binding OkEnabled}" Command="{Binding SetRulesCommand}" Margin="5,5,5,5">
                         <Button.Style>
                             <Style TargetType="Button">
                                 <Style.Triggers>
@@ -44,7 +44,7 @@
                             </Style>
                         </Button.Style>
                     </Button>
-                    <Button Content="Instructions" Click="Instructions_Click" Command="{Binding SetInstructionsCommand}" Margin="5,5,5,5">
+                    <Button Content="Instructions" Click="Instructions_Click" IsEnabled="{Binding OkEnabled}" Command="{Binding SetInstructionsCommand}" Margin="5,5,5,5">
                         <Button.Style>
                             <Style TargetType="Button">
                                 <Style.Triggers>
