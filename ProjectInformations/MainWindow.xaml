@@ -7,12 +7,15 @@
         xmlns:local="clr-namespace:ProjectInformations"
         xmlns:vm="clr-namespace:ProjectInformations.ViewModel"
         xmlns:converter="clr-namespace:ProjectInformations.Converters"
+        xmlns:globalConverter="clr-namespace:CommonLibrary.Converters;assembly=CommonLibrary"
+        xmlns:globalResources="clr-namespace:CommonLibrary.Properties;assembly=CommonLibrary"
         mc:Ignorable="d"
         Title="Project configurator" MaxHeight="600" Width="800">
     <Window.Resources>
         <ResourceDictionary>
             <converter:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
             <converter:StringToBoolConverter x:Key="stringToBoolConverter"/>
+            <globalConverter:BitmapToImageSourceConverter x:Key="bitmapToImageSourceConverter"/>
         </ResourceDictionary>
     </Window.Resources>
     <Window.DataContext>
@@ -23,7 +26,11 @@
             <ColumnDefinition Width="150"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Border Grid.Column="0" BorderThickness="1" BorderBrush="Black" Margin="2">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+        <Border Grid.Column="0" Grid.Row="0" BorderThickness="1" BorderBrush="Black" Margin="2">
             <DockPanel>
                 <StackPanel DockPanel.Dock="Top">
                     <TextBlock Text="Available projects:" HorizontalAlignment="Center" Margin="5"/>
@@ -171,10 +178,13 @@
                     </StackPanel>
                 </Border>
             </Border>
-            <StackPanel Height="30" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+            <StackPanel Height="30" Grid.RowSpan="2" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Center">
                 <Button Content="OK" DockPanel.Dock="Top" IsEnabled="{Binding EditProjectNameDisabled}"  VerticalAlignment="Bottom" Command="{Binding OKCommand}" CommandParameter="{Binding ElementName=MainProgramWindow}" Margin="5" Width="50"/>
                 <Button Content="Cancel" Command="{Binding CancelCommand}" CommandParameter="{Binding ElementName=MainProgramWindow}" Margin="5" Width="50"/>
             </StackPanel>
         </DockPanel>
+        <Button Grid.Row="1" Grid.Column="0" Width="20" Height="20" Margin="5" HorizontalAlignment="Left" Command="{Binding OpenHelpCommand}">
+            <Image Source="{Binding Source={x:Static globalResources:Resources.questionmark}, Converter={StaticResource bitmapToImageSourceConverter}}" />
+        </Button>
     </Grid>
 </Window>

@@ -110,7 +110,9 @@ namespace ProjectInformations.Model
             Name = "NewProject";
             TypNumbers = new TypNumbers(true);
             TypIDMain = new TypIDMain() { Value = 0 };
-            TypIDCommunal = new TypIDCommunal() {  Value = 0 };
+            TypIDCommunal = new TypIDCommunal() { Value = 0 };
+            ApplicationTypes = new ApplicationTypes() { GlueType = new GlueType() { A08 = "true" }, LaserType = new LaserType() { A15 = "true"}, SpotType = new SpotType() { A04 = "true"}, TchType = new TchType() {A02 = "true" } };
+            RobotType = "KUKA";
         }
 
         [XmlAttribute(AttributeName = "RobotType")]

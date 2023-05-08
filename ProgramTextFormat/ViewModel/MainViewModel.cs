@@ -10,6 +10,7 @@ using ProgramTextFormat.Model.Rules;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -83,6 +84,15 @@ namespace ProgramTextFormat.ViewModel
             RulesActive = false;
             InstructionsActive = true;
             WeakReferenceMessenger.Default.Send<InstructionsMessage>(new InstructionsMessage(xmlDeserialized.Instructions));
+        }
+
+        [RelayCommand]
+        private void OpenHelp()
+        {
+            var resourceFile = Properties.Resources.ProgramFormattingRule;
+            string destination = Path.Combine(Path.GetTempPath(), "ProgramFormattingRule.pdf");
+            System.IO.File.WriteAllBytes(destination, resourceFile);
+            Process.Start(destination);
         }
         #endregion commands
 

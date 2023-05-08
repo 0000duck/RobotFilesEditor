@@ -1249,16 +1249,18 @@ namespace RobotFilesEditor.ViewModel
         {
             if (ProjectInfos is null)
               ProjectInfos = new ObservableCollection<Project>();
-
             var path = CommonLibrary.CommonMethods.GetFilePath("ProjectInfos.xml");
             var projName = string.Empty;
             var serializer = new XmlSerializer(typeof(ProjectInfos));
             using (Stream reader = new FileStream(path, FileMode.Open))
             {
                 xmlDeserialized = (ProjectInfos)serializer.Deserialize(reader);
-                xmlDeserialized.Project.ForEach(x => ProjectInfos.Add(x));
-                projName = xmlDeserialized?.SelectedProject?.Name;               
             }
+            List<Project> list = xmlDeserialized.Project.ToList();
+            ProjectInfos = CommonLibrary.CommonMethods.ToObservableCollection(list);
+            //xmlDeserialized.Project.ForEach(x => ProjectInfos.Add(x));
+            projName = xmlDeserialized?.SelectedProject?.Name;               
+            
             SelectedProject = ProjectInfos.FirstOrDefault(x => x.Name == projName);
         }
 

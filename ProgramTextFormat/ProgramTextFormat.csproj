@@ -1,13 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-	  <TargetFramework>net48</TargetFramework>
+	<TargetFramework>net48</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
 	<LangVersion>10.0</LangVersion>
+	<PublishProtocol>ClickOnce</PublishProtocol>
+	<SignAssembly>False</SignAssembly>
+	<NoWin32Manifest>true</NoWin32Manifest>
   </PropertyGroup>
-
+  <Import Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.props" />
+  <Import Sdk="Microsoft.NET.Sdk.WindowsDesktop" Project="Sdk.targets" />
+  <Target Name="ComputeAndCopyFilesToPublishDirectory" />
+  <ItemGroup>
+    <None Remove="Resources\ProgramFormattingRule.pdf" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\ProgramFormattingRule.pdf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
     <PackageReference Include="System.Memory" Version="4.5.5" />
@@ -30,10 +42,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Resources\" />
   </ItemGroup>
 
 </Project>

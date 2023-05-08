@@ -7,6 +7,8 @@
         xmlns:local="clr-namespace:ProgramTextFormat"
         xmlns:viewModel="clr-namespace:ProgramTextFormat.ViewModel"
         xmlns:converters="clr-namespace:ProgramTextFormat.Converters"
+        xmlns:globalConverter="clr-namespace:CommonLibrary.Converters;assembly=CommonLibrary"
+        xmlns:globalResources="clr-namespace:CommonLibrary.Properties;assembly=CommonLibrary"
         mc:Ignorable="d"
         Title="Robot program code formatter" MinHeight="500" SizeToContent="WidthAndHeight">
     <Window.DataContext>
@@ -16,6 +18,7 @@
         <ResourceDictionary>
             <converters:BoolToVisibilityConverter x:Key="boolToVisibilityConverter"/>
             <converters:EnumToStringConverter x:Key="enumToStringConverter"/>
+            <globalConverter:BitmapToImageSourceConverter x:Key="bitmapToImageSourceConverter"/>
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
@@ -26,6 +29,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="500"/>
             <RowDefinition Height="50"/>
+            <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Column="0" Grid.Row="0" Margin="5,5,5,5">
             <Border BorderThickness="2" BorderBrush="Black" Margin="5,5,5,5">
@@ -59,13 +63,16 @@
                         </Button.Style>
                     </Button>
                 </StackPanel>
-                
+
             </Border>
         </StackPanel>
-        <CheckBox Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding ExportOnClose}" Content="Export after close" Margin="5"/>
+        <CheckBox Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center"  IsChecked="{Binding ExportOnClose}" Content="Export after close" Margin="5"/>
+        <Button Grid.Row="2" Grid.Column="0" Width="20" Height="20" Margin="5" HorizontalAlignment="Left" Command="{Binding OpenHelpCommand}">
+            <Image Source="{Binding Source={x:Static globalResources:Resources.questionmark}, Converter={StaticResource bitmapToImageSourceConverter}}" />
+        </Button>
         <Frame x:Name="Main" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" NavigationUIVisibility="Hidden"/>
        
-        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
+        <StackPanel Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button Content="OK" Margin="5,5,5,5" Command="{Binding OKCommand}" IsEnabled="{Binding OkEnabled}" CommandParameter="{Binding ElementName=MainProgramWindow}" Height="20" Width="50"/>
             <Button Content="Cancel" Margin="5,5,5,5" Command="{Binding CancelCommand}"  CommandParameter="{Binding ElementName=MainProgramWindow}" Height="20" Width="50"/>
         </StackPanel>

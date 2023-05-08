@@ -5,6 +5,7 @@ using ProjectInformations.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -71,8 +72,6 @@ namespace ProjectInformations.ViewModel
 
         [ObservableProperty]
         TypNumber selectedTypNr;
-        //public TypNumber SelectedTypNr { get { return m_SelectedTypNr; } set { SetProperty(ref m_SelectedTypNr, value); } }
-        //private TypNumber m_SelectedTypNr;
 
         public Project SelectedProject { get { m_SelectedProject?.TypNumbers?.Sort(); return m_SelectedProject; } set { SetProperty(ref m_SelectedProject, value); UpdateGUI(); } }
         private Project m_SelectedProject;
@@ -225,6 +224,15 @@ namespace ProjectInformations.ViewModel
                 SelectedProject.Name = tempProjectName;
             EditProjectNameVisible = false;
             newproject = null;
+        }
+
+        [RelayCommand]
+        public void OpenHelp()
+        {
+            var resourceFile = Properties.Resources.ProjectConfigurator;
+            string destination = Path.Combine(Path.GetTempPath(), "ProjectConfigurator.pdf");
+            System.IO.File.WriteAllBytes(destination, resourceFile);
+            Process.Start(destination);
         }
         #endregion commands
 

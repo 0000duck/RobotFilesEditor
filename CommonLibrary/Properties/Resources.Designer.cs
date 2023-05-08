@@ -22,7 +22,7 @@ namespace CommonLibrary.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class Resources {
+    public class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace CommonLibrary.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("CommonLibrary.Properties.Resources", typeof(Resources).Assembly);
@@ -51,7 +51,7 @@ namespace CommonLibrary.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace CommonLibrary.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap alert {
+        public static System.Drawing.Bitmap alert {
             get {
                 object obj = ResourceManager.GetObject("alert", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -73,7 +73,7 @@ namespace CommonLibrary.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap error {
+        public static System.Drawing.Bitmap error {
             get {
                 object obj = ResourceManager.GetObject("error", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -83,7 +83,7 @@ namespace CommonLibrary.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap info {
+        public static System.Drawing.Bitmap info {
             get {
                 object obj = ResourceManager.GetObject("info", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
@@ -91,16 +91,14 @@ namespace CommonLibrary.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot;?&gt;
         ///&lt;ProgramFormatter xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;
-        ///  &lt;Rules&gt;
-        ///    &lt;ProgramFormatRule Number=&quot;1&quot; Instruction=&quot;CollisionReqKrc2&quot; SelectedAction=&quot;RemoveCommand&quot; GroupItems=&quot;false&quot; /&gt;
-        ///    &lt;ProgramFormatRule Number=&quot;2&quot; Instruction=&quot;PLC_COM&quot; SelectedAction=&quot;EnterBefore&quot; GroupItems=&quot;true&quot; /&gt;
-        ///  &lt;/Rules&gt;
-        ///  &lt;Instructions&gt;
-        ///    &lt;KukaInstruction Name=&quot;CollisionReqKrc2&quot; IsComment=&quot;true&quot; IsFold=&quot;true&quot; KeyWordsSt [rest of string was truncated]&quot;;.
+        ///	&lt;Rules&gt;
+        ///		&lt;ProgramFormatRule Instruction=&quot;CollReqKRC4&quot; SelectedAction=&quot;EnterBeforeAfter&quot; GroupItems=&quot;true&quot; GroupWithOther=&quot;true&quot; GroupWithInstruction=&quot;CollComment&quot; GroupWithInstruction2=&quot;JobStarted&quot; /&gt;
+        ///		&lt;ProgramFormatRule Instruction=&quot;CollClrKRC4&quot; SelectedAction=&quot;EnterBeforeAfter&quot; GroupItems=&quot;true&quot; GroupWithOther=&quot;true&quot; GroupWithInstruction=&quot;CollComment&quot; /&gt;
+        ///		&lt;Pr [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string ProgramFormatter {
+        public static string ProgramFormatter {
             get {
                 return ResourceManager.GetString("ProgramFormatter", resourceCulture);
             }
@@ -121,7 +119,7 @@ namespace CommonLibrary.Properties {
         ///		&lt;SpotType A04=&quot;true&quot; A05=&quot;false&quot;/&gt;
         ///		&lt;GlueType A08=&quot;true&quot; B08=&quot;false&quot;/ [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string ProjectInfos {
+        public static string ProjectInfos {
             get {
                 return ResourceManager.GetString("ProjectInfos", resourceCulture);
             }
@@ -130,7 +128,17 @@ namespace CommonLibrary.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap tick {
+        public static System.Drawing.Bitmap questionmark {
+            get {
+                object obj = ResourceManager.GetObject("questionmark", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap tick {
             get {
                 object obj = ResourceManager.GetObject("tick", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));

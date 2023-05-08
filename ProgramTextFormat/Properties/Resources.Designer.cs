@@ -59,5 +59,15 @@ namespace ProgramTextFormat.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] ProgramFormattingRule {
+            get {
+                object obj = ResourceManager.GetObject("ProgramFormattingRule", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }
